@@ -5,17 +5,16 @@ PS4='' set -e
 #shellcheck disable=SC2068
 cd "$(dirname "$0")" || exit
 
-INSTALL_DIR=/usr/local
-PATH_BUILD=../build/include/jstr
-PATH_LIB=../build/lib
+INSTALL_DIR='/usr/local'
 
 [ $# -eq 1 ] && INSTALL_DIR=$1
-./fmt "$PATH_BUILD"/*.h
 if [ "$(id -u)" -eq 0 ]; then
-	mkdir -p "$INSTALL_DIR/jstr"
-	cp -rf "$PATH_BUILD"/. "$INSTALL_DIR/include/"
-	cp -rf "$PATH_LIB"/. "$INSTALL_DIR/lib/"
+	cp -rf '../build/include' "$INSTALL_DIR"
+	cp -rf '../build/lib' "$INSTALL_DIR"
 	echo "Successfully built to $INSTALL_DIR."
+	if [ "$INSTALL_DIR" = '/usr/local' ]; then
+		sudo ln -s /usr/local/lib/libjstr.so /usr/lib
+	fi
 else
 	echo "Please run the command with sudo, as it requires permission to install to /usr/local/"
 	exit 1

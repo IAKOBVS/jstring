@@ -24,6 +24,7 @@
 #	define JSTR_REPLACE_H 1
 
 #	include "macros.h"
+#	include "struct.h"
 
 JSTR_INTERNAL_BEGIN_DECLS
 #	include <stdlib.h>

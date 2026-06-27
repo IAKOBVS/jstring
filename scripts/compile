@@ -36,7 +36,6 @@ update() {
 	*/*.h)
 		out_fname=$PATH_BUILD/$base_fname
 		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
-		# perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl | perl ./wrap-func-decls.pl >"$out_fname"
 		;;
 	*)
 		return
@@ -72,7 +71,7 @@ for file in ./../include/*.h; do
 	fi
 done
 
-PRIVDIR="$OUTDIR/private"
+# PRIVDIR="$OUTDIR/private"
 
 for cfile in "$SRCDIR"/*.c; do
 	base=$(basename "$cfile" .c)
@@ -91,16 +90,13 @@ if [ -z "$OFILES" ]; then
 	echo "No object files produced."
 	exit 1
 fi
+echo $OFILES
 
 # 4. Archive static library
 # ar rcs "$LIBDIR/libjstr.a" $OFILES
 
 # 5. Link shared library
-cc -shared -o "$LIBDIR/libjstr.so" $OFILES
-
-# 6. Copy public headers for user convenience
-mkdir -p "$LIBDIR/../include/jstr"
-cp -r "$INCDIR"/* "$LIBDIR/../include/jstr/" 2>/dev/null || true
+cc -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
 
 echo "Library built successfully."
 # echo "Static:  $(realpath $LIBDIR/libjstr.a)"

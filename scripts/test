@@ -54,9 +54,9 @@ generate_jobs()
 {
 	for file in $files; do
 		echo "$file $CFLAGS"
-		echo "$file $CFLAGS -march=native"
-		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1"
-		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1 -march=native"
+		# echo "$file $CFLAGS -march=native"
+		# echo "$file $CFLAGS -DJSTR_TEST_SLOW=1"
+		# echo "$file $CFLAGS -DJSTR_TEST_SLOW=1 -march=native"
 	done
 }
 

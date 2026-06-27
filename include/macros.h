@@ -23,12 +23,6 @@
 #ifndef JSTR_MACROS_H
 #	define JSTR_MACROS_H 1
 
-#	if defined(JSTR_IMPLEMENTATION)
-#		define JSTR_API
-#	else
-#		define JSTR_API static
-#	endif
-
 #	include "config.h"
 #	include "macros-arch.h"
 #	include "macros-os.h"
@@ -91,6 +85,8 @@ JSTR_INTERNAL_END_DECLS
 #		define JSTR_GNUC_PREREQ(maj, min) __GNUC_PREREQ(maj, min)
 #	elif defined __GNUC__
 #		define JSTR_GNUC_PREREQ(maj, min) ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#	else
+#		define JSTR_GNUC_PREREQ(maj, min) (0)
 #	endif
 
 #	if JSTR_ENV_BSD
