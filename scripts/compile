@@ -62,7 +62,7 @@ wait
 
 # 3. Compile all .c files in parallel using nproc
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
-CFLAGS="$CFLAGS -fPIC -O2"
+CFLAGS="$CFLAGS -O2"
 
 echo 'Compiling'
 
@@ -77,7 +77,7 @@ PRIVDIR="$OUTDIR/private"
 for cfile in "$SRCDIR"/*.c; do
 	base=$(basename "$cfile" .c)
 	{
-		cc -DJSTR_IMPLEMENTATION=1 -c "$cfile" -o "$OBJDIR/$base.o" $CFLAGS
+		cc -DJSTR_IMPLEMENTATION=1 -c "$cfile" -o "$OBJDIR/$base.o" -fPIC $CFLAGS
 	} &
 done
 wait
@@ -93,7 +93,7 @@ if [ -z "$OFILES" ]; then
 fi
 
 # 4. Archive static library
-ar rcs "$LIBDIR/libjstr.a" $OFILES
+# ar rcs "$LIBDIR/libjstr.a" $OFILES
 
 # 5. Link shared library
 cc -shared -o "$LIBDIR/libjstr.so" $OFILES
@@ -103,6 +103,6 @@ mkdir -p "$LIBDIR/../include/jstr"
 cp -r "$INCDIR"/* "$LIBDIR/../include/jstr/" 2>/dev/null || true
 
 echo "Library built successfully."
-echo "Static:  $(realpath $LIBDIR/libjstr.a)"
+# echo "Static:  $(realpath $LIBDIR/libjstr.a)"
 echo "Shared:  $(realpath $LIBDIR/libjstr.so)"
 echo "Headers: $(realpath $LIBDIR/../include/jstr/)"
