@@ -90,7 +90,6 @@ if [ -z "$OFILES" ]; then
 	echo "No object files produced."
 	exit 1
 fi
-echo $OFILES
 
 # 4. Archive static library
 # ar rcs "$LIBDIR/libjstr.a" $OFILES

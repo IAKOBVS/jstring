@@ -24,7 +24,9 @@ obj="$TMP_TESTDIR/${base}_${hash}.o"
 out="$TMP_TESTDIR/${base}_${flatargs}"
 
 # Compile .o if stale
-cc -c "$file" -o "$obj" $args $COMPILE_ONLY_FLAGS || { echo "COMPILE FAILED: $base $args" >&2; exit 1; }
+if [ ! -f "$obj" ] || [ "$file" -nt "$obj" ]; then
+	cc -c "$file" -o "$obj" $args $COMPILE_ONLY_FLAGS || { echo "COMPILE FAILED: $base $args" >&2; exit 1; }
+fi
 
 export LD_LIBRARY_PATH="$REPOROOT/build/lib"
 # Link against shared library

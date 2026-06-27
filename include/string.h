@@ -259,8 +259,8 @@ char *
 jstr_basename_len(const char *fname, size_t sz) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	char *p = (char *)memchr(fname, '/', sz);
-	return p ? p + 1 : NULL;
+	char *p = (char *)jstr_memrchr(fname, '/', sz);
+	return p ? p + 1 : (char *)fname;
 }
 #else
 ;
@@ -271,8 +271,8 @@ char *
 jstr_basename(const char *fname) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	char *p = (char *)strchr(fname, '/');
-	return p ? p + 1 : NULL;
+	char *p = (char *)strrchr(fname, '/');
+	return p ? p + 1 : (char *)fname;
 }
 #else
 ;
@@ -1533,120 +1533,6 @@ jstr_trim_p(char *s) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_trim_len_p(s, strlen(s));
-}
-#else
-;
-#endif
-
-/* Convert snake_case to camelCase.
- * Return ptr to '\0' in S.
- * Leading underscores are preserved. */
-JSTR_FUNC_RET_NONNULL
-char *
-jstr_toCamelCaseP(char *s) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
-{
-	for (; *s == '_'; ++s) {}
-	for (; *s && *s != '_'; ++s) {}
-	if (jstr_unlikely(*s == '\0'))
-		return s;
-	unsigned char *dst = (unsigned char *)s;
-	const unsigned char *src = (const unsigned char *)s;
-	goto start;
-	for (; *src; ++src)
-		if (jstr_likely(*src != '_'))
-			*dst++ = *src;
-		else {
-start:
-			*dst++ = jstr_toupper(*++src);
-			if (jstr_unlikely(*src == '\0'))
-				break;
-		}
-	*dst = '\0';
-	return (char *)dst;
-}
-#else
-;
-#endif
-
-/* Convert snake_case to camelCase.
- * Return ptr to '\0' in DST.
- * Leading underscores are preserved. */
-JSTR_FUNC_RET_NONNULL
-char *
-jstr_toCamelCaseCpyP(char *R dst, const char *R src) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
-{
-	unsigned char *d = (unsigned char *)dst;
-	const unsigned char *s = (const unsigned char *)src;
-	for (; *s == '_'; ++s, *d++ = '_') {}
-	while (*s)
-		if (*s != '_') {
-			*d++ = *s++;
-		} else {
-			if (jstr_unlikely(*++s == '\0'))
-				break;
-			*d++ = jstr_toupper(*s++);
-		}
-	*d = '\0';
-	return (char *)d;
-}
-#else
-;
-#endif
-
-/* Convert camelCase to snake_case.
- * Return ptr to '\0' in S.
- * Leading underscores are preserved. */
-JSTR_FUNC_RET_NONNULL
-char *
-jstr_to_snake_case_p(char *s) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
-{
-	unsigned char *p = (unsigned char *)s;
-	for (; *p == '_'; ++p) {}
-	*p = jstr_tolower(*p);
-	for (; *p && !jstr_isupper(*p); ++p) {}
-	if (jstr_unlikely(*p == '\0'))
-		return (char *)p;
-	const unsigned char *end = p + strlen((char *)p);
-	goto start;
-	for (; *p; ++p)
-		if (jstr_isupper(*p)) {
-start:
-			jstr_strmove_len((char *)p + 1, (const char *)p, JSTR_DIFF(end++, p));
-			*p++ = '_';
-			*p = jstr_tolower(*p);
-		}
-	*p = '\0';
-	return (char *)p;
-}
-#else
-;
-#endif
-
-/* Convert camelCase to snake_case.
- * Return ptr to '\0' in DST.
- * Leading underscores are preserved. */
-JSTR_FUNC_RET_NONNULL
-char *
-jstr_to_snake_case_cpy_p(char *R dst, const char *R src) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
-{
-	unsigned char *d = (unsigned char *)dst;
-	const unsigned char *s = (const unsigned char *)src;
-	for (; *s == '_'; ++s, *d++ = '_') {}
-	*d = jstr_tolower(*s);
-	while (*s)
-		if (!jstr_isupper(*s)) {
-			*d++ = *s++;
-		} else {
-			*d = '_';
-			*(d + 1) = jstr_tolower(*s++);
-			d += 2;
-		}
-	*d = '\0';
-	return (char *)d;
 }
 #else
 ;

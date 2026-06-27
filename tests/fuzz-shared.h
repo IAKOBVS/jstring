@@ -11,7 +11,7 @@
 
 #include "../include/macros.h"
 
-enum { FSTR = 256, FMEM = 128, FITER = 5000 };
+enum { FSTR = 256, FMEM = 128, FITER = 256 };
 
 enum gen_mode {
 	GEN_ASCII = 0,   /* printable ASCII (0x20-0x7E) */

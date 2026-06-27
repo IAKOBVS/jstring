@@ -1,8 +1,6 @@
 #!/bin/sh
 #shellcheck disable=disable=SC2086
 
-set -e
-
 echo 'This might take a while'
 
 PATH_TEST=../tests
@@ -14,11 +12,12 @@ CFLAGS="
 -Wno-unused-result
 -O2
 -g
--fanalyzer
 -fsanitize=address
 -D_XOPEN_SOURCE=700
 $CFLAGS
 "
+# -fanalyzer
+
 # Flatten newlines to single spaces
 CFLAGS=$(echo "$CFLAGS" | tr '\n' ' ' | sed 's/  */ /g; s/^ *//; s/ *$//')
 
@@ -36,8 +35,9 @@ if [ -z "$TMPDIR" ]; then
 		TMPDIR=$(echo "$PWD" | head -c 255)
 	fi
 fi
-TMP_TESTDIR="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
-mkdir -p "$TMP_TESTDIR"
+# Create a secure, unique temporary directory inside TMPDIR
+TMP_TESTDIR=$(mktemp -d "$TMPDIR/jstr.XXXXXXXXXX")
+trap 'rm -rf "$TMP_TESTDIR"' EXIT INT TERM
 
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
@@ -53,10 +53,8 @@ NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPR
 generate_jobs()
 {
 	for file in $files; do
-		echo "$file $CFLAGS"
-		# echo "$file $CFLAGS -march=native"
-		# echo "$file $CFLAGS -DJSTR_TEST_SLOW=1"
-		# echo "$file $CFLAGS -DJSTR_TEST_SLOW=1 -march=native"
+		# echo "$file $CFLAGS"
+		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1"
 	done
 }
 

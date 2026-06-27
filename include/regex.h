@@ -355,7 +355,6 @@ jstr_re_rm_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
 	}
-	jstr_free_noinline(s, sz, cap);
 	JSTR_RE_RETURN_ERR(ret, preg);
 }
 #else
@@ -409,7 +408,6 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
 	} else {
-		jstr_free_noinline(s, sz, cap);
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	/* Use the same algorithm as rmn, only replacing memmem with regex. */
@@ -420,7 +418,6 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 		} else if (ret == JSTR_RE_RET_NOMATCH) {
 			break;
 		} else {
-			jstr_free_noinline(s, sz, cap);
 			JSTR_RE_RETURN_ERR(ret, preg);
 		}
 		/* Get length of FIND. */
@@ -515,7 +512,6 @@ jstr_re_rplc_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz,
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
 	}
-	jstr_free_noinline(s, sz, cap);
 	JSTR_RE_RETURN_ERR(ret, preg);
 }
 #else
@@ -689,7 +685,6 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
-		jstr_free_noinline(s, sz, cap);
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
@@ -706,7 +701,6 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 	if (rplcwbackref_len > (size_t)find_len)
 		new_cap += rplcwbackref_len - (size_t)find_len;
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
-		jstr_free_noinline(s, sz, cap);
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	memmove(*s + *sz + 1, *s, *sz);
@@ -725,7 +719,6 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		} else if (ret == JSTR_RE_RET_NOMATCH) {
 			break;
 		} else {
-			jstr_free_noinline(s, sz, cap);
 			JSTR_RE_RETURN_ERR(ret, preg);
 		}
 		/* Get length of FIND. */
@@ -746,7 +739,6 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 			*sz = JSTR_DIFF(i.dst, *s);
 			if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
 				ret = JSTR_RE_RET_ESPACE;
-				jstr_free_noinline(s, sz, cap);
 				JSTR_RE_RETURN_ERR(ret, preg);
 			}
 			*sz = saved_sz;

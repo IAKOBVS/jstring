@@ -152,20 +152,6 @@ jstr_free(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
-JSTR_ATTR_COLD
-JSTR_ATTR_NOINLINE
-void
-jstr_free_noinline(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
-{
-	jstr_free(s, sz, cap);
-}
-#else
-;
-#endif
-
-/* free(p) and set p to NULL. */
-JSTR_FUNC_VOID
 void
 jstr_free_j(jstr_ty *j) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
@@ -193,8 +179,8 @@ jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JS
 	*s = tmp;
 	return JSTR_RET_SUCC;
 err:
-	jstr_free_noinline(s, sz, cap);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
+	(void)sz;
 }
 #else
 ;
@@ -232,8 +218,8 @@ jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_ca
 	}
 	return JSTR_RET_SUCC;
 err:
-	jstr_free_noinline(s, sz, cap);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
+	(void)sz;
 }
 #else
 ;
@@ -435,15 +421,12 @@ jstr_strset(char *s, int c) JSTR_NOEXCEPT
 
 JSTR_FUNC
 char *
-jstr_assignnchr_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
+jstr_assignnchr_unsafe_p(char *s, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	memset(s, c, n);
-	if (n > sz) {
-		*(s + n) = '\0';
-		return s + n;
-	}
-	return s + sz;
+	*(s + n) = '\0';
+	return s + n;
 }
 #else
 ;
@@ -500,11 +483,8 @@ char *
 jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_likely(sz != 0))
-		jstr_strmove_len(s + n, s, sz);
-	else
-		*(s + n) = '\0';
-	return (char *)memset(s, c, n) + n;
+	jstr_strmove_len(s + n, s, sz);
+	return (char *)jstr_mempset(s, c, n) + sz;
 }
 #else
 ;
@@ -714,6 +694,7 @@ jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
  * size of allocation.
  * -1 on error and errno is set. */
 JSTR_FUNC
+JSTR_ATTR_FORMAT(printf, 2, 0)
 int
 jstr_vsprintf_maxlen(va_list ap, const char *fmt) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
@@ -985,16 +966,14 @@ jstr_asprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...)
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
 	if (jstr_chk(jstr_reserveexact(s, sz, cap, (size_t)arg_len)))
-		goto err_free;
+		goto err;
 	va_start(ap, fmt);
 	arg_len = vsprintf(*s, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
-		goto err_free;
+		goto err;
 	*sz = (size_t)arg_len;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(s, sz, cap);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
@@ -1018,16 +997,14 @@ jstr_asprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, (size_t)ret)))
-		goto err_free;
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	j->size = (size_t)ret;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(&j->data, &j->size, &j->capacity);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
@@ -1052,16 +1029,14 @@ jstr_asprintf_append(char *R *R s, size_t *R sz, size_t *R cap, const char *R fm
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + (size_t)ret)))
-		goto err_free;
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	*sz += (size_t)ret;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(s, sz, cap);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
@@ -1086,16 +1061,14 @@ jstr_asprintf_append_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	if (jstr_chk(jstr_reserve(&j->data, &j->size, &j->capacity, j->size + (size_t)ret)))
-		goto err_free;
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	j->size += (size_t)ret;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(&j->data, &j->size, &j->capacity);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
@@ -1119,18 +1092,17 @@ jstr_asprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, 
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	if (jstr_chk(jstr_reserve(s, sz, cap, start_idx + (size_t)ret)))
-		goto err_free;
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	*sz = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(s, sz, cap);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
+	(void)cap;
 }
 #else
 ;
@@ -1152,16 +1124,14 @@ jstr_asprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JST
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	if (jstr_chk(jstr_reserve(&j->data, &j->size, &j->capacity, start_idx + (size_t)ret)))
-		goto err_free;
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	j->size = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(&j->data, &j->size, &j->capacity);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
@@ -1184,12 +1154,12 @@ jstr_sprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) 
 	const int ret = vsprintf(*s, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	*sz = (size_t)ret;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(s, sz, cap);
+err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
+	(void)cap;
 }
 #else
 ;
@@ -1208,11 +1178,10 @@ jstr_sprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	const int ret = vsprintf(j->data, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	j->size = (size_t)ret;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(&j->data, &j->size, &j->capacity);
+err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else
@@ -1232,12 +1201,12 @@ jstr_sprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, c
 	const int ret = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	*sz = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(s, sz, cap);
+err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
+	(void)cap;
 }
 #else
 ;
@@ -1256,11 +1225,10 @@ jstr_sprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR
 	const int ret = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err_free;
+		goto err;
 	j->size = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free_noinline(&j->data, &j->size, &j->capacity);
+err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else

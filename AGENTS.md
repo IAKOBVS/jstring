@@ -80,6 +80,7 @@ to `void *` and use the corresponding `_mem*` / `void *` overload when available
   convention above). Use `_mem*` variants for binary-safe operations.
 - `internal/*.h` are internal headers.
 - Config macros go in `config.h` before including `jstr.h` (e.g., `JSTR_USE_UNLOCKED_IO`, `JSTR_DEBUG`, `JSTR_PANIC`).
+- In regex tests, eflags must not be REG_NOSUB.
 
 ## License
 

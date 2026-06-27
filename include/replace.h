@@ -251,7 +251,8 @@ size_t
 jstr_rplcallspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject, char rplc) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	char *p = s + start_idx;
 	size_t changed = 0;
 	size_t i;
@@ -291,7 +292,8 @@ size_t
 jstr_rmspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	char *p = s + start_idx;
 	size_t changed = 0;
 	if (jstr_likely(*p) && (*(p += strcspn(p, reject)))) {
@@ -328,7 +330,8 @@ size_t
 jstr_rmspn_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	char *p = s + start_idx;
 	size_t changed = 0;
 	if (jstr_likely(*p) && (*(p += strcspn(p, reject)))) {
@@ -365,7 +368,8 @@ size_t
 jstr_rmallspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(*i.src_e == '\0') || !(*(i.src_e += strcspn(i.src_e, reject))))
 		return 0;
@@ -416,7 +420,8 @@ size_t
 jstr_rmnchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	const char *end = s + *sz;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(n == 0) || jstr_unlikely(*i.src_e == '\0') || !(i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))))
@@ -491,7 +496,8 @@ size_t
 jstr_rmnchr_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(n == 0) || jstr_unlikely(*i.src_e == '\0') || !*(i.src_e = jstr_strchrnul((char *)i.src_e, c)))
 		return 0;
@@ -810,7 +816,8 @@ int
 jstr_rmlast_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	const char *p = jstr_strrstr_len(s + start_idx, *sz - start_idx, find, find_len);
 	if (p) {
 		*sz = JSTR_DIFF(jstr_rmat_len_p(s, *sz, JSTR_DIFF(p, s), find_len), s);
@@ -865,7 +872,8 @@ size_t
 jstr_rmn_len_from_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	if (find_len == 1)
 		return jstr_rmnchr_len_from(s, sz, start_idx, *find, n);
 	if (jstr_unlikely(find_len == 0))
@@ -980,7 +988,8 @@ int
 jstr_rplc_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	char *p = (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find, find_len);
@@ -1019,7 +1028,8 @@ size_t
 jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	if (n == 1)
 		return (size_t)jstr_rplc_len_from_exec(t, s, sz, cap, start_idx, find, find_len, rplc, rplc_len);
 	if (jstr_unlikely(n == 0))
@@ -1078,7 +1088,6 @@ start:
 			return 0;
 		if (changed == 1) {
 			if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(first, *s), rplc, rplc_len, find_len))) {
-				jstr_free_noinline(s, sz, cap);
 				JSTR_RETURN_ERR((size_t)-1);
 			}
 			return 1;
@@ -1093,7 +1102,6 @@ start:
 		 * for the destination string. If need to allocate, realloc will try to
 		 * grow in-place. */
 		if (jstr_chk(jstr_reserve(s, sz, cap, new_size + first_len + 1))) {
-			jstr_free_noinline(s, sz, cap);
 			JSTR_RETURN_ERR((size_t)-1);
 		}
 		i.dst = *s + JSTR_DIFF(first, s_old);
