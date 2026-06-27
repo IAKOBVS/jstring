@@ -1651,11 +1651,12 @@ jstr_thousep_len_p(char *nptr, size_t sz, char separator) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	char *end = nptr + sz;
+	if (jstr_unlikely(sz == 0))
+		return nptr;
 	if (*nptr == '-') {
 		++nptr;
 		--sz;
-	} else if (jstr_unlikely(sz == 0))
-		return nptr;
+	}
 	if (sz < 4)
 		return end;
 	size_t dif = (sz - 1) / 3;
@@ -1704,23 +1705,30 @@ char *
 jstr_thousepcpy_len_p(char *R dst, const char *R src, size_t src_len, char separator) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	if (jstr_unlikely(src_len == 0)) {
+		*dst = '\0';
+		return dst;
+	}
 	if (*src == '-') {
 		*dst++ = '-';
 		++src;
 		--src_len;
 	}
 	if (src_len < 4) {
-		while ((*dst++ = *src++)) {}
-		return dst - 1;
+		while (src_len--)
+			*dst++ = *src++;
+		*dst = '\0';
+		return dst;
 	}
 	int i = src_len % 3;
+	size_t src_left = src_len - (size_t)i;
 	int j = i;
 	for (; j--; *dst++ = *src++) {}
 	if (i) {
 		*dst++ = separator;
 		i = 0;
 	}
-	for (; *src; ++i) {
+	for (; src_left--; ++i) {
 		if (i == 3) {
 			*dst = separator;
 			*(dst + 1) = *src++;
@@ -1754,100 +1762,36 @@ jstr_thousepcpy_p(char *R dst, const char *R src, char separator) JSTR_NOEXCEPT
 /* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
  * Otherwise, remove unescaped backslashes.
  * For example: "\q\x" -> "qx".
- * Trailing backslashes are ignored. */
+ * Trailing backslashes are ignored.
+ * Returns pointer to first NUL even escaped NUL. */
 JSTR_FUNC
 char *
 jstr_unescapecpy_p(char *dst, const char *src) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	for (;; ++dst) {
-		if (jstr_likely(*src != '\\')) {
-			if (jstr_unlikely(*src == '\0'))
-				break;
-			*dst = *src++;
-		} else {
-			switch (*(src + 1)) {
-			case '\0':
-				goto out;
-				/* clang-format off */
-			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-				/* clang-format on */
-				{
-					*dst = '\0';
-					++src;
-					for (int o = 3; o-- && *src <= '7' && *src >= '0'; ++src)
-						*dst = (*dst << 3) + (*src - '0');
-					goto CONT;
-					break;
-				}
-			case 'b': *dst = '\b'; break;
-			case 'f': *dst = '\f'; break;
-			case 'n': *dst = '\n'; break;
-			case 'r': *dst = '\r'; break;
-			case 't': *dst = '\t'; break;
-			case 'v': *dst = '\v'; break;
-			default: *dst = *(src + 1); break;
-			}
-			src += 2;
-		}
-CONT:;
-	}
-out:
-	*dst = '\0';
-	return dst;
-}
-#else
-;
-#endif
-
-/* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
- * Otherwise, remove unescaped backslashes.
- * For example: "\q\x" -> "qx".
- * Trailing backslashes are ignored. */
-JSTR_FUNC
-char *
-jstr_unescape_p(char *s) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
-{
-#	if JSTR_HAVE_STRCHRNUL
-	s = strchrnul(s, '\\');
-#	else
-	for (; *s && *s != '\\'; ++s) {}
-#	endif
-	return jstr_unescapecpy_p(s, s);
-}
-#else
-;
-#endif
-
-/* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
- * Otherwise, remove unescaped backslashes.
- * For example: "\q\x" -> "qx".
- * Trailing backslashes are ignored. */
-JSTR_ATTR_ACCESS((__write_only__, 1, 3))
-JSTR_ATTR_ACCESS((__read_only__, 2, 3))
-JSTR_FUNC
-void *
-jstr_unescapecpy_len_p(void *dst, const void *src, size_t n) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
-{
 	unsigned char *d = (unsigned char *)dst;
 	const unsigned char *s = (const unsigned char *)src;
-	for (; n--; ++d) {
+	for (;; ++d) {
 		if (jstr_likely(*s != '\\')) {
+			if (jstr_unlikely(*s == '\0'))
+				break;
 			*d = *s++;
 		} else {
-			if (jstr_unlikely(n-- == 0))
-				break;
 			switch (*(s + 1)) {
+			case '\0':
+				goto out;
+				break;
 				/* clang-format off */
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
 				/* clang-format on */
 				{
 					*d = '\0';
 					++s;
-					for (int o = 3; o-- && n && *s <= '7' && *s >= '0'; ++s, --n)
+					for (int o = 3; o-- && *s <= '7' && *s >= '0'; ++s)
 						*d = (*d << 3) + (*s - '0');
+					/* escaped NUL */
+					if (*d == '\0')
+						goto out;
 					goto CONT;
 					break;
 				}
@@ -1863,8 +1807,9 @@ jstr_unescapecpy_len_p(void *dst, const void *src, size_t n) JSTR_NOEXCEPT
 		}
 CONT:;
 	}
+out:
 	*d = '\0';
-	return d;
+	return (char *)d;
 }
 #else
 ;
@@ -1873,16 +1818,21 @@ CONT:;
 /* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
  * Otherwise, remove unescaped backslashes.
  * For example: "\q\x" -> "qx".
- * Trailing backslashes are ignored. */
+ * Trailing backslashes are ignored.
+ * Returns pointer to first NUL even escaped NUL. */
 JSTR_FUNC
-JSTR_ATTR_ACCESS((__read_write__, 1, 2))
-void *
-jstr_unescape_len_p(void *s, size_t n) JSTR_NOEXCEPT
+char *
+jstr_unescape_p(char *s) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	unsigned char *s_e = (unsigned char *)s + n;
-	s = memchr(s, '\\', n);
-	return s ? jstr_unescapecpy_len_p(s, s, JSTR_DIFF(s_e, s)) : s_e;
+#	if JSTR_HAVE_STRCHRNUL
+	s = strchrnul(s, '\\');
+#	else
+	for (; *s && *s != '\\'; ++s) {}
+#	endif
+	if (*s == '\0')
+	    return s;
+	return jstr_unescapecpy_p(s, s);
 }
 #else
 ;

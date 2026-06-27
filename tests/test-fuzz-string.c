@@ -48,61 +48,25 @@ simple_count_len(const char *s, size_t sz, const char *find, size_t find_len)
 	return cnt;
 }
 
-static void
-simple_tocamelCaseP(char *s)
-{
-	for (; *s == '_'; ++s) {}
-	for (; *s && *s != '_'; ++s) {}
-	if (*s == '\0')
-		return;
-	unsigned char *dst = (unsigned char *)s;
-	const unsigned char *src = (const unsigned char *)s;
-	for (; *src; ++src) {
-		if (*src != '_')
-			*dst++ = *src;
-		else {
-			if (*++src == '\0')
-				break;
-			*dst++ = toupper(*src);
-		}
-	}
-	*dst = '\0';
-}
-
-static void
-simple_to_snake_case_p(char *s)
-{
-	unsigned char *p = (unsigned char *)s;
-	for (; *p == '_'; ++p) {}
-	*p = tolower(*p);
-	for (; *p && !isupper(*p); ++p) {}
-	if (*p == '\0')
-		return;
-	const unsigned char *end = p + strlen((char *)p);
-	for (; *p; ++p) {
-		if (isupper(*p)) {
-			memmove(p + 1, p, end - p + 1);
-			*p++ = '_';
-			*p = tolower(*p);
-			++end;
-		}
-	}
-}
-
 static size_t
 simple_thousep_len_p(char *nptr, size_t sz, char separator)
 {
-	if (sz < 4)
-		return sz;
+	if (sz == 0)
+		return 0;
+
+	char *orig = nptr;
 	char *end = nptr + sz;
 	if (*nptr == '-') {
 		++nptr;
 		--sz;
 	}
+	if (sz < 4)
+		return (size_t)(end - orig);
+
 	size_t dif = (sz - 1) / 3;
 	end += dif;
-	const char *start = nptr;
-	nptr += (sz - 1);
+	char *start = nptr;
+	nptr += sz - 1;
 	int n = 0;
 	for (; nptr >= start;) {
 		*(nptr + dif) = *nptr;
@@ -115,7 +79,7 @@ simple_thousep_len_p(char *nptr, size_t sz, char separator)
 		}
 	}
 	*end = '\0';
-	return (size_t)(end - (char *)start);
+	return (size_t)(end - orig);
 }
 
 static void
@@ -123,19 +87,31 @@ simple_unescape_p(char *s)
 {
 	char *dst = s;
 	for (; *s; ++s) {
-		if (*s == '\\' && s[1]) {
-			++s;
-			switch (*s) {
-				case 'b': *dst++ = '\b'; break;
-				case 'f': *dst++ = '\f'; break;
-				case 'n': *dst++ = '\n'; break;
-				case 'r': *dst++ = '\r'; break;
-				case 't': *dst++ = '\t'; break;
-				case 'v': *dst++ = '\v'; break;
-				default: *dst++ = *s; break;
-			}
-		} else {
+		if (*s != '\\') {
 			*dst++ = *s;
+			continue;
+		}
+		if (!s[1])
+			break;
+		++s;
+		switch (*s) {
+		case '0': case '1': case '2': case '3':
+		case '4': case '5': case '6': case '7':
+		{
+			*dst = '\0';
+			for (int o = 3; o-- && *s >= '0' && *s <= '7'; ++s)
+				*dst = (*dst << 3) + (*s - '0');
+			++dst;
+			--s;
+			break;
+		}
+		case 'b': *dst++ = '\b'; break;
+		case 'f': *dst++ = '\f'; break;
+		case 'n': *dst++ = '\n'; break;
+		case 'r': *dst++ = '\r'; break;
+		case 't': *dst++ = '\t'; break;
+		case 'v': *dst++ = '\v'; break;
+		default:  *dst++ = *s;   break;
 		}
 	}
 	*dst = '\0';
@@ -237,53 +213,14 @@ fuzz_string(size_t iter)
 			}
 		}
 
-#if 0
-		/* --- camelCase / snake_case --- */
-		if (hl == strlen(h)) {
-			memcpy(buf_j, h, hl + 1);
-			memcpy(buf_s, h, hl + 1);
-			char *j_ep = jstr_toCamelCaseP(buf_j);
-			simple_tocamelCaseP(buf_s);
-			assert(strcmp(buf_j, buf_s) == 0);
-			assert(j_ep == buf_j + strlen(buf_s));
 
-			memcpy(buf_j, h, hl + 1);
-			memcpy(buf_s, h, hl + 1);
-			j_ep = jstr_toCamelCaseCpyP(buf_j, h);
-			simple_tocamelCaseP(buf_s);
-			assert(strcmp(buf_j, buf_s) == 0);
-			assert(j_ep == buf_j + strlen(buf_s));
-
-			memcpy(buf_j, h, hl + 1);
-			memcpy(buf_s, h, hl + 1);
-			j_ep = jstr_to_snake_case_p(buf_j);
-			simple_to_snake_case_p(buf_s);
-			assert(strcmp(buf_j, buf_s) == 0);
-			assert(j_ep == buf_j + strlen(buf_s));
-
-			memcpy(buf_j, h, hl + 1);
-			memcpy(buf_s, h, hl + 1);
-			fprintf(stderr, "before: %s.\n", buf_j);
-			fprintf(stderr, "before: %s.\n", buf_s);
-			j_ep = jstr_to_snake_case_cpy_p(buf_j, h);
-			simple_to_snake_case_p(buf_s);
-			assert(strcmp(buf_j, buf_s) == 0);
-			assert(j_ep == buf_j + strlen(buf_s));
-		}
-#endif
-
-#if 0
 		/* --- thousep --- */
 		if (hl > 0 && hl < 180) {
 			memcpy(buf_j, h, hl + 1);
 			memcpy(buf_s, h, hl + 1);
 			char sep = ',';
-			fprintf(stderr, "before: %s.\n", buf_j);
-			fprintf(stderr, "before: %s.\n", buf_s);
 			char *j_ep = jstr_thousep_len_p(buf_j, hl, sep);
 			size_t s_len = simple_thousep_len_p(buf_s, hl, sep);
-			fprintf(stderr, "after: %s.\n", buf_j);
-			fprintf(stderr, "after: %s.\n", buf_s);
 			assert(strcmp(buf_j, buf_s) == 0);
 			assert((size_t)(j_ep - buf_j) == s_len);
 
@@ -296,24 +233,17 @@ fuzz_string(size_t iter)
 				assert((size_t)(j_ep - buf_j) == s_len);
 			}
 		}
-#endif
 
-#if 0
 		/* --- unescape --- */
 		if (hl == strlen(h) && hl < FSTR - 1) {
 			/* Add some escape sequences */
 			memcpy(buf_j, h, hl + 1);
 			memcpy(buf_s, h, hl + 1);
-			fprintf(stderr, "after: %s.\n", buf_j);
-			fprintf(stderr, "after: %s.\n", buf_s);
 			char *j_ep = jstr_unescape_p(buf_j);
 			simple_unescape_p(buf_s);
-			fprintf(stderr, "after: %s.\n", buf_j);
-			fprintf(stderr, "after: %s.\n", buf_s);
 			assert(strcmp(buf_j, buf_s) == 0);
 			assert(j_ep == buf_j + strlen(buf_s));
 		}
-#endif
 
 		/* --- starts_len / starts / endscase_len / ends --- */
 		if (hl > 1) {
