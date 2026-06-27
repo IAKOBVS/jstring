@@ -53,8 +53,8 @@ NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPR
 generate_jobs()
 {
 	for file in $files; do
-		# echo "$file $CFLAGS"
 		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1"
+		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1 -march=native"
 	done
 }
 
