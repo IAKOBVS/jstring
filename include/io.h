@@ -34,6 +34,7 @@ JSTR_INTERNAL_BEGIN_DECLS
 #	include <stdlib.h>
 #	include <sys/stat.h>
 #	include <unistd.h>
+#	include <sys/uio.h>
 JSTR_INTERNAL_END_DECLS
 
 #	ifdef JSTR_IMPLEMENTATION
@@ -164,15 +165,34 @@ jstr_isbinary(const char *buf, size_t sz, size_t n) JSTR_NOEXCEPT
 ;
 #	endif
 
+#	define JSTR_IMPLEMENTATION
+
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_writefilefd_len(const char *s, size_t sz, int fd) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
+	if (jstr_unlikely(sz == 0))
+		return JSTR_RET_SUCC;
+#		if JSTR_HAVE_WRITEV
+	if (s[sz - 1] != '\n') {
+		const struct iovec i[] = {
+			{ .iov_base = (void *)s,    .iov_len = sz },
+			{ .iov_base = (void *)"\n", .iov_len = 1  }
+		};
+		if (jstr_unlikely(writev(fd, i, JSTR_ARRAY_COUNT(i))) != (ssize_t)sz + 1)
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
+	} else {
+		if (jstr_unlikely(write(fd, s, sz) < 0))
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
+#		else
+	if (jstr_unlikely(write(fd, s, sz) < 0))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	if (s[sz ? sz - 1 : 0] != '\n' && jstr_unlikely(write(fd, "\n", 1) != 1))
-		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	if (s[sz - 1] != '\n')
+		if (jstr_unlikely(write(fd, "\n", 1) < 0))
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
+#		endif
 	return JSTR_RET_SUCC;
 }
 #	else

@@ -159,7 +159,7 @@ JSTR_INTERNAL_END_DECLS
 
 #	define jstr_chk(ret)                     jstr_unlikely(ret == -1)
 #	define jstr_nullchk(p)                   jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#	define JSTR_PAGE_SIZE                    4096
 #	define JSTR_ARRAY_COUNT(array)           (sizeof(array) / sizeof(array[0]))
 #	define JSTR_INTERNAL_CONCAT_HELPER(x, y) x##y
 #	define JSTR_CONCAT(x, y)                 JSTR_INTERNAL_CONCAT_HELPER(x, y)
@@ -484,12 +484,12 @@ JSTR_INTERNAL_END_DECLS
 #	endif /* static_assert */
 
 #	if JSTR_DEBUG
-#		define JSTR_ASSERT_DEBUG(expr, msg)               \
-			do {                                       \
-				if (jstr_unlikely(!(expr))) {      \
+#		define JSTR_ASSERT_DEBUG(expr, msg)           \
+			do {                                   \
+				if (jstr_unlikely(!(expr))) {  \
 					jstr_err("%s\n", msg); \
-					assert(expr);              \
-				}                                  \
+					assert(expr);          \
+				}                              \
 			} while (0)
 #		define JSTR_ASSERT_DEBUG_PRINTF(expr, ...)           \
 			do {                                          \
@@ -1028,6 +1028,28 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 	|| (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 2)
 #		define JSTR_HAVE_POPEN  1
 #		define JSTR_HAVE_PCLOSE 1
+#	endif
+
+#	if defined(_GNU_SOURCE)                            \
+	|| defined(_DEFAULT_SOURCE)                         \
+	|| defined(_BSD_SOURCE)                             \
+	|| (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) \
+	|| (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
+#		define JSTR_HAVE_READV  1
+#		define JSTR_HAVE_WRITEV 1
+#	endif
+
+#	if JSTR_GLIBC_PREREQ(2, 10)    \
+	&& (defined(_GNU_SOURCE)        \
+	    || defined(_DEFAULT_SOURCE) \
+	    || defined(_BSD_SOURCE))
+#		define JSTR_HAVE_PREADV  1
+#		define JSTR_HAVE_PWRITEV 1
+#	endif
+
+#	if JSTR_GLIBC_PREREQ(2, 26) && defined(_GNU_SOURCE)
+#		define JSTR_HAVE_PREADV2  1
+#		define JSTR_HAVE_PWRITEV2 1
 #	endif
 
 #	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE)                                                                    \
