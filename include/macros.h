@@ -1047,6 +1047,17 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #		define JSTR_HAVE_PWRITEV 1
 #	endif
 
+#	if defined(_POSIX_VERSION) && (_POSIX_VERSION >= 200112L)
+#		define JSTR_HAVE_PREAD 1
+#		define JSTR_HAVE_PWRITE 1
+#	elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#		define JSTR_HAVE_PREAD 1
+#		define JSTR_HAVE_PWRITE 1
+#	elif defined(_XOPEN_VERSION) && (_XOPEN_VERSION >= 500)
+#		define JSTR_HAVE_PREAD 1
+#		define JSTR_HAVE_PWRITE 1
+#	endif
+
 #	if JSTR_GLIBC_PREREQ(2, 26) && defined(_GNU_SOURCE)
 #		define JSTR_HAVE_PREADV2  1
 #		define JSTR_HAVE_PWRITEV2 1
@@ -1521,22 +1532,40 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #	ifndef JSTR_HAVE_VASPRINTF
 #		define JSTR_HAVE_VASPRINTF 0
 #	endif
-#ifndef JSTR_HAVE_READV
-#	define JSTR_HAVE_READV 0
+#	ifndef JSTR_HAVE_READV
+#		define JSTR_HAVE_READV 0
+#	endif
+#	ifndef JSTR_HAVE_WRITEV
+#		define JSTR_HAVE_WRITEV 0
+#	endif
+#	ifndef JSTR_HAVE_PREADV
+#		define JSTR_HAVE_PREADV 0
+#	endif
+#	ifndef JSTR_HAVE_PWRITEV
+#		define JSTR_HAVE_PWRITEV 0
+#	endif
+#	ifndef JSTR_HAVE_PREADV2
+#		define JSTR_HAVE_PREADV2 0
+#	endif
+#	ifndef JSTR_HAVE_PWRITEV2
+#		define JSTR_HAVE_PWRITEV2 0
+#	endif
+#ifndef JSTR_HAVE_PREAD
+#	define JSTR_HAVE_PREAD 0
 #endif
-#ifndef JSTR_HAVE_WRITEV
-#	define JSTR_HAVE_WRITEV 0
+#ifndef JSTR_HAVE_PWRITE
+#	define JSTR_HAVE_PWRITE 0
 #endif
-#ifndef JSTR_HAVE_PREADV
-#	define JSTR_HAVE_PREADV 0
+#ifndef JSTR_HAVE_PREAD
+#	define JSTR_HAVE_PREAD 0
 #endif
-#ifndef JSTR_HAVE_PWRITEV
-#	define JSTR_HAVE_PWRITEV 0
+#ifndef JSTR_HAVE_PWRITE
+#	define JSTR_HAVE_PWRITE 0
 #endif
-#ifndef JSTR_HAVE_PREADV2
-#	define JSTR_HAVE_PREADV2 0
+#ifndef JSTR_HAVE_PREAD
+#	define JSTR_HAVE_PREAD 0
 #endif
-#ifndef JSTR_HAVE_PWRITEV2
-#	define JSTR_HAVE_PWRITEV2 0
+#ifndef JSTR_HAVE_PWRITE
+#	define JSTR_HAVE_PWRITE 0
 #endif
 #endif /* JSTR_MACROS_H */

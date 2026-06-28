@@ -1777,7 +1777,7 @@ jstr_unescapecpy_p(char *dst, const char *src) JSTR_NOEXCEPT
 				break;
 			*d = *s++;
 		} else {
-			switch (*(s + 1)) {
+			switch (s[1]) {
 			case '\0':
 				goto out;
 				break;

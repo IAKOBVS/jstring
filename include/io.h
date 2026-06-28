@@ -20,6 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+#define JSTR_IMPLEMENTATION 1
+
 #ifndef JSTR_IO_H
 #	define JSTR_IO_H 1
 
@@ -173,25 +175,52 @@ jstr_io_writefilefd_len(const char *s, size_t sz, int fd) JSTR_NOEXCEPT
 	if (jstr_unlikely(sz == 0))
 		return JSTR_RET_SUCC;
 #		if JSTR_HAVE_WRITEV
-	if (s[sz - 1] != '\n') {
-		const struct iovec i[] = {
-			{ .iov_base = (void *)s,    .iov_len = sz },
-			{ .iov_base = (void *)"\n", .iov_len = 1  }
-		};
-		if (jstr_unlikely(writev(fd, i, JSTR_ARRAY_COUNT(i))) != (ssize_t)sz + 1)
+	struct iovec iov[] = {
+		{ .iov_base = (void *)s,    .iov_len = sz                          },
+		{ .iov_base = (void *)"\n", .iov_len = (s[sz - 1] == '\n') ? 1 : 0 }
+	};
+	const struct iovec *iop = iov;
+	int iol = JSTR_ARRAY_COUNT(iov);
+	ssize_t write_sz;
+	size_t left = iov[0].iov_len + iov[1].iov_len;
+	/* Handle partial writev */
+	for (;;) {
+		write_sz = writev(fd, iop, iol);
+		/* Error */
+		if (jstr_unlikely(write_sz < 0))
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
-	} else {
-		if (jstr_unlikely(write(fd, s, sz) < 0))
+		left -= (size_t)write_sz;
+		/* Update iov */
+		if (jstr_likely(left == 0)) {
+			break;
+		} else if (left > 1) {
+			iov[0].iov_base = (unsigned char *)iov[0].iov_base + write_sz;
+			iov[0].iov_len -= (size_t)write_sz;
+		} else { /* left == 1 */
+			++iop;
+			--iol;
+		}
+	}
+	return JSTR_RET_SUCC;
+#		else
+	ssize_t write_sz;
+	size_t left = sz;
+	const char *src = s;
+	/* Handle partial write */
+	for (; left; left -= (size_t)write_sz, src += write_sz) {
+		write_sz = write(fd, src, left);
+		/* Error */
+		if (jstr_unlikely(write_sz < 0))
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-#		else
-	if (jstr_unlikely(write(fd, s, sz) < 0))
-		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (s[sz - 1] != '\n')
-		if (jstr_unlikely(write(fd, "\n", 1) < 0))
-			JSTR_RETURN_ERR(JSTR_RET_ERR);
-#		endif
+		do {
+			write_sz = write(fd, "\n", 1);
+			if (jstr_unlikely(write_sz < 0))
+				JSTR_RETURN_ERR(JSTR_RET_ERR);
+		} while (write_sz != 1);
 	return JSTR_RET_SUCC;
+#		endif
 }
 #	else
 ;
@@ -205,7 +234,7 @@ jstr_io_writefile_len(const char *R s, size_t sz, const char *R fname, int oflag
 #	ifdef JSTR_IMPLEMENTATION
 {
 	const int fd = open(fname, oflag | O_WRONLY, mode);
-	if (jstr_unlikely(fd == -1))
+	if (jstr_unlikely(fd < 0))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_io_writefilefd_len(s, sz, fd))) {
 		close(fd);
@@ -261,8 +290,18 @@ jstr_io_readfilefd_len(char *R *R s, size_t *R sz, size_t *R cap, int fd, size_t
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, file_size + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
-		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	char *dst = *s;
+	size_t left = file_size;
+	ssize_t read_sz;
+	for (; left; dst += read_sz, left -= (size_t)read_sz) {
+		read_sz = read(fd, dst, left);
+		/* Error */
+		if (jstr_unlikely(read_sz < 0))
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
+		/* EOF */
+		if (jstr_unlikely(read_sz == 0))
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 	*(*s + file_size) = '\0';
 	*sz = file_size;
 	return JSTR_RET_SUCC;
@@ -308,7 +347,7 @@ jstr_io_freadfilefp(char *R *R s, size_t *R sz, size_t *R cap, const char *R fna
 {
 #		if JSTR_HAVE_FILENO
 	const int fd = jstr_io_fileno(fp);
-	if (jstr_unlikely(fd == -1))
+	if (jstr_unlikely(fd < 0))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_unlikely(fstat(fd, st)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -354,7 +393,7 @@ jstr_io_freadfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname
 #		if JSTR_HAVE_FILENO
 	int fd;
 	fd = jstr_io_fileno(fp);
-	if (jstr_unlikely(fd == -1)) {
+	if (jstr_unlikely(fd < 0)) {
 		fclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
@@ -386,7 +425,7 @@ jstr_io_readfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fn
 #	ifdef JSTR_IMPLEMENTATION
 {
 	const int fd = open(fname, oflag | O_RDONLY);
-	if (jstr_unlikely(fd == -1))
+	if (jstr_unlikely(fd < 0))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_io_readfilefd_len(s, sz, cap, fd, file_size))) {
 		close(fd);
@@ -405,23 +444,58 @@ jstr_io_readfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fn
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 jstr_ret_ty
-jstr_io_readfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, int oflag, struct stat *R st) JSTR_NOEXCEPT
+jstr_io_readfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, int oflag) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
-	const int fd = open(fname, oflag | O_RDONLY);
-	if (jstr_unlikely(fd == -1))
+	int fd = open(fname, oflag | O_RDONLY);
+	if (jstr_unlikely(fd < 0))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	if (jstr_unlikely(fstat(fd, st))) {
+#		if JSTR_HAVE_PREAD
+	const off_t file_size = lseek(fd, 0, SEEK_END);
+	if (jstr_unlikely(file_size < 0)) {
 		close(fd);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	if (jstr_chk(jstr_io_readfilefd_len(s, sz, cap, fd, (size_t)st->st_size))) {
+	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)file_size + 1))) {
 		close(fd);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	if (jstr_unlikely(close(fd)))
+	char *dst = *s;
+	size_t off = 0;
+	size_t left = file_size;
+	ssize_t read_sz;
+	for (; left; dst += read_sz, left -= read_sz, off += read_sz) {
+		read_sz = pread(fd, dst, left, off);
+		/* Error */
+		if (jstr_unlikely(read_sz < 0)) {
+			close(fd);
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
+		}
+		/* EOF */
+		if (jstr_unlikely(read_sz == 0)) {
+			close(fd);
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
+		}
+	}
+	if (jstr_unlikely(close(fd) < 0))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	*(*s + file_size) = '\0';
+	*sz = file_size;
+	return JSTR_RET_SUCC;
+#		else
+	struct stat st;
+	if (jstr_unlikely(fstat(fd, &st))) {
+		close(fd);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
+	if (jstr_chk(jstr_io_readfilefd_len(s, sz, cap, fd, (size_t)st.st_size))) {
+		close(fd);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
+	if (jstr_unlikely(close(fd) < 0))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
+#		endif
 }
 #	else
 ;
@@ -523,7 +597,7 @@ jstr_io_readsystem(char *R *R s, size_t *R sz, size_t *R cap, const char *R cmd)
 		}
 	}
 	*(*s + *sz) = '\0';
-	if (jstr_unlikely(pclose(fp) == -1))
+	if (jstr_unlikely(pclose(fp) < 0))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
 }
@@ -721,17 +795,17 @@ typedef enum jstr_io_ftw_flag_ty {
 			} while (0)
 #		define STAT_ALWAYS(st, fd, ep, dirpath) \
 			STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
-#		define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                             \
-			do {                                                                     \
-				if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) == -1)) { \
-					do_on_err;                                               \
-				}                                                                \
+#		define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                           \
+			do {                                                                   \
+				if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) < 0)) { \
+					do_on_err;                                             \
+				}                                                              \
 			} while (0)
-#		define OPEN(fd, file, oflag, do_on_err)                             \
-			do {                                                         \
-				if (jstr_unlikely((fd = open(file, oflag)) == -1)) { \
-					do_on_err;                                   \
-				}                                                    \
+#		define OPEN(fd, file, oflag, do_on_err)                           \
+			do {                                                       \
+				if (jstr_unlikely((fd = open(file, oflag)) < 0)) { \
+					do_on_err;                                 \
+				}                                                  \
 			} while (0)
 #		define CLOSE(fd, do_on_err)                            \
 			do {                                            \

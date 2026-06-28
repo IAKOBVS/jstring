@@ -174,12 +174,10 @@ jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JS
 		old_cap *= JSTR_GROWTH;
 	char *tmp = (char *)realloc(*s, old_cap);
 	if (jstr_nullchk(tmp))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*cap = old_cap;
 	*s = tmp;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 	(void)sz;
 }
 #else
@@ -213,12 +211,10 @@ jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_ca
 		*cap = new_cap;
 		char *tmp = (char *)realloc(*s, *cap);
 		if (jstr_nullchk(tmp))
-			goto err;
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		*s = tmp;
 	}
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 	(void)sz;
 }
 #else
@@ -964,18 +960,16 @@ jstr_asprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...)
 	int arg_len = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_reserveexact(s, sz, cap, (size_t)arg_len)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	va_start(ap, fmt);
 	arg_len = vsprintf(*s, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = (size_t)arg_len;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else
 ;
@@ -995,18 +989,16 @@ jstr_asprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, (size_t)ret)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	va_start(ap, fmt);
 	ret = vsprintf(j->data, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	j->size = (size_t)ret;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else
 ;
@@ -1027,18 +1019,16 @@ jstr_asprintf_append(char *R *R s, size_t *R sz, size_t *R cap, const char *R fm
 	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + (size_t)ret)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	va_start(ap, fmt);
 	ret = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz += (size_t)ret;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else
 ;
@@ -1059,18 +1049,16 @@ jstr_asprintf_append_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_reserve(&j->data, &j->size, &j->capacity, j->size + (size_t)ret)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	j->size += (size_t)ret;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else
 ;
@@ -1090,18 +1078,16 @@ jstr_asprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, 
 	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_reserve(s, sz, cap, start_idx + (size_t)ret)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	va_start(ap, fmt);
 	ret = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 	(void)cap;
 }
 #else
@@ -1122,18 +1108,16 @@ jstr_asprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JST
 	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_reserve(&j->data, &j->size, &j->capacity, start_idx + (size_t)ret)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	j->size = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else
 ;
@@ -1154,11 +1138,9 @@ jstr_sprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) 
 	const int ret = vsprintf(*s, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = (size_t)ret;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 	(void)cap;
 }
 #else
@@ -1178,11 +1160,9 @@ jstr_sprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	const int ret = vsprintf(j->data, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	j->size = (size_t)ret;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else
 ;
@@ -1201,11 +1181,9 @@ jstr_sprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, c
 	const int ret = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 	(void)cap;
 }
 #else
@@ -1225,11 +1203,9 @@ jstr_sprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR
 	const int ret = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	j->size = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 #else
 ;
