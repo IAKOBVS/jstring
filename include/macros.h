@@ -159,7 +159,7 @@ JSTR_INTERNAL_END_DECLS
 
 #	define jstr_chk(ret)                     jstr_unlikely(ret == -1)
 #	define jstr_nullchk(p)                   jstr_unlikely((p) == NULL)
-#	define JSTR_PAGE_SIZE                    4096
+#define JSTR_PAGE_SIZE 4096
 #	define JSTR_ARRAY_COUNT(array)           (sizeof(array) / sizeof(array[0]))
 #	define JSTR_INTERNAL_CONCAT_HELPER(x, y) x##y
 #	define JSTR_CONCAT(x, y)                 JSTR_INTERNAL_CONCAT_HELPER(x, y)
@@ -1521,4 +1521,22 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #	ifndef JSTR_HAVE_VASPRINTF
 #		define JSTR_HAVE_VASPRINTF 0
 #	endif
+#ifndef JSTR_HAVE_READV
+#	define JSTR_HAVE_READV 0
+#endif
+#ifndef JSTR_HAVE_WRITEV
+#	define JSTR_HAVE_WRITEV 0
+#endif
+#ifndef JSTR_HAVE_PREADV
+#	define JSTR_HAVE_PREADV 0
+#endif
+#ifndef JSTR_HAVE_PWRITEV
+#	define JSTR_HAVE_PWRITEV 0
+#endif
+#ifndef JSTR_HAVE_PREADV2
+#	define JSTR_HAVE_PREADV2 0
+#endif
+#ifndef JSTR_HAVE_PWRITEV2
+#	define JSTR_HAVE_PWRITEV2 0
+#endif
 #endif /* JSTR_MACROS_H */

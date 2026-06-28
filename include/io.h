@@ -165,8 +165,6 @@ jstr_isbinary(const char *buf, size_t sz, size_t n) JSTR_NOEXCEPT
 ;
 #	endif
 
-#	define JSTR_IMPLEMENTATION
-
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_writefilefd_len(const char *s, size_t sz, int fd) JSTR_NOEXCEPT
