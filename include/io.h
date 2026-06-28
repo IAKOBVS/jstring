@@ -565,30 +565,38 @@ jstr_io_readsystem(char *R *R s, size_t *R sz, size_t *R cap, const char *R cmd)
 	if (jstr_nullchk(fp))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	char buf[MINBUF];
-	size_t readsz = jstr_io_fread(buf, 1, sizeof(buf), fp);
-	if (jstr_unlikely(readsz == 0)) {
+	size_t read_sz = jstr_io_fread(buf, 1, sizeof(buf), fp);
+	if (jstr_unlikely(read_sz == 0)) {
 		pclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	const size_t initialsz = (size_t)readsz == sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
+	const size_t initialsz = (size_t)read_sz == sizeof(buf) ? read_sz * JSTR_GROWTH : read_sz + 1;
 	if (jstr_chk(jstr_reserve(s, sz, cap, initialsz))) {
 		pclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	memcpy(*s, buf, readsz);
-	*sz = readsz;
-	if (jstr_unlikely(readsz == MINBUF)) {
-		size_t reqsz;
+	memcpy(*s, buf, read_sz);
+	*sz = read_sz;
+	if (jstr_unlikely(read_sz == MINBUF)) {
+		size_t requested_sz;
 		for (;;) {
-			reqsz = *cap - *sz;
-			readsz = jstr_io_fread(*s + *sz, 1, reqsz, fp);
-			if (jstr_unlikely(readsz == (size_t)-1)) {
+			requested_sz = *cap - *sz;
+			read_sz = jstr_io_fread(*s + *sz, 1, requested_sz, fp);
+			if (jstr_unlikely(read_sz == (size_t)-1)) {
 				pclose(fp);
 				JSTR_RETURN_ERR(JSTR_RET_ERR);
 			}
-			*sz += readsz;
-			if (readsz < reqsz)
-				break;
+			*sz += read_sz;
+			if (read_sz < requested_sz) {
+				/* EOF */
+				if (feof(fp))
+					break;
+				if (jstr_unlikely(ferror(fp))) {
+					clearerr(fp);
+					pclose(fp);
+					JSTR_RETURN_ERR(JSTR_RET_ERR);
+				}
+			}
 			if (*sz == *cap)
 				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH)))) {
 					pclose(fp);
@@ -613,23 +621,23 @@ jstr_io_readstdin(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
 	char buf[BUFSIZ];
-	ssize_t readsz = read(STDIN_FILENO, buf, sizeof(buf));
-	if (jstr_unlikely(readsz == (ssize_t)-1))
+	ssize_t read_sz = read(STDIN_FILENO, buf, sizeof(buf));
+	if (jstr_unlikely(read_sz == (ssize_t)-1))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	const size_t initialsz = (size_t)(readsz == sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1);
+	const size_t initialsz = (size_t)(read_sz == sizeof(buf) ? read_sz * JSTR_GROWTH : read_sz + 1);
 	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)initialsz)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	memcpy(*s, buf, (size_t)readsz);
-	*sz = (size_t)readsz;
-	if (jstr_unlikely(readsz == BUFSIZ)) {
-		ssize_t reqsz;
+	memcpy(*s, buf, (size_t)read_sz);
+	*sz = (size_t)read_sz;
+	if (jstr_unlikely(read_sz == BUFSIZ)) {
+		ssize_t requested_sz;
 		for (;;) {
-			reqsz = (ssize_t)(*cap - *sz);
-			readsz = read(STDIN_FILENO, *s + *sz, (size_t)reqsz);
-			if (jstr_unlikely(readsz == (ssize_t)-1))
+			requested_sz = (ssize_t)(*cap - *sz);
+			read_sz = read(STDIN_FILENO, *s + *sz, (size_t)requested_sz);
+			if (jstr_unlikely(read_sz == (ssize_t)-1))
 				JSTR_RETURN_ERR(JSTR_RET_ERR);
-			*sz += (size_t)readsz;
-			if (readsz < reqsz)
+			*sz += (size_t)read_sz;
+			if (read_sz < requested_sz)
 				break;
 			if (*sz == *cap)
 				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH))))
