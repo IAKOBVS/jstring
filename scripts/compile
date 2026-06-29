@@ -13,7 +13,7 @@ cd "$(dirname "$0")" || exit
 PATH_BUILD=../build/include/jstr
 PATH_SRC=../include
 PATH_MACROS=$PATH_BUILD/macros.h
-CFLAGS="-O2 -flto -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
+CFLAGS="-O2 -flto -fanalyzer -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
 
 has_prog() { type "$1" >/dev/null 2>/dev/null; }
 
@@ -94,7 +94,7 @@ fi
 # ar rcs "$LIBDIR/libjstr.a" $OFILES
 
 # 5. Link shared library
-cc -flto -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
+cc -fanalyzer -flto -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
 
 echo "Library built successfully."
 # echo "Static:  $(realpath $LIBDIR/libjstr.a)"

@@ -34,7 +34,9 @@ JSTR_INTERNAL_BEGIN_DECLS
 #	include <stdlib.h>
 #	include <sys/stat.h>
 #	include <unistd.h>
-#	include <sys/uio.h>
+#	if JSTR_HAVE_READV && JSTR_HAVE_WRITEV
+#		include <sys/uio.h>
+#	endif
 JSTR_INTERNAL_END_DECLS
 
 #	ifdef JSTR_IMPLEMENTATION
