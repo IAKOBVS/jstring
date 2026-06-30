@@ -1,3 +1,6 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
