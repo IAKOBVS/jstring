@@ -158,7 +158,7 @@ jstr_io_writefilefd_len(const char *s, size_t sz, int fd) JSTR_NOEXCEPT
 #		if JSTR_HAVE_WRITEV
 	struct iovec iov[] = {
 		{ .iov_base = (void *)s,    .iov_len = sz                          },
-		{ .iov_base = (void *)"\n", .iov_len = (s[sz - 1] == '\n') ? 1 : 0 }
+		{ .iov_base = (void *)"\n", .iov_len = (s[sz - 1] != '\n') ? 1 : 0 }
 	};
 	const struct iovec *iop = iov;
 	int iol = JSTR_ARRAY_COUNT(iov);
