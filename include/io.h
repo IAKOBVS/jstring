@@ -234,9 +234,11 @@ jstr_ret_ty
 jstr_io_fwritefilefp_len(const char *R s, size_t sz, FILE *fp) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
+	if (jstr_unlikely(sz == 0))
+		return JSTR_RET_SUCC;
 	if (jstr_unlikely(jstr_io_fwrite(s, 1, sz, fp) != sz))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	if (s[sz ? sz - 1 : 0] != '\n' && jstr_io_putc('\n', fp) == EOF)
+	if (s[sz - 1] != '\n' && jstr_io_putc('\n', fp) == EOF)
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
 }
