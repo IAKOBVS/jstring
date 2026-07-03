@@ -50,6 +50,21 @@ JSTR_INTERNAL_END_DECLS
 #		define JSTR_RE_EF_STARTEND REG_STARTEND
 #	endif
 
+/* REG_STARTEND (a BSD extension also available on Linux since glibc 2.0)
+ * tells regexec to match only within [rm_so, rm_eo) of the input string,
+ * avoiding the need for NUL-termination or a separate copy.
+ *
+ * On platforms without REG_STARTEND (musl, older BSDs), string-with-length
+ * functions like jstr_re_exec_len must NUL-terminate the string before
+ * calling regexec.  The NUL-termination strategy:
+ *
+ *   - jstr_re_exec_len     — malloc+copy+NUL (safe for const strings)
+ *   - jstr_re_exec_mut     — temporary in-place NUL (requires writable S)
+ *
+ * Use jstr_re_exec_mut when the string buffer is known to be writable
+ * (e.g. internal buffers in jstr_internal_re_rplcn_backref_len_from_exec)
+ * to avoid the allocation overhead of jstr_re_exec_len's fallback path. */
+
 JSTR_INTERNAL_BEGIN_DECLS
 
 typedef enum {
@@ -304,6 +319,25 @@ jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nm
 #	else
 ;
 #	endif
+
+/* Like jstr_re_exec_len, but S must be writable.
+ * On platforms without REG_STARTEND, NUL-terminates S at position SZ in place,
+ * avoiding an allocation. On platforms with REG_STARTEND, delegates to
+ * jstr_re_exec_len. */
+JSTR_FUNC_PURE
+jstr_re_ret_ty
+jstr_re_exec_mut(const jstr_re_ty *R preg, char *R s, size_t sz, size_t nmatch, regmatch_t *R pmatch, int eflags) JSTR_NOEXCEPT
+{
+#	ifdef JSTR_RE_EF_STARTEND
+	return jstr_re_exec_len(preg, s, sz, nmatch, pmatch, eflags);
+#	else
+	char saved = s[sz];
+	s[sz] = 0;
+	jstr_re_ret_ty ret = (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags);
+	s[sz] = saved;
+	return ret;
+#	endif
+}
 
 /* Check if S matches precompiled regex.
  * Return return value of regexec. */
@@ -714,7 +748,7 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 	jstr_internal_inplace_ty i;
 	i.src_e = *s + start_idx;
 	const char *end = *s + *sz;
-	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
+	int ret = jstr_re_exec_mut(preg, (char *)i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
@@ -746,7 +780,7 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 	/* Use the same algorithm as rplcn, only replacing memmem with regex,
 	 * with backreference handling. */
 	for (; n && i.src_e < end; --n, ++changed) {
-		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
+		ret = jstr_re_exec_mut(preg, (char *)i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 			;
 		} else if (ret == JSTR_RE_RET_NOMATCH) {

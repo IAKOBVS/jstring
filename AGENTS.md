@@ -53,6 +53,8 @@ scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test (one-off
 | Pattern | Meaning |
 | :--- | :--- |
 | `_len` | Takes explicit length parameter. |
+| `_mut` | String is mutable (writable); may be modified in place (e.g., temporary NUL-termination). |
+| `_nonnull*` | Assumes pointer arguments are non-null. |
 | `_p` / `*stp*` | Returns pointer to end of processed string (e.g., `stpcpy`). |
 | `_unsafe` | Assumes buffer has sufficient space (no reallocation). |
 | `_from` | Operates starting from a given index (in-bounds assumed). |
@@ -80,6 +82,22 @@ to `void *` and use the corresponding `_mem*` / `void *` overload when available
 - Test files include `<test.h>` which provides `t_assert`, `t_print`, and a shared test harness.
 
 **Namespacing**: everything uses `[Jj][Ss][Tt][Rr]_` prefix.
+
+## REG_STARTEND portability
+
+The `regex.h` module uses the BSD extension `REG_STARTEND` (also available on Linux
+since glibc 2.0) to match substrings without NUL-termination. On platforms without
+`REG_STARTEND` (musl, older BSDs), two strategies are used:
+
+| Function | Strategy | When to use |
+| :--- | :--- | :--- |
+| `jstr_re_exec_len` | `malloc` + copy + NUL-terminate + free | String may be read-only (`const char *`). |
+| `jstr_re_exec_mut` | Temporarily NUL-terminates in place, restores original byte | String is known writable (`char *`). Avoids allocation. |
+
+**Always prefer `jstr_re_exec_mut` when the buffer is writable** — it avoids the
+`malloc`/`free` overhead of `jstr_re_exec_len`'s fallback. Internal functions
+with `char * *s` parameters (e.g. `jstr_internal_re_rplcn_backref_len_from_exec`)
+should use `jstr_re_exec_mut` rather than `jstr_re_exec_len`.
 
 ## Caveats
 
