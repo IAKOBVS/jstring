@@ -394,6 +394,55 @@ main(int argc, char **argv)
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "el");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "l");
 
+	/* n-count replacement tests. */
+	FILL(result, "hello world");
+	find = "x";
+	rplc = "y";
+	expected = "hello world";
+	T_APPEND_NORET(jstr_rplcn_len_from, jstr_struct(&result), 0, find, (size_t)0, rplc, strlen(rplc), (size_t)-1);
+
+	FILL(result, "ababab");
+	find = "ab";
+	rplc = "";
+	expected = "ab";
+	T_APPEND_NORET(jstr_rplcn_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc), 2);
+
+	FILL(result, "abc");
+	find = "abcdef";
+	rplc = "x";
+	expected = "abc";
+	T_APPEND_NORET(jstr_rplcn_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc), (size_t)-1);
+
+	FILL(result, "aaabbbaaa");
+	find = "a";
+	rplc = "x";
+	expected = "xxxbbbaaa";
+	T_APPEND_NORET(jstr_rplcn_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc), 3);
+
+	FILL(result, "hello world");
+	find = "hello";
+	rplc = "hi";
+	expected = "hi world";
+	T_APPEND_NORET(jstr_rplcn_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc), 1);
+
+	FILL(result, "abc");
+	find = "b";
+	rplc = "XYZ";
+	expected = "aXYZc";
+	T_APPEND_NORET(jstr_rplcn_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc), 1);
+
+	FILL(result, "aaaa");
+	find = "aa";
+	rplc = "x";
+	expected = "xx";
+	T_APPEND_NORET(jstr_rplcn_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc), (size_t)-1);
+
+	FILL(result, "hello world");
+	find = "hello";
+	rplc = "x";
+	expected = "hello world";
+	T_APPEND_NORET(jstr_rplcn_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc), 0);
+
 	jstr_free_j(&result);
 	SUCCESS();
 	return EXIT_SUCCESS;

@@ -28,15 +28,18 @@ Custom shell+Perl scripts (no Makefile, no CMake). Run from repo root:
 
 ```sh
 ./test                  # all tests, 4 combos: {normal, -march=native} × {fast, -DJSTR_TEST_SLOW=1}
+./test <test.c> ...     # run specific test file(s) by name
 ./test-check-fail       # runs all tests, shows only failures (filters PASS)
-scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
+scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test (one-off)
 ```
 
+- **Tests are auto-discovered**: any `.c` file placed in `tests/` is picked up by the runner.
 - Every test in `tests/*.c` is compiled and run from `/tmp`.
 - Default CFLAGS: `-std=c99 -Wall -Wextra -Wpedantic -O2 -g -fsanitize=address`.
-- All 4 variants run in parallel; tests can take a while.
+- All 4 variants run in parallel via `xargs -P "$NPROC"`; tests can take a while.
 - Order: `./scripts/build && ./test`.
 - Use `./test-check-fail` (not `./test`) when checking for errors — it filters out passing tests so failures are immediately visible.
+- To run a single variant of a single test: `scripts/test1 /tmp tests/test-regex.c`.
 
 ## Language & toolchain
 
@@ -67,7 +70,14 @@ to `void *` and use the corresponding `_mem*` / `void *` overload when available
 
 **Always zero-initialize**: `jstr_ty j = JSTR_INIT;`
 
-**Error handling**: functions return negative on error. Check return values. Use `jstr_err()` to print or `jstr_errdie()` to print and exit. Set `JSTR_PANIC=1` to auto-abort on errors.
+**Error handling**:
+- Functions return negative values on error (typically `-1` or `JSTR_RET_ERR`). Check return values.
+- `jstr_chk(x)` evaluates to true if `x` is an error value (`x < 0`).
+- `jstr_err()` prints the last error message to stderr.
+- `jstr_errdie()` prints the last error and calls `exit(EXIT_FAILURE)`.
+- `JSTR_RETURN_ERR(msg)` is the canonical macro for setting an error and returning -1.
+- Set `JSTR_PANIC=1` environment variable to auto-abort on any error (calls `abort()` in a signal handler).
+- Test files include `<test.h>` which provides `t_assert`, `t_print`, and a shared test harness.
 
 **Namespacing**: everything uses `[Jj][Ss][Tt][Rr]_` prefix.
 

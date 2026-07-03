@@ -287,8 +287,19 @@ jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nm
 #		ifdef JSTR_RE_EF_STARTEND
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
-#		endif
 	return (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags | JSTR_RE_EF_STARTEND);
+#		else
+	{
+		char *copy = (char *)malloc(sz + 1);
+		if (jstr_unlikely(copy == NULL))
+			return JSTR_RE_RET_ESPACE;
+		memcpy(copy, s, sz);
+		copy[sz] = 0;
+		jstr_re_ret_ty ret = (jstr_re_ret_ty)regexec(&preg->reg, copy, nmatch, pmatch, eflags);
+		free(copy);
+		return ret;
+	}
+#		endif
 }
 #	else
 ;
@@ -343,7 +354,11 @@ jstr_re_match_len(const jstr_re_ty *R preg, const char *R s, size_t sz, int efla
 #	ifdef JSTR_IMPLEMENTATION
 {
 	regmatch_t rm;
+#		ifdef JSTR_RE_EF_STARTEND
 	return jstr_re_exec_len(preg, s, sz, 0, &rm, eflags | JSTR_RE_EF_STARTEND);
+#		else
+	return jstr_re_exec_len(preg, s, sz, 0, &rm, eflags);
+#		endif
 }
 #	else
 ;
@@ -693,6 +708,8 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		if (n == 1)
 			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	}
+	if (nmatch > 10)
+		nmatch = 10;
 	regmatch_t rm[10];
 	jstr_internal_inplace_ty i;
 	i.src_e = *s + start_idx;
