@@ -37,6 +37,10 @@ fuzz_builder2(size_t iter)
 		ret = jstr_reserveexactalways(&s, &sz, &cap, 150);
 		assert(ret == JSTR_RET_SUCC);
 		assert(cap == 150);
+		if (sz >= cap) {
+			sz = cap - 1;
+			s[sz] = '\0';
+		}
 
 		ret = jstr_shrink_to_fit(&s, &sz, &cap);
 		assert(ret == JSTR_RET_SUCC);

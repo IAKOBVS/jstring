@@ -150,7 +150,7 @@ fuzz_stdstring(size_t iter)
 		{int _r = jstr_memcasecmpeq(h, h2, cmp_n);(void)_r;}
 		int cmpeq_len = jstr_strcasecmpeq_len(h, h2, cmp_n);
 		int cmpeq_ll = jstr_strcasecmpeq_len_loop(h, h2, cmp_n);
-		assert(cmpeq_len == cmpeq_ll);
+		assert(!!cmpeq_len == !!cmpeq_ll);
 
 		/* --- stpmove / strmove_len / stpmove_len --- */
 		char mv[FSTR];
