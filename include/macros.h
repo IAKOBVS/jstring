@@ -929,14 +929,17 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #	endif
 
 #	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) \
-	|| defined _BSD_SOURCE
+	|| defined _BSD_SOURCE \
+	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) \
+	|| (defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 600)
 #		define JSTR_HAVE_STRCASECMP  1
 #		define JSTR_HAVE_STRNCASECMP 1
-#	endif /* Bsd || Default */
+#	endif
 
-#	if defined _XOPEN_SOURCE || defined _ISOC2X_SOURCE
+#	if defined _XOPEN_SOURCE || defined _ISOC2X_SOURCE \
+	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
 #		define JSTR_HAVE_MEMCCPY 1
-#	endif /* Misc || Xopen */
+#	endif
 
 #	ifdef _GNU_SOURCE
 #		define JSTR_HAVE_MEMMEM            1
@@ -956,7 +959,7 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #		define JSTR_HAVE_STRCASESTR        1
 #		define JSTR_HAVE_ASPRINTF          1
 #		define JSTR_HAVE_VASPRINTF         1
-#	endif /* Gnu */
+#	endif
 
 #	if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
 	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
@@ -965,14 +968,14 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #		define JSTR_HAVE_SNPRINTF_STRLEN 0
 #	endif
 
-#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 24) && (_POSIX_C_SOURCE - 0) >= 199309L)                            \
-	|| ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE) \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 24) && (_POSIX_C_SOURCE - 0) >= 199309L)                          \
+	|| ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && (defined _SVID_SOURCE || defined _BSD_SOURCE)) \
 	|| (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
 #		define JSTR_HAVE_GETC_UNLOCKED    1
 #		define JSTR_HAVE_GETCHAR_UNLOCKED 1
 #		define JSTR_HAVE_PUTC_UNLOCKED    1
 #		define JSTR_HAVE_PUTCHAR_UNLOCKED 1
-#	endif /* Posix || Bsd  */
+#	endif
 
 #	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
 	|| defined _SVID_SOURCE || defined _BSD_SOURCE
@@ -985,27 +988,27 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #		define JSTR_HAVE_FERROR_UNLOCKED   1
 #		define JSTR_HAVE_FILENO_UNLOCKED   1
 #		define JSTR_HAVE_FFLUSH_UNLOCKED   1
-#	endif /* Default || Svid || Bsd */
+#	endif
 
 #	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 10) && (_POSIX_C_SOURCE - 0) >= 200809L) \
 	|| defined _GNU_SOURCE
 #		define JSTR_HAVE_STPCPY  1
 #		define JSTR_HAVE_STRNLEN 1
 #		define JSTR_HAVE_STRNDUP 1
-#	endif /* Posix || Gnu */
+#	endif
 
-#	if (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500)                               \
+#	if (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500)                                \
 	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && (_POSIX_C_SOURCE - 0) >= 200809L) \
 	|| defined _BSD_SOURCE || defined _SVID_SOURCE
 #		define JSTR_HAVE_STRDUP 1
-#	endif /* Xopen || Bsd || Svid || Posix */
+#	endif
 
 #	ifdef _GNU_SOURCE
 #		define JSTR_HAVE_STRDUPA  1
 #		define JSTR_HAVE_STRNDUPA 1
-#	endif /* Gnu */
+#	endif
 
-#	if (defined __GLIBC__ && (__GLIBC__ < 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _BSD_SOURCE || defined _SVID_SOURCE) \
+#	if (defined __GLIBC__ && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19)) && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
 	|| (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 2)
 #		define JSTR_HAVE_POPEN  1
 #		define JSTR_HAVE_PCLOSE 1
@@ -1028,14 +1031,10 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #		define JSTR_HAVE_PWRITEV 1
 #	endif
 
-#	if defined(_POSIX_VERSION) && (_POSIX_VERSION >= 200112L)
-#		define JSTR_HAVE_PREAD 1
-#		define JSTR_HAVE_PWRITE 1
-#	elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-#		define JSTR_HAVE_PREAD 1
-#		define JSTR_HAVE_PWRITE 1
-#	elif defined(_XOPEN_VERSION) && (_XOPEN_VERSION >= 500)
-#		define JSTR_HAVE_PREAD 1
+#	if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) \
+	|| (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) \
+	|| defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#		define JSTR_HAVE_PREAD  1
 #		define JSTR_HAVE_PWRITE 1
 #	endif
 
@@ -1044,9 +1043,9 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #		define JSTR_HAVE_PWRITEV2 1
 #	endif
 
-#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE)                                                                    \
-	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _SVID_SOURCE)                                                                        \
-	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 17) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200809L)))                         \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE)                                                                      \
+	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _SVID_SOURCE)                                                                       \
+	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 17) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200809L)))                          \
 	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200112L)) || defined _SVID_SOURCE) \
 	|| (defined _SVID_SOURCE || (_XOPEN_SOURCE - 0) >= 500)
 #		define JSTR_HAVE_GCVT 1
@@ -1069,7 +1068,7 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #		define JSTR_HAVE_FCVT_R  1
 #	endif
 
-#	if defined _DEFAULT_SOURCE || !defined __USE_XOPEN2K8
+#	if defined _DEFAULT_SOURCE || defined _BSD_SOURCE || defined _SVID_SOURCE || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE < 200809L) || (defined _XOPEN_SOURCE && _XOPEN_SOURCE < 700)
 #		define JSTR_HAVE_BCMP  1
 #		define JSTR_HAVE_BCOPY 1
 #		define JSTR_HAVE_BZERO 1
@@ -1081,15 +1080,15 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 
 #	if defined _XOPEN_SOURCE && (defined _XOPEN_SOURCE_EXTENDED || (_XOPEN_SOURCE - 0) >= 500)
 #		define JSTR_HAVE_FCHDIR 1
-#	endif /* Xopen extended || Xopen 2k8 */
+#	endif
 
 #	if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 700
 #		define JSTR_HAVE_FDOPENDIR 1
-#	endif /* Xopen 2k8 */
+#	endif
 
 #	if defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L
 #		define JSTR_HAVE_NANOSLEEP 1
-#	endif /* Posix 199309L */
+#	endif
 
 #	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FREAD_UNLOCKED
 #		define jstr_io_fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
