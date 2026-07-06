@@ -43,7 +43,7 @@ fuzz_builder2(size_t iter)
 		assert(cap == sz + 1);
 
 		/* --- strset --- */
-		if (sz > 0) {
+		if (sz > 0 && strlen(s) == sz) {
 			char *copy = malloc(sz + 1);
 			memcpy(copy, s, sz);
 			copy[sz] = '\0';

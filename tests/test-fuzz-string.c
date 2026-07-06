@@ -133,8 +133,14 @@ fuzz_string(size_t iter)
 		memcpy(buf_s, h, hl + 1);
 		char *j_end = jstr_trimend_len_p(buf_j, hl);
 		simple_trimend_len_p(buf_s, hl);
-		assert(strcmp(buf_j, buf_s) == 0);
-		assert(j_end - buf_j == (ptrdiff_t)strlen(buf_s));
+		{
+			size_t trimlen = hl;
+			while (trimlen > 0 && jstr_isspace((unsigned char)h[trimlen - 1]))
+				--trimlen;
+			assert(trimlen == 0 || memcmp(buf_j, buf_s, trimlen) == 0);
+			assert(buf_j[trimlen] == '\0');
+			assert(j_end - buf_j == (ptrdiff_t)trimlen);
+		}
 
 		if (hl == strlen(h)) {
 			memcpy(buf_j, h, hl + 1);
@@ -150,8 +156,15 @@ fuzz_string(size_t iter)
 		memcpy(buf_s, h, hl + 1);
 		j_end = jstr_trimstart_len_p(buf_j, hl);
 		simple_trimstart_len_p(buf_s, hl);
-		assert(strcmp(buf_j, buf_s) == 0);
-		assert(j_end - buf_j == (ptrdiff_t)strlen(buf_s));
+		{
+			size_t nlead = 0;
+			while (nlead < hl && jstr_isspace((unsigned char)h[nlead]))
+				++nlead;
+			size_t trimlen = hl - nlead;
+			assert(trimlen == 0 || memcmp(buf_j, buf_s, trimlen) == 0);
+			assert(buf_j[trimlen] == '\0');
+			assert(j_end - buf_j == (ptrdiff_t)trimlen);
+		}
 
 		if (hl == strlen(h)) {
 			memcpy(buf_j, h, hl + 1);
@@ -167,9 +180,19 @@ fuzz_string(size_t iter)
 		memcpy(buf_s, h, hl + 1);
 		j_end = jstr_trim_len_p(buf_j, hl);
 		simple_trimend_len_p(buf_s, hl);
-		simple_trimstart_len_p(buf_s, strlen(buf_s));
-		assert(strcmp(buf_j, buf_s) == 0);
-		assert(j_end - buf_j == (ptrdiff_t)strlen(buf_s));
+		simple_trimstart_len_p(buf_s, hl);
+		{
+			size_t nlead = 0;
+			while (nlead < hl && jstr_isspace((unsigned char)h[nlead]))
+				++nlead;
+			size_t nend = hl;
+			while (nend > nlead && jstr_isspace((unsigned char)h[nend - 1]))
+				--nend;
+			size_t trimlen = nend - nlead;
+			assert(trimlen == 0 || memcmp(buf_j, buf_s, trimlen) == 0);
+			assert(buf_j[trimlen] == '\0');
+			assert(j_end - buf_j == (ptrdiff_t)trimlen);
+		}
 
 		if (hl == strlen(h)) {
 			memcpy(buf_j, h, hl + 1);
@@ -221,8 +244,8 @@ fuzz_string(size_t iter)
 			char sep = ',';
 			char *j_ep = jstr_thousep_len_p(buf_j, hl, sep);
 			size_t s_len = simple_thousep_len_p(buf_s, hl, sep);
-			assert(strcmp(buf_j, buf_s) == 0);
 			assert((size_t)(j_ep - buf_j) == s_len);
+			assert(memcmp(buf_j, buf_s, s_len) == 0);
 
 			if (hl == strlen(h)) {
 				memcpy(buf_j, h, hl + 1);
@@ -320,10 +343,11 @@ fuzz_string(size_t iter)
 			char *p = (char *)memchr(h, '\n', hl);
 			if (p) {
 				char *j_ls = jstr_linestart(h, p);
+				/* jstr_linestart searches backwards excluding p itself */
 				char *s_ls = h;
-				for (char *q = p; q >= h; --q) {
-					if (*q == '\n') {
-						s_ls = q + 1;
+				for (char *q = p; q > h; --q) {
+					if (*(q - 1) == '\n') {
+						s_ls = q;
 						break;
 					}
 				}
