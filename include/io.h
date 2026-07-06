@@ -445,10 +445,10 @@ jstr_io_readfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname,
 	}
 	char *dst = *s;
 	size_t off = 0;
-	size_t left = file_size;
+	size_t left = (size_t)file_size;
 	ssize_t read_sz;
-	for (; left; dst += read_sz, left -= read_sz, off += read_sz) {
-		read_sz = pread(fd, dst, left, off);
+	for (; left; dst += read_sz, left -= (size_t)read_sz, off += (long unsigned int)read_sz) {
+		read_sz = pread(fd, dst, left, (ssize_t)off);
 		/* Error */
 		if (jstr_unlikely(read_sz < 0)) {
 			close(fd);
@@ -463,7 +463,7 @@ jstr_io_readfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname,
 	if (jstr_unlikely(close(fd) < 0))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*(*s + file_size) = '\0';
-	*sz = file_size;
+	*sz = (size_t)file_size;
 	return JSTR_RET_SUCC;
 #		else
 	struct stat st;

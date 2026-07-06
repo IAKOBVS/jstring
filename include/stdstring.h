@@ -8,6 +8,9 @@
 #	include "struct.h"
 
 JSTR_INTERNAL_BEGIN_DECLS
+#if JSTR_HAVE_STRCASECMP && JSTR_HAVE_STRNCASECMP
+#	include <strings.h>
+#endif
 #	include <stdlib.h>
 #	include <string.h>
 #	include <limits.h>
