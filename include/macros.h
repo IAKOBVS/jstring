@@ -995,7 +995,7 @@ jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line
 #	endif /* Posix || Gnu */
 
 #	if (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500)                               \
-	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && (__POSIX_C_SOURCE - 0) >= 200809L) \
+	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && (_POSIX_C_SOURCE - 0) >= 200809L) \
 	|| defined _BSD_SOURCE || defined _SVID_SOURCE
 #		define JSTR_HAVE_STRDUP 1
 #	endif /* Xopen || Bsd || Svid || Posix */
