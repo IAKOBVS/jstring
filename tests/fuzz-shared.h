@@ -30,12 +30,16 @@ gen_str(char *buf, size_t max_len, enum gen_mode mode)
 		memset(buf, (char)('!' + (rand() % 94)), len);
 	} else {
 		for (size_t i = 0; i < len; ++i) {
+#if 0
 			if (mode == GEN_ASCII)
 				buf[i] = (char)(' ' + (rand() % 95));
 			else if (mode == GEN_MEM)
 				buf[i] = (char)(1 + (rand() % 254));
 			else /* GEN_BINARY */
 				buf[i] = (char)(rand() & 0xFF);
+#else
+			buf[i] = (char)(' ' + (rand() % 95));
+#endif
 		}
 	}
 	buf[len] = '\0';
