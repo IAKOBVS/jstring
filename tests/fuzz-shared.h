@@ -30,12 +30,12 @@ gen_str(char *buf, size_t max_len, enum gen_mode mode)
 		memset(buf, (char)('!' + (rand() % 94)), len);
 	} else {
 		for (size_t i = 0; i < len; ++i) {
-			/* if (mode == GEN_ASCII) */
+			if (mode == GEN_ASCII)
 				buf[i] = (char)(' ' + (rand() % 95));
-			/* else /1* if (mode == GEN_MEM) *1/ */
-			/* 	buf[i] = (char)(1 + (rand() % 254)); */
-			/* else /1* GEN_BINARY *1/ */
-			/* 	buf[i] = (char)(rand() & 0xFF); */
+			else if (mode == GEN_MEM)
+				buf[i] = (char)(1 + (rand() % 254));
+			else /* GEN_BINARY */
+				buf[i] = (char)(rand() & 0xFF);
 		}
 	}
 	buf[len] = '\0';

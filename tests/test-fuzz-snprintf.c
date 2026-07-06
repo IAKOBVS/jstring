@@ -93,7 +93,7 @@ fuzz_snprintf(size_t iter)
 			ret = JSTR_RET_ERR;
 			break;
 		}
-		(void)ret;
+		assert(ret == JSTR_RET_SUCC);
 		if (s) {
 			assert(strcmp(s, ref_buf) == 0);
 			assert(sz == strlen(s));

@@ -30,7 +30,7 @@ fuzz_builder(size_t iter)
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
 		int ret = jstr_assign_len(&s, &sz, &cap, h, hl);
-		(void)ret;
+		assert(ret == JSTR_RET_SUCC);
 		assert(sz == hl);
 		assert(memcmp(s, h, hl) == 0);
 		assert(s[sz] == '\0');

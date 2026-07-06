@@ -85,8 +85,8 @@ fuzz_replace_substr(size_t iter)
 		size_t count = (size_t)rand() % 8;
 
 		/* --- rplcn_len_from --- */
-		(void)jstr_assign_len(&jbuf, &jsz, &jcap, h, hl);
-		(void)jstr_assign_len(&sbuf, &ssz, &scap, h, hl);
+		assert(jstr_assign_len(&jbuf, &jsz, &jcap, h, hl) == JSTR_RET_SUCC);
+		assert(jstr_assign_len(&sbuf, &ssz, &scap, h, hl) == JSTR_RET_SUCC);
 		int gj = jstr_rplcn_len_from(&jbuf, &jsz, &jcap, start_idx,
 		                             n_small, nl, r, rl, count);
 		int es = simple_rplcn_len_from(&sbuf, &ssz, &scap, start_idx,
@@ -101,8 +101,8 @@ fuzz_replace_substr(size_t iter)
 
 		/* --- rmn_len --- */
 		if (nl != 1 || h[0] != '\0') {
-			(void)jstr_assign_len(&jbuf, &jsz, &jcap, h, hl);
-			(void)jstr_assign_len(&sbuf, &ssz, &scap, h, hl);
+			assert(jstr_assign_len(&jbuf, &jsz, &jcap, h, hl) == JSTR_RET_SUCC);
+			assert(jstr_assign_len(&sbuf, &ssz, &scap, h, hl) == JSTR_RET_SUCC);
 			size_t rj = jstr_rmn_len(jbuf, &jsz, n_small, nl, count);
 			size_t rs = simple_rmn_len(sbuf, &ssz, n_small, nl, count);
 			assert(rj == rs);
