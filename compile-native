@@ -1,0 +1,2 @@
+#!/bin/sh
+CFLAGS=-march=native ./compile
