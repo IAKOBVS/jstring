@@ -1,0 +1,191 @@
+        -:    0:Source:tests/test-regex-exec.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-regex-exec.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-regex-exec.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:/* Fixes regex.h problems with tcc */
+        -:    5:#define __STDC_NO_VLA__ 1
+        -:    6:
+        -:    7:#include "test.h"
+        -:    8:#include "../include/regex.h"
+        -:    9:
+        -:   10:int
+        1:   11:main(int argc, char **argv)
+        -:   12:{
+        -:   13:	START();
+        -:   14:	{
+        -:   15:		jstr_re_ty preg;
+       1*:   16:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "hello", 0)));
+        -:   17:
+        -:   18:		/* jstr_re_exec: exact match. */
+       1*:   19:		assert(jstr_re_exec(&preg, "hello", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   20:		assert(jstr_re_exec(&preg, "hello!", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   21:		assert(jstr_re_exec(&preg, "world", 0, NULL, 0) == JSTR_RE_RET_NOMATCH);
+        -:   22:
+        1:   23:		jstr_re_free(&preg);
+        -:   24:	}
+        -:   25:	{
+        -:   26:		jstr_re_ty preg;
+       1*:   27:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
+        -:   28:
+        -:   29:		/* Anchored at start. */
+       1*:   30:		assert(jstr_re_exec(&preg, "hello", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   31:		assert(jstr_re_exec(&preg, "hello world", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   32:		assert(jstr_re_exec(&preg, "say hello", 0, NULL, 0) == JSTR_RE_RET_NOMATCH);
+        -:   33:		/* NOTBOL prevents ^ from matching at start. */
+       1*:   34:		assert(jstr_re_exec(&preg, "hello", 0, NULL, JSTR_RE_EF_NOTBOL) == JSTR_RE_RET_NOMATCH);
+        -:   35:
+        1:   36:		jstr_re_free(&preg);
+        -:   37:	}
+        -:   38:	{
+        -:   39:		jstr_re_ty preg;
+       1*:   40:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "world$", 0)));
+        -:   41:
+        -:   42:		/* Anchored at end. */
+       1*:   43:		assert(jstr_re_exec(&preg, "world", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   44:		assert(jstr_re_exec(&preg, "hello world", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   45:		assert(jstr_re_exec(&preg, "world! hello", 0, NULL, 0) == JSTR_RE_RET_NOMATCH);
+        -:   46:		/* NOTEOL prevents $ from matching at end. */
+       1*:   47:		assert(jstr_re_exec(&preg, "world", 0, NULL, JSTR_RE_EF_NOTEOL) == JSTR_RE_RET_NOMATCH);
+        -:   48:
+        1:   49:		jstr_re_free(&preg);
+        -:   50:	}
+        -:   51:	{
+        -:   52:		jstr_re_ty preg;
+       1*:   53:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "hello", JSTR_RE_CF_ICASE)));
+        -:   54:
+        -:   55:		/* Case insensitive. */
+       1*:   56:		assert(jstr_re_exec(&preg, "HELLO", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   57:		assert(jstr_re_exec(&preg, "Hello", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   58:		assert(jstr_re_exec(&preg, "hElLo", 0, NULL, 0) == JSTR_RE_RET_NOERROR);
+       1*:   59:		assert(jstr_re_exec(&preg, "world", 0, NULL, 0) == JSTR_RE_RET_NOMATCH);
+        -:   60:
+        1:   61:		jstr_re_free(&preg);
+        -:   62:	}
+        -:   63:	{
+        -:   64:		jstr_re_ty preg;
+        -:   65:		/* jstr_re_exec with nmatch and pmatch. */
+       1*:   66:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\) \\([a-z]\\{1,\\}\\)", 0)));
+        -:   67:
+        -:   68:		regmatch_t pmatch[3];
+       1*:   69:		assert(jstr_re_exec(&preg, "hello world", 3, pmatch, 0) == JSTR_RE_RET_NOERROR);
+       1*:   70:		assert(pmatch[0].rm_so == 0);
+       1*:   71:		assert(pmatch[0].rm_eo == 11);
+       1*:   72:		assert(pmatch[1].rm_so == 0);
+       1*:   73:		assert(pmatch[1].rm_eo == 5);
+       1*:   74:		assert(pmatch[2].rm_so == 6);
+       1*:   75:		assert(pmatch[2].rm_eo == 11);
+        -:   76:
+        1:   77:		jstr_re_free(&preg);
+        -:   78:	}
+        -:   79:	{
+        -:   80:		jstr_re_ty preg;
+        -:   81:		/* jstr_re_exec_len with explicit length. */
+       1*:   82:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "hello", 0)));
+        -:   83:
+        -:   84:		regmatch_t rm;
+       1*:   85:		assert(jstr_re_exec_len(&preg, "helloXXX", 5, 1, &rm, 0) == JSTR_RE_RET_NOERROR);
+       1*:   86:		assert(rm.rm_so == 0);
+       1*:   87:		assert(rm.rm_eo == 5);
+        -:   88:		/* Matching beyond length should fail. */
+       1*:   89:		assert(jstr_re_exec_len(&preg, "HELLO", 5, 1, &rm, 0) == JSTR_RE_RET_NOMATCH);
+        -:   90:
+        1:   91:		jstr_re_free(&preg);
+        -:   92:	}
+        -:   93:	{
+        -:   94:		jstr_re_ty preg;
+        -:   95:		/* jstr_re_exec_len with a shorter length should not match
+        -:   96:		 * beyond it. */
+       1*:   97:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "hello", 0)));
+        -:   98:
+        -:   99:		regmatch_t rm;
+       1*:  100:		assert(jstr_re_exec_len(&preg, "hello", 4, 1, &rm, 0) == JSTR_RE_RET_NOMATCH);
+        -:  101:
+        1:  102:		jstr_re_free(&preg);
+        -:  103:	}
+        -:  104:	{
+        -:  105:		jstr_re_ty preg;
+        -:  106:		/* jstr_re_match returns NOERROR if pattern matches, NOMATCH
+        -:  107:		 * otherwise (no submatches). */
+       1*:  108:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:  109:
+       1*:  110:		assert(jstr_re_match(&preg, "123", 0) == JSTR_RE_RET_NOERROR);
+       1*:  111:		assert(jstr_re_match(&preg, "abc123", 0) == JSTR_RE_RET_NOERROR);
+       1*:  112:		assert(jstr_re_match(&preg, "abc", 0) == JSTR_RE_RET_NOMATCH);
+       1*:  113:		assert(jstr_re_match(&preg, "", 0) == JSTR_RE_RET_NOMATCH);
+        -:  114:
+        1:  115:		jstr_re_free(&preg);
+        -:  116:	}
+        -:  117:	{
+        -:  118:		jstr_re_ty preg;
+        -:  119:		/* jstr_re_match_len with explicit length. */
+       1*:  120:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "abc", 0)));
+        -:  121:
+       1*:  122:		assert(jstr_re_match_len(&preg, "abc", 3, 0) == JSTR_RE_RET_NOERROR);
+       1*:  123:		assert(jstr_re_match_len(&preg, "abcXXX", 3, 0) == JSTR_RE_RET_NOERROR);
+       1*:  124:		assert(jstr_re_match_len(&preg, "ABC", 3, 0) == JSTR_RE_RET_NOMATCH);
+        -:  125:		/* Shorter than pattern should not match. */
+       1*:  126:		assert(jstr_re_match_len(&preg, "ab", 2, 0) == JSTR_RE_RET_NOMATCH);
+        -:  127:
+        1:  128:		jstr_re_free(&preg);
+        -:  129:	}
+        -:  130:	{
+        -:  131:		jstr_re_ty preg;
+        -:  132:		/* jstr_re_search returns match position. */
+       1*:  133:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "world", 0)));
+        -:  134:
+        -:  135:		regmatch_t rm;
+       1*:  136:		assert(jstr_re_search(&preg, "hello world", &rm, 0) == JSTR_RE_RET_NOERROR);
+       1*:  137:		assert(rm.rm_so == 6);
+       1*:  138:		assert(rm.rm_eo == 11);
+        -:  139:
+        -:  140:		/* No match. */
+       1*:  141:		assert(jstr_re_search(&preg, "hello there", &rm, 0) == JSTR_RE_RET_NOMATCH);
+        -:  142:
+        1:  143:		jstr_re_free(&preg);
+        -:  144:	}
+        -:  145:	{
+        -:  146:		jstr_re_ty preg;
+        -:  147:		/* jstr_re_search with case insensitive flag. */
+       1*:  148:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "hello", JSTR_RE_CF_ICASE)));
+        -:  149:
+        -:  150:		regmatch_t rm;
+       1*:  151:		assert(jstr_re_search(&preg, "say HELLO world", &rm, 0) == JSTR_RE_RET_NOERROR);
+       1*:  152:		assert(rm.rm_so == 4);
+       1*:  153:		assert(rm.rm_eo == 9);
+        -:  154:
+        1:  155:		jstr_re_free(&preg);
+        -:  156:	}
+        -:  157:	{
+        -:  158:		jstr_re_ty preg;
+        -:  159:		/* jstr_re_search_len with explicit length. */
+       1*:  160:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "world", 0)));
+        -:  161:
+        -:  162:		regmatch_t rm;
+       1*:  163:		assert(jstr_re_search_len(&preg, "hello world and more", 11, &rm, 0) == JSTR_RE_RET_NOERROR);
+       1*:  164:		assert(rm.rm_so == 6);
+       1*:  165:		assert(rm.rm_eo == 11);
+        -:  166:		/* Searching beyond length should not find it. */
+       1*:  167:		assert(jstr_re_search_len(&preg, "hello world and more", 10, &rm, 0) == JSTR_RE_RET_NOMATCH);
+        -:  168:
+        1:  169:		jstr_re_free(&preg);
+        -:  170:	}
+        -:  171:	{
+        -:  172:		jstr_re_ty preg;
+        -:  173:		/* Extended regex with jstr_re_exec. */
+       1*:  174:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]+[0-9]+", JSTR_RE_CF_EXTENDED)));
+        -:  175:
+        -:  176:		regmatch_t rm;
+       1*:  177:		assert(jstr_re_exec(&preg, "abc123", 1, &rm, 0) == JSTR_RE_RET_NOERROR);
+       1*:  178:		assert(rm.rm_so == 0);
+       1*:  179:		assert(rm.rm_eo == 6);
+       1*:  180:		assert(jstr_re_exec(&preg, "abc", 1, &rm, 0) == JSTR_RE_RET_NOMATCH);
+        -:  181:
+        1:  182:		jstr_re_free(&preg);
+        -:  183:	}
+        -:  184:	SUCCESS();
+        1:  185:	return 0;
+        -:  186:	(void)argc;
+        -:  187:}

@@ -1,0 +1,51 @@
+        -:    0:Source:tests/test-fuzz-regex-p0.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-regex-p0.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-regex-p0.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for regex functions — patterns 0-7 only. */
+        -:    5:
+        -:    6:#define __STDC_NO_VLA__ 1
+        -:    7:
+        -:    8:#include "test.h"
+        -:    9:#include "../include/regex.h"
+        -:   10:#include "fuzz-regex.h"
+        -:   11:
+        -:   12:static const struct regex_pattern patterns[] = {
+        -:   13:	{ "[0-9]",                               0,                       0 },
+        -:   14:	{ "[0-9]\\{1,\\}",                       0,                       0 },
+        -:   15:	{ "[a-z]\\{1,\\}",                       0,                       0 },
+        -:   16:	{ "[a-zA-Z]",                            0,                       0 },
+        -:   17:	{ ".",                                   0,                       0 },
+        -:   18:	{ ".*",                                  0,                       0 },
+        -:   19:	{ "hello",                               0,                       0 },
+        -:   20:	{ "^hello",                              0,                       0 },
+        -:   21:};
+        -:   22:static const size_t npatterns = sizeof(patterns) / sizeof(patterns[0]);
+        -:   23:
+        -:   24:int
+        1:   25:main(int argc, char **argv)
+        -:   26:{
+        -:   27:	START();
+        1:   28:	unsigned seed = 0;
+        1:   29:	if (argc > 1)
+    #####:   30:		seed = (unsigned)atoi(argv[1]);
+        1:   31:	size_t iter = FITER;
+        -:   32:#ifdef JSTR_TEST_SLOW
+        1:   33:	iter *= 2;
+        -:   34:#else
+        -:   35:	if (iter > 50)
+        -:   36:		iter = 50;
+        -:   37:#endif
+        1:   38:	if (iter < 1)
+    #####:   39:		iter = 1;
+        -:   40:	{
+        1:   41:		srand(seed);
+        -:   42:		TESTING(fuzz_regex_p0);
+        1:   43:		fuzz_regex_patterns(iter, patterns, npatterns);
+        -:   44:	}
+        -:   45:	SUCCESS();
+        1:   46:	return EXIT_SUCCESS;
+        -:   47:}

@@ -1,0 +1,208 @@
+        -:    0:Source:/home/james/.local/src/iakobvs-workspace/jstring/build/include/jstr/internal/musl/ctype.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* This file is part of the jstring library, derived from musl's ctype
+        -:    3: * functions with modifications.
+        -:    4: *
+        -:    5: * musl is licensed under the following standard MIT license:
+        -:    6: *
+        -:    7: * Copyright © 2005-2020 Rich Felker, et al.
+        -:    8: *
+        -:    9: * Permission is hereby granted, free of charge, to any person obtaining
+        -:   10: * a copy of this software and associated documentation files (the
+        -:   11: * "Software"), to deal in the Software without restriction, including
+        -:   12: * without limitation the rights to use, copy, modify, merge, publish,
+        -:   13: * distribute, sublicense, and/or sell copies of the Software, and to
+        -:   14: * permit persons to whom the Software is furnished to do so, subject to
+        -:   15: * the following conditions:
+        -:   16: *
+        -:   17: * The above copyright notice and this permission notice shall be
+        -:   18: * included in all copies or substantial portions of the Software.
+        -:   19: *
+        -:   20: * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        -:   21: * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        -:   22: * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+        -:   23: * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+        -:   24: * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+        -:   25: * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+        -:   26: * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+        -:   27:
+        -:   28:#ifndef JSTR_INTERNAL_MUSL_CTYPE_H
+        -:   29:#	define JSTR_INTERNAL_MUSL_CTYPE_H 1
+        -:   30:
+        -:   31:#	include "../../macros.h"
+        -:   32:
+        -:   33:JSTR_INTERNAL_BEGIN_DECLS
+        -:   34:
+        -:   35:#	define JSTR_INTERNAL_ISALPHA(c)  (((unsigned)c | 32) - 'a' < 26)
+        -:   36:#	define JSTR_INTERNAL_ISDIGIT(c)  ((unsigned)c - '0' < 10)
+        -:   37:#	define JSTR_INTERNAL_ISGRAPH(c)  ((unsigned)c - 0x21 < 0x5e)
+        -:   38:#	define JSTR_INTERNAL_ISASCII(c)  (!(c & ~0x7f))
+        -:   39:#	define JSTR_INTERNAL_ISBLANK(c)  ((c == ' ') | (c == '\t'))
+        -:   40:#	define JSTR_INTERNAL_ISCNTRL(c)  ((unsigned)c < 0x20 || c == 0x7f)
+        -:   41:#	define JSTR_INTERNAL_ISLOWER(c)  ((unsigned)c - 'a' < 26)
+        -:   42:#	define JSTR_INTERNAL_ISUPPER(c)  ((unsigned)c - 'A' < 26)
+        -:   43:#	define JSTR_INTERNAL_ISPRINT(c)  ((unsigned)c - 0x20 < 0x5f)
+        -:   44:#	define JSTR_INTERNAL_ISALNUM(c)  (JSTR_INTERNAL_ISALPHA(c) | JSTR_INTERNAL_ISDIGIT(c))
+        -:   45:#	define JSTR_INTERNAL_ISPUNCT(c)  (JSTR_INTERNAL_ISGRAPH(c) ^ JSTR_INTERNAL_ISALNUM(c))
+        -:   46:#	define JSTR_INTERNAL_ISSPACE(c)  ((c == ' ') | ((unsigned)c - '\t' < 5))
+        -:   47:#	define JSTR_INTERNAL_TOLOWER(c)  (c | (JSTR_INTERNAL_ISUPPER(c) ? 32 : 0))
+        -:   48:#	define JSTR_INTERNAL_TOUPPER(c)  (c & (JSTR_INTERNAL_ISLOWER(c) ? 0x5f : (int)-1))
+        -:   49:#	define JSTR_INTERNAL_ISXDIGIT(c) (JSTR_INTERNAL_ISDIGIT(c) | (((unsigned)c | 32) - 'a' < 6))
+        -:   50:
+        -:   51:JSTR_ATTR_INLINE
+        -:   52:JSTR_ATTR_CONST
+        -:   53:static int
+        -:   54:jstr_isalpha(int c)
+        -:   55:JSTR_NOEXCEPT
+        -:   56:{
+    #####:   57:	return JSTR_INTERNAL_ISALPHA((unsigned char)c);
+        -:   58:}
+        -:   59:
+        -:   60:JSTR_ATTR_INLINE
+        -:   61:JSTR_ATTR_CONST
+        -:   62:static int
+        -:   63:jstr_isdigit(int c)
+        -:   64:JSTR_NOEXCEPT
+        -:   65:{
+        -:   66:	return JSTR_INTERNAL_ISDIGIT((unsigned char)c);
+        -:   67:}
+        -:   68:
+        -:   69:JSTR_ATTR_INLINE
+        -:   70:JSTR_ATTR_CONST
+        -:   71:static int
+        -:   72:jstr_isalnum(int c)
+        -:   73:JSTR_NOEXCEPT
+        -:   74:{
+        -:   75:	return JSTR_INTERNAL_ISALNUM((unsigned char)c);
+        -:   76:}
+        -:   77:
+        -:   78:JSTR_ATTR_INLINE
+        -:   79:JSTR_ATTR_CONST
+        -:   80:static int
+        -:   81:jstr_isascii(int c)
+        -:   82:JSTR_NOEXCEPT
+        -:   83:{
+        -:   84:	return JSTR_INTERNAL_ISASCII((unsigned char)c);
+        -:   85:}
+        -:   86:
+        -:   87:JSTR_ATTR_INLINE
+        -:   88:JSTR_ATTR_CONST
+        -:   89:static int
+        -:   90:jstr_isblank(int c)
+        -:   91:JSTR_NOEXCEPT
+        -:   92:{
+        -:   93:	return JSTR_INTERNAL_ISBLANK((unsigned char)c);
+        -:   94:}
+        -:   95:
+        -:   96:JSTR_ATTR_INLINE
+        -:   97:JSTR_ATTR_CONST
+        -:   98:static int
+        -:   99:jstr_iscntrl(int c)
+        -:  100:JSTR_NOEXCEPT
+        -:  101:{
+        -:  102:	return JSTR_INTERNAL_ISCNTRL((unsigned char)c);
+        -:  103:}
+        -:  104:
+        -:  105:JSTR_ATTR_INLINE
+        -:  106:JSTR_ATTR_CONST
+        -:  107:static int
+        -:  108:jstr_isgraph(int c)
+        -:  109:JSTR_NOEXCEPT
+        -:  110:{
+        -:  111:	return JSTR_INTERNAL_ISGRAPH((unsigned char)c);
+        -:  112:}
+        -:  113:
+        -:  114:JSTR_ATTR_INLINE
+        -:  115:JSTR_ATTR_CONST
+        -:  116:static int
+        -:  117:jstr_islower(int c)
+        -:  118:JSTR_NOEXCEPT
+        -:  119:{
+        -:  120:	return JSTR_INTERNAL_ISLOWER((unsigned char)c);
+        -:  121:}
+        -:  122:
+        -:  123:JSTR_ATTR_INLINE
+        -:  124:JSTR_ATTR_CONST
+        -:  125:static int
+        -:  126:jstr_isupper(int c)
+        -:  127:JSTR_NOEXCEPT
+        -:  128:{
+        -:  129:	return JSTR_INTERNAL_ISUPPER((unsigned char)c);
+        -:  130:}
+        -:  131:
+        -:  132:JSTR_ATTR_INLINE
+        -:  133:JSTR_ATTR_CONST
+        -:  134:static int
+        -:  135:jstr_isprint(int c)
+        -:  136:JSTR_NOEXCEPT
+        -:  137:{
+        -:  138:	return JSTR_INTERNAL_ISPRINT((unsigned char)c);
+        -:  139:}
+        -:  140:
+        -:  141:JSTR_ATTR_INLINE
+        -:  142:JSTR_ATTR_CONST
+        -:  143:static int
+        -:  144:jstr_ispunct(int c)
+        -:  145:JSTR_NOEXCEPT
+        -:  146:{
+        -:  147:	return JSTR_INTERNAL_ISPUNCT((unsigned char)c);
+        -:  148:}
+        -:  149:
+        -:  150:JSTR_ATTR_INLINE
+        -:  151:JSTR_ATTR_CONST
+        -:  152:static int
+        -:  153:jstr_isspace(int c)
+        -:  154:JSTR_NOEXCEPT
+        -:  155:{
+    #####:  156:	return JSTR_INTERNAL_ISSPACE((unsigned char)c);
+        -:  157:}
+        -:  158:
+        -:  159:JSTR_ATTR_INLINE
+        -:  160:JSTR_ATTR_CONST
+        -:  161:static int
+        -:  162:jstr_isxdigit(int c)
+        -:  163:JSTR_NOEXCEPT
+        -:  164:{
+        -:  165:	return JSTR_INTERNAL_ISXDIGIT((unsigned char)c);
+        -:  166:}
+        -:  167:
+        -:  168:JSTR_ATTR_INLINE
+        -:  169:JSTR_ATTR_CONST
+        -:  170:static int
+        -:  171:jstr_tolower(int c)
+        -:  172:JSTR_NOEXCEPT
+        -:  173:{
+    #####:  174:	return JSTR_INTERNAL_TOLOWER((unsigned char)c);
+        -:  175:}
+        -:  176:
+        -:  177:JSTR_ATTR_INLINE
+        -:  178:JSTR_ATTR_CONST
+        -:  179:static int
+        -:  180:jstr_toupper(int c)
+        -:  181:JSTR_NOEXCEPT
+        -:  182:{
+    #####:  183:	return JSTR_INTERNAL_TOUPPER((unsigned char)c);
+        -:  184:}
+        -:  185:
+        -:  186:#	undef JSTR_INTERNAL_ISALPHA
+        -:  187:#	undef JSTR_INTERNAL_ISDIGIT
+        -:  188:#	undef JSTR_INTERNAL_ISGRAPH
+        -:  189:#	undef JSTR_INTERNAL_ISASCII
+        -:  190:#	undef JSTR_INTERNAL_ISBLANK
+        -:  191:#	undef JSTR_INTERNAL_ISCNTRL
+        -:  192:#	undef JSTR_INTERNAL_ISLOWER
+        -:  193:#	undef JSTR_INTERNAL_ISUPPER
+        -:  194:#	undef JSTR_INTERNAL_ISPRINT
+        -:  195:#	undef JSTR_INTERNAL_ISALNUM
+        -:  196:#	undef JSTR_INTERNAL_ISPUNCT
+        -:  197:#	undef JSTR_INTERNAL_ISSPACE
+        -:  198:#	undef JSTR_INTERNAL_TOLOWER
+        -:  199:#	undef JSTR_INTERNAL_TOUPPER
+        -:  200:#	undef JSTR_INTERNAL_ISXDIGIT
+        -:  201:
+        -:  202:JSTR_INTERNAL_END_DECLS
+        -:  203:
+        -:  204:#endif /* JSTR_INTERNAL_MUSL_CTYPE_H */

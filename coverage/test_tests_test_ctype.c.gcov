@@ -1,0 +1,82 @@
+        -:    0:Source:tests/test-ctype.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-ctype.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-ctype.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#include "test.h"
+        -:    5:#include "../include/ctype.h"
+        -:    6:#include <assert.h>
+        -:    7:#include <stdio.h>
+        -:    8:#include <stdlib.h>
+        -:    9:#include <string.h>
+        -:   10:
+        -:   11:#define T(func)                       \
+        -:   12:	for (int i = 0; i < 128; ++i) \
+        -:   13:	ASSERT_ERRFUNC(#func, !jstr_##func(i) == !func(i))
+        -:   14:#define T_STR(func, str, result)                                                                                             \
+        -:   15:	do {                                                                                                                 \
+        -:   16:		size_t expected_len, result_len;                                                                             \
+        -:   17:		*(char *)memcpy(buffer_expected, str, strlen(str)) = '\0';                                                   \
+        -:   18:		*(char *)memcpy(buffer_result, str, strlen(str)) = '\0';                                                     \
+        -:   19:		(void)jstr_##func(buffer_result);                                                                            \
+        -:   20:		(void)simple_##func(buffer_expected);                                                                        \
+        -:   21:		expected_len = strlen(buffer_expected);                                                                      \
+        -:   22:		result_len = strlen(buffer_result);                                                                          \
+        -:   23:		ASSERT_RESULT(#func, !strcmp(buffer_result, buffer_expected), buffer_result, buffer_expected);               \
+        -:   24:		ASSERT_RESULT(#func, result_len == expected_len, buffer_result, buffer_expected);                            \
+        -:   25:		ASSERT_RESULT(#func, !memcmp(buffer_result, buffer_expected, result_len), buffer_expected, buffer_expected); \
+        -:   26:	} while (0)
+        -:   27:#define T_TO(str, result)                         \
+        -:   28:	do {                                      \
+        -:   29:		T_STR(tolowerstr_p, str, result); \
+        -:   30:		T_STR(toupperstr_p, str, result); \
+        -:   31:	} while (0)
+        -:   32:
+        -:   33:static char buffer_result[256];
+        -:   34:static char buffer_expected[256];
+        -:   35:
+        -:   36:static char *
+        4:   37:simple_toupperstr_p(char *s)
+        -:   38:{
+       4*:   39:	for (; *s; ++s)
+    #####:   40:		*s = toupper(*s);
+        4:   41:	return s;
+        -:   42:}
+        -:   43:
+        -:   44:static char *
+        4:   45:simple_tolowerstr_p(char *s)
+        -:   46:{
+       4*:   47:	for (; *s; ++s)
+    #####:   48:		*s = tolower(*s);
+        4:   49:	return s;
+        -:   50:}
+        -:   51:
+        -:   52:int
+        1:   53:main(int argc, char **argv)
+        -:   54:{
+        -:   55:	START();
+     129*:   56:	T(isalpha);
+     129*:   57:	T(islower);
+     129*:   58:	T(isupper);
+     129*:   59:	T(isspace);
+     129*:   60:	T(isblank);
+     129*:   61:	T(isdigit);
+     129*:   62:	T(isxdigit);
+     129*:   63:	T(ispunct);
+     129*:   64:	T(isgraph);
+     129*:   65:	T(isprint);
+     129*:   66:	T(isprint);
+     129*:   67:	T(iscntrl);
+     129*:   68:	T(tolower);
+     129*:   69:	T(toupper);
+       1*:   70:	T_TO("", "");
+       1*:   71:	T_TO(";", ";");
+       1*:   72:	T_STR(toupperstr_p, "a", "A");
+       1*:   73:	T_STR(toupperstr_p, "aA", "AA");
+       1*:   74:	T_STR(tolowerstr_p, "A", "a");
+       1*:   75:	T_STR(tolowerstr_p, "aA", "aa");
+        -:   76:	SUCCESS();
+        1:   77:	return EXIT_SUCCESS;
+        -:   78:}

@@ -8,11 +8,16 @@ cd "$(dirname "$0")" || exit
 # 1. Run setup checks
 ./setup || exit
 
-# 2. Generate headers (same as ./build but skip final syntax check for speed)
+# 2. Generate headers + build shared library
 ./clean
 PATH_BUILD=../build/include/jstr
 PATH_SRC=../include
 PATH_MACROS=$PATH_BUILD/macros.h
+OUTDIR="../build"
+LIBDIR="$OUTDIR/lib"
+SRCDIR="$OUTDIR/src"
+INCDIR="$OUTDIR/include"
+OBJDIR="$OUTDIR/obj"
 CFLAGS="-O2 -flto -fanalyzer -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
 
 has_prog() { type "$1" >/dev/null 2>/dev/null; }
@@ -43,13 +48,6 @@ update() {
 	esac
 }
 
-OUTDIR="../build"
-LIBDIR="$OUTDIR/lib"
-SRCDIR="$OUTDIR/src"
-INCDIR="$OUTDIR/include"
-OBJDIR="$OUTDIR/obj"
-
-rm -rf "$OUTDIR"
 mkdir -p "$LIBDIR" "$SRCDIR" "$INCDIR" "$OBJDIR"
 mkdir -p $PATH_BUILD $PATH_BUILD/internal $PATH_BUILD/internal/musl
 

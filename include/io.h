@@ -692,7 +692,7 @@ jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R 
 #			define JSTR_DIRENT_D_EXACT_NAMLEN(d) _D_EXACT_NAMLEN(d)
 #		endif
 #		ifndef _D_ALLOC_NAMLEN
-#			define JSTR_DIRENT_D_ALLOC_NAMLEN(c) _D_ALLOC_NAMLEN(d)
+#			define JSTR_DIRENT_D_ALLOC_NAMLEN(d) _D_ALLOC_NAMLEN(d)
 #		else
 #			ifdef _DIRENT_HAVE_D_RECLEN
 #				define JSTR_DIRENT_D_ALLOC_NAMLEN(d) \
@@ -923,6 +923,9 @@ jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_
 	(void)dirfd;
 	DIR *dp = OPENDIR(dirfd, a->ftw.dirpath);
 	if (jstr_nullchk(dp)) {
+#	if USE_ATFILE
+		close(dirfd);
+#	endif
 		if (NONFATAL_ERR()) {
 			if (FLAG(JSTR_IO_FTW_REG))
 				if (!FLAG(JSTR_IO_FTW_DIR))
@@ -1082,8 +1085,6 @@ skip_fn:
 		(void)filefd;
 		OPENAT(filefd, dirfd, a->ftw.ep->d_name, O_RDONLY | JSTR_INTERNAL_IO_O_DIRECTORY, goto next_entry);
 		tmp = jstr_internal_io_ftw_len(a, a->ftw.dirpath_len, filefd);
-		/* Close when we have *_at functions. */
-		CLOSE(filefd, closedir(dp); JSTR_RETURN_ERR(JSTR_RET_ERR));
 		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
 			if (jstr_unlikely(tmp == JSTR_IO_FTW_RET_STOP)) {
 				closedir(dp);
@@ -1163,11 +1164,13 @@ jstr_io_ftw_len(const char *R dirpath, jstr_io_path_size_ty dirpath_len, jstr_io
 	}
 	data.ftw.dirpath_len = dirpath_len;
 #		if USE_ATFILE
-	if (jstr_unlikely(fstat(dirfd, &st)))
-		goto func;
+	if (jstr_unlikely(fstat(dirfd, &st))) {
+		CLOSE(dirfd, );
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 #		else
 	if (jstr_unlikely(stat(fulpath, &st)))
-		goto func;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 #		endif
 	/* If DIRPATH is a directory, call FUNC on directory when needed and
 	 * call ftw. */
@@ -1196,10 +1199,8 @@ file:;
 		data.ftw_flags = jstr_io_ftw_flags;
 		data.func_match_args = func_match_args;
 		tmp = jstr_internal_io_ftw_len(&data, dirpath_len, dirfd);
-		CLOSE(dirfd, JSTR_RETURN_ERR(JSTR_RET_ERR));
 		return tmp;
 	}
-func:;
 	/* DIRPATH is not a directory. */
 	CLOSE(dirfd, JSTR_RETURN_ERR(JSTR_RET_ERR));
 	if (FLAG(JSTR_IO_FTW_REG))

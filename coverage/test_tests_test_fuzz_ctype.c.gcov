@@ -1,0 +1,150 @@
+        -:    0:Source:tests/test-fuzz-ctype.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-ctype.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-ctype.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for ctype functions: isalpha, islower, isupper, isspace,
+        -:    5: * isblank, isdigit, isxdigit, ispunct, isgraph, isprint, iscntrl,
+        -:    6: * tolower, toupper. */
+        -:    7:
+        -:    8:#define __STDC_NO_VLA__ 1
+        -:    9:
+        -:   10:#include "test.h"
+        -:   11:#include "../include/ctype.h"
+        -:   12:#include "fuzz-shared.h"
+        -:   13:
+        -:   14:JSTR_ATTR_MAYBE_UNUSED
+        -:   15:static void
+        1:   16:fuzz_ctype(size_t iter)
+        -:   17:{
+        -:   18:	char h[FSTR];
+     2561:   19:	for (size_t i = 0; i < iter; ++i) {
+     2560:   20:		enum gen_mode mode = (enum gen_mode)(rand() % 4);
+     2560:   21:		size_t hl = gen_str(h, FSTR - 1, mode);
+     2560:   22:		if (hl == 0)
+        9:   23:			continue;
+        -:   24:
+        -:   25:		/* Test character classification functions on each character */
+   324573:   26:		for (size_t j = 0; j < hl; ++j) {
+   322022:   27:			unsigned char c = (unsigned char)h[j];
+        -:   28:
+        -:   29:			/* isalpha: alphabetic character */
+   322022:   30:			int ref_isalpha = isalpha(c) != 0;
+   322022:   31:			int got_isalpha = jstr_isalpha(c) != 0;
+  322022*:   32:			assert(ref_isalpha == got_isalpha);
+        -:   33:
+        -:   34:			/* islower: lowercase character */
+   322022:   35:			int ref_islower = islower(c) != 0;
+   322022:   36:			int got_islower = jstr_islower(c) != 0;
+  322022*:   37:			assert(ref_islower == got_islower);
+        -:   38:
+        -:   39:			/* isupper: uppercase character */
+   322022:   40:			int ref_isupper = isupper(c) != 0;
+   322022:   41:			int got_isupper = jstr_isupper(c) != 0;
+  322022*:   42:			assert(ref_isupper == got_isupper);
+        -:   43:
+        -:   44:			/* isspace: whitespace character */
+   322022:   45:			int ref_isspace = isspace(c) != 0;
+   322022:   46:			int got_isspace = jstr_isspace(c) != 0;
+  322022*:   47:			assert(ref_isspace == got_isspace);
+        -:   48:
+        -:   49:			/* isblank: blank character (space or tab) */
+   322022:   50:			int ref_isblank = isblank(c) != 0;
+   322022:   51:			int got_isblank = jstr_isblank(c) != 0;
+  322022*:   52:			assert(ref_isblank == got_isblank);
+        -:   53:
+        -:   54:			/* isdigit: decimal digit */
+   322022:   55:			int ref_isdigit = isdigit(c) != 0;
+   322022:   56:			int got_isdigit = jstr_isdigit(c) != 0;
+  322022*:   57:			assert(ref_isdigit == got_isdigit);
+        -:   58:
+        -:   59:			/* isxdigit: hexadecimal digit */
+   322022:   60:			int ref_isxdigit = isxdigit(c) != 0;
+   322022:   61:			int got_isxdigit = jstr_isxdigit(c) != 0;
+  322022*:   62:			assert(ref_isxdigit == got_isxdigit);
+        -:   63:
+        -:   64:			/* ispunct: punctuation character */
+   322022:   65:			int ref_ispunct = ispunct(c) != 0;
+   322022:   66:			int got_ispunct = jstr_ispunct(c) != 0;
+  322022*:   67:			assert(ref_ispunct == got_ispunct);
+        -:   68:
+        -:   69:			/* isgraph: graphic character (printable and not space) */
+   322022:   70:			int ref_isgraph = isgraph(c) != 0;
+   322022:   71:			int got_isgraph = jstr_isgraph(c) != 0;
+  322022*:   72:			assert(ref_isgraph == got_isgraph);
+        -:   73:
+        -:   74:			/* isprint: printable character (including space) */
+   322022:   75:			int ref_isprint = isprint(c) != 0;
+   322022:   76:			int got_isprint = jstr_isprint(c) != 0;
+  322022*:   77:			assert(ref_isprint == got_isprint);
+        -:   78:
+        -:   79:			/* iscntrl: control character */
+   322022:   80:			int ref_iscntrl = iscntrl(c) != 0;
+   322022:   81:			int got_iscntrl = jstr_iscntrl(c) != 0;
+  322022*:   82:			assert(ref_iscntrl == got_iscntrl);
+        -:   83:
+        -:   84:			/* tolower */
+   322022:   85:			unsigned char ref_tolower = tolower(c);
+   322022:   86:			unsigned char got_tolower = jstr_tolower(c);
+  322022*:   87:			assert(ref_tolower == got_tolower);
+        -:   88:
+        -:   89:			/* toupper */
+   322022:   90:			unsigned char ref_toupper = toupper(c);
+   322022:   91:			unsigned char got_toupper = jstr_toupper(c);
+  322022*:   92:			assert(ref_toupper == got_toupper);
+        -:   93:		}
+        -:   94:	}
+        1:   95:}
+        -:   96:
+        -:   97:#ifndef FUZZ_LIBFUZZER
+        -:   98:
+        -:   99:int
+        1:  100:main(int argc, char **argv)
+        -:  101:{
+        -:  102:	START();
+        1:  103:	unsigned seed = 0;
+        1:  104:	if (argc > 1)
+    #####:  105:		seed = (unsigned)atoi(argv[1]);
+        1:  106:	size_t iter = FITER;
+        -:  107:#ifdef JSTR_TEST_SLOW
+        1:  108:	iter *= 10;
+        -:  109:#else
+        -:  110:	if (iter > 500)
+        -:  111:		iter = 500;
+        -:  112:#endif
+        1:  113:	if (iter < 1)
+    #####:  114:		iter = 1;
+        -:  115:#ifdef FUZZ_AFL
+        -:  116:	while (__AFL_LOOP(10000))
+        -:  117:#endif
+        -:  118:	{
+        1:  119:		srand(seed);
+        -:  120:		TESTING(fuzz_ctype);
+        1:  121:		fuzz_ctype(iter);
+        -:  122:	}
+        -:  123:	SUCCESS();
+        1:  124:	return EXIT_SUCCESS;
+        -:  125:}
+        -:  126:
+        -:  127:#else
+        -:  128:
+        -:  129:int
+        -:  130:LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
+        -:  131:{
+        -:  132:	if (size < 4)
+        -:  133:		return 0;
+        -:  134:	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
+        -:  135:	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+        -:  136:	srand(seed);
+        -:  137:	data += 4;
+        -:  138:	size -= 4;
+        -:  139:	size_t iter = size > 0 ? size : 10;
+        -:  140:	if (iter > 100)
+        -:  141:		iter = 100;
+        -:  142:	fuzz_ctype(iter);
+        -:  143:	return 0;
+        -:  144:}
+        -:  145:
+        -:  146:#endif

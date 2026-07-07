@@ -1,0 +1,169 @@
+        -:    0:Source:tests/test-fuzz-io.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-io.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-io.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for I/O helper functions: binary detection,
+        -:    5: * path manipulation, tilde expansion. */
+        -:    6:
+        -:    7:#define __STDC_NO_VLA__ 1
+        -:    8:
+        -:    9:#include "test.h"
+        -:   10:#include "../include/io.h"
+        -:   11:#include "fuzz-shared.h"
+        -:   12:
+        -:   13:JSTR_ATTR_MAYBE_UNUSED
+        -:   14:static void
+        1:   15:fuzz_io(size_t iter)
+        -:   16:{
+        -:   17:	char h[FSTR];
+      513:   18:	for (size_t i = 0; i < iter; ++i) {
+      512:   19:		enum gen_mode hmode = (enum gen_mode)(rand() % 4);
+      512:   20:		size_t hl = gen_str(h, FSTR - 1, hmode);
+        -:   21:
+        -:   22:		/* --- jstr_isbinary / jstr_io_isbinary_maybe --- */
+        -:   23:		/* jstr_isbinary: first N bytes checked for control chars */
+    63789:   24:		for (size_t n = 0; n <= hl + 2; ++n) {
+    63277:   25:			int r = jstr_isbinary(h, hl, n);
+    63277:   26:			if (n == 0 || hl == 0) {
+     514*:   27:				assert(r == 0);
+        -:   28:			} else {
+    62763:   29:				size_t check = JSTR_MIN(n, hl);
+    62763:   30:		int found = 0;
+  5279604:   31:		for (size_t j = 0; j < check; ++j) {
+ 5216841*:   32:			if (((unsigned char)h[j] < ' ' && h[j] != '\t' && h[j] != '\n') || (unsigned char)h[j] == 127)
+    #####:   33:				found = 1;
+        -:   34:		}
+   62763*:   35:				assert(r == found);
+        -:   36:			}
+        -:   37:		}
+        -:   38:
+        -:   39:		/* --- jstr_io_isbinary_maybe --- */
+      512:   40:		int mb = jstr_io_isbinary_maybe(h, hl);
+      512:   41:		if (hl == 0)
+       1*:   42:			assert(mb == 0);
+     511*:   43:		else if (hl >= 4 && (unsigned char)h[0] == 0x7 && h[1] == 'E' && h[2] == 'L' && h[3] == 'F')
+    #####:   44:			assert(mb == 0);
+     511*:   45:		else if (hl >= 3 && (unsigned char)h[0] == 0xEF && (unsigned char)h[1] == 0xBB && (unsigned char)h[2] == 0xBF)
+    #####:   46:			assert(mb == 1);
+        -:   47:		/* otherwise, result depends on first 64 bytes for control chars */
+        -:   48:
+        -:   49:		/* --- jstr_io_isbinary --- */
+        -:   50:		/* Checks signature + NUL detection (strlen != sz) */
+      512:   51:		int ib = jstr_io_isbinary(h, hl);
+     512*:   52:		if (hl >= 4 && (unsigned char)h[0] == 0x7 && h[1] == 'E' && h[2] == 'L' && h[3] == 'F')
+    #####:   53:			assert(ib == 0);
+     512*:   54:		else if (hl >= 3 && (unsigned char)h[0] == 0xEF && (unsigned char)h[1] == 0xBB && (unsigned char)h[2] == 0xBF)
+    #####:   55:			assert(ib == 1);
+        -:   56:		else {
+        -:   57:			/* embedded NUL -> binary */
+      512:   58:			int has_nul = 0;
+    62253:   59:			for (size_t j = 0; j < hl; ++j)
+    61741:   60:				if (h[j] == '\0')
+    #####:   61:					has_nul = 1;
+     512*:   62:			assert(ib == has_nul);
+        -:   63:		}
+        -:   64:
+        -:   65:		/* --- jstr_io_appendpath_len_p / jstr_io_appendpath_p --- */
+      512:   66:		if (hl > 0) {
+        -:   67:			char buf[FSTR + JSTR_IO_NAME_MAX + 2];
+      511:   68:			memcpy(buf, h, hl);
+      511:   69:			buf[hl] = '\0';
+        -:   70:			/* These functions require path to NOT end with '/' */
+      511:   71:			size_t path_end = hl;
+      515:   72:			while (path_end > 0 && buf[path_end - 1] == '/')
+        4:   73:				--path_end;
+      511:   74:			if (path_end > 0 && hl < FSTR - 2) {
+        -:   75:				/* _len variant */
+      508:   76:				const char *fname = "testfile";
+      508:   77:				size_t flen = 8;
+      508:   78:				char *end = jstr_io_appendpath_len_p(buf, path_end, fname, flen);
+     508*:   79:				assert(end >= buf);
+     508*:   80:				assert(*end == '\0');
+     508*:   81:				assert(buf[path_end] == '/');
+     508*:   82:				assert(memcmp(buf + path_end + 1, fname, flen) == 0);
+        -:   83:				/* Restore for _p variant */
+      508:   84:				memcpy(buf, h, hl);
+      508:   85:				buf[hl] = '\0';
+        -:   86:				/* _p variant */
+      508:   87:				end = jstr_io_appendpath_p(buf, path_end, fname);
+     508*:   88:				assert(end >= buf);
+     508*:   89:				assert(*end == '\0');
+     508*:   90:				assert(buf[path_end] == '/');
+     508*:   91:				assert(strcmp(buf + path_end + 1, fname) == 0);
+        -:   92:			}
+        -:   93:		}
+        -:   94:
+        -:   95:		/* --- jstr_io_appendpath_len (safe) --- */
+      512:   96:		char *s = NULL;
+      512:   97:		size_t sz = 0, cap = 0;
+      512:   98:		if (hl > 0 && hl < FSTR - 2) {
+        -:   99:			/* set up */
+      508:  100:			int ret = jstr_assign_len(&s, &sz, &cap, h, hl);
+     508*:  101:			assert(ret == JSTR_RET_SUCC);
+        -:  102:			/* append path */
+      508:  103:			const char *fname = "subdir";
+      508:  104:			size_t flen = 6;
+      508:  105:			ret = jstr_io_appendpath_len(&s, &sz, &cap, fname, flen);
+     508*:  106:			assert(ret == JSTR_RET_SUCC);
+     508*:  107:			assert(sz == hl + 1 + flen);
+     508*:  108:			assert(s[hl] == '/');
+     508*:  109:			assert(memcmp(s + hl + 1, fname, flen) == 0);
+     508*:  110:			assert(s[sz] == '\0');
+        -:  111:		}
+      512:  112:		jstr_free(&s, &sz, &cap);
+        -:  113:	}
+        1:  114:}
+        -:  115:
+        -:  116:#ifndef FUZZ_LIBFUZZER
+        -:  117:
+        -:  118:int
+        1:  119:main(int argc, char **argv)
+        -:  120:{
+        -:  121:	START();
+        1:  122:	unsigned seed = 0;
+        1:  123:	if (argc > 1)
+    #####:  124:		seed = (unsigned)atoi(argv[1]);
+        1:  125:	size_t iter = FITER;
+        -:  126:#ifdef JSTR_TEST_SLOW
+        1:  127:	iter *= 2;
+        -:  128:#else
+        -:  129:	if (iter > 50)
+        -:  130:		iter = 50;
+        -:  131:#endif
+        1:  132:	if (iter < 1)
+    #####:  133:		iter = 1;
+        -:  134:#ifdef FUZZ_AFL
+        -:  135:	while (__AFL_LOOP(10000))
+        -:  136:#endif
+        -:  137:	{
+        1:  138:		srand(seed);
+        -:  139:		TESTING(fuzz_io);
+        1:  140:		fuzz_io(iter);
+        -:  141:	}
+        -:  142:	SUCCESS();
+        1:  143:	return EXIT_SUCCESS;
+        -:  144:}
+        -:  145:
+        -:  146:#else
+        -:  147:
+        -:  148:int
+        -:  149:LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
+        -:  150:{
+        -:  151:	if (size < 4)
+        -:  152:		return 0;
+        -:  153:	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
+        -:  154:	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+        -:  155:	srand(seed);
+        -:  156:	data += 4;
+        -:  157:	size -= 4;
+        -:  158:	size_t iter = size > 0 ? size : 10;
+        -:  159:	if (iter > 100)
+        -:  160:		iter = 100;
+        -:  161:	fuzz_io(iter);
+        -:  162:	return 0;
+        -:  163:}
+        -:  164:
+        -:  165:#endif

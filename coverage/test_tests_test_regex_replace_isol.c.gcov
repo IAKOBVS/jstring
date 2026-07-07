@@ -1,0 +1,57 @@
+        -:    0:Source:tests/test-regex-replace-isol.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-regex-replace-isol.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-regex-replace-isol.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:#define __STDC_NO_VLA__ 1
+        -:    3:#include "test.h"
+        -:    4:#include "../include/regex.h"
+        -:    5:
+        -:    6:#define T_ASSERT_BREF(func, result, expected)                                                                            \
+        -:    7:	do {                                                                                                           \
+        -:    8:		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                       \
+        -:    9:		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected);     \
+        -:   10:	} while (0)
+        -:   11:
+        -:   12:int
+        1:   13:main(int argc, char **argv)
+        -:   14:{
+        -:   15:	START();
+        1:   16:	jstr_ty result = JSTR_INIT;
+        -:   17:
+        -:   18:	/* colou?r ERE on "color colour" — rplcall */
+        -:   19:	{
+        -:   20:		jstr_re_ty preg;
+       1*:   21:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "colou?r", JSTR_RE_CF_EXTENDED)));
+       1*:   22:		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result), "color colour", 12)));
+        1:   23:		jstr_re_off_ty ret = jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "X", 1, 0);
+       1*:   24:		assert(ret == 2);
+       1*:   25:		T_ASSERT_BREF(jstr_re_rplcall_len_exec, result, "X X");
+        1:   26:		jstr_re_free(&preg);
+        -:   27:	}
+        -:   28:	/* colou?r — single replace from start_idx (first match only). */
+        -:   29:	{
+        -:   30:		jstr_re_ty preg;
+       1*:   31:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "colou?r", JSTR_RE_CF_EXTENDED)));
+       1*:   32:		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result), "color colour", 12)));
+        1:   33:		jstr_re_off_ty ret = jstr_re_rplc_len_exec(&preg, jstr_struct(&result), "X", 1, 0);
+       1*:   34:		assert(ret == 1);
+       1*:   35:		T_ASSERT_BREF(jstr_re_rplc_len_exec, result, "X colour");
+        1:   36:		jstr_re_free(&preg);
+        -:   37:	}
+        -:   38:	/* colou?r — _from_exec skipping the first match. */
+        -:   39:	{
+        -:   40:		jstr_re_ty preg;
+       1*:   41:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "colou?r", JSTR_RE_CF_EXTENDED)));
+       1*:   42:		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result), "color colour", 12)));
+        1:   43:		jstr_re_off_ty ret = jstr_re_rplc_len_from_exec(&preg, jstr_struct(&result), 6, "X", 1, 0);
+       1*:   44:		assert(ret == 1);
+       1*:   45:		T_ASSERT_BREF(jstr_re_rplc_len_from_exec, result, "color X");
+        1:   46:		jstr_re_free(&preg);
+        -:   47:	}
+        1:   48:	jstr_free_j(&result);
+        -:   49:	SUCCESS();
+        1:   50:	return 0;
+        -:   51:	(void)argc;
+        -:   52:#undef T_ASSERT_BREF
+        -:   53:}

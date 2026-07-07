@@ -1,0 +1,195 @@
+        -:    0:Source:tests/test-strchr.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-strchr.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-strchr.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* This file is part of the jstring library, and a modified version
+        -:    3: * of functional/strchr.c taken from musl's libc-test
+        -:    4: *
+        -:    5: * libc-test is licensed under the following standard MIT license:
+        -:    6: *
+        -:    7: * Copyright © 2005-2013 libc-test AUTHORS
+        -:    8: *
+        -:    9: * Permission is hereby granted, free of charge, to any person obtaining
+        -:   10: * a copy of this software and associated documentation files (the
+        -:   11: * "Software"), to deal in the Software without restriction, including
+        -:   12: * without limitation the rights to use, copy, modify, merge, publish,
+        -:   13: * distribute, sublicense, and/or sell copies of the Software, and to
+        -:   14: * permit persons to whom the Software is furnished to do so, subject to
+        -:   15: * the following conditions:
+        -:   16: *
+        -:   17: * The above copyright notice and this permission notice shall be
+        -:   18: * included in all copies or substantial portions of the Software.
+        -:   19: *
+        -:   20: * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        -:   21: * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        -:   22: * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+        -:   23: * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+        -:   24: * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+        -:   25: * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+        -:   26: * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+        -:   27:
+        -:   28:#include "test.h"
+        -:   29:#include "../include/jstr.h"
+        -:   30:
+        -:   31:static JSTR_ATTR_MAYBE_UNUSED char buf[512];
+        -:   32:
+        -:   33:static JSTR_ATTR_MAYBE_UNUSED void *
+      528:   34:aligned(void *p)
+        -:   35:{
+      528:   36:	return (void *)(((uintptr_t)p + 63) & (unsigned long)-64);
+        -:   37:}
+        -:   38:
+        -:   39:static JSTR_ATTR_MAYBE_UNUSED void *
+      528:   40:aligncpy(const void *p, size_t len, size_t a)
+        -:   41:{
+      528:   42:	return memcpy((char *)aligned(buf) + a, p, len);
+        -:   43:}
+        -:   44:
+        -:   45:#define T(res, exp, ...)                                     \
+        -:   46:	do {                                                 \
+        -:   47:		t.result = (const char *)res(__VA_ARGS__);   \
+        -:   48:		t.expected = (const char *)exp(__VA_ARGS__); \
+        -:   49:		T_DEBUG(#res, t.result == t.expected);       \
+        -:   50:	} while (0)
+        -:   51:
+        -:   52:#define T_size(res, exp, ...)                              \
+        -:   53:	do {                                               \
+        -:   54:		t.result_n = res(__VA_ARGS__);             \
+        -:   55:		t.expected_n = exp(__VA_ARGS__);           \
+        -:   56:		T_DEBUG(#res, t.result_n == t.expected_n); \
+        -:   57:	} while (0)
+        -:   58:
+        -:   59:
+        -:   60:void
+       47:   61:T_ALL(const char *s, int c)
+        -:   62:{
+        -:   63:	size_t align;
+      423:   64:	for (align = 0; align < 8; align++) {
+      376:   65:		const char *p = (const char *)aligncpy(s, strlen(s), (size_t)align);
+      376:   66:		t_init();
+      376:   67:		t.hs = p;
+      376:   68:		t.n = strlen(p);
+     376*:   69:		T(jstr_strncasechr, simple_strncasechr, p, c, t.n);
+     376*:   70:		T(jstr_strnchr, simple_strnchr, p, c, t.n);
+     376*:   71:		T(jstr_memrchr, simple_memrchr, p, c, t.n);
+     376*:   72:		T(jstr_memcasechr, simple_memcasechr, p, c, t.n);
+     376*:   73:		T(jstr_strchrnul, simple_strchrnul, p, c);
+     376*:   74:		T(jstr_strcasechr, simple_strcasechr, p, c);
+     376*:   75:		T(jstr_strcasechrnul, simple_strcasechrnul, p, c);
+     376*:   76:		T_size(jstr_countchr, simple_countchr, p, c);
+     376*:   77:		T_size(jstr_countchr_len, simple_countchr_len, p, c, t.n);
+        -:   78:	}
+       47:   79:}
+        -:   80:
+        -:   81:
+        -:   82:void
+       19:   83:T_ALL_SPN(const char *s, const char *a)
+        -:   84:{
+        -:   85:	size_t align;
+      171:   86:	for (align = 0; align < 8; align++) {
+      152:   87:		const char *p = (const char *)aligncpy(s, strlen(s), (size_t)align);
+      152:   88:		t_init();
+      152:   89:		t.hs = p;
+      152:   90:		t.n = strlen(p);
+     152*:   91:		T_size(jstr_strrspn_len, simple_memrspn, p, a, t.n);
+     152*:   92:		T_size(jstr_strrcspn_len, simple_memrcspn, p, a, t.n);
+        -:   93:	}
+       19:   94:}
+        -:   95:
+        -:   96:int
+        1:   97:main(int argc, char **argv)
+        -:   98:{
+        -:   99:	START();
+        -:  100:	int i;
+        -:  101:	char a[128];
+        -:  102:	char s[256];
+        -:  103:
+      129:  104:	for (i = 0; i < 128; i++)
+      128:  105:		a[i] = (i + 1) & 127;
+      257:  106:	for (i = 0; i < 256; i++)
+      256:  107:		*((unsigned char *)s + i) = i + 1;
+        -:  108:
+        1:  109:	T_ALL("\0aaa", 'a');
+        1:  110:	T_ALL("a\0bb", 'b');
+        1:  111:	T_ALL("ab\0c", 'c');
+        1:  112:	T_ALL("abc\0d", 'd');
+        1:  113:	T_ALL("abc abc\0x", 'x');
+        -:  114:
+        1:  115:	T_ALL("\0aaa", 'b');
+        1:  116:	T_ALL("a\0bb", 'c');
+        1:  117:	T_ALL("ab\0c", 'c');
+        1:  118:	T_ALL("abc\0d", '\0');
+        1:  119:	T_ALL("abc abc\0x", 'x');
+        -:  120:
+        1:  121:	T_ALL("\0AAA", 'A');
+        1:  122:	T_ALL("A\0bb", 'b');
+        1:  123:	T_ALL("Ab\0c", 'c');
+        1:  124:	T_ALL("Abc\0d", 'd');
+        1:  125:	T_ALL("Abc Abc\0x", 'x');
+        -:  126:
+        1:  127:	T_ALL(a, 128);
+        1:  128:	T_ALL(a, 255);
+        -:  129:
+        1:  130:	T_ALL("", 0);
+        1:  131:	T_ALL("a", 'a');
+        1:  132:	T_ALL("a", 'a' + 256);
+        1:  133:	T_ALL("a", 0);
+        1:  134:	T_ALL("abb", 'b');
+        1:  135:	T_ALL("aabb", 'b');
+        1:  136:	T_ALL("aaabb", 'b');
+        1:  137:	T_ALL("aaaabb", 'b');
+        1:  138:	T_ALL("aaaaabb", 'b');
+        1:  139:	T_ALL("aaaaaabb", 'b');
+        1:  140:	T_ALL("abc abc", 'c');
+        -:  141:
+        1:  142:	T_ALL("", 0);
+        1:  143:	T_ALL("A", 'A');
+        1:  144:	T_ALL("A", 'A' + 256);
+        1:  145:	T_ALL("A", 0);
+        1:  146:	T_ALL("Abb", 'b');
+        1:  147:	T_ALL("AAbb", 'b');
+        1:  148:	T_ALL("AAAbb", 'b');
+        1:  149:	T_ALL("AAAAbb", 'b');
+        1:  150:	T_ALL("AAAAAbb", 'b');
+        1:  151:	T_ALL("AAAAAAbb", 'b');
+        1:  152:	T_ALL("Abc Abc", 'c');
+        -:  153:
+        1:  154:	T_ALL(s, 1);
+        1:  155:	T_ALL(s, 2);
+        1:  156:	T_ALL(s, 10);
+        1:  157:	T_ALL(s, 11);
+        1:  158:	T_ALL(s, 127);
+        1:  159:	T_ALL(s, 128);
+        1:  160:	T_ALL(s, 255);
+        1:  161:	T_ALL(s, 0);
+        -:  162:
+        1:  163:	T_ALL_SPN("hello", "h");
+        1:  164:	T_ALL_SPN("hello", "he");
+        1:  165:	T_ALL_SPN("hello", "hel");
+        1:  166:	T_ALL_SPN("hello", "hell");
+        1:  167:	T_ALL_SPN("hello", "hello");
+        -:  168:
+        1:  169:	T_ALL_SPN("hello", "e");
+        1:  170:	T_ALL_SPN("hello", "el");
+        1:  171:	T_ALL_SPN("hello", "ell");
+        1:  172:	T_ALL_SPN("hello", "ello");
+        -:  173:
+        1:  174:	T_ALL_SPN("hello", "l");
+        1:  175:	T_ALL_SPN("hello", "ll");
+        1:  176:	T_ALL_SPN("hello", "llo");
+        -:  177:
+        1:  178:	T_ALL_SPN("hello", "l");
+        1:  179:	T_ALL_SPN("hello", "ll");
+        1:  180:	T_ALL_SPN("hello", "llo");
+        -:  181:
+        1:  182:	T_ALL_SPN("hello", "l");
+        1:  183:	T_ALL_SPN("hello", "lo");
+        -:  184:
+        1:  185:	T_ALL_SPN("hello", "o");
+        -:  186:
+        1:  187:	T_ALL_SPN("hello", "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        -:  188:
+        -:  189:	SUCCESS();
+        1:  190:	return EXIT_SUCCESS;
+        -:  191:}

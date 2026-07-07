@@ -1,0 +1,311 @@
+        -:    0:Source:tests/simple.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#ifndef SIMPLE_H
+        -:    5:#define SIMPLE_H
+        -:    6:
+        -:    7:#define JSTR_BUILT
+        -:    8:#include "../include/string.h"
+        -:    9:#include "../include/stdstring.h"
+        -:   10:
+        -:   11:JSTR_ATTR_MAYBE_UNUSED
+        -:   12:JSTR_ATTR_INLINE
+        -:   13:static int
+        -:   14:TOLOWER(int c)
+        -:   15:{
+    #####:   16:	c = (char)c;
+    #####:   17:	return (unsigned char)((c >= 'A' && c <= 'Z') ? (c - 'A' + 'a') : c);
+        -:   18:}
+        -:   19:
+        -:   20:JSTR_ATTR_MAYBE_UNUSED
+        -:   21:JSTR_ATTR_INLINE
+        -:   22:static int
+        -:   23:TOUPPER(int c)
+        -:   24:{
+        -:   25:	c = (char)c;
+        -:   26:	return (unsigned char)((c >= 'a' && c <= 'z') ? (c - 'a' + 'A') : c);
+        -:   27:}
+        -:   28:
+        -:   29:JSTR_ATTR_MAYBE_UNUSED
+        -:   30:static char *
+    #####:   31:simple_strrstr_len(const char *h, size_t hl, const char *n, size_t nl)
+        -:   32:{
+    #####:   33:	if (nl == 0)
+    #####:   34:		return (char *)h + hl;
+    #####:   35:	if (hl < nl)
+    #####:   36:		return NULL;
+    #####:   37:	const char *p = h + hl - nl;
+    #####:   38:	hl -= (nl - 1);
+    #####:   39:	for (; hl--; --p)
+    #####:   40:		if (*p == *n && !memcmp(p, n, nl))
+    #####:   41:			return (char *)p;
+    #####:   42:	return NULL;
+        -:   43:}
+        -:   44:
+        -:   45:JSTR_ATTR_MAYBE_UNUSED
+        -:   46:static char *
+    #####:   47:simple_strrstr(const char *h, const char *n)
+        -:   48:{
+        -:   49:#if JSTR_HAVE_STRSTR && !JSTR_USE_SIMPLE
+        -:   50:	return strstr(h, n);
+        -:   51:#else
+    #####:   52:	return simple_strrstr_len(h, strlen(h), n, strlen(n));
+        -:   53:#endif
+        -:   54:}
+        -:   55:
+        -:   56:JSTR_ATTR_MAYBE_UNUSED
+        -:   57:static char *
+    #####:   58:simple_memmem(const void *hs, const size_t hl, const void *ne, const size_t nl)
+        -:   59:{
+        -:   60:#if JSTR_HAVE_MEMMEM && !JSTR_USE_SIMPLE
+        -:   61:	return (char *)memmem(hs, hl, ne, nl);
+        -:   62:#else
+    #####:   63:	const unsigned char *h = (const unsigned char *)hs;
+    #####:   64:	const unsigned char *n = (const unsigned char *)ne;
+    #####:   65:	if (nl == 0)
+    #####:   66:		return (char *)h;
+    #####:   67:	if (hl < nl)
+    #####:   68:		return NULL;
+    #####:   69:	const unsigned char *const end = h + hl - nl;
+    #####:   70:	for (; h <= end; ++h)
+    #####:   71:		if (*h == *n && !memcmp(h, n, nl))
+    #####:   72:			return (char *)h;
+    #####:   73:	return NULL;
+        -:   74:#endif
+        -:   75:}
+        -:   76:
+        -:   77:JSTR_ATTR_MAYBE_UNUSED
+        -:   78:static char *
+    #####:   79:simple_strnstr(const char *hs, const char *ne, size_t n)
+        -:   80:{
+    #####:   81:	return (char *)simple_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
+        -:   82:}
+        -:   83:
+        -:   84:JSTR_ATTR_MAYBE_UNUSED
+        -:   85:static char *
+    #####:   86:simple_strstr(const char *h, const char *n)
+        -:   87:{
+        -:   88:#if JSTR_HAVE_STRSTR && !JSTR_USE_SIMPLE
+        -:   89:	return strstr(h, n);
+        -:   90:#else
+    #####:   91:	return simple_memmem(h, strlen(h), n, strlen(n));
+        -:   92:#endif
+        -:   93:}
+        -:   94:
+        -:   95:JSTR_ATTR_MAYBE_UNUSED
+        -:   96:static int
+    #####:   97:simple_strcasecmp(const char *s1, const char *s2)
+        -:   98:{
+        -:   99:#if JSTR_HAVE_STRCASECMP && !JSTR_USE_SIMPLE
+    #####:  100:	return strcasecmp(s1, s2);
+        -:  101:#else
+        -:  102:	int ret;
+        -:  103:	for (; (ret = (TOLOWER(*s1) - TOLOWER(*s2))) == 0 && *s1; ++s1, ++s2)
+        -:  104:		;
+        -:  105:	return ret;
+        -:  106:#endif
+        -:  107:}
+        -:  108:
+        -:  109:JSTR_ATTR_MAYBE_UNUSED
+        -:  110:static int
+    #####:  111:simple_strncasecmp(const char *s1, const char *s2, size_t n)
+        -:  112:{
+        -:  113:#if JSTR_HAVE_STRNCASECMP && !JSTR_USE_SIMPLE
+    #####:  114:	return strncasecmp(s1, s2, n);
+        -:  115:#else
+        -:  116:	if (n == 0)
+        -:  117:		return 0;
+        -:  118:	int ret = TOLOWER(*s1) - TOLOWER(*s2);
+        -:  119:	for (; n && (ret = (TOLOWER(*s1) - TOLOWER(*s2))) == 0 && *s1; --n, ++s1, ++s2)
+        -:  120:		;
+        -:  121:	if (n == 0)
+        -:  122:		return 0;
+        -:  123:	return ret;
+        -:  124:#endif
+        -:  125:}
+        -:  126:
+        -:  127:JSTR_ATTR_MAYBE_UNUSED
+        -:  128:static char *
+    #####:  129:simple_strcasestr_len(const char *h, const size_t hl, const char *n, const size_t nl)
+        -:  130:{
+    #####:  131:	if (nl == 0)
+    #####:  132:		return (char *)h;
+    #####:  133:	if (hl < nl)
+    #####:  134:		return NULL;
+    #####:  135:	const char *end = h + hl - nl;
+    #####:  136:	for (; h <= end; ++h)
+    #####:  137:		if (!simple_strncasecmp(h, n, nl))
+    #####:  138:			return (char *)h;
+    #####:  139:	return NULL;
+        -:  140:}
+        -:  141:
+        -:  142:JSTR_ATTR_MAYBE_UNUSED
+        -:  143:static char *
+    #####:  144:simple_strncasestr(const char *hs, const char *ne, const size_t limit)
+        -:  145:{
+    #####:  146:	if (*ne == '\0')
+    #####:  147:		return (char *)hs;
+    #####:  148:	const size_t ne_len = strlen(ne);
+    #####:  149:	if (ne_len < limit)
+    #####:  150:		return NULL;
+    #####:  151:	const char *end = hs + limit;
+    #####:  152:	for (; *hs && hs <= end; ++hs)
+    #####:  153:		if (!simple_strncasecmp(hs, ne, ne_len))
+    #####:  154:			return (char *)hs;
+    #####:  155:	return NULL;
+        -:  156:}
+        -:  157:
+        -:  158:JSTR_ATTR_MAYBE_UNUSED
+        -:  159:static char *
+    #####:  160:simple_strcasestr(const char *h, const char *n)
+        -:  161:{
+        -:  162:#if JSTR_HAVE_STRCASESTR && !JSTR_USE_SIMPLE
+        -:  163:	return (char *)strcasestr(h, n);
+        -:  164:#else
+    #####:  165:	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
+        -:  166:#endif
+        -:  167:}
+        -:  168:
+        -:  169:JSTR_ATTR_MAYBE_UNUSED
+        -:  170:static char *
+    #####:  171:simple_stpcpy(char *d, const char *s)
+        -:  172:{
+        -:  173:#if JSTR_HAVE_STPCPY && !JSTR_USE_SIMPLE
+    #####:  174:	return stpcpy(d, s);
+        -:  175:#else
+        -:  176:	const size_t len = strlen(s);
+        -:  177:	*((char *)memcpy(d, s, len) + len) = '\0';
+        -:  178:	return d + len;
+        -:  179:#endif
+        -:  180:}
+        -:  181:
+        -:  182:JSTR_ATTR_MAYBE_UNUSED
+        -:  183:static char *
+    #####:  184:simple_revcpy_p(char *dst, const char *src)
+        -:  185:{
+    #####:  186:	size_t src_len = strlen(src);
+    #####:  187:	src += src_len - 1;
+    #####:  188:	for (; src_len--; *dst++ = *src--) {}
+    #####:  189:	*dst = '\0';
+    #####:  190:	return dst;
+        -:  191:}
+        -:  192:
+        -:  193:static JSTR_ATTR_MAYBE_UNUSED void *
+    #####:  194:simple_memrchr(const void *s, int c, size_t n)
+        -:  195:JSTR_NOEXCEPT
+        -:  196:{
+        -:  197:#if JSTR_HAVE_MEMRCHR && !JSTR_USE_SIMPLE
+        -:  198:	return (char *)memrchr(s, c, n);
+        -:  199:#else
+    #####:  200:	const unsigned char *p = (const unsigned char *)s + n;
+    #####:  201:	for (; n--;)
+    #####:  202:		if (*--p == (unsigned char)c)
+    #####:  203:			return (void *)p;
+    #####:  204:	return NULL;
+        -:  205:#endif
+        -:  206:}
+        -:  207:
+        -:  208:/*
+        -:  209:   strchr() before s + T.
+        -:  210:*/
+        -:  211:static JSTR_ATTR_MAYBE_UNUSED char *
+    #####:  212:simple_strnchr(const char *s, int c, size_t n)
+        -:  213:JSTR_NOEXCEPT
+        -:  214:{
+    #####:  215:	for (; n--; ++s) {
+    #####:  216:		if (*s == (char)c)
+    #####:  217:			return (char *)s;
+    #####:  218:		if (jstr_unlikely(*s == '\0'))
+    #####:  219:			break;
+        -:  220:	}
+    #####:  221:	return NULL;
+        -:  222:}
+        -:  223:
+        -:  224:static JSTR_ATTR_MAYBE_UNUSED char *
+    #####:  225:simple_strchrnul(const char *s, int c)
+        -:  226:{
+        -:  227:#if JSTR_HAVE_STRCHRNUL && !JSTR_USE_SIMPLE
+        -:  228:	return (char *)strchrnul(s, c);
+        -:  229:#else
+    #####:  230:	const char *const p = strchr(s, c);
+    #####:  231:	return (char *)(p ? p : s + strlen(s));
+        -:  232:#endif
+        -:  233:}
+        -:  234:
+        -:  235:static JSTR_ATTR_MAYBE_UNUSED char *
+    #####:  236:simple_strcasechrnul(const char *s, int c)
+        -:  237:{
+    #####:  238:	c = TOLOWER(c);
+    #####:  239:	for (;; ++s)
+    #####:  240:		if (TOLOWER(*s) == c || *s == '\0')
+        -:  241:			break;
+    #####:  242:	return (char *)s;
+        -:  243:}
+        -:  244:
+        -:  245:static JSTR_ATTR_MAYBE_UNUSED char *
+    #####:  246:simple_strcasechr(const char *s, int c)
+        -:  247:{
+    #####:  248:	s = simple_strcasechrnul(s, c);
+    #####:  249:	return TOLOWER(*s) == TOLOWER(c) ? (char *)s : NULL;
+        -:  250:}
+        -:  251:
+        -:  252:static JSTR_ATTR_MAYBE_UNUSED char *
+    #####:  253:simple_strncasechr(const char *s, int c, size_t n)
+        -:  254:{
+    #####:  255:	const char *p = simple_strcasechrnul(s, c);
+    #####:  256:	return (p < s + n && TOLOWER(*p) == TOLOWER(c)) ? (char *)p : NULL;
+        -:  257:}
+        -:  258:
+        -:  259:static JSTR_ATTR_MAYBE_UNUSED char *
+    #####:  260:simple_memcasechr(const void *s, int c, size_t n)
+        -:  261:{
+    #####:  262:	c = TOLOWER(c);
+    #####:  263:	const unsigned char *p = (const unsigned char *)s;
+    #####:  264:	for (; n && TOLOWER(*p) != c; --n, ++p) {}
+    #####:  265:	return n ? (char *)p : NULL;
+        -:  266:}
+        -:  267:
+        -:  268:static JSTR_ATTR_MAYBE_UNUSED size_t
+    #####:  269:simple_countchr_len(const char *s, int c, size_t sz)
+        -:  270:{
+    #####:  271:	size_t cnt = 0;
+    #####:  272:	for (; sz--; cnt += *s++ == (char)c) {}
+    #####:  273:	return cnt;
+        -:  274:}
+        -:  275:
+        -:  276:static JSTR_ATTR_MAYBE_UNUSED size_t
+    #####:  277:simple_countchr(const char *s, int c)
+        -:  278:{
+    #####:  279:	return simple_countchr_len(s, c, strlen(s));
+        -:  280:}
+        -:  281:
+        -:  282:static JSTR_ATTR_MAYBE_UNUSED size_t
+    #####:  283:simple_memrspn(const char *s, const char *accept, size_t n)
+        -:  284:{
+    #####:  285:	if (*accept == '\0')
+    #####:  286:		return 0;
+    #####:  287:	s += (n - 1);
+    #####:  288:	for (; n; --s, --n)
+    #####:  289:		if (!strchr(accept, *s))
+    #####:  290:			break;
+    #####:  291:	return n;
+        -:  292:}
+        -:  293:
+        -:  294:static JSTR_ATTR_MAYBE_UNUSED size_t
+    #####:  295:simple_memrcspn(const char *s, const char *reject, size_t n)
+        -:  296:{
+    #####:  297:	if (*reject == '\0')
+    #####:  298:		return n;
+    #####:  299:	s += (n - 1);
+    #####:  300:	for (; n; --s, --n)
+    #####:  301:		if (strchr(reject, *s))
+    #####:  302:			break;
+    #####:  303:	return n;
+        -:  304:}
+        -:  305:
+        -:  306:
+        -:  307:#endif /* SIMPLE_H */

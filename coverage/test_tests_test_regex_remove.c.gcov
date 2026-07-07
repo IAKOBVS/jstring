@@ -1,0 +1,306 @@
+        -:    0:Source:tests/test-regex-remove.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-regex-remove.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-regex-remove.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:/* Fixes regex.h problems with tcc */
+        -:    5:#define __STDC_NO_VLA__ 1
+        -:    6:
+        -:    7:#include "test.h"
+        -:    8:#include "../include/regex.h"
+        -:    9:
+        -:   10:/* Helper: assign a C string to result, trimming capacity to fit. */
+        -:   11:#define FILL(result, str)                                                                     \
+        -:   12:	do {                                                                                  \
+        -:   13:		(void)jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
+        -:   14:		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
+        -:   15:	} while (0)
+        -:   16:/* Assert that result equals expected string. */
+        -:   17:#define T_ASSERT(func, result, expected)                                                                           \
+        -:   18:	do {                                                                                                       \
+        -:   19:		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
+        -:   20:		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
+        -:   21:	} while (0)
+        -:   22:
+        -:   23:/* Test a removal function.
+        -:   24: * Calls func on the current result, asserts it returns expected_n,
+        -:   25: * then asserts result string matches expected. */
+        -:   26:#define T_RM(func, result, expected, expected_n)           \
+        -:   27:	do {                                               \
+        -:   28:		TESTING(func);                             \
+        -:   29:		jstr_re_off_ty ret_n_ = func;              \
+        -:   30:		ASSERT_ERRFUNC(func, ret_n_ == expected_n); \
+        -:   31:		T_ASSERT(func, result, expected);          \
+        -:   32:	} while (0)
+        -:   33:
+        -:   34:int
+        1:   35:main(int argc, char **argv)
+        -:   36:{
+        -:   37:	START();
+        1:   38:	jstr_ty result = JSTR_INIT;
+        -:   39:	{
+        -:   40:		/* jstr_re_rm_exec: remove first match of digit sequence. */
+        -:   41:		jstr_re_ty preg;
+       1*:   42:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:   43:
+       1*:   44:		FILL(result, "abc123def456");
+       1*:   45:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "abcdef456", 1);
+        -:   46:
+       1*:   47:		FILL(result, "no digits here");
+       1*:   48:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "no digits here", 0);
+        -:   49:
+       1*:   50:		FILL(result, "123");
+       1*:   51:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "", 1);
+        -:   52:
+        1:   53:		jstr_re_free(&preg);
+        -:   54:	}
+        -:   55:	{
+        -:   56:		/* jstr_re_rm_from_exec: remove first match from start_idx. */
+        -:   57:		jstr_re_ty preg;
+       1*:   58:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:   59:
+       1*:   60:		FILL(result, "abc123def456");
+       1*:   61:		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 3, 0), result, "abcdef456", 1);
+        -:   62:
+        -:   63:		/* start_idx past first match, finds the second. */
+       1*:   64:		FILL(result, "abc123def456");
+       1*:   65:		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 7, 0), result, "abc123def", 1);
+        -:   66:
+        -:   67:		/* start_idx past all matches. */
+       1*:   68:		FILL(result, "abc123def456");
+       1*:   69:		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 15, 0), result, "abc123def456", 0);
+        -:   70:
+        1:   71:		jstr_re_free(&preg);
+        -:   72:	}
+        -:   73:	{
+        -:   74:		/* jstr_re_rmn_exec: remove up to n matches. */
+        -:   75:		jstr_re_ty preg;
+       1*:   76:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:   77:
+       1*:   78:		FILL(result, "1a2b3c4d");
+       1*:   79:		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, 2), result, "ab3c4d", 2);
+        -:   80:
+       1*:   81:		FILL(result, "1a2b3c4d");
+       1*:   82:		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, 0), result, "1a2b3c4d", 0);
+        -:   83:
+       1*:   84:		FILL(result, "1a2b3c4d");
+       1*:   85:		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, (size_t)-1), result, "abcd", 4);
+        -:   86:
+        1:   87:		jstr_re_free(&preg);
+        -:   88:	}
+        -:   89:	{
+        -:   90:		/* jstr_re_rmn_from_exec: remove up to n matches from start_idx. */
+        -:   91:		jstr_re_ty preg;
+       1*:   92:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:   93:
+       1*:   94:		FILL(result, "1a2b3c4d");
+       1*:   95:		T_RM(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 2, 0, 2), result, "1abc4d", 2);
+        -:   96:
+        1:   97:		jstr_re_free(&preg);
+        -:   98:	}
+        -:   99:	{
+        -:  100:		/* jstr_re_rmall_exec: remove all matches. */
+        -:  101:		jstr_re_ty preg;
+       1*:  102:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:  103:
+       1*:  104:		FILL(result, "1a2b3c4d");
+       1*:  105:		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "abcd", 4);
+        -:  106:
+       1*:  107:		FILL(result, "no_digits");
+       1*:  108:		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "no_digits", 0);
+        -:  109:
+       1*:  110:		FILL(result, "123");
+       1*:  111:		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "", 1);
+        -:  112:
+        1:  113:		jstr_re_free(&preg);
+        -:  114:	}
+        -:  115:	{
+        -:  116:		/* jstr_re_rmall_from_exec: remove all matches from start_idx. */
+        -:  117:		jstr_re_ty preg;
+       1*:  118:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:  119:
+       1*:  120:		FILL(result, "1a2b3c4d");
+       1*:  121:		T_RM(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 2, 0), result, "1abcd", 3);
+        -:  122:
+       1*:  123:		FILL(result, "1a2b3c4d");
+       1*:  124:		T_RM(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 0, 0), result, "abcd", 4);
+        -:  125:
+        1:  126:		jstr_re_free(&preg);
+        -:  127:	}
+        -:  128:	{
+        -:  129:		/* Remove letters, keep digits. */
+        -:  130:		jstr_re_ty preg;
+       1*:  131:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-zA-Z]\\{1,\\}", 0)));
+        -:  132:
+       1*:  133:		FILL(result, "abc123def456ghi");
+       1*:  134:		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "123456", 3);
+        -:  135:
+        1:  136:		jstr_re_free(&preg);
+        -:  137:	}
+        -:  138:	{
+        -:  139:		/* Remove underscores and keep rest. */
+        -:  140:		jstr_re_ty preg;
+       1*:  141:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "_\\{1,\\}", 0)));
+        -:  142:
+       1*:  143:		FILL(result, "a_b_c_d");
+       1*:  144:		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "abcd", 3);
+        -:  145:
+        1:  146:		jstr_re_free(&preg);
+        -:  147:	}
+        -:  148:	{
+        -:  149:		/* Anchored pattern with jstr_re_rm_exec (single remove). */
+        -:  150:		jstr_re_ty preg;
+       1*:  151:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
+        -:  152:
+       1*:  153:		FILL(result, "hello world hello");
+       1*:  154:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, " world hello", 1);
+        -:  155:
+       1*:  156:		FILL(result, "say hello");
+       1*:  157:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "say hello", 0);
+        -:  158:
+        1:  159:		jstr_re_free(&preg);
+        -:  160:	}
+        -:  161:	{
+        -:  162:		/* Anchored at end with jstr_re_rm_exec. */
+        -:  163:		jstr_re_ty preg;
+       1*:  164:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "world$", 0)));
+        -:  165:
+       1*:  166:		FILL(result, "hello world");
+       1*:  167:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "hello ", 1);
+        -:  168:
+        1:  169:		jstr_re_free(&preg);
+        -:  170:	}
+        -:  171:	{
+        -:  172:		/* Remove with NOTBOL via eflags. */
+        -:  173:		jstr_re_ty preg;
+       1*:  174:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
+        -:  175:
+       1*:  176:		FILL(result, "hello world");
+       1*:  177:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), JSTR_RE_EF_NOTBOL), result, "hello world", 0);
+        -:  178:
+        1:  179:		jstr_re_free(&preg);
+        -:  180:	}
+        -:  181:	{
+        -:  182:		/* Newline-sensitive remove. */
+        -:  183:		jstr_re_ty preg;
+       1*:  184:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^[a-z]\\{1,\\}", JSTR_RE_CF_NEWLINE)));
+        -:  185:
+       1*:  186:		FILL(result, "\nhello_world");
+       1*:  187:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "\n_world", 1);
+        -:  188:
+        1:  189:		jstr_re_free(&preg);
+        -:  190:	}
+        -:  191:	{
+        -:  192:		/* Remove all alphabetic runs. */
+        -:  193:		jstr_re_ty preg;
+       1*:  194:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{1,\\}", 0)));
+        -:  195:
+       1*:  196:		FILL(result, "hello world foo bar");
+       1*:  197:		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "   ", 4);
+        -:  198:
+        1:  199:		jstr_re_free(&preg);
+        -:  200:	}
+        -:  201:	{
+        -:  202:		/* _from_exec with start_idx == sz (boundary, no match possible). */
+        -:  203:		jstr_re_ty preg;
+       1*:  204:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:  205:
+       1*:  206:		FILL(result, "abc");
+       1*:  207:		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 3, 0), result, "abc", 0);
+        -:  208:
+       1*:  209:		FILL(result, "");
+       1*:  210:		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 0, 0), result, "", 0);
+        -:  211:
+        1:  212:		jstr_re_free(&preg);
+        -:  213:	}
+        -:  214:	{
+        -:  215:		/* _from_exec on empty string. */
+        -:  216:		jstr_re_ty preg;
+       1*:  217:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{1,\\}", 0)));
+        -:  218:
+       1*:  219:		FILL(result, "");
+       1*:  220:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "", 0);
+       1*:  221:		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "", 0);
+       1*:  222:		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, (size_t)-1), result, "", 0);
+        -:  223:
+        1:  224:		jstr_re_free(&preg);
+        -:  225:	}
+        -:  226:	{
+        -:  227:		/* rmn_from_exec with n=1 (falls through to rm_from_exec). */
+        -:  228:		jstr_re_ty preg;
+       1*:  229:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:  230:
+       1*:  231:		FILL(result, "a1b2c3");
+       1*:  232:		T_RM(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 0, 0, 1), result, "ab2c3", 1);
+        -:  233:
+        1:  234:		jstr_re_free(&preg);
+        -:  235:	}
+        -:  236:	{
+        -:  237:		/* rmn_from_exec with start_idx > sz. */
+        -:  238:		jstr_re_ty preg;
+       1*:  239:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:  240:
+       1*:  241:		FILL(result, "a1b2c3");
+       1*:  242:		T_RM(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 99, 0, (size_t)-1), result, "a1b2c3", 0);
+        -:  243:
+        1:  244:		jstr_re_free(&preg);
+        -:  245:	}
+        -:  246:	{
+        -:  247:		/* rmall_from_exec with start_idx past end. */
+        -:  248:		jstr_re_ty preg;
+       1*:  249:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+        -:  250:
+       1*:  251:		FILL(result, "a1b2c3");
+       1*:  252:		T_RM(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 20, 0), result, "a1b2c3", 0);
+        -:  253:
+        1:  254:		jstr_re_free(&preg);
+        -:  255:	}
+        -:  256:	{
+        -:  257:		/* Remove first char only (pattern matches single char). */
+        -:  258:		jstr_re_ty preg;
+       1*:  259:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".", 0)));
+        -:  260:
+       1*:  261:		FILL(result, "abc");
+       1*:  262:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "bc", 1);
+        -:  263:
+       1*:  264:		FILL(result, "a");
+       1*:  265:		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "", 1);
+        -:  266:
+        1:  267:		jstr_re_free(&preg);
+        -:  268:	}
+        -:  269:	{
+        -:  270:		/* Remove all individual characters (dot pattern). */
+        -:  271:		jstr_re_ty preg;
+       1*:  272:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".", 0)));
+        -:  273:
+       1*:  274:		FILL(result, "abc");
+       1*:  275:		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "", 3);
+        -:  276:
+        1:  277:		jstr_re_free(&preg);
+        -:  278:	}
+        -:  279:	{
+        -:  280:		/* NOTBOL with remove from mid-string. */
+        -:  281:		jstr_re_ty preg;
+       1*:  282:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
+        -:  283:
+       1*:  284:		FILL(result, "hello hello");
+       1*:  285:		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 1, JSTR_RE_EF_NOTBOL), result, "hello hello", 0);
+        -:  286:
+        -:  287:		/* Without NOTBOL, skips bol-only match. */
+       1*:  288:		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 6, JSTR_RE_EF_NOTBOL), result, "hello hello", 0);
+        -:  289:
+        1:  290:		jstr_re_free(&preg);
+        -:  291:	}
+        -:  292:	{
+        -:  293:		/* Double free is safe (already tested). */
+        -:  294:		jstr_re_ty preg;
+       1*:  295:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "abc", 0)));
+        1:  296:		jstr_re_free(&preg);
+        -:  297:	}
+        1:  298:	jstr_free_j(&result);
+        -:  299:	SUCCESS();
+        1:  300:	return 0;
+        -:  301:	(void)argc;
+        -:  302:}

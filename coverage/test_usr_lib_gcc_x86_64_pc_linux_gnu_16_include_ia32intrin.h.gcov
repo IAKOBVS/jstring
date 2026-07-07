@@ -1,0 +1,321 @@
+        -:    0:Source:/usr/lib/gcc/x86_64-pc-linux-gnu/16/include/ia32intrin.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcda
+        -:    0:Runs:1
+        -:    1:/* Copyright (C) 2009-2026 Free Software Foundation, Inc.
+        -:    2:
+        -:    3:   This file is part of GCC.
+        -:    4:
+        -:    5:   GCC is free software; you can redistribute it and/or modify
+        -:    6:   it under the terms of the GNU General Public License as published by
+        -:    7:   the Free Software Foundation; either version 3, or (at your option)
+        -:    8:   any later version.
+        -:    9:
+        -:   10:   GCC is distributed in the hope that it will be useful,
+        -:   11:   but WITHOUT ANY WARRANTY; without even the implied warranty of
+        -:   12:   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        -:   13:   GNU General Public License for more details.
+        -:   14:
+        -:   15:   Under Section 7 of GPL version 3, you are granted additional
+        -:   16:   permissions described in the GCC Runtime Library Exception, version
+        -:   17:   3.1, as published by the Free Software Foundation.
+        -:   18:
+        -:   19:   You should have received a copy of the GNU General Public License and
+        -:   20:   a copy of the GCC Runtime Library Exception along with this program;
+        -:   21:   see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+        -:   22:   <http://www.gnu.org/licenses/>.  */
+        -:   23:
+        -:   24:#ifndef _X86GPRINTRIN_H_INCLUDED
+        -:   25:# error "Never use <ia32intrin.h> directly; include <x86gprintrin.h> instead."
+        -:   26:#endif
+        -:   27:
+        -:   28:/* 32bit bsf */
+        -:   29:extern __inline int
+        -:   30:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:   31:__bsfd (int __X)
+        -:   32:{
+    #####:   33:  return __builtin_ctz (__X);
+        -:   34:}
+        -:   35:
+        -:   36:/* 32bit bsr */
+        -:   37:extern __inline int
+        -:   38:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:   39:__bsrd (int __X)
+        -:   40:{
+    #####:   41:  return __builtin_ia32_bsrsi (__X);
+        -:   42:}
+        -:   43:
+        -:   44:/* 32bit bswap */
+        -:   45:extern __inline int
+        -:   46:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:   47:__bswapd (int __X)
+        -:   48:{
+        -:   49:  return __builtin_bswap32 (__X);
+        -:   50:}
+        -:   51:
+        -:   52:#ifndef __iamcu__
+        -:   53:
+        -:   54:#ifndef __CRC32__
+        -:   55:#pragma GCC push_options
+        -:   56:#pragma GCC target("crc32")
+        -:   57:#define __DISABLE_CRC32__
+        -:   58:#endif /* __CRC32__ */
+        -:   59:
+        -:   60:/* 32bit accumulate CRC32 (polynomial 0x11EDC6F41) value.  */
+        -:   61:extern __inline unsigned int
+        -:   62:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:   63:__crc32b (unsigned int __C, unsigned char __V)
+        -:   64:{
+        -:   65:  return __builtin_ia32_crc32qi (__C, __V);
+        -:   66:}
+        -:   67:
+        -:   68:extern __inline unsigned int
+        -:   69:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:   70:__crc32w (unsigned int __C, unsigned short __V)
+        -:   71:{
+        -:   72:  return __builtin_ia32_crc32hi (__C, __V);
+        -:   73:}
+        -:   74:
+        -:   75:extern __inline unsigned int
+        -:   76:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:   77:__crc32d (unsigned int __C, unsigned int __V)
+        -:   78:{
+        -:   79:  return __builtin_ia32_crc32si (__C, __V);
+        -:   80:}
+        -:   81:
+        -:   82:#ifdef __DISABLE_CRC32__
+        -:   83:#undef __DISABLE_CRC32__
+        -:   84:#pragma GCC pop_options
+        -:   85:#endif /* __DISABLE_CRC32__ */
+        -:   86:
+        -:   87:#endif /* __iamcu__ */
+        -:   88:
+        -:   89:/* 32bit popcnt */
+        -:   90:extern __inline int
+        -:   91:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:   92:__popcntd (unsigned int __X)
+        -:   93:{
+        -:   94:  return __builtin_popcount (__X);
+        -:   95:}
+        -:   96:
+        -:   97:#ifndef __iamcu__
+        -:   98:
+        -:   99:/* rdpmc */
+        -:  100:extern __inline unsigned long long
+        -:  101:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  102:__rdpmc (int __S)
+        -:  103:{
+        -:  104:  return __builtin_ia32_rdpmc (__S);
+        -:  105:}
+        -:  106:
+        -:  107:#endif /* __iamcu__ */
+        -:  108:
+        -:  109:/* rdtsc */
+        -:  110:extern __inline unsigned long long
+        -:  111:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  112:__rdtsc (void)
+        -:  113:{
+        -:  114:  return __builtin_ia32_rdtsc ();
+        -:  115:}
+        -:  116:
+        -:  117:#ifndef __iamcu__
+        -:  118:
+        -:  119:/* rdtscp */
+        -:  120:extern __inline unsigned long long
+        -:  121:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  122:__rdtscp (unsigned int *__A)
+        -:  123:{
+        -:  124:  return __builtin_ia32_rdtscp (__A);
+        -:  125:}
+        -:  126:
+        -:  127:#endif /* __iamcu__ */
+        -:  128:
+        -:  129:/* 8bit rol */
+        -:  130:extern __inline unsigned char
+        -:  131:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  132:__rolb (unsigned char __X, int __C)
+        -:  133:{
+        -:  134:  return __builtin_ia32_rolqi (__X, __C);
+        -:  135:}
+        -:  136:
+        -:  137:/* 16bit rol */
+        -:  138:extern __inline unsigned short
+        -:  139:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  140:__rolw (unsigned short __X, int __C)
+        -:  141:{
+        -:  142:  return __builtin_ia32_rolhi (__X, __C);
+        -:  143:}
+        -:  144:
+        -:  145:/* 32bit rol */
+        -:  146:extern __inline unsigned int
+        -:  147:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  148:__rold (unsigned int __X, int __C)
+        -:  149:{
+        -:  150:  __C &= 31;
+        -:  151:  return (__X << __C) | (__X >> (-__C & 31));
+        -:  152:}
+        -:  153:
+        -:  154:/* 8bit ror */
+        -:  155:extern __inline unsigned char
+        -:  156:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  157:__rorb (unsigned char __X, int __C)
+        -:  158:{
+        -:  159:  return __builtin_ia32_rorqi (__X, __C);
+        -:  160:}
+        -:  161:
+        -:  162:/* 16bit ror */
+        -:  163:extern __inline unsigned short
+        -:  164:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  165:__rorw (unsigned short __X, int __C)
+        -:  166:{
+        -:  167:  return __builtin_ia32_rorhi (__X, __C);
+        -:  168:}
+        -:  169:
+        -:  170:/* 32bit ror */
+        -:  171:extern __inline unsigned int
+        -:  172:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  173:__rord (unsigned int __X, int __C)
+        -:  174:{
+        -:  175:  __C &= 31;
+        -:  176:  return (__X >> __C) | (__X << (-__C & 31));
+        -:  177:}
+        -:  178:
+        -:  179:/* Pause */
+        -:  180:extern __inline void
+        -:  181:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  182:__pause (void)
+        -:  183:{
+        -:  184:  __builtin_ia32_pause ();
+        -:  185:}
+        -:  186:
+        -:  187:#ifdef __x86_64__
+        -:  188:/* 64bit bsf */
+        -:  189:extern __inline int
+        -:  190:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  191:__bsfq (long long __X)
+        -:  192:{
+        -:  193:  return __builtin_ctzll (__X);
+        -:  194:}
+        -:  195:
+        -:  196:/* 64bit bsr */
+        -:  197:extern __inline int
+        -:  198:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  199:__bsrq (long long __X)
+        -:  200:{
+        -:  201:  return __builtin_ia32_bsrdi (__X);
+        -:  202:}
+        -:  203:
+        -:  204:/* 64bit bswap */
+        -:  205:extern __inline long long
+        -:  206:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  207:__bswapq (long long __X)
+        -:  208:{
+        -:  209:  return __builtin_bswap64 (__X);
+        -:  210:}
+        -:  211:
+        -:  212:#ifndef __CRC32__
+        -:  213:#pragma GCC push_options
+        -:  214:#pragma GCC target("crc32")
+        -:  215:#define __DISABLE_CRC32__
+        -:  216:#endif /* __CRC32__ */
+        -:  217:
+        -:  218:/* 64bit accumulate CRC32 (polynomial 0x11EDC6F41) value.  */
+        -:  219:extern __inline unsigned long long
+        -:  220:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  221:__crc32q (unsigned long long __C, unsigned long long __V)
+        -:  222:{
+        -:  223:  return __builtin_ia32_crc32di (__C, __V);
+        -:  224:}
+        -:  225:
+        -:  226:#ifdef __DISABLE_CRC32__
+        -:  227:#undef __DISABLE_CRC32__
+        -:  228:#pragma GCC pop_options
+        -:  229:#endif /* __DISABLE_CRC32__ */
+        -:  230:
+        -:  231:/* 64bit popcnt */
+        -:  232:extern __inline long long
+        -:  233:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  234:__popcntq (unsigned long long __X)
+        -:  235:{
+        -:  236:  return __builtin_popcountll (__X);
+        -:  237:}
+        -:  238:
+        -:  239:/* 64bit rol */
+        -:  240:extern __inline unsigned long long
+        -:  241:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  242:__rolq (unsigned long long __X, int __C)
+        -:  243:{
+        -:  244:  __C &= 63;
+        -:  245:  return (__X << __C) | (__X >> (-__C & 63));
+        -:  246:}
+        -:  247:
+        -:  248:/* 64bit ror */
+        -:  249:extern __inline unsigned long long
+        -:  250:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  251:__rorq (unsigned long long __X, int __C)
+        -:  252:{
+        -:  253:  __C &= 63;
+        -:  254:  return (__X >> __C) | (__X << (-__C & 63));
+        -:  255:}
+        -:  256:
+        -:  257:/* Read flags register */
+        -:  258:extern __inline unsigned long long
+        -:  259:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  260:__readeflags (void)
+        -:  261:{
+        -:  262:  return __builtin_ia32_readeflags_u64 ();
+        -:  263:}
+        -:  264:
+        -:  265:/* Write flags register */
+        -:  266:extern __inline void
+        -:  267:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  268:__writeeflags (unsigned long long __X)
+        -:  269:{
+        -:  270:  __builtin_ia32_writeeflags_u64 (__X);
+        -:  271:}
+        -:  272:
+        -:  273:#define _bswap64(a)		__bswapq(a)
+        -:  274:#define _popcnt64(a)		__popcntq(a)
+        -:  275:#else
+        -:  276:
+        -:  277:/* Read flags register */
+        -:  278:extern __inline unsigned int
+        -:  279:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  280:__readeflags (void)
+        -:  281:{
+        -:  282:  return __builtin_ia32_readeflags_u32 ();
+        -:  283:}
+        -:  284:
+        -:  285:/* Write flags register */
+        -:  286:extern __inline void
+        -:  287:__attribute__((__gnu_inline__, __always_inline__, __artificial__))
+        -:  288:__writeeflags (unsigned int __X)
+        -:  289:{
+        -:  290:  __builtin_ia32_writeeflags_u32 (__X);
+        -:  291:}
+        -:  292:
+        -:  293:#endif
+        -:  294:
+        -:  295:/* On LP64 systems, longs are 64-bit.  Use the appropriate rotate
+        -:  296: * function.  */
+        -:  297:#ifdef __LP64__
+        -:  298:#define _lrotl(a,b)		__rolq((a), (b))
+        -:  299:#define _lrotr(a,b)		__rorq((a), (b))
+        -:  300:#else
+        -:  301:#define _lrotl(a,b)		__rold((a), (b))
+        -:  302:#define _lrotr(a,b)		__rord((a), (b))
+        -:  303:#endif
+        -:  304:
+        -:  305:#define _bit_scan_forward(a)	__bsfd(a)
+        -:  306:#define _bit_scan_reverse(a)	__bsrd(a)
+        -:  307:#define _bswap(a)		__bswapd(a)
+        -:  308:#define _popcnt32(a)		__popcntd(a)
+        -:  309:#ifndef __iamcu__
+        -:  310:#define _rdpmc(a)		__rdpmc(a)
+        -:  311:#define _rdtscp(a)		__rdtscp(a)
+        -:  312:#endif /* __iamcu__ */
+        -:  313:#define _rdtsc()		__rdtsc()
+        -:  314:#define _rotwl(a,b)		__rolw((a), (b))
+        -:  315:#define _rotwr(a,b)		__rorw((a), (b))
+        -:  316:#define _rotl(a,b)		__rold((a), (b))
+        -:  317:#define _rotr(a,b)		__rord((a), (b))

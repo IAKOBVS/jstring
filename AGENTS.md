@@ -5,8 +5,7 @@
 Custom shell+Perl scripts (no Makefile, no CMake). Run from repo root:
 
 ```sh
-./scripts/build         # generate headers into build/include/jstr/
-./compile         # generate headers + build shared library into build/
+./compile         # setup checks + generate headers + build shared library into build/
 ./test                  # run all tests (4 variants each, via scripts/test)
 ./clean                 # rm -rf build/
 ./scripts/fmt [files]   # clang-format (skips _jstr* and *macros* files)
@@ -15,7 +14,7 @@ Custom shell+Perl scripts (no Makefile, no CMake). Run from repo root:
 ./uninstall             # remove installed files
 ```
 
-`./compile` and `./scripts/build` both run `scripts/setup` first (checks page size, undefined macros, scoped macros), then generate headers via Perl (`gen-func.pl` + `namespace-macros.pl`). `./compile` additionally compiles a shared library into `build/lib/`.
+`./compile` runs `scripts/setup` first (checks page size, undefined macros, scoped macros), then generates headers via Perl (`gen-func.pl` + `namespace-macros.pl`), then compiles a shared library into `build/lib/`.
 
 ## Code generation
 
@@ -33,17 +32,21 @@ scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
 ```
 
 - Every test in `tests/*.c` is compiled and run from `/tmp`.
+- Tests using `mkdtemp` must `#define _POSIX_C_SOURCE 200809L` before any includes.
+- New tests ARE automatically picked up — `./test` globs `tests/*.c`.
+- For manual compilation of test-only files: use `-DJSTR_DECL_ONLY -include build/include/jstr/jstr.h -iquote build/include/jstr`.
 - Default CFLAGS: `-std=c99 -Wall -Wextra -Wpedantic -O2 -g -fsanitize=address`.
 - All 4 variants run in parallel; tests can take a while.
-- Order: `./scripts/build && ./test`.
+- Order: `./scripts/compile && ./test`.
 - Use `./test-check-fail` (not `./test`) when checking for errors — it filters out passing tests so failures are immediately visible.
 
 ## Language & toolchain
 
 - **C99** (`-std=c99`). Flags: `-Wall -Wextra -Wpedantic -Wsign-conversion`.
 - Format: `.clang-format` (WebKit brace style, 8-wide tab indentation, Never sort includes).
-- If `tcc` is available, `./scripts/build` uses it for a syntax check instead of `cc`.
+- If `tcc` is available, `./scripts/compile` uses it for a syntax check instead of `cc`.
 - libc requirement: musl's twoway `memmem` is vendored. POSIX headers (`io.h`, `regex.h`) must be included explicitly by the user.
+- **Library compilation caveat**: `./scripts/compile` does not define `_ATFILE_SOURCE` or `_XOPEN_SOURCE >= 700`, so the shared library is built without `USE_ATFILE=1` even on systems that support `*at` functions. Test-only code (DECL_ONLY) uses the generated headers which may define `USE_ATFILE=1`. This mismatch can cause different behavior in edge cases (e.g., `open` failure vs `stat` failure on nonexistent paths).
 
 ## Key conventions
 

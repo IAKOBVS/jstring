@@ -1,0 +1,654 @@
+        -:    0:Source:/home/james/.local/src/iakobvs-workspace/jstring/build/include/jstr/internal/simd.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#ifndef JSTR_INTERNAL_SIMD_H
+        -:    5:#define JSTR_INTERNAL_SIMD_H
+        -:    6:
+        -:    7:#include "../macros.h"
+        -:    8:
+        -:    9:#include "../pointer-arith.h"
+        -:   10:#include "../stdstring.h"
+        -:   11:
+        -:   12:JSTR_INTERNAL_BEGIN_DECLS
+        -:   13:
+        -:   14:#define JSTR_INTERNAL_R JSTR_RESTRICT
+        -:   15:
+        -:   16:/* Select AVX512, AVX2, or SSE2. */
+        -:   17:
+        -:   18:#if JSTR_ARCH_X86_64
+        -:   19:#	include <x86intrin.h>
+        -:   20:#endif
+        -:   21:#ifdef __AVX512BW__
+        -:   22:#	include <immintrin.h>
+        -:   23:typedef __m512i jstr_vvec_ty;
+        -:   24:typedef uint64_t jstr_vmask_ty;
+        -:   25:#	define JSTR_INTERNAL_LOAD(x)           _mm512_load_si512(x)
+        -:   26:#	define JSTR_INTERNAL_LOADU(x)          _mm512_loadu_si512(x)
+        -:   27:#	define JSTR_INTERNAL_STORE(dst, src)   _mm512_store_si512(dst, src)
+        -:   28:#	define JSTR_INTERNAL_STOREU(dst, src)  _mm512_storeu_si512(dst, src)
+        -:   29:#	define JSTR_INTERNAL_CMPEQ8_MASK(x, y) _mm512_cmpeq_epi8_mask(x, y) /* AVX512BW */
+        -:   30:#	define JSTR_INTERNAL_SETZERO(x)        _mm512_setzero_si512(x)
+        -:   31:#	define JSTR_INTERNAL_SETONE8(x)        _mm512_set1_epi8(x)
+        -:   32:#	define JSTR_INTERNAL_AND(x, y)         _mm512_and_si512(x, y)
+        -:   33:#	define JSTR_INTERNAL_ADD8(x, y)        _mm512_add_epi8(x, y) /* AVX512BW */
+        -:   34:#	define JSTR_INTERNAL_SUB8(x, y)        _mm512_sub_epi8(x, y) /* AVX512BW */
+        -:   35:#	ifdef __BMI__
+        -:   36:#		define JSTR_INTERNAL_BLSR(x)  _blsr_u64(x)
+        -:   37:#		define JSTR_INTERNAL_TZCNT(x) _tzcnt_u64(x)
+        -:   38:#	endif
+        -:   39:#	ifdef __LZCNT__
+        -:   40:#		define JSTR_INTERNAL_LZCNT(x) _lzcnt_u64(x)
+        -:   41:#	endif
+        -:   42:#	ifdef __POPCNT__
+        -:   43:#		define JSTR_INTERNAL_POPCNT(x) _mm_popcnt_u64(x)
+        -:   44:#	endif
+        -:   45:#elif defined __AVX2__
+        -:   46:#	include <immintrin.h>
+        -:   47:typedef __m256i jstr_vvec_ty;
+        -:   48:typedef uint32_t jstr_vmask_ty;
+        -:   49:#	define JSTR_INTERNAL_LOAD(x)           _mm256_load_si256(x)
+        -:   50:#	define JSTR_INTERNAL_LOADU(x)          _mm256_loadu_si256(x)
+        -:   51:#	define JSTR_INTERNAL_STORE(dst, src)   _mm256_store_si256(dst, src)
+        -:   52:#	define JSTR_INTERNAL_STOREU(dst, src)  _mm256_storeu_si256(dst, src)
+        -:   53:#	define JSTR_INTERNAL_CMPEQ8_MASK(x, y) _mm256_movemask_epi8(_mm256_cmpeq_epi8(x, y))
+        -:   54:#	define JSTR_INTERNAL_SETZERO(x)        _mm256_setzero_si256(x)
+        -:   55:#	define JSTR_INTERNAL_SETONE8(x)        _mm256_set1_epi8(x)
+        -:   56:#	define JSTR_INTERNAL_AND(x, y)         _mm256_and_si256(x, y)
+        -:   57:#	define JSTR_INTERNAL_ADD8(x, y)        _mm256_add_epi8(x, y)
+        -:   58:#	define JSTR_INTERNAL_SUB8(x, y)        _mm256_sub_epi8(x, y)
+        -:   59:#	define CMPGT8(x, y)      _mm256_cmpgt_epi8(x, y)
+        -:   60:#	define CMPLT8(x, y)      CMPGT8(y, x)
+        -:   61:#	ifdef __BMI__
+        -:   62:#		define JSTR_INTERNAL_BLSR(x)  _blsr_u32(x)
+        -:   63:#		define JSTR_INTERNAL_TZCNT(x) _tzcnt_u32(x)
+        -:   64:#	endif
+        -:   65:#	ifdef __LZCNT__
+        -:   66:#		define JSTR_INTERNAL_LZCNT(x) _lzcnt_u32(x)
+        -:   67:#	endif
+        -:   68:#	ifdef __POPCNT__
+        -:   69:#		define JSTR_INTERNAL_POPCNT(x) _mm_popcnt_u32(x)
+        -:   70:#	endif
+        -:   71:#elif defined __SSE2__
+        -:   72:#	include <emmintrin.h>
+        -:   73:typedef __m128i jstr_vvec_ty;
+        -:   74:typedef uint16_t jstr_vmask_ty;
+        -:   75:#	define JSTR_INTERNAL_LOAD(x)           _mm_load_si128(x)
+        -:   76:#	define JSTR_INTERNAL_LOADU(x)          _mm_loadu_si128(x)
+        -:   77:#	define JSTR_INTERNAL_STORE(dst, src)   _mm_store_si128(dst, src)
+        -:   78:#	define JSTR_INTERNAL_STOREU(dst, src)  _mm_storeu_si128(dst, src)
+        -:   79:#	define JSTR_INTERNAL_CMPEQ8_MASK(x, y) _mm_movemask_epi8(_mm_cmpeq_epi8(x, y))
+        -:   80:#	define JSTR_INTERNAL_SETZERO(x)        _mm_setzero_si128(x)
+        -:   81:#	define JSTR_INTERNAL_SETONE8(x)        _mm_set1_epi8(x)
+        -:   82:#	define JSTR_INTERNAL_AND(x, y)         _mm_and_si128(x, y)
+        -:   83:#	define JSTR_INTERNAL_ADD8(x, y)        _mm_add_epi8(x, y)
+        -:   84:#	define JSTR_INTERNAL_SUB8(x, y)        _mm_sub_epi8(x, y)
+        -:   85:#	define CMPGT8(x, y)      _mm_cmpgt_epi8(x, y)
+        -:   86:#	define CMPLT8(x, y)      _mm_cmplt_epi8(x, y)
+        -:   87:#	ifdef __BMI__
+        -:   88:#		define JSTR_INTERNAL_TZCNT(x) _tzcnt_u16(x)
+        -:   89:#	endif
+        -:   90:#	ifdef __LZCNT__
+        -:   91:#		ifdef __lzcnt16
+        -:   92:#			define JSTR_INTERNAL_LZCNT(x) __lzcnt16(x)
+        -:   93:#		endif
+        -:   94:#	endif
+        -:   95:#	ifdef __POPCNT__
+        -:   96:#		define JSTR_INTERNAL_POPCNT(x) _mm_popcnt_u32(x)
+        -:   97:#	endif
+        -:   98:#endif
+        -:   99:#define VEC       jstr_vvec_ty
+        -:  100:#define VEC_SIZE  sizeof(VEC)
+        -:  101:#define MASK      jstr_vmask_ty
+        -:  102:#define MASK_SIZE sizeof(MASK)
+        -:  103:#define JSTR_INTERNAL_ONES      ((MASK) - 1)
+        -:  104:#if JSTR_ARCH_X86_64
+        -:  105:#	ifndef JSTR_INTERNAL_LZCNT
+        -:  106:#		define JSTR_INTERNAL_LZCNT(x) (MASK)((x) ? ((MASK)MASK_SIZE * CHAR_BIT - 1) - _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
+        -:  107:#	endif
+        -:  108:#	ifndef JSTR_INTERNAL_TZCNT
+        -:  109:#		define JSTR_INTERNAL_TZCNT(x) (MASK)((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
+        -:  110:#	endif
+        -:  111:#endif
+        -:  112:#ifndef JSTR_INTERNAL_BLSR
+        -:  113:#	define JSTR_INTERNAL_BLSR(x) ((x) & ((x) - 1))
+        -:  114:#endif
+        -:  115:
+        -:  116:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  117:JSTR_FUNC
+        -:  118:static char *
+    #####:  119:jstr_internal_simd_stpcpy(char *JSTR_INTERNAL_R dst, const char *JSTR_INTERNAL_R src)
+        -:  120:JSTR_NOEXCEPT
+        -:  121:{
+    #####:  122:	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
+    #####:  123:	while (i--)
+    #####:  124:		if ((*dst++ = *src++) == '\0')
+    #####:  125:			return dst - 1;
+        -:  126:	VEC sv;
+    #####:  127:	const VEC zv = JSTR_INTERNAL_SETZERO();
+    #####:  128:	if (JSTR_PTR_IS_ALIGNED(dst, VEC_SIZE))
+        -:  129:		/* Aligned store to DST. */
+    #####:  130:		for (; JSTR_INTERNAL_CMPEQ8_MASK(sv = JSTR_INTERNAL_LOAD((const VEC *)src), zv);
+    #####:  131:		     src += VEC_SIZE, dst += VEC_SIZE)
+        -:  132:			JSTR_INTERNAL_STORE((VEC *)dst, sv);
+        -:  133:	else
+        -:  134:		/* Unaligned store to DST. */
+    #####:  135:		for (; JSTR_INTERNAL_CMPEQ8_MASK(sv = JSTR_INTERNAL_LOAD((const VEC *)src), zv);
+    #####:  136:		     src += VEC_SIZE, dst += VEC_SIZE)
+        -:  137:			JSTR_INTERNAL_STOREU((VEC *)dst, sv);
+    #####:  138:	while ((*dst++ = *src++)) {}
+    #####:  139:	return dst - 1;
+        -:  140:}
+        -:  141:
+        -:  142:#ifndef JSTR_INTERNAL_TZCNT
+        -:  143:
+        -:  144:#	define JSTR_HAVENT_STRNCASECHR_SIMD   1
+        -:  145:#	define JSTR_HAVENT_MEMCASECHR_SIMD    1
+        -:  146:#	define JSTR_HAVENT_STRCHRNUL_SIMD     1
+        -:  147:#	define JSTR_HAVENT_STRNCHR_SIMD       1
+        -:  148:#	define JSTR_HAVENT_STRCASECHR_SIMD    1
+        -:  149:#	define JSTR_HAVENT_STRCASECHRNUL_SIMD 1
+        -:  150:#	define JSTR_HAVENT_STRCHRUL_SIMD      1
+        -:  151:
+        -:  152:#else
+        -:  153:
+        -:  154:JSTR_FUNC_PURE
+        -:  155:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  156:static char *
+    #####:  157:jstr_internal_simd_strncasechr(const char *s, int c, size_t n)
+        -:  158:JSTR_NOEXCEPT
+        -:  159:{
+    #####:  160:	if (jstr_unlikely(n == 0))
+    #####:  161:		return NULL;
+    #####:  162:	const char *end = s + n;
+        -:  163:	MASK cm0, cm1, m, zm, i;
+        -:  164:	VEC sv;
+    #####:  165:	const VEC cv0 = JSTR_INTERNAL_SETONE8((char)jstr_tolower(c));
+    #####:  166:	const VEC cv1 = JSTR_INTERNAL_SETONE8((char)jstr_toupper(c));
+    #####:  167:	const VEC zv = JSTR_INTERNAL_SETZERO();
+    #####:  168:	const unsigned int off = JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+    #####:  169:	s -= off;
+    #####:  170:	sv = JSTR_INTERNAL_LOAD((const VEC *)s);
+    #####:  171:	cm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv0);
+    #####:  172:	cm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv1);
+    #####:  173:	zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+    #####:  174:	m = (cm0 | cm1 | zm) >> off;
+    #####:  175:	if (m) {
+    #####:  176:		i = off + JSTR_INTERNAL_TZCNT(m);
+    #####:  177:		goto ret_early;
+        -:  178:	}
+        -:  179:	do {
+    #####:  180:		s += VEC_SIZE;
+    #####:  181:		sv = JSTR_INTERNAL_LOAD((const VEC *)s);
+    #####:  182:		cm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv0);
+    #####:  183:		cm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv1);
+    #####:  184:		zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+    #####:  185:		m = cm0 | cm1 | zm;
+    #####:  186:	} while (!(m | (s >= end)));
+    #####:  187:	if (s >= end)
+    #####:  188:		return NULL;
+    #####:  189:	i = JSTR_INTERNAL_TZCNT(m);
+    #####:  190:ret_early:
+    #####:  191:	return s + i < end ? (char *)s + i : NULL;
+        -:  192:}
+        -:  193:
+        -:  194:JSTR_FUNC_PURE
+        -:  195:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  196:static char *
+    #####:  197:jstr_internal_simd_strnchr(const char *s, int c, size_t n)
+        -:  198:JSTR_NOEXCEPT
+        -:  199:{
+    #####:  200:	if (jstr_unlikely(n == 0))
+    #####:  201:		return NULL;
+    #####:  202:	const char *end = s + n;
+        -:  203:	MASK cm, m, zm, i;
+        -:  204:	VEC sv;
+    #####:  205:	const VEC cv = JSTR_INTERNAL_SETONE8((char)c);
+    #####:  206:	const VEC zv = JSTR_INTERNAL_SETZERO();
+    #####:  207:	const unsigned int off = JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+    #####:  208:	s -= off;
+    #####:  209:	sv = JSTR_INTERNAL_LOAD((const VEC *)s);
+    #####:  210:	cm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv);
+    #####:  211:	zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+    #####:  212:	m = (cm | zm) >> off;
+    #####:  213:	if (m) {
+    #####:  214:		i = off + JSTR_INTERNAL_TZCNT(m);
+    #####:  215:		goto ret_early;
+        -:  216:	}
+        -:  217:	do {
+    #####:  218:		s += VEC_SIZE;
+    #####:  219:		sv = JSTR_INTERNAL_LOAD((const VEC *)s);
+    #####:  220:		cm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv);
+    #####:  221:		zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+    #####:  222:		m = cm | zm;
+    #####:  223:	} while (!(m | (s >= end)));
+    #####:  224:	if (s >= end)
+    #####:  225:		return NULL;
+    #####:  226:	i = JSTR_INTERNAL_TZCNT(m);
+    #####:  227:ret_early:
+    #####:  228:	return s + i < end ? (char *)s + i : NULL;
+        -:  229:}
+        -:  230:
+        -:  231:JSTR_FUNC_PURE
+        -:  232:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  233:static char *
+    #####:  234:jstr_internal_simd_strchrnul(const char *s, int c)
+        -:  235:JSTR_NOEXCEPT
+        -:  236:{
+        -:  237:	MASK cm, m, zm;
+        -:  238:	VEC sv;
+    #####:  239:	const VEC cv = JSTR_INTERNAL_SETONE8((char)c);
+    #####:  240:	const VEC zv = JSTR_INTERNAL_SETZERO();
+    #####:  241:	const unsigned int off = JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+    #####:  242:	s -= off;
+    #####:  243:	sv = JSTR_INTERNAL_LOAD((const VEC *)s);
+    #####:  244:	cm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv);
+    #####:  245:	zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+    #####:  246:	m = (cm | zm) >> off;
+    #####:  247:	if (m)
+    #####:  248:		return (char *)s + off + JSTR_INTERNAL_TZCNT(m);
+        -:  249:	do {
+    #####:  250:		s += VEC_SIZE;
+    #####:  251:		sv = JSTR_INTERNAL_LOAD((const VEC *)s);
+    #####:  252:		cm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv);
+    #####:  253:		zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+    #####:  254:		m = cm | zm;
+    #####:  255:	} while (!m);
+    #####:  256:	return (char *)s + JSTR_INTERNAL_TZCNT(m);
+        -:  257:}
+        -:  258:
+        -:  259:JSTR_FUNC_PURE
+        -:  260:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  261:JSTR_ATTR_INLINE
+        -:  262:static char *
+        -:  263:jstr_internal_simd_strchr(const char *s, int c)
+        -:  264:JSTR_NOEXCEPT
+        -:  265:{
+        -:  266:	s = jstr_internal_simd_strchrnul(s, c);
+        -:  267:	return *s == (char)c ? (char *)s : NULL;
+        -:  268:}
+        -:  269:
+        -:  270:JSTR_FUNC_PURE
+        -:  271:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  272:static char *
+    #####:  273:jstr_internal_simd_strcasechrnul(const char *s, int c)
+        -:  274:JSTR_NOEXCEPT
+        -:  275:{
+        -:  276:	MASK m, cm0, cm1, zm;
+        -:  277:	VEC sv;
+    #####:  278:	const VEC cv0 = JSTR_INTERNAL_SETONE8((char)jstr_tolower(c));
+    #####:  279:	const VEC cv1 = JSTR_INTERNAL_SETONE8((char)jstr_toupper(c));
+    #####:  280:	const VEC zv = JSTR_INTERNAL_SETZERO();
+    #####:  281:	const unsigned int off = JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+    #####:  282:	s -= off;
+    #####:  283:	sv = JSTR_INTERNAL_LOAD((const VEC *)s);
+    #####:  284:	zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+    #####:  285:	cm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv0);
+    #####:  286:	cm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv1);
+    #####:  287:	m = (cm0 | cm1 | zm) >> off;
+    #####:  288:	if (m)
+    #####:  289:		return (char *)s + off + JSTR_INTERNAL_TZCNT(m);
+        -:  290:	do {
+    #####:  291:		s += VEC_SIZE;
+    #####:  292:		sv = JSTR_INTERNAL_LOAD((const VEC *)s);
+    #####:  293:		zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+    #####:  294:		cm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv0);
+    #####:  295:		cm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv1);
+    #####:  296:		m = cm0 | cm1 | zm;
+    #####:  297:	} while (!m);
+    #####:  298:	return (char *)s + JSTR_INTERNAL_TZCNT(m);
+        -:  299:}
+        -:  300:
+        -:  301:JSTR_FUNC_PURE
+        -:  302:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  303:JSTR_ATTR_INLINE
+        -:  304:static char *
+        -:  305:jstr_internal_simd_strcasechr(const char *s, int c)
+        -:  306:JSTR_NOEXCEPT
+        -:  307:{
+        -:  308:	s = jstr_internal_simd_strcasechrnul(s, c);
+        -:  309:	return *s == (char)c ? (char *)s : NULL;
+        -:  310:}
+        -:  311:
+        -:  312:JSTR_FUNC_PURE
+        -:  313:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  314:static void *
+    #####:  315:jstr_internal_simd_memcasechr(const void *s, int c, size_t n)
+        -:  316:JSTR_NOEXCEPT
+        -:  317:{
+    #####:  318:	if (jstr_unlikely(n == 0))
+    #####:  319:		return NULL;
+    #####:  320:	const unsigned char *p = (const unsigned char *)s;
+    #####:  321:	const unsigned char *end = p + n;
+        -:  322:	MASK cm0, cm1, m, i;
+        -:  323:	VEC sv;
+    #####:  324:	const VEC cv0 = JSTR_INTERNAL_SETONE8((char)jstr_tolower(c));
+    #####:  325:	const VEC cv1 = JSTR_INTERNAL_SETONE8((char)jstr_toupper(c));
+    #####:  326:	const unsigned int off = JSTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
+    #####:  327:	p -= off;
+    #####:  328:	sv = JSTR_INTERNAL_LOAD((const VEC *)p);
+    #####:  329:	cm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv0);
+    #####:  330:	cm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv1);
+    #####:  331:	m = (cm0 | cm1) >> off;
+    #####:  332:	if (m) {
+    #####:  333:		i = off + JSTR_INTERNAL_TZCNT(m);
+    #####:  334:		goto ret_early;
+        -:  335:	}
+    #####:  336:	while ((p += VEC_SIZE) < end) {
+    #####:  337:		sv = JSTR_INTERNAL_LOAD((const VEC *)p);
+    #####:  338:		cm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv0);
+    #####:  339:		cm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv1);
+    #####:  340:		m = cm0 | cm1;
+    #####:  341:		if (m)
+    #####:  342:			goto ret;
+        -:  343:	}
+    #####:  344:	return NULL;
+    #####:  345:ret:;
+    #####:  346:	i = JSTR_INTERNAL_TZCNT(m);
+    #####:  347:ret_early:
+    #####:  348:	return p + i < end ? (char *)p + i : NULL;
+        -:  349:}
+        -:  350:
+        -:  351:#endif
+        -:  352:
+        -:  353:#ifndef JSTR_INTERNAL_LZCNT
+        -:  354:
+        -:  355:#	define JSTR_HAVENT_MEMRCHR_SIMD 1
+        -:  356:
+        -:  357:#else
+        -:  358:
+        -:  359:JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+        -:  360:JSTR_FUNC_PURE
+        -:  361:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  362:static void *
+    #####:  363:jstr_internal_simd_memrchr(const void *s, int c, size_t n)
+        -:  364:JSTR_NOEXCEPT
+        -:  365:{
+    #####:  366:	if (jstr_unlikely(n == 0))
+    #####:  367:		return NULL;
+    #####:  368:	const unsigned char *p = (unsigned char *)s + n - VEC_SIZE;
+        -:  369:	MASK m, i;
+        -:  370:	VEC sv;
+    #####:  371:	const VEC cv = JSTR_INTERNAL_SETONE8((char)c);
+    #####:  372:	const unsigned int off = JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+    #####:  373:	p += off;
+    #####:  374:	sv = JSTR_INTERNAL_LOAD((const VEC *)p);
+    #####:  375:	m = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv) << off;
+    #####:  376:	if (m) {
+    #####:  377:		i = (VEC_SIZE - 1) - JSTR_INTERNAL_LZCNT(m);
+    #####:  378:		return p - off + i >= (unsigned char *)s ? (char *)p - off + i
+    #####:  379:		                                         : NULL;
+        -:  380:	}
+    #####:  381:	p -= VEC_SIZE;
+    #####:  382:	for (; p + VEC_SIZE >= (unsigned char *)s; p -= VEC_SIZE) {
+    #####:  383:		sv = JSTR_INTERNAL_LOAD((const VEC *)p);
+    #####:  384:		m = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv);
+    #####:  385:		if (m)
+    #####:  386:			goto ret;
+        -:  387:	}
+    #####:  388:	return NULL;
+    #####:  389:ret:;
+    #####:  390:	i = (VEC_SIZE - 1) - JSTR_INTERNAL_LZCNT(m);
+    #####:  391:	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
+        -:  392:}
+        -:  393:
+        -:  394:#endif
+        -:  395:
+        -:  396:#if !defined JSTR_INTERNAL_POPCNT
+        -:  397:
+        -:  398:#	define JSTR_HAVENT_COUNTCHR_SIMD     1
+        -:  399:#	define JSTR_HAVENT_COUNTCHR_LEN_SIMD 1
+        -:  400:
+        -:  401:#else
+        -:  402:
+        -:  403:JSTR_FUNC_PURE
+        -:  404:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  405:static size_t
+        -:  406:jstr_internal_simd_countchr(const char *s, int c)
+        -:  407:JSTR_NOEXCEPT
+        -:  408:{
+        -:  409:	const unsigned char *p = (const unsigned char *)s;
+        -:  410:	size_t cnt = 0;
+        -:  411:	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+        -:  412:	for (; i--; cnt += *p++ == (unsigned char)c)
+        -:  413:		if (jstr_unlikely(*p == '\0'))
+        -:  414:			return cnt;
+        -:  415:	const VEC cv = JSTR_INTERNAL_SETONE8((char)c);
+        -:  416:	const VEC zv = JSTR_INTERNAL_SETZERO();
+        -:  417:	VEC sv;
+        -:  418:	MASK m, zm;
+        -:  419:	unsigned int cnt0;
+        -:  420:	for (;; p += VEC_SIZE, cnt += cnt0) {
+        -:  421:		sv = JSTR_INTERNAL_LOAD((const VEC *)p);
+        -:  422:		m = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv);
+        -:  423:		zm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, zv);
+        -:  424:		cnt0 = m ? (unsigned int)JSTR_INTERNAL_POPCNT(m) : 0;
+        -:  425:		if (zm)
+        -:  426:			break;
+        -:  427:	}
+        -:  428:	for (; *p; cnt += *p++ == (unsigned char)c) {}
+        -:  429:	return cnt;
+        -:  430:}
+        -:  431:
+        -:  432:JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+        -:  433:JSTR_FUNC_PURE
+        -:  434:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  435:static size_t
+        -:  436:jstr_internal_simd_countchr_len(const void *s, int c, size_t n)
+        -:  437:JSTR_NOEXCEPT
+        -:  438:{
+        -:  439:	const unsigned char *p = (const unsigned char *)s;
+        -:  440:	size_t cnt = 0;
+        -:  441:	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+        -:  442:	for (; i--; --n, cnt += *p++ == (unsigned char)c)
+        -:  443:		if (jstr_unlikely(n == 0))
+        -:  444:			return cnt;
+        -:  445:	const VEC cv = JSTR_INTERNAL_SETONE8((char)c);
+        -:  446:	VEC sv;
+        -:  447:	MASK m;
+        -:  448:	for (; n >= VEC_SIZE; n -= VEC_SIZE, p += VEC_SIZE) {
+        -:  449:		sv = JSTR_INTERNAL_LOAD((const VEC *)p);
+        -:  450:		m = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(sv, cv);
+        -:  451:		cnt += (MASK)JSTR_INTERNAL_POPCNT(m);
+        -:  452:	}
+        -:  453:	for (; n--; cnt += *p++ == (unsigned char)c) {}
+        -:  454:	return cnt;
+        -:  455:}
+        -:  456:
+        -:  457:#endif
+        -:  458:
+        -:  459:#if defined CMPGT8 && defined CMPLT8 && defined JSTR_INTERNAL_AND && defined JSTR_INTERNAL_ADD8
+        -:  460:
+        -:  461:JSTR_ATTR_CONST
+        -:  462:JSTR_ATTR_INLINE
+        -:  463:static VEC
+        -:  464:jstr_internal_simd_tolower_vec(const VEC v)
+        -:  465:JSTR_NOEXCEPT
+        -:  466:{
+    #####:  467:	const VEC gt_a = CMPGT8(v, JSTR_INTERNAL_SETONE8('A' - 1));
+    #####:  468:	const VEC lt_z = CMPLT8(v, JSTR_INTERNAL_SETONE8('Z' + 1));
+    #####:  469:	const VEC is_lower = JSTR_INTERNAL_AND(gt_a, lt_z);
+    #####:  470:	const VEC cvt = JSTR_INTERNAL_AND(is_lower, JSTR_INTERNAL_SETONE8('a' - 'A'));
+    #####:  471:	return JSTR_INTERNAL_ADD8(v, cvt);
+        -:  472:}
+        -:  473:
+        -:  474:JSTR_FUNC_VOID
+        -:  475:static void
+    #####:  476:jstr_internal_simd_tolowerstr_len(char *s, size_t n)
+        -:  477:JSTR_NOEXCEPT
+        -:  478:{
+    #####:  479:	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
+    #####:  480:	for (; off--; ++s) {
+    #####:  481:		if (n-- == 0)
+    #####:  482:			return;
+    #####:  483:		*s = (char)jstr_tolower(*s);
+        -:  484:	}
+    #####:  485:	for (VEC sv; n >= VEC_SIZE; n -= VEC_SIZE, s += VEC_SIZE) {
+    #####:  486:		sv = JSTR_INTERNAL_LOAD((VEC *)s);
+    #####:  487:		JSTR_INTERNAL_STORE((VEC *)s, jstr_internal_simd_tolower_vec(sv));
+        -:  488:	}
+    #####:  489:	for (; n--; ++s)
+    #####:  490:		*s = (char)jstr_tolower(*s);
+        -:  491:}
+        -:  492:
+        -:  493:JSTR_FUNC_VOID
+        -:  494:static char *
+    #####:  495:jstr_internal_simd_tolowerstr_p(char *s)
+        -:  496:JSTR_NOEXCEPT
+        -:  497:{
+    #####:  498:	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
+    #####:  499:	for (; off--; ++s)
+    #####:  500:		if ((*s = (char)jstr_tolower(*s)) == '\0')
+    #####:  501:			return s;
+    #####:  502:	const VEC zv = JSTR_INTERNAL_SETZERO();
+    #####:  503:	for (VEC sv; JSTR_INTERNAL_CMPEQ8_MASK(sv = JSTR_INTERNAL_LOAD((VEC *)s), zv); s += VEC_SIZE)
+    #####:  504:		JSTR_INTERNAL_STORE((VEC *)s, jstr_internal_simd_tolower_vec(sv));
+    #####:  505:	for (; (*s = (char)jstr_tolower(*s)); ++s) {}
+    #####:  506:	return s;
+        -:  507:}
+        -:  508:
+        -:  509:#endif
+        -:  510:
+        -:  511:#if defined CMPGT8 && defined CMPLT8 && defined JSTR_INTERNAL_AND && defined JSTR_INTERNAL_SUB8
+        -:  512:
+        -:  513:JSTR_ATTR_CONST
+        -:  514:JSTR_ATTR_INLINE
+        -:  515:static VEC
+        -:  516:jstr_internal_simd_toupper_vec(const VEC v)
+        -:  517:JSTR_NOEXCEPT
+        -:  518:{
+        -:  519:	const VEC gt_a = CMPGT8(v, JSTR_INTERNAL_SETONE8('a' - 1));
+        -:  520:	const VEC lt_z = CMPLT8(v, JSTR_INTERNAL_SETONE8('z' + 1));
+        -:  521:	const VEC is_upper = JSTR_INTERNAL_AND(gt_a, lt_z);
+        -:  522:	const VEC cvt = JSTR_INTERNAL_AND(is_upper, JSTR_INTERNAL_SETONE8('a' - 'A'));
+        -:  523:	return JSTR_INTERNAL_SUB8(v, cvt);
+        -:  524:}
+        -:  525:
+        -:  526:#endif
+        -:  527:
+        -:  528:#if (!defined(JSTR_INTERNAL_TZCNT) || !defined(JSTR_INTERNAL_BLSR))
+        -:  529:#	define JSTR_HAVENT_MEMMEM_SIMD 1
+        -:  530:#endif
+        -:  531:
+        -:  532:#ifndef JSTR_HAVENT_MEMMEM_SIMD
+        -:  533:#	define JSTR_INTERNAL_FIND_MATCH()                                                            \
+        -:  534:		do {                                                                    \
+        -:  535:			if (JSTR_PTR_NOT_CROSSING_PAGE(p, VEC_SIZE, JSTR_PAGE_SIZE)) {  \
+        -:  536:				hv = JSTR_INTERNAL_LOADU((const VEC *)p);                             \
+        -:  537:				cmpm = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(hv, nv) << matchsh;            \
+        -:  538:				if (cmpm == matchm)                                     \
+        -:  539:					return (ret_ty)p;                               \
+        -:  540:			} else {                                                        \
+        -:  541:				if (!memcmp((const char *)p, (const char *)ne, ne_len)) \
+        -:  542:					return (ret_ty)p;                               \
+        -:  543:			}                                                               \
+        -:  544:		} while (0)
+        -:  545:
+        -:  546:/* ne_len must be <= VEC_SIZE.
+        -:  547: * Worst case: O(n).
+        -:  548: * Best case: O(n / VEC_SIZE). */
+        -:  549:JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  550:JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+        -:  551:JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+        -:  552:JSTR_FUNC_PURE
+        -:  553:static void *
+    #####:  554:jstr_internal_simd_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len)
+        -:  555:JSTR_NOEXCEPT
+        -:  556:{
+        -:  557:	typedef void *ret_ty;
+    #####:  558:	if (ne_len == 1)
+    #####:  559:		return (ret_ty)memchr(hs, *(unsigned char *)ne, hs_len);
+    #####:  560:	if (jstr_unlikely(ne_len == 0))
+    #####:  561:		return (ret_ty)hs;
+    #####:  562:	if (jstr_unlikely(hs_len < ne_len))
+    #####:  563:		return NULL;
+        -:  564:	VEC hv0, hv1;
+        -:  565:	MASK i, hm0, hm1, m;
+        -:  566:	VEC hv, nv;
+        -:  567:	MASK cmpm;
+    #####:  568:	const unsigned char *h = (const unsigned char *)hs;
+    #####:  569:	const unsigned char *end = h + hs_len - ne_len;
+        -:  570:	/* Find a unique character pair in NE. For example, "ab" in
+        -:  571:	 * "aaaaaaaaaaaaaaaabbbbcccc". */
+    #####:  572:	const unsigned char *p = (const unsigned char *)ne + 1;
+    #####:  573:	size_t n = ne_len - 2;
+    #####:  574:	for (const int c = *(unsigned char *)ne; n-- && *p == c; ++p) {}
+        -:  575:	/* N must be the "ab", not the "bb". */
+    #####:  576:	n = JSTR_DIFF(p, ne) - 1;
+    #####:  577:	h += n;
+    #####:  578:	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
+    #####:  579:	const MASK matchm = JSTR_INTERNAL_ONES << matchsh;
+    #####:  580:	const VEC nv0 = JSTR_INTERNAL_SETONE8(*((char *)ne + n));
+    #####:  581:	const VEC nv1 = JSTR_INTERNAL_SETONE8(*((char *)ne + n + 1));
+    #####:  582:	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE) || ne_len == VEC_SIZE)
+    #####:  583:		nv = JSTR_INTERNAL_LOADU((const VEC *)ne);
+        -:  584:	else
+    #####:  585:		memcpy(&nv, ne, ne_len);
+    #####:  586:	const unsigned int off_s = JSTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+    #####:  587:	unsigned int off_e = (JSTR_DIFF(end, (h - n)) < VEC_SIZE) ? VEC_SIZE - (unsigned int)(end - (h - n)) - 1 : 0;
+    #####:  588:	h -= off_s;
+    #####:  589:	hv0 = JSTR_INTERNAL_LOAD((const VEC *)h);
+    #####:  590:	hm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(hv0, nv0);
+    #####:  591:	hm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(hv0, nv1) >> 1;
+        -:  592:	/* Clear matched bits that are out of bounds. */
+    #####:  593:	m = ((hm0 & hm1) >> off_s) & (JSTR_INTERNAL_ONES >> off_e);
+    #####:  594:	while (m) {
+    #####:  595:		i = JSTR_INTERNAL_TZCNT(m);
+    #####:  596:		m = JSTR_INTERNAL_BLSR(m);
+    #####:  597:		p = h + off_s + i - n;
+    #####:  598:		JSTR_INTERNAL_FIND_MATCH();
+        -:  599:	}
+    #####:  600:	h += VEC_SIZE - 1;
+    #####:  601:	for (; h - n + VEC_SIZE <= end; h += VEC_SIZE) {
+    #####:  602:		hv0 = JSTR_INTERNAL_LOADU((const VEC *)h);
+    #####:  603:		hv1 = JSTR_INTERNAL_LOAD((const VEC *)(h + 1));
+    #####:  604:		hm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(hv0, nv0);
+    #####:  605:		hm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(hv1, nv1);
+    #####:  606:		m = hm0 & hm1;
+    #####:  607:		while (m) {
+    #####:  608:match:
+    #####:  609:			i = JSTR_INTERNAL_TZCNT(m);
+    #####:  610:			m = JSTR_INTERNAL_BLSR(m);
+    #####:  611:			p = h + i - n;
+    #####:  612:			JSTR_INTERNAL_FIND_MATCH();
+        -:  613:		}
+        -:  614:	}
+    #####:  615:	if (h - n <= end) {
+    #####:  616:		off_e = VEC_SIZE - (unsigned int)(end - (h - n)) - 1;
+    #####:  617:		hv0 = JSTR_INTERNAL_LOADU((const VEC *)h);
+    #####:  618:		hv1 = JSTR_INTERNAL_LOAD((const VEC *)(h + 1));
+    #####:  619:		hm0 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(hv0, nv0);
+    #####:  620:		hm1 = (MASK)JSTR_INTERNAL_CMPEQ8_MASK(hv1, nv1);
+    #####:  621:		m = hm0 & hm1 & (JSTR_INTERNAL_ONES >> off_e);
+    #####:  622:		if (m)
+    #####:  623:			goto match;
+        -:  624:	}
+    #####:  625:	return NULL;
+        -:  626:}
+        -:  627:#endif
+        -:  628:
+        -:  629:#undef JSTR_INTERNAL_FIND_MATCH
+        -:  630:#undef JSTR_INTERNAL_ONES
+        -:  631:#undef JSTR_INTERNAL_LOAD
+        -:  632:#undef JSTR_INTERNAL_LOADU
+        -:  633:#undef JSTR_INTERNAL_STORE
+        -:  634:#undef JSTR_INTERNAL_STOREU
+        -:  635:#undef JSTR_INTERNAL_CMPEQ8_MASK
+        -:  636:#undef JSTR_INTERNAL_SETZERO
+        -:  637:#undef JSTR_INTERNAL_SETONE8
+        -:  638:#undef JSTR_INTERNAL_AND
+        -:  639:#undef JSTR_INTERNAL_ADD8
+        -:  640:#undef JSTR_INTERNAL_SUB8
+        -:  641:#undef JSTR_INTERNAL_BLSR
+        -:  642:#undef JSTR_INTERNAL_TZCNT
+        -:  643:#undef JSTR_INTERNAL_LZCNT
+        -:  644:#undef JSTR_INTERNAL_POPCNT
+        -:  645:
+        -:  646:#undef JSTR_INTERNAL_R
+        -:  647:
+        -:  648:JSTR_INTERNAL_END_DECLS
+        -:  649:
+        -:  650:#endif /* JSTR_INTERNAL_SIMD_H */

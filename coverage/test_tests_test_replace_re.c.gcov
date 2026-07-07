@@ -1,0 +1,81 @@
+        -:    0:Source:tests/test-replace-re.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-replace-re.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-replace-re.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:/* Fixes regex.h problems with tcc */
+        -:    5:#define __STDC_NO_VLA__ 1
+        -:    6:
+        -:    7:#include "test.h"
+        -:    8:#include "../include/regex.h"
+        -:    9:
+        -:   10:#define T_ASSERT(func, result, expected)                                                                           \
+        -:   11:	do {                                                                                                       \
+        -:   12:		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
+        -:   13:		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
+        -:   14:	} while (0)
+        -:   15:#define FILL(result, str)                                                                     \
+        -:   16:	do {                                                                                  \
+        -:   17:		(void)jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
+        -:   18:		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
+        -:   19:	} while (0)
+        -:   20:#define T_APPEND_NORET(func, ...)                              \
+        -:   21:	do {                                                   \
+        -:   22:		TESTING(func);                                 \
+        -:   23:		func(__VA_ARGS__);                             \
+        -:   24:		T_ASSERT(func(__VA_ARGS__), result, expected); \
+        -:   25:		(result).size = 0;                             \
+        -:   26:		*(result).data = '\0';                         \
+        -:   27:	} while (0)
+        -:   28:#define T_RE(_string, _find, _rplc, _expected, _n)                                                                \
+        -:   29:	do {                                                                                                      \
+        -:   30:		const char *rplc, *find, *expected;                                                               \
+        -:   31:		FILL(result, _string);                                                                            \
+        -:   32:		find = _find;                                                                                     \
+        -:   33:		rplc = _rplc;                                                                                     \
+        -:   34:		expected = _expected;                                                                             \
+        -:   35:		jstr_re_ty preg;                                                                                  \
+        -:   36:		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                          \
+        -:   37:		T_APPEND_NORET(jstr_re_rplcn_len_exec, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _n); \
+        -:   38:		jstr_re_free(&preg);                                                                              \
+        -:   39:		(void)find;                                                                                       \
+        -:   40:		(void)rplc;                                                                                       \
+        -:   41:	} while (0)
+        -:   42:
+        -:   43:int
+        1:   44:main(int argc, char **argv)
+        -:   45:{
+        -:   46:	START();
+        1:   47:	jstr_ty result = JSTR_INIT;
+       1*:   48:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", (size_t)-1);
+       1*:   49:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", 4);
+       1*:   50:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___hello", 3);
+       1*:   51:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "__hello_hello", 2);
+       1*:   52:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "_hello_hello_hello", 1);
+       1*:   53:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "hello_hello_hello_hello", 0);
+        -:   54:	/* rplc_len > find_len */
+       1*:   55:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", (size_t)-1);
+       1*:   56:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", 4);
+       1*:   57:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_hello", 3);
+       1*:   58:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_hello_hello", 2);
+       1*:   59:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_hello_hello_hello", 1);
+       1*:   60:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "hello_hello_hello_hello", 0);
+        -:   61:	/* rplc_len < find_len */
+       1*:   62:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_worl", (size_t)-1);
+       1*:   63:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_worl", 4);
+       1*:   64:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_hello", 3);
+       1*:   65:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_hello_hello", 2);
+       1*:   66:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_hello_hello_hello", 1);
+       1*:   67:	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "hello_hello_hello_hello", 0);
+        -:   68:	/* .* */
+       1*:   69:	T_RE("hello_hello_hello_hello", ".*", "worl", "worl", (size_t)-1);
+       1*:   70:	T_RE("hello_hello_hello_hello", "(.*)", "worl", "hello_hello_hello_hello", (size_t)-1);
+       1*:   71:	T_RE("hello_hello_hello_hello", "\\(.*\\)", "worl", "worl", (size_t)-1);
+       1*:   72:	T_RE("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", (size_t)-1);
+        1:   73:	jstr_free_j(&result);
+        -:   74:	SUCCESS();
+        1:   75:	return 0;
+        -:   76:	(void)argc;
+        -:   77:}

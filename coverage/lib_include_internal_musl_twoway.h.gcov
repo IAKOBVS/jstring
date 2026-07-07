@@ -1,0 +1,415 @@
+        -:    0:Source:include/internal/musl/twoway.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/obj/string.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/obj/string.gcda
+        -:    0:Runs:39
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Based on musl's strstr and memmem.
+        -:    3: * Copyright © 2005-2020 Rich Felker, et al.
+        -:    4: *
+        -:    5: * Permission is hereby granted, free of charge, to any person obtaining
+        -:    6: * a copy of this software and associated documentation files (the
+        -:    7: * "Software"), to deal in the Software without restriction, including
+        -:    8: * without limitation the rights to use, copy, modify, merge, publish,
+        -:    9: * distribute, sublicense, and/or sell copies of the Software, and to
+        -:   10: * permit persons to whom the Software is furnished to do so, subject to
+        -:   11: * the following conditions:
+        -:   12: *
+        -:   13: * The above copyright notice and this permission notice shall be
+        -:   14: * included in all copies or substantial portions of the Software.
+        -:   15: *
+        -:   16: * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        -:   17: * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        -:   18: * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+        -:   19: * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+        -:   20: * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+        -:   21: * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+        -:   22: * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+        -:   23:
+        -:   24:#include "../../macros.h"
+        -:   25:
+        -:   26:#ifndef JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
+        -:   27:#	define JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
+        -:   28:
+        -:   29:typedef struct jstr_internal_twoway_ty {
+        -:   30:	size_t needle_len;
+        -:   31:	union u {
+        -:   32:		struct _t {
+        -:   33:			size_t _shift[256];
+        -:   34:			size_t _byteset[32 / sizeof(size_t)];
+        -:   35:			size_t _suffix;
+        -:   36:			size_t _global_period;
+        -:   37:			size_t _memory0;
+        -:   38:		} _t;
+        -:   39:		char _buf[4096 - sizeof(size_t)];
+        -:   40:	} u;
+        -:   41:} jstr_internal_twoway_ty;
+        -:   42:
+        -:   43:#endif
+        -:   44:
+        -:   45:#ifdef JSTR_IMPLEMENTATION
+        -:   46:
+        -:   47:#ifdef JSTR_INTERNAL_MUSL_CANON
+        -:   48:#	define CANON JSTR_INTERNAL_MUSL_CANON
+        -:   49:#else
+        -:   50:#	define CANON(c) (c)
+        -:   51:#endif
+        -:   52:#ifndef JSTR_INTERNAL_MUSL_CMP_FUNC
+        -:   53:#	define JSTR_INTERNAL_MUSL_CMP_FUNC memcmp
+        -:   54:#endif
+        -:   55:#ifndef JSTR_INTERNAL_MUSL_FUNC_NAME
+        -:   56:#	define JSTR_INTERNAL_MUSL_FUNC_NAME jstr_internal_memmem_musl
+        -:   57:#endif
+        -:   58:
+        -:   59:#define BITOP(a, b, op) ((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
+        -:   60:
+        -:   61:JSTR_FUNC_VOID
+        -:   62:JSTR_ATTR_INLINE
+        -:   63:static void
+        -:   64:JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)(jstr_internal_twoway_ty *t, const unsigned char *ne
+        -:   65:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:   66:                                         ,
+        -:   67:                                         size_t needle_len
+        -:   68:#endif
+        -:   69:                                         )
+        -:   70:JSTR_NOEXCEPT
+        -:   71:{
+        -:   72:	size_t max_suffix, j, k, period;
+        -:   73:	int a, b;
+    #####:   74:	memset(t->u._t._byteset, 0, sizeof(t->u._t._byteset));
+        -:   75:	/* Computing length of ne and fill shift table. */
+        -:   76:#ifdef JSTR_INTERNAL_MUSL_CHECK_EOL
+    #####:   77:	for (max_suffix = 0; ne[max_suffix]; ++max_suffix)
+        -:   78:#else
+    #####:   79:	for (max_suffix = 0; max_suffix < needle_len; ++max_suffix)
+        -:   80:#endif
+    #####:   81:		a = CANON(ne[max_suffix]), BITOP(t->u._t._byteset, a, |=), t->u._t._shift[a] = max_suffix + 1;
+    #####:   82:	t->needle_len = max_suffix;
+        -:   83:	/* Compute maximal suffix. */
+    #####:   84:	max_suffix = (size_t)-1, j = 0, k = t->u._t._global_period = 1;
+    #####:   85:	while (j + k < t->needle_len) {
+    #####:   86:		a = CANON(ne[max_suffix + k]);
+    #####:   87:		b = CANON(ne[j + k]);
+    #####:   88:		if (a > b) {
+    #####:   89:			j += k;
+    #####:   90:			k = 1;
+    #####:   91:			t->u._t._global_period = j - max_suffix;
+    #####:   92:		} else if (a == b) {
+    #####:   93:			if (k == t->u._t._global_period) {
+    #####:   94:				j += t->u._t._global_period;
+    #####:   95:				k = 1;
+        -:   96:			} else {
+    #####:   97:				++k;
+        -:   98:			}
+        -:   99:		} else /* a < b */ {
+    #####:  100:			max_suffix = j++;
+    #####:  101:			k = t->u._t._global_period = 1;
+        -:  102:		}
+        -:  103:	}
+    #####:  104:	t->u._t._suffix = max_suffix;
+    #####:  105:	period = t->u._t._global_period;
+        -:  106:	/* And with the opposite comparison. */
+    #####:  107:	max_suffix = (size_t)-1, j = 0, k = t->u._t._global_period = 1;
+    #####:  108:	while (j + k < t->needle_len) {
+    #####:  109:		a = CANON(ne[max_suffix + k]);
+    #####:  110:		b = CANON(ne[j + k]);
+    #####:  111:		if (a < b) {
+    #####:  112:			j += k;
+    #####:  113:			k = 1;
+    #####:  114:			t->u._t._global_period = j - max_suffix;
+    #####:  115:		} else if (a == b) {
+    #####:  116:			if (k == t->u._t._global_period) {
+    #####:  117:				j += t->u._t._global_period;
+    #####:  118:				k = 1;
+        -:  119:			} else {
+    #####:  120:				++k;
+        -:  121:			}
+        -:  122:		} else /* a > b */ {
+    #####:  123:			max_suffix = j++;
+    #####:  124:			k = t->u._t._global_period = 1;
+        -:  125:		}
+        -:  126:	}
+    #####:  127:	if (max_suffix + 1 > t->u._t._suffix + 1)
+    #####:  128:		t->u._t._suffix = max_suffix;
+        -:  129:	else
+    #####:  130:		t->u._t._global_period = period;
+        -:  131:	/* Periodic ne? */
+    #####:  132:	if (JSTR_INTERNAL_MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->u._t._global_period, t->u._t._suffix + 1)) {
+    #####:  133:		t->u._t._memory0 = 0;
+    #####:  134:		t->u._t._global_period = JSTR_MAX(t->u._t._suffix, t->needle_len - t->u._t._suffix - 1) + 1;
+        -:  135:	} else {
+    #####:  136:		t->u._t._memory0 = t->needle_len - t->u._t._global_period;
+        -:  137:	}
+    #####:  138:}
+        -:  139:
+        -:  140:JSTR_FUNC_PURE
+        -:  141:JSTR_ATTR_INLINE
+        -:  142:static char *
+        -:  143:JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(const jstr_internal_twoway_ty *t, const unsigned char *hs
+        -:  144:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  145:                                         ,
+        -:  146:                                         const size_t hs_len
+        -:  147:#endif
+        -:  148:                                         ,
+        -:  149:                                         const unsigned char *ne
+        -:  150:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  151:                                         ,
+        -:  152:                                         const size_t needle_len
+        -:  153:#endif
+        -:  154:                                         )
+        -:  155:JSTR_NOEXCEPT
+        -:  156:{
+        -:  157:	JSTR_ASSERT_DEBUG(t->needle_len != (size_t)-1, "Trying to call jstr_*exec before compiling with jstr_*comp.");
+        -:  158:	int c;
+        -:  159:	size_t k;
+    #####:  160:	size_t memory = 0;
+        -:  161:	/* Initialize end-of-haystack pointer. */
+        -:  162:#ifdef JSTR_INTERNAL_MUSL_CHECK_EOL
+    #####:  163:	const unsigned char *end = hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
+        -:  164:#else
+    #####:  165:	const unsigned char *end = hs + hs_len;
+        -:  166:	(void)needle_len;
+        -:  167:#endif
+        -:  168:	/* Search loop */
+        -:  169:	for (;;) {
+        -:  170:#ifdef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  171:		/* Update incremental end-of-haystack pointer. */
+    #####:  172:		if (jstr_unlikely(JSTR_DIFF(end, hs) < t->needle_len)) {
+        -:  173:			/* Fast estimate for MAX(t->needle_len, 2048). */
+    #####:  174:			end += jstr_strnlen((const char *)end, t->needle_len | 2048);
+    #####:  175:			if (jstr_unlikely(JSTR_DIFF(end, hs) < t->needle_len))
+    #####:  176:				break;
+        -:  177:		}
+        -:  178:#else
+        -:  179:		/* If remainder of haystack is shorter than needle, done. */
+    #####:  180:		if (jstr_unlikely(JSTR_DIFF(end, hs) < t->needle_len))
+    #####:  181:			break;
+        -:  182:#endif
+        -:  183:		/* Check last byte first; advance by shift on mismatch. */
+    #####:  184:		c = CANON(hs[t->needle_len - 1]);
+    #####:  185:		if (BITOP(t->u._t._byteset, c, &)) {
+    #####:  186:			k = t->needle_len - t->u._t._shift[c];
+    #####:  187:			if (k) {
+    #####:  188:				if (k < memory)
+    #####:  189:					k = memory;
+    #####:  190:				hs += k;
+    #####:  191:				memory = 0;
+    #####:  192:				continue;
+        -:  193:			}
+        -:  194:		} else {
+    #####:  195:			hs += t->needle_len;
+    #####:  196:			memory = 0;
+    #####:  197:			continue;
+        -:  198:		}
+        -:  199:		/* Compare right half. */
+    #####:  200:		for (k = JSTR_MAX(t->u._t._suffix + 1, memory); k < t->needle_len && CANON(ne[k]) == CANON(hs[k]); ++k) {}
+    #####:  201:		if (k < t->needle_len) {
+    #####:  202:			hs += k - t->u._t._suffix;
+    #####:  203:			memory = 0;
+    #####:  204:			continue;
+        -:  205:		}
+        -:  206:		/* Compare left half. */
+    #####:  207:		for (k = t->u._t._suffix + 1; k > memory && CANON(ne[k - 1]) == CANON(hs[k - 1]); --k) {}
+    #####:  208:		if (k <= memory)
+    #####:  209:			return (char *)hs;
+    #####:  210:		hs += t->u._t._global_period;
+    #####:  211:		memory = t->u._t._memory0;
+        -:  212:	}
+    #####:  213:	return NULL;
+        -:  214:}
+        -:  215:
+        -:  216:JSTR_FUNC_PURE
+        -:  217:static char *
+    #####:  218:JSTR_INTERNAL_MUSL_FUNC_NAME(const unsigned char *haystack
+        -:  219:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  220:                     ,
+        -:  221:                     const size_t haystack_len
+        -:  222:#endif
+        -:  223:                     ,
+        -:  224:                     const unsigned char *needle
+        -:  225:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  226:                     ,
+        -:  227:                     const size_t needle_len
+        -:  228:#endif
+        -:  229:                     )
+        -:  230:JSTR_NOEXCEPT
+        -:  231:{
+        -:  232:	jstr_internal_twoway_ty t;
+        -:  233:	JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)
+        -:  234:	(&t, (const unsigned char *)needle
+        -:  235:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  236:	 ,
+        -:  237:	 needle_len
+        -:  238:#endif
+        -:  239:	);
+    #####:  240:	return JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
+        -:  241:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  242:	                                                ,
+        -:  243:	                                                haystack_len
+        -:  244:#endif
+        -:  245:	                                                ,
+        -:  246:	                                                (const unsigned char *)needle
+        -:  247:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  248:	                                                ,
+        -:  249:	                                                needle_len
+        -:  250:#endif
+        -:  251:	);
+        -:  252:}
+------------------
+jstr_internal_strstr_musl:
+    #####:  218:JSTR_INTERNAL_MUSL_FUNC_NAME(const unsigned char *haystack
+        -:  219:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  220:                     ,
+        -:  221:                     const size_t haystack_len
+        -:  222:#endif
+        -:  223:                     ,
+        -:  224:                     const unsigned char *needle
+        -:  225:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  226:                     ,
+        -:  227:                     const size_t needle_len
+        -:  228:#endif
+        -:  229:                     )
+        -:  230:JSTR_NOEXCEPT
+        -:  231:{
+        -:  232:	jstr_internal_twoway_ty t;
+        -:  233:	JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)
+        -:  234:	(&t, (const unsigned char *)needle
+        -:  235:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  236:	 ,
+        -:  237:	 needle_len
+        -:  238:#endif
+        -:  239:	);
+    #####:  240:	return JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
+        -:  241:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  242:	                                                ,
+        -:  243:	                                                haystack_len
+        -:  244:#endif
+        -:  245:	                                                ,
+        -:  246:	                                                (const unsigned char *)needle
+        -:  247:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  248:	                                                ,
+        -:  249:	                                                needle_len
+        -:  250:#endif
+        -:  251:	);
+        -:  252:}
+------------------
+jstr_internal_strcasestr_musl:
+    #####:  218:JSTR_INTERNAL_MUSL_FUNC_NAME(const unsigned char *haystack
+        -:  219:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  220:                     ,
+        -:  221:                     const size_t haystack_len
+        -:  222:#endif
+        -:  223:                     ,
+        -:  224:                     const unsigned char *needle
+        -:  225:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  226:                     ,
+        -:  227:                     const size_t needle_len
+        -:  228:#endif
+        -:  229:                     )
+        -:  230:JSTR_NOEXCEPT
+        -:  231:{
+        -:  232:	jstr_internal_twoway_ty t;
+        -:  233:	JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)
+        -:  234:	(&t, (const unsigned char *)needle
+        -:  235:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  236:	 ,
+        -:  237:	 needle_len
+        -:  238:#endif
+        -:  239:	);
+    #####:  240:	return JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
+        -:  241:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  242:	                                                ,
+        -:  243:	                                                haystack_len
+        -:  244:#endif
+        -:  245:	                                                ,
+        -:  246:	                                                (const unsigned char *)needle
+        -:  247:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  248:	                                                ,
+        -:  249:	                                                needle_len
+        -:  250:#endif
+        -:  251:	);
+        -:  252:}
+------------------
+jstr_internal_strcasestr_len_musl:
+    #####:  218:JSTR_INTERNAL_MUSL_FUNC_NAME(const unsigned char *haystack
+        -:  219:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  220:                     ,
+        -:  221:                     const size_t haystack_len
+        -:  222:#endif
+        -:  223:                     ,
+        -:  224:                     const unsigned char *needle
+        -:  225:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  226:                     ,
+        -:  227:                     const size_t needle_len
+        -:  228:#endif
+        -:  229:                     )
+        -:  230:JSTR_NOEXCEPT
+        -:  231:{
+        -:  232:	jstr_internal_twoway_ty t;
+        -:  233:	JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)
+        -:  234:	(&t, (const unsigned char *)needle
+        -:  235:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  236:	 ,
+        -:  237:	 needle_len
+        -:  238:#endif
+        -:  239:	);
+    #####:  240:	return JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
+        -:  241:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  242:	                                                ,
+        -:  243:	                                                haystack_len
+        -:  244:#endif
+        -:  245:	                                                ,
+        -:  246:	                                                (const unsigned char *)needle
+        -:  247:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  248:	                                                ,
+        -:  249:	                                                needle_len
+        -:  250:#endif
+        -:  251:	);
+        -:  252:}
+------------------
+jstr_internal_memmem_musl:
+    #####:  218:JSTR_INTERNAL_MUSL_FUNC_NAME(const unsigned char *haystack
+        -:  219:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  220:                     ,
+        -:  221:                     const size_t haystack_len
+        -:  222:#endif
+        -:  223:                     ,
+        -:  224:                     const unsigned char *needle
+        -:  225:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  226:                     ,
+        -:  227:                     const size_t needle_len
+        -:  228:#endif
+        -:  229:                     )
+        -:  230:JSTR_NOEXCEPT
+        -:  231:{
+        -:  232:	jstr_internal_twoway_ty t;
+        -:  233:	JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)
+        -:  234:	(&t, (const unsigned char *)needle
+        -:  235:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  236:	 ,
+        -:  237:	 needle_len
+        -:  238:#endif
+        -:  239:	);
+    #####:  240:	return JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
+        -:  241:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  242:	                                                ,
+        -:  243:	                                                haystack_len
+        -:  244:#endif
+        -:  245:	                                                ,
+        -:  246:	                                                (const unsigned char *)needle
+        -:  247:#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  248:	                                                ,
+        -:  249:	                                                needle_len
+        -:  250:#endif
+        -:  251:	);
+        -:  252:}
+------------------
+        -:  253:
+        -:  254:#undef BITOP
+        -:  255:#undef CANON
+        -:  256:
+        -:  257:#endif
+        -:  258:
+        -:  259:#undef JSTR_INTERNAL_MUSL_CHECK_EOL
+        -:  260:#undef JSTR_INTERNAL_MUSL_CANON
+        -:  261:#undef JSTR_INTERNAL_MUSL_FUNC_NAME
+        -:  262:#undef JSTR_INTERNAL_MUSL_CMP_FUNC

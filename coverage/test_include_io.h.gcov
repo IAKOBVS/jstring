@@ -1,0 +1,1245 @@
+        -:    0:Source:include/io.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-io-ftw.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-io-ftw.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#ifndef JSTR_IO_H
+        -:    5:#	define JSTR_IO_H 1
+        -:    6:
+        -:    7:#	include "macros.h"
+        -:    8:#	include "struct.h"
+        -:    9:
+        -:   10:JSTR_INTERNAL_BEGIN_DECLS
+        -:   11:#	include <dirent.h>
+        -:   12:#	include <fcntl.h>
+        -:   13:#	include <limits.h>
+        -:   14:#	include <stdio.h>
+        -:   15:#	include <stdlib.h>
+        -:   16:#	include <sys/stat.h>
+        -:   17:#	include <unistd.h>
+        -:   18:#	if JSTR_HAVE_READV && JSTR_HAVE_WRITEV
+        -:   19:#		include <sys/uio.h>
+        -:   20:#	endif
+        -:   21:JSTR_INTERNAL_END_DECLS
+        -:   22:
+        -:   23:#	ifdef JSTR_IMPLEMENTATION
+        -:   24:#		undef JSTR_IMPLEMENTATION
+        -:   25:#		include "builder.h"
+        -:   26:#		include "stdstring.h"
+        -:   27:#		include "string.h"
+        -:   28:#		define JSTR_IMPLEMENTATION 1
+        -:   29:#	endif
+        -:   30:
+        -:   31:#	define R JSTR_RESTRICT
+        -:   32:
+        -:   33:JSTR_INTERNAL_BEGIN_DECLS
+        -:   34:
+        -:   35:enum {
+        -:   36:#	ifdef PATH_MAX
+        -:   37:	JSTR_IO_PATH_MAX = PATH_MAX,
+        -:   38:#	else
+        -:   39:	JSTR_IO_PATH_MAX = 4096,
+        -:   40:#	endif
+        -:   41:#	define JSTR_IO_PATH_MAX JSTR_IO_PATH_MAX
+        -:   42:#	ifdef NAME_MAX
+        -:   43:	JSTR_IO_NAME_MAX = NAME_MAX,
+        -:   44:#	else
+        -:   45:	JSTR_IO_NAME_MAX = 255,
+        -:   46:#	endif
+        -:   47:#	define JSTR_IO_NAME_MAX JSTR_IO_NAME_MAX
+        -:   48:	JSTR_IO_BINARY_CHECK_MAX = 64
+        -:   49:};
+        -:   50:
+        -:   51:JSTR_FUNC
+        -:   52:int
+    #####:   53:jstr_internal_io_isbinarysignature(const char *buf, size_t sz) JSTR_NOEXCEPT
+        -:   54:#	ifdef JSTR_IMPLEMENTATION
+        -:   55:{
+        -:   56:	enum { ELFSZ = 4,
+        -:   57:	       UTFSZ = 3 };
+    #####:   58:	const unsigned char *p = (const unsigned char *)buf;
+    #####:   59:	if (jstr_likely(sz >= ELFSZ)) {
+        -:   60:#		if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
+    #####:   61:		const unsigned char elf[] = { 0x7F, 'E', 'L', 'F' };
+        -:   62:		JSTR_STATIC_ASSERT(sizeof(elf) == ELFSZ, "");
+    #####:   63:		if (!memcmp(p, elf, 4))
+    #####:   64:			return 0;
+        -:   65:#		else
+        -:   66:		if (p[0] == 0x7F && p[1] == 'E' && p[2] == 'L' && p[3] == 'F')
+        -:   67:			return 0;
+        -:   68:#		endif
+    #####:   69:		goto check_utf;
+    #####:   70:	} else if (jstr_likely(sz == UTFSZ)) {
+    #####:   71:check_utf:;
+        -:   72:#		if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
+    #####:   73:		const unsigned char utf[] = { 0xEF, 0xBB /*, 0xBF */ };
+        -:   74:		JSTR_STATIC_ASSERT(sizeof(utf) + 1 == UTFSZ, "");
+    #####:   75:		if (!memcmp(p, utf, 2) && p[2] == 0xBF)
+    #####:   76:			return 1;
+        -:   77:#		else
+        -:   78:		if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
+        -:   79:			return 1;
+        -:   80:#		endif
+        -:   81:	}
+    #####:   82:	return -1;
+        -:   83:}
+        -:   84:#	else
+        -:   85:;
+        -:   86:#	endif
+        -:   87:
+        -:   88:#	if JSTR_OS_WINDOWS || JSTR_OS_WINDOWSCE
+        -:   89:#		define FORM_FEED_IS_BINARY 0
+        -:   90:#	else
+        -:   91:#		define FORM_FEED_IS_BINARY 1
+        -:   92:#	endif
+        -:   93:
+        -:   94:/* Check if the first JSTR_IO_BINARY_CHECK_MAX bytes or fewer contain any
+        -:   95: * unprintable char. */
+        -:   96:JSTR_FUNC
+        -:   97:int
+    #####:   98:jstr_io_isbinary_maybe(const char *buf, size_t sz) JSTR_NOEXCEPT
+        -:   99:#	ifdef JSTR_IMPLEMENTATION
+        -:  100:{
+    #####:  101:	if (jstr_unlikely(sz == 0))
+    #####:  102:		return 0;
+    #####:  103:	const int ret = jstr_internal_io_isbinarysignature(buf, sz);
+    #####:  104:	if (ret != -1)
+    #####:  105:		return ret;
+    #####:  106:	sz = JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX);
+    #####:  107:	const unsigned char *s = (unsigned char *)buf;
+    #####:  108:	for (; sz--; ++s)
+    #####:  109:		if ((*s < ' ' && jstr_unlikely(*s != '\t' && *s != '\n')) || jstr_unlikely(*s == 127))
+    #####:  110:			return 1;
+    #####:  111:	return 0;
+        -:  112:}
+        -:  113:#	else
+        -:  114:;
+        -:  115:#	endif
+        -:  116:
+        -:  117:/* Check the whole file for a NUL byte.
+        -:  118: * File must be nul terminated. */
+        -:  119:JSTR_FUNC_PURE
+        -:  120:int
+    #####:  121:jstr_io_isbinary(const char *buf, size_t sz) JSTR_NOEXCEPT
+        -:  122:#	ifdef JSTR_IMPLEMENTATION
+        -:  123:{
+    #####:  124:	const int ret = jstr_internal_io_isbinarysignature(buf, sz);
+    #####:  125:	if (ret != -1)
+    #####:  126:		return ret;
+    #####:  127:	return strlen(buf) != sz;
+        -:  128:}
+        -:  129:#	else
+        -:  130:;
+        -:  131:#	endif
+        -:  132:
+        -:  133:/* Check MIN(N, SZ) bytes for any unprintable char. */
+        -:  134:JSTR_FUNC
+        -:  135:int
+    #####:  136:jstr_isbinary(const char *buf, size_t sz, size_t n) JSTR_NOEXCEPT
+        -:  137:#	ifdef JSTR_IMPLEMENTATION
+        -:  138:{
+    #####:  139:	if (jstr_unlikely(sz == 0))
+    #####:  140:		return 0;
+    #####:  141:	const unsigned char *s = (const unsigned char *)buf;
+    #####:  142:	for (n = JSTR_MIN(n, sz); n--; ++s)
+    #####:  143:		if ((*s < ' ' && jstr_unlikely(*s != '\t' && *s != '\n')) || jstr_unlikely(*s == 127))
+    #####:  144:			return 1;
+    #####:  145:	return 0;
+        -:  146:}
+        -:  147:#	else
+        -:  148:;
+        -:  149:#	endif
+        -:  150:
+        -:  151:JSTR_FUNC
+        -:  152:jstr_ret_ty
+        2:  153:jstr_io_writefilefd_len(const char *s, size_t sz, int fd) JSTR_NOEXCEPT
+        -:  154:#	ifdef JSTR_IMPLEMENTATION
+        -:  155:{
+        2:  156:	if (jstr_unlikely(sz == 0))
+    #####:  157:		return JSTR_RET_SUCC;
+        -:  158:#		if JSTR_HAVE_WRITEV
+        2:  159:	struct iovec iov[] = {
+        -:  160:		{ .iov_base = (void *)s,    .iov_len = sz                          },
+        2:  161:		{ .iov_base = (void *)"\n", .iov_len = (s[sz - 1] != '\n') ? 1 : 0 }
+        -:  162:	};
+        2:  163:	const struct iovec *iop = iov;
+        2:  164:	int iol = JSTR_ARRAY_COUNT(iov);
+        -:  165:	ssize_t write_sz;
+        2:  166:	size_t left = iov[0].iov_len + iov[1].iov_len;
+        -:  167:	/* Handle partial writev */
+        -:  168:	for (;;) {
+       2*:  169:		write_sz = writev(fd, iop, iol);
+        -:  170:		/* Error */
+        2:  171:		if (jstr_unlikely(write_sz < 0))
+    #####:  172:			JSTR_RETURN_ERR(JSTR_RET_ERR);
+        2:  173:		left -= (size_t)write_sz;
+        -:  174:		/* Update iov */
+        2:  175:		if (jstr_likely(left == 0)) {
+        2:  176:			break;
+    #####:  177:		} else if (left > 1) {
+    #####:  178:			iov[0].iov_base = (unsigned char *)iov[0].iov_base + write_sz;
+    #####:  179:			iov[0].iov_len -= (size_t)write_sz;
+        -:  180:		} else { /* left == 1 */
+    #####:  181:			++iop;
+    #####:  182:			--iol;
+        -:  183:		}
+        -:  184:	}
+        2:  185:	return JSTR_RET_SUCC;
+        -:  186:#		else
+        -:  187:	ssize_t write_sz;
+        -:  188:	size_t left = sz;
+        -:  189:	const char *src = s;
+        -:  190:	/* Handle partial write */
+        -:  191:	for (; left; left -= (size_t)write_sz, src += write_sz) {
+        -:  192:		write_sz = write(fd, src, left);
+        -:  193:		/* Error */
+        -:  194:		if (jstr_unlikely(write_sz < 0))
+        -:  195:			JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  196:	}
+        -:  197:	if (s[sz - 1] != '\n')
+        -:  198:		do {
+        -:  199:			write_sz = write(fd, "\n", 1);
+        -:  200:			if (jstr_unlikely(write_sz < 0))
+        -:  201:				JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  202:		} while (write_sz != 1);
+        -:  203:	return JSTR_RET_SUCC;
+        -:  204:#		endif
+        -:  205:}
+        -:  206:#	else
+        -:  207:;
+        -:  208:#	endif
+        -:  209:
+        -:  210:/* MODE is used to specify the file permission when using O_CREAT.
+        -:  211: * Otherwise, MODE is ignored. */
+        -:  212:JSTR_FUNC
+        -:  213:jstr_ret_ty
+        2:  214:jstr_io_writefile_len(const char *R s, size_t sz, const char *R fname, int oflag, int mode) JSTR_NOEXCEPT
+        -:  215:#	ifdef JSTR_IMPLEMENTATION
+        -:  216:{
+        2:  217:	const int fd = open(fname, oflag | O_WRONLY, mode);
+        2:  218:	if (jstr_unlikely(fd < 0))
+    #####:  219:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        2:  220:	if (jstr_chk(jstr_io_writefilefd_len(s, sz, fd))) {
+    #####:  221:		close(fd);
+    #####:  222:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  223:	}
+        2:  224:	if (jstr_unlikely(close(fd)))
+    #####:  225:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        2:  226:	return JSTR_RET_SUCC;
+        -:  227:}
+        -:  228:#	else
+        -:  229:;
+        -:  230:#	endif
+        -:  231:
+        -:  232:JSTR_FUNC
+        -:  233:jstr_ret_ty
+    #####:  234:jstr_io_fwritefilefp_len(const char *R s, size_t sz, FILE *fp) JSTR_NOEXCEPT
+        -:  235:#	ifdef JSTR_IMPLEMENTATION
+        -:  236:{
+    #####:  237:	if (jstr_unlikely(sz == 0))
+    #####:  238:		return JSTR_RET_SUCC;
+    #####:  239:	if (jstr_unlikely(jstr_io_fwrite(s, 1, sz, fp) != sz))
+    #####:  240:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  241:	if (s[sz - 1] != '\n' && jstr_io_putc('\n', fp) == EOF)
+    #####:  242:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  243:	return JSTR_RET_SUCC;
+        -:  244:}
+        -:  245:#	else
+        -:  246:;
+        -:  247:#	endif
+        -:  248:
+        -:  249:JSTR_FUNC
+        -:  250:jstr_ret_ty
+    #####:  251:jstr_io_fwritefile_len(const char *R s, size_t sz, const char *R fname, const char *R modes) JSTR_NOEXCEPT
+        -:  252:#	ifdef JSTR_IMPLEMENTATION
+        -:  253:{
+    #####:  254:	FILE *R fp = fopen(fname, modes);
+    #####:  255:	if (jstr_nullchk(fp))
+    #####:  256:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  257:	if (jstr_unlikely(jstr_io_fwritefilefp_len(s, sz, fp))) {
+    #####:  258:		fclose(fp);
+    #####:  259:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  260:	}
+    #####:  261:	if (jstr_unlikely(fclose(fp)))
+    #####:  262:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  263:	return JSTR_RET_SUCC;
+        -:  264:}
+        -:  265:#	else
+        -:  266:;
+        -:  267:#	endif
+        -:  268:
+        -:  269:JSTR_FUNC
+        -:  270:jstr_ret_ty
+        2:  271:jstr_io_readfilefd_len(char *R *R s, size_t *R sz, size_t *R cap, int fd, size_t file_size) JSTR_NOEXCEPT
+        -:  272:#	ifdef JSTR_IMPLEMENTATION
+        -:  273:{
+        2:  274:	if (jstr_chk(jstr_reserve(s, sz, cap, file_size + 1)))
+    #####:  275:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        2:  276:	char *dst = *s;
+        2:  277:	size_t left = file_size;
+        -:  278:	ssize_t read_sz;
+        4:  279:	for (; left; dst += read_sz, left -= (size_t)read_sz) {
+        2:  280:		read_sz = read(fd, dst, left);
+        -:  281:		/* Error */
+        2:  282:		if (jstr_unlikely(read_sz < 0))
+    #####:  283:			JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  284:		/* EOF */
+        2:  285:		if (jstr_unlikely(read_sz == 0))
+    #####:  286:			JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  287:	}
+        2:  288:	*(*s + file_size) = '\0';
+        2:  289:	*sz = file_size;
+        2:  290:	return JSTR_RET_SUCC;
+        -:  291:}
+        -:  292:#	else
+        -:  293:;
+        -:  294:#	endif
+        -:  295:
+        -:  296:JSTR_FUNC
+        -:  297:jstr_ret_ty
+    #####:  298:jstr_io_readfilefd(char *R *R s, size_t *R sz, size_t *R cap, int fd, struct stat *st) JSTR_NOEXCEPT
+        -:  299:#	ifdef JSTR_IMPLEMENTATION
+        -:  300:{
+    #####:  301:	if (jstr_unlikely(fstat(fd, st)))
+    #####:  302:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  303:	return jstr_io_readfilefd_len(s, sz, cap, fd, (size_t)st->st_size);
+        -:  304:}
+        -:  305:#	else
+        -:  306:;
+        -:  307:#	endif
+        -:  308:
+        -:  309:JSTR_FUNC
+        -:  310:jstr_ret_ty
+    #####:  311:jstr_io_freadfilefp_len(char *R *R s, size_t *R sz, size_t *R cap, FILE *fp, size_t file_size) JSTR_NOEXCEPT
+        -:  312:#	ifdef JSTR_IMPLEMENTATION
+        -:  313:{
+    #####:  314:	if (jstr_chk(jstr_reserve(s, sz, cap, file_size + 1)))
+    #####:  315:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  316:	if (jstr_unlikely(file_size != (size_t)jstr_io_fread(*s, 1, file_size, fp)))
+    #####:  317:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  318:	*(*s + file_size) = '\0';
+    #####:  319:	*sz = file_size;
+    #####:  320:	return JSTR_RET_SUCC;
+        -:  321:}
+        -:  322:#	else
+        -:  323:;
+        -:  324:#	endif
+        -:  325:
+        -:  326:JSTR_FUNC
+        -:  327:jstr_ret_ty
+    #####:  328:jstr_io_freadfilefp(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, FILE *fp, struct stat *st) JSTR_NOEXCEPT
+        -:  329:#	ifdef JSTR_IMPLEMENTATION
+        -:  330:{
+        -:  331:#		if JSTR_HAVE_FILENO
+    #####:  332:	const int fd = jstr_io_fileno(fp);
+    #####:  333:	if (jstr_unlikely(fd < 0))
+    #####:  334:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  335:	if (jstr_unlikely(fstat(fd, st)))
+    #####:  336:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  337:#		else
+        -:  338:	if (jstr_unlikely(stat(fname, st)))
+        -:  339:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  340:#		endif
+    #####:  341:	return jstr_io_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size);
+        -:  342:	(void)fname;
+        -:  343:}
+        -:  344:#	else
+        -:  345:;
+        -:  346:#	endif
+        -:  347:
+        -:  348:JSTR_FUNC
+        -:  349:jstr_ret_ty
+    #####:  350:jstr_io_freadfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, const char *R modes, const size_t file_size) JSTR_NOEXCEPT
+        -:  351:#	ifdef JSTR_IMPLEMENTATION
+        -:  352:{
+    #####:  353:	FILE *fp = fopen(fname, modes);
+    #####:  354:	if (jstr_nullchk(fp))
+    #####:  355:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  356:	if (jstr_chk(jstr_io_freadfilefp_len(s, sz, cap, fp, (size_t)file_size))) {
+    #####:  357:		fclose(fp);
+    #####:  358:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  359:	}
+    #####:  360:	if (jstr_unlikely(fclose(fp)))
+    #####:  361:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  362:	return JSTR_RET_SUCC;
+        -:  363:}
+        -:  364:#	else
+        -:  365:;
+        -:  366:#	endif
+        -:  367:
+        -:  368:JSTR_FUNC
+        -:  369:jstr_ret_ty
+    #####:  370:jstr_io_freadfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, const char *R modes, struct stat *st) JSTR_NOEXCEPT
+        -:  371:#	ifdef JSTR_IMPLEMENTATION
+        -:  372:{
+    #####:  373:	FILE *fp = fopen(fname, modes);
+    #####:  374:	if (jstr_nullchk(fp))
+    #####:  375:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  376:#		if JSTR_HAVE_FILENO
+        -:  377:	int fd;
+    #####:  378:	fd = jstr_io_fileno(fp);
+    #####:  379:	if (jstr_unlikely(fd < 0)) {
+    #####:  380:		fclose(fp);
+    #####:  381:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  382:	}
+    #####:  383:	if (jstr_unlikely(fstat(fd, st))) {
+    #####:  384:		fclose(fp);
+    #####:  385:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  386:	}
+        -:  387:#		else
+        -:  388:	if (jstr_unlikely(stat(fname, st))) {
+        -:  389:		fclose(fp);
+        -:  390:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  391:	}
+        -:  392:#		endif
+    #####:  393:	if (jstr_chk(jstr_io_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size))) {
+    #####:  394:		fclose(fp);
+    #####:  395:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  396:	}
+    #####:  397:	if (jstr_unlikely(fclose(fp)))
+    #####:  398:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  399:	return JSTR_RET_SUCC;
+        -:  400:}
+        -:  401:#	else
+        -:  402:;
+        -:  403:#	endif
+        -:  404:
+        -:  405:JSTR_FUNC
+        -:  406:jstr_ret_ty
+        2:  407:jstr_io_readfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, int oflag, size_t file_size) JSTR_NOEXCEPT
+        -:  408:#	ifdef JSTR_IMPLEMENTATION
+        -:  409:{
+        2:  410:	const int fd = open(fname, oflag | O_RDONLY);
+        2:  411:	if (jstr_unlikely(fd < 0))
+    #####:  412:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        2:  413:	if (jstr_chk(jstr_io_readfilefd_len(s, sz, cap, fd, file_size))) {
+    #####:  414:		close(fd);
+    #####:  415:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  416:	}
+        2:  417:	if (jstr_unlikely(close(fd)))
+    #####:  418:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        2:  419:	return JSTR_RET_SUCC;
+        -:  420:}
+        -:  421:#	else
+        -:  422:;
+        -:  423:#	endif
+        -:  424:
+        -:  425:/* Return value:
+        -:  426: * JSTR_RET_ERR on error.
+        -:  427: * Otherwise, JSTR_RET_SUCC. */
+        -:  428:JSTR_FUNC
+        -:  429:jstr_ret_ty
+    #####:  430:jstr_io_readfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, int oflag) JSTR_NOEXCEPT
+        -:  431:#	ifdef JSTR_IMPLEMENTATION
+        -:  432:{
+    #####:  433:	int fd = open(fname, oflag | O_RDONLY);
+    #####:  434:	if (jstr_unlikely(fd < 0))
+    #####:  435:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  436:#		if JSTR_HAVE_PREAD
+    #####:  437:	const off_t file_size = lseek(fd, 0, SEEK_END);
+    #####:  438:	if (jstr_unlikely(file_size < 0)) {
+    #####:  439:		close(fd);
+    #####:  440:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  441:	}
+    #####:  442:	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)file_size + 1))) {
+    #####:  443:		close(fd);
+    #####:  444:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  445:	}
+    #####:  446:	char *dst = *s;
+    #####:  447:	size_t off = 0;
+    #####:  448:	size_t left = (size_t)file_size;
+        -:  449:	ssize_t read_sz;
+    #####:  450:	for (; left; dst += read_sz, left -= (size_t)read_sz, off += (long unsigned int)read_sz) {
+    #####:  451:		read_sz = pread(fd, dst, left, (ssize_t)off);
+        -:  452:		/* Error */
+    #####:  453:		if (jstr_unlikely(read_sz < 0)) {
+    #####:  454:			close(fd);
+    #####:  455:			JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  456:		}
+        -:  457:		/* EOF */
+    #####:  458:		if (jstr_unlikely(read_sz == 0)) {
+    #####:  459:			close(fd);
+    #####:  460:			JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  461:		}
+        -:  462:	}
+    #####:  463:	if (jstr_unlikely(close(fd) < 0))
+    #####:  464:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  465:	*(*s + file_size) = '\0';
+    #####:  466:	*sz = (size_t)file_size;
+    #####:  467:	return JSTR_RET_SUCC;
+        -:  468:#		else
+        -:  469:	struct stat st;
+        -:  470:	if (jstr_unlikely(fstat(fd, &st))) {
+        -:  471:		close(fd);
+        -:  472:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  473:	}
+        -:  474:	if (jstr_chk(jstr_io_readfilefd_len(s, sz, cap, fd, (size_t)st.st_size))) {
+        -:  475:		close(fd);
+        -:  476:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  477:	}
+        -:  478:	if (jstr_unlikely(close(fd) < 0))
+        -:  479:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  480:	return JSTR_RET_SUCC;
+        -:  481:#		endif
+        -:  482:}
+        -:  483:#	else
+        -:  484:;
+        -:  485:#	endif
+        -:  486:
+        -:  487:/* Expand ~/some_dir to /home/username/some_dir,
+        -:  488: * ~ being the first character.
+        -:  489: * Assume that S has enough space.
+        -:  490: * Return value:
+        -:  491: * ptr to '\0' in S.
+        -:  492: * NULL on error. */
+        -:  493:JSTR_FUNC
+        -:  494:char *
+    #####:  495:jstr_io_expandtildefirst_len_unsafe_p(char *s, size_t sz) JSTR_NOEXCEPT
+        -:  496:#	ifdef JSTR_IMPLEMENTATION
+        -:  497:{
+    #####:  498:	if (*s != '~')
+    #####:  499:		return s + sz;
+    #####:  500:	const char *home = getenv("HOME");
+    #####:  501:	if (jstr_nullchk(home))
+    #####:  502:		JSTR_RETURN_ERR_P(NULL);
+    #####:  503:	const size_t len = strlen(home);
+    #####:  504:	jstr_strmove_len(s + len, s + 1, JSTR_DIFF(s + sz, s + 1));
+    #####:  505:	memcpy(s, home, len);
+    #####:  506:	return s + sz + len - 1;
+        -:  507:}
+        -:  508:#	else
+        -:  509:;
+        -:  510:#	endif
+        -:  511:
+        -:  512:/* Expand ~/some_dir to /home/username/some_dir,
+        -:  513: * ~ being the first character.
+        -:  514: * Return value:
+        -:  515: * ptr to '\0' in S.
+        -:  516: * NULL on error. */
+        -:  517:JSTR_FUNC
+        -:  518:jstr_ret_ty
+        2:  519:jstr_io_expandtildefirst(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
+        -:  520:#	ifdef JSTR_IMPLEMENTATION
+        -:  521:{
+        2:  522:	if (**s != '~')
+        1:  523:		return JSTR_RET_SUCC;
+        1:  524:	const char *home = getenv("HOME");
+        1:  525:	if (jstr_nullchk(home))
+    #####:  526:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        1:  527:	const size_t len = strlen(home);
+        1:  528:	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + len + 1)))
+    #####:  529:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        1:  530:	jstr_strmove_len(*s + len, *s + 1, JSTR_DIFF(*s + *sz, *s + 1));
+        1:  531:	memcpy(*s, home, len);
+        1:  532:	*sz += len;
+        1:  533:	return JSTR_RET_SUCC;
+        -:  534:}
+        -:  535:#	else
+        -:  536:;
+        -:  537:#	endif
+        -:  538:
+        -:  539:#	if JSTR_HAVE_POPEN
+        -:  540:
+        -:  541:JSTR_FUNC
+        -:  542:jstr_ret_ty
+    #####:  543:jstr_io_readsystem(char *R *R s, size_t *R sz, size_t *R cap, const char *R cmd) JSTR_NOEXCEPT
+        -:  544:#		ifdef JSTR_IMPLEMENTATION
+        -:  545:{
+        -:  546:	enum { MINBUF = JSTR_PAGE_SIZE };
+    #####:  547:	FILE *fp = popen(cmd, "r");
+    #####:  548:	if (jstr_nullchk(fp))
+    #####:  549:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  550:	char buf[MINBUF];
+    #####:  551:	size_t read_sz = jstr_io_fread(buf, 1, sizeof(buf), fp);
+    #####:  552:	if (jstr_unlikely(read_sz == 0)) {
+    #####:  553:		pclose(fp);
+    #####:  554:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  555:	}
+    #####:  556:	const size_t initialsz = (size_t)read_sz == sizeof(buf) ? read_sz * JSTR_GROWTH : read_sz + 1;
+    #####:  557:	if (jstr_chk(jstr_reserve(s, sz, cap, initialsz))) {
+    #####:  558:		pclose(fp);
+    #####:  559:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  560:	}
+    #####:  561:	memcpy(*s, buf, read_sz);
+    #####:  562:	*sz = read_sz;
+    #####:  563:	if (jstr_unlikely(read_sz == MINBUF)) {
+        -:  564:		size_t requested_sz;
+        -:  565:		for (;;) {
+    #####:  566:			requested_sz = *cap - *sz;
+    #####:  567:			read_sz = jstr_io_fread(*s + *sz, 1, requested_sz, fp);
+    #####:  568:			if (jstr_unlikely(read_sz == (size_t)-1)) {
+    #####:  569:				pclose(fp);
+    #####:  570:				JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  571:			}
+    #####:  572:			*sz += read_sz;
+    #####:  573:			if (read_sz < requested_sz) {
+        -:  574:				/* EOF */
+    #####:  575:				if (feof(fp))
+    #####:  576:					break;
+    #####:  577:				if (jstr_unlikely(ferror(fp))) {
+    #####:  578:					clearerr(fp);
+    #####:  579:					pclose(fp);
+    #####:  580:					JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  581:				}
+        -:  582:			}
+    #####:  583:			if (*sz == *cap)
+    #####:  584:				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH)))) {
+    #####:  585:					pclose(fp);
+    #####:  586:					JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  587:				}
+        -:  588:		}
+        -:  589:	}
+    #####:  590:	*(*s + *sz) = '\0';
+    #####:  591:	if (jstr_unlikely(pclose(fp) < 0))
+    #####:  592:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  593:	return JSTR_RET_SUCC;
+        -:  594:}
+        -:  595:#		else
+        -:  596:;
+        -:  597:#		endif
+        -:  598:
+        -:  599:#	endif
+        -:  600:
+        -:  601:JSTR_FUNC
+        -:  602:jstr_ret_ty
+    #####:  603:jstr_io_readstdin(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
+        -:  604:#	ifdef JSTR_IMPLEMENTATION
+        -:  605:{
+        -:  606:	char buf[BUFSIZ];
+    #####:  607:	ssize_t read_sz = read(STDIN_FILENO, buf, sizeof(buf));
+    #####:  608:	if (jstr_unlikely(read_sz == (ssize_t)-1))
+    #####:  609:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  610:	const size_t initialsz = (size_t)(read_sz == sizeof(buf) ? read_sz * JSTR_GROWTH : read_sz + 1);
+    #####:  611:	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)initialsz)))
+    #####:  612:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  613:	memcpy(*s, buf, (size_t)read_sz);
+    #####:  614:	*sz = (size_t)read_sz;
+    #####:  615:	if (jstr_unlikely(read_sz == BUFSIZ)) {
+        -:  616:		ssize_t requested_sz;
+        -:  617:		for (;;) {
+    #####:  618:			requested_sz = (ssize_t)(*cap - *sz);
+    #####:  619:			read_sz = read(STDIN_FILENO, *s + *sz, (size_t)requested_sz);
+    #####:  620:			if (jstr_unlikely(read_sz == (ssize_t)-1))
+    #####:  621:				JSTR_RETURN_ERR(JSTR_RET_ERR);
+    #####:  622:			*sz += (size_t)read_sz;
+    #####:  623:			if (read_sz < requested_sz)
+    #####:  624:				break;
+    #####:  625:			if (*sz == *cap)
+    #####:  626:				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH))))
+    #####:  627:					JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  628:		}
+        -:  629:	}
+    #####:  630:	*(*s + *sz) = '\0';
+    #####:  631:	return JSTR_RET_SUCC;
+        -:  632:}
+        -:  633:#	else
+        -:  634:;
+        -:  635:#	endif
+        -:  636:
+        -:  637:JSTR_FUNC_RET_NONNULL
+        -:  638:char *
+        5:  639:jstr_io_appendpath_len_p(char *R path, size_t sz, const char *R fname, size_t fname_len) JSTR_NOEXCEPT
+        -:  640:#	ifdef JSTR_IMPLEMENTATION
+        -:  641:{
+        5:  642:	*(path + sz) = '/';
+        5:  643:	jstr_strcpy_len(path + sz + 1, fname, fname_len);
+        5:  644:	return path + sz + 1 + fname_len;
+        -:  645:}
+        -:  646:#	else
+        -:  647:;
+        -:  648:#	endif
+        -:  649:
+        -:  650:JSTR_FUNC_RET_NONNULL
+        -:  651:char *
+    #####:  652:jstr_io_appendpath_p(char *R path, size_t sz, const char *R fname) JSTR_NOEXCEPT
+        -:  653:#	ifdef JSTR_IMPLEMENTATION
+        -:  654:{
+    #####:  655:	*(path + sz) = '/';
+    #####:  656:	return jstr_stpcpy(path + sz + 1, fname);
+        -:  657:}
+        -:  658:#	else
+        -:  659:;
+        -:  660:#	endif
+        -:  661:
+        -:  662:JSTR_FUNC
+        -:  663:jstr_ret_ty
+        1:  664:jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, size_t fname_len) JSTR_NOEXCEPT
+        -:  665:#	ifdef JSTR_IMPLEMENTATION
+        -:  666:{
+        1:  667:	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len + 2)))
+    #####:  668:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        1:  669:	*sz = JSTR_DIFF(jstr_io_appendpath_len_p(*s, *sz, fname, fname_len), *s);
+        1:  670:	return JSTR_RET_SUCC;
+        -:  671:}
+        -:  672:#	else
+        -:  673:;
+        -:  674:#	endif
+        -:  675:
+        -:  676:#	ifdef _DIRENT_HAVE_D_NAMLEN
+        -:  677:#		ifndef _D_EXACT_NAMLEN
+        -:  678:#			define JSTR_DIRENT_D_EXACT_NAMLEN(d) ((d)->d_namlen)
+        -:  679:#		else
+        -:  680:#			define JSTR_DIRENT_D_EXACT_NAMLEN(d) _D_EXACT_NAMLEN(d)
+        -:  681:#		endif
+        -:  682:#		ifndef _D_ALLOC_NAMLEN
+        -:  683:#			define JSTR_DIRENT_D_ALLOC_NAMLEN(d) \
+        -:  684:				(JSTR_DIRENT_D_EXACT_NAMLEN(d) + 1)
+        -:  685:#		else
+        -:  686:#			define JSTR_DIRENT_D_ALLOC_NAMLEN(d) _D_ALLOC_NAMLEN(d)
+        -:  687:#		endif
+        -:  688:#	else
+        -:  689:#		ifndef _D_EXACT_NAMLEN
+        -:  690:#			define JSTR_DIRENT_D_EXACT_NAMLEN(d) (strlen((d)->d_name))
+        -:  691:#		else
+        -:  692:#			define JSTR_DIRENT_D_EXACT_NAMLEN(d) _D_EXACT_NAMLEN(d)
+        -:  693:#		endif
+        -:  694:#		ifndef _D_ALLOC_NAMLEN
+        -:  695:#			define JSTR_DIRENT_D_ALLOC_NAMLEN(d) _D_ALLOC_NAMLEN(d)
+        -:  696:#		else
+        -:  697:#			ifdef _DIRENT_HAVE_D_RECLEN
+        -:  698:#				define JSTR_DIRENT_D_ALLOC_NAMLEN(d) \
+        -:  699:					(((char *)(d) + (d)->d_reclen) - &(d)->d_name[0])
+        -:  700:#			else
+        -:  701:#				define JSTR_DIRENT_D_ALLOC_NAMLEN(d) \
+        -:  702:					(sizeof(d)->d_name > 1 ? sizeof(d)->d_name : JSTR_DIRENT_D_EXACT_NAMLEN(d) + 1)
+        -:  703:#			endif
+        -:  704:#		endif
+        -:  705:#	endif
+        -:  706:
+        -:  707:/* If JSTR_IO_ACTION_RETVAL is passed, use these as return values of FUNC. */
+        -:  708:typedef enum jstr_io_ftw_actionretval_ty {
+        -:  709:	JSTR_IO_FTW_RET_STOP = 0,
+        -:  710:#	define JSTR_IO_FTW_RET_STOP JSTR_IO_FTW_RET_STOP
+        -:  711:	JSTR_IO_FTW_RET_CONTINUE,
+        -:  712:#	define JSTR_IO_FTW_RET_CONTINUE JSTR_IO_FTW_RET_CONTINUE
+        -:  713:	/* Skip sibling entries. */
+        -:  714:	JSTR_IO_FTW_RET_SKIP_SIBLINGS,
+        -:  715:#	define JSTR_IO_FTW_RET_SKIP_SIBLINGS JSTR_IO_FTW_RET_SKIP_SIBLINGS
+        -:  716:	/* Skip subdirectories. */
+        -:  717:	JSTR_IO_FTW_RET_SKIP_SUBTREE
+        -:  718:#	define JSTR_IO_FTW_RET_SKIP_SUBTREE JSTR_IO_FTW_RET_SKIP_SUBTREE
+        -:  719:} jstr_io_ftw_actionretval_ty;
+        -:  720:
+        -:  721:typedef enum jstr_io_ftw_flag_ty {
+        -:  722:	/* Match glob with FULPATH instead of d_name. */
+        -:  723:	JSTR_IO_FTW_MATCHPATH = (1),
+        -:  724:#	define JSTR_IO_FTW_MATCHPATH JSTR_IO_FTW_MATCHPATH
+        -:  725:	/* Call FUNC on regular files. */
+        -:  726:	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCHPATH << 1),
+        -:  727:#	define JSTR_IO_FTW_REG JSTR_IO_FTW_REG
+        -:  728:	/* Call FUNC on directories. */
+        -:  729:	JSTR_IO_FTW_DIR = (JSTR_IO_FTW_REG << 1),
+        -:  730:#	define JSTR_IO_FTW_DIR JSTR_IO_FTW_DIR
+        -:  731:	/* Do not traverse subdirectories. */
+        -:  732:	JSTR_IO_FTW_NOSUBDIR = (JSTR_IO_FTW_DIR << 1),
+        -:  733:#	define JSTR_IO_FTW_NOSUBDIR JSTR_IO_FTW_NOSUBDIR
+        -:  734:	/* Do not call stat. Only st.st_mode is defined. */
+        -:  735:	JSTR_IO_FTW_NOSTAT = (JSTR_IO_FTW_NOSUBDIR << 1),
+        -:  736:#	define JSTR_IO_FTW_NOSTAT JSTR_IO_FTW_NOSTAT
+        -:  737:	/* Only call stat on regular files. */
+        -:  738:	JSTR_IO_FTW_STATREG = (JSTR_IO_FTW_NOSTAT << 1),
+        -:  739:#	define JSTR_IO_FTW_STATREG JSTR_IO_FTW_STATREG
+        -:  740:	/* Ignore hidden entries. */
+        -:  741:	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STATREG << 1),
+        -:  742:#	define JSTR_IO_FTW_NOHIDDEN JSTR_IO_FTW_NOHIDDEN
+        -:  743:	/* Handle FUNC return value according to jstr_io_ftw_actionretval_ty. */
+        -:  744:	JSTR_IO_FTW_ACTIONRETVAL = (JSTR_IO_FTW_NOHIDDEN << 1)
+        -:  745:#	define JSTR_IO_FTW_ACTIONRETVAL JSTR_IO_FTW_ACTIONRETVAL
+        -:  746:} jstr_io_ftw_flag_ty;
+        -:  747:
+        -:  748:#	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+        -:  749:#		define USE_ATFILE 1
+        -:  750:#	else
+        -:  751:#		define USE_ATFILE 0
+        -:  752:#	endif
+        -:  753:
+        -:  754:#	define NONFATAL_ERR() \
+        -:  755:		(jstr_likely(errno == EACCES) || jstr_likely(errno == ENOENT))
+        -:  756:
+        -:  757:/* If have d_namlen, save a strlen. */
+        -:  758:#	if JSTR_HAVE_DIRENT_D_NAMLEN
+        -:  759:#		define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                           \
+        -:  760:			do {                                                                              \
+        -:  761:				*(dirpath + dirpath_len) = '/';                                           \
+        -:  762:				jstr_strcpy_len(dirpath + dirpath_len + 1, (ep)->d_name, (ep)->d_namlen); \
+        -:  763:				newpath_len = dirpath_len + 1 + (ep)->d_namlen;                           \
+        -:  764:			} while (0)
+        -:  765:/* Otherwise, need to strlen. */
+        -:  766:#	else
+        -:  767:#		define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                                         \
+        -:  768:			do {                                                                                            \
+        -:  769:				*(dirpath + dirpath_len) = '/';                                                         \
+        -:  770:				newpath_len = JSTR_DIFF(jstr_stpcpy(dirpath + dirpath_len + 1, (ep)->d_name), dirpath); \
+        -:  771:			} while (0)
+        -:  772:#	endif
+        -:  773:
+        -:  774:/* If have *_at functions, avoid constructing the path. */
+        -:  775:#	if USE_ATFILE
+        -:  776:#		define OPENDIR(fd, fname) fdopendir(fd)
+        -:  777:#		define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err)               \
+        -:  778:			do {                                                           \
+        -:  779:				if (jstr_unlikely(fstatat(fd, (ep)->d_name, st, 0))) { \
+        -:  780:					if (NONFATAL_ERR()) {                          \
+        -:  781:						do_on_nonfatal_err;                    \
+        -:  782:					}                                              \
+        -:  783:					closedir(dp);                                  \
+        -:  784:					JSTR_RETURN_ERR(JSTR_RET_ERR);                 \
+        -:  785:				}                                                      \
+        -:  786:			} while (0)
+        -:  787:#		define STAT_ALWAYS(st, fd, ep, dirpath) \
+        -:  788:			STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
+        -:  789:#		define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                           \
+        -:  790:			do {                                                                   \
+        -:  791:				if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) < 0)) { \
+        -:  792:					do_on_err;                                             \
+        -:  793:				}                                                              \
+        -:  794:			} while (0)
+        -:  795:#		define OPEN(fd, file, oflag, do_on_err)                           \
+        -:  796:			do {                                                       \
+        -:  797:				if (jstr_unlikely((fd = open(file, oflag)) < 0)) { \
+        -:  798:					do_on_err;                                 \
+        -:  799:				}                                                  \
+        -:  800:			} while (0)
+        -:  801:#		define CLOSE(fd, do_on_err)                            \
+        -:  802:			do {                                            \
+        -:  803:				if (fd != -1) {                         \
+        -:  804:					if (jstr_unlikely(close(fd))) { \
+        -:  805:						do_on_err;              \
+        -:  806:					}                               \
+        -:  807:					fd = -1;                        \
+        -:  808:				}                                       \
+        -:  809:			} while (0)
+        -:  810:/* Otherwise, construct path. */
+        -:  811:#	else
+        -:  812:#		define OPENDIR(fd, fname) opendir(fname)
+        -:  813:#		define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err) \
+        -:  814:			do {                                             \
+        -:  815:				if (jstr_unlikely(stat(dirpath, st))) {  \
+        -:  816:					if (NONFATAL_ERR()) {            \
+        -:  817:						do_on_nonfatal_err;      \
+        -:  818:					}                                \
+        -:  819:					closedir(dp);                    \
+        -:  820:					JSTR_RETURN_ERR(JSTR_RET_ERR);   \
+        -:  821:				}                                        \
+        -:  822:			} while (0)
+        -:  823:#		define STAT_ALWAYS(st, fd, ep, dirpath) \
+        -:  824:			STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
+        -:  825:#		define OPENAT(dstfd, srcfd, file, oflag, do_on_err) \
+        -:  826:			do {                                         \
+        -:  827:			} while (0)
+        -:  828:#		define OPEN(fd, file, oflag, do_on_err) \
+        -:  829:			do {                             \
+        -:  830:			} while (0)
+        -:  831:#		define CLOSE(fd, do_on_err) \
+        -:  832:			do {                 \
+        -:  833:			} while (0)
+        -:  834:#	endif
+        -:  835:
+        -:  836:/* If have d_type, avoid calling stat to check directory type. */
+        -:  837:#	if JSTR_HAVE_DIRENT_D_TYPE
+        -:  838:#		define IS_DIR(ep, st)    ((ep)->d_type == DT_DIR)
+        -:  839:#		define IS_REG(ep, st)    ((ep)->d_type == DT_REG)
+        -:  840:#		define STAT_MODE(st, ep) ((void)((st)->st_mode = DTTOIF((ep)->d_type)))
+        -:  841:#		define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) \
+        -:  842:			FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)
+        -:  843:#		define STAT(st, fd, ep, dirpath) STAT_ALWAYS(st, fd, ep, dirpath)
+        -:  844:#		define STAT_OR_MODE(st, fd, ep, dirpath)          \
+        -:  845:			do {                                       \
+        -:  846:				if (FLAG(JSTR_IO_FTW_NOSTAT))      \
+        -:  847:					STAT_MODE(st, ep);         \
+        -:  848:				else                               \
+        -:  849:					STAT(st, fd, ep, dirpath); \
+        -:  850:			} while (0)
+        -:  851:/* Otherwise, call stat. */
+        -:  852:#	else
+        -:  853:#		define IS_DIR(ep, st) S_ISDIR((st)->st_mode)
+        -:  854:#		define IS_REG(ep, st) S_ISREG((st)->st_mode)
+        -:  855:#		if USE_ATFILE
+        -:  856:#			define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) \
+        -:  857:				FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)
+        -:  858:#		else
+        -:  859:#			define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) \
+        -:  860:				do {                                             \
+        -:  861:				} while (0)
+        -:  862:#		endif
+        -:  863:#		define STAT(st, fd, ep, dirpath) \
+        -:  864:			do {                      \
+        -:  865:			} while (0)
+        -:  866:#		define STAT_MODE(st, ep) \
+        -:  867:			do {              \
+        -:  868:			} while (0)
+        -:  869:#		define STAT_OR_MODE(st, fd, ep, dirpath) \
+        -:  870:			do {                              \
+        -:  871:			} while (0)
+        -:  872:#	endif
+        -:  873:
+        -:  874:#	if JSTR_IO_PATH_MAX <= 65536
+        -:  875:typedef uint16_t jstr_io_path_size_ty;
+        -:  876:#	elif JSTR_IO_PATH_MAX <= 4294967296
+        -:  877:typedef uint32_t jstr_io_path_size_ty;
+        -:  878:#	else
+        -:  879:typedef size_t jstr_io_path_size_ty;
+        -:  880:#	endif
+        -:  881:
+        -:  882:struct JSTR_IO_FTW {
+        -:  883:	const char *dirpath;
+        -:  884:	const struct stat *st;
+        -:  885:	const struct dirent *ep;
+        -:  886:	jstr_io_path_size_ty dirpath_len;
+        -:  887:};
+        -:  888:
+        -:  889:typedef int (*jstr_io_ftw_func_ty)(const struct JSTR_IO_FTW *ftw, const void *args);
+        -:  890:typedef int (*jstr_io_ftw_func_match_ty)(const char *fname, jstr_io_path_size_ty fname_len, const void *args);
+        -:  891:
+        -:  892:struct jstr_internal_io_ftw_data {
+        -:  893:	jstr_io_ftw_func_ty func;
+        -:  894:	const void *func_args;
+        -:  895:	jstr_io_ftw_func_match_ty func_match;
+        -:  896:	const void *func_match_args;
+        -:  897:	struct JSTR_IO_FTW ftw;
+        -:  898:	int ftw_flags;
+        -:  899:};
+        -:  900:
+        -:  901:#	define JSTR_IO_FTW_FUNC(func_name, ftw, func_args) \
+        -:  902:		int func_name(const struct JSTR_IO_FTW *ftw, const void *func_args)
+        -:  903:
+        -:  904:#	define JSTR_IO_FTW_FUNC_MATCH(func_name, filename, filename_len, args) \
+        -:  905:		int func_name(const char *filename, jstr_io_path_size_ty filename_len, const void *args)
+        -:  906:
+        -:  907:#	ifdef O_DIRECTORY
+        -:  908:#		define JSTR_INTERNAL_IO_O_DIRECTORY O_DIRECTORY
+        -:  909:#	else
+        -:  910:#		define JSTR_INTERNAL_IO_O_DIRECTORY 0
+        -:  911:#	endif
+        -:  912:
+        -:  913:#	define FLAG(x) ((a)->ftw_flags & (x))
+        -:  914:
+        -:  915:/* We try to avoid stat when d_type is available, and avoid constructing the
+        -:  916: * full path when we can use *_at functions. */
+        -:  917:JSTR_FUNC_MAY_NULL
+        -:  918:JSTR_NONNULL((1))
+        -:  919:int
+       33:  920:jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_ty dirpath_len, int dirfd) JSTR_NOEXCEPT
+        -:  921:#	ifdef JSTR_IMPLEMENTATION
+        -:  922:{
+        -:  923:	(void)dirfd;
+       33:  924:	DIR *dp = OPENDIR(dirfd, a->ftw.dirpath);
+       33:  925:	if (jstr_nullchk(dp)) {
+        -:  926:#	if USE_ATFILE
+    #####:  927:		close(dirfd);
+        -:  928:#	endif
+    #####:  929:		if (NONFATAL_ERR()) {
+    #####:  930:			if (FLAG(JSTR_IO_FTW_REG))
+    #####:  931:				if (!FLAG(JSTR_IO_FTW_DIR))
+    #####:  932:					return JSTR_RET_SUCC;
+    #####:  933:			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
+    #####:  934:				return JSTR_RET_SUCC;
+    #####:  935:			a->ftw.dirpath_len = dirpath_len;
+    #####:  936:			a->func(&a->ftw, a->func_args);
+    #####:  937:			return JSTR_RET_SUCC;
+        -:  938:		}
+    #####:  939:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  940:	}
+        -:  941:	int tmp;
+      168:  942:	while ((a->ftw.ep = readdir(dp))) {
+        -:  943:		/* Ignore hidden files. */
+      135:  944:		if (FLAG(JSTR_IO_FTW_NOHIDDEN)) {
+       16:  945:			if (a->ftw.ep->d_name[0] == '.')
+        9:  946:				goto next_entry;
+        -:  947:			/* Ignore "." and "..". */
+        -:  948:		} else {
+      119:  949:			if (a->ftw.ep->d_name[0] == '.' && (a->ftw.ep->d_name[1] == '\0' || (a->ftw.ep->d_name[1] == '.' && a->ftw.ep->d_name[2] == '\0')))
+       58:  950:				goto next_entry;
+        -:  951:		}
+        -:  952:		/* Stop processing if DIRPATH is longer than PATH_MAX.
+        -:  953:		   If we don't have d_namlen, try to estimate the length. */
+        -:  954:#		if JSTR_HAVE_DIRENT_D_NAMLEN
+        -:  955:		if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
+        -:  956:			errno = ENAMETOOLONG;
+        -:  957:			closedir(dp);
+        -:  958:			JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  959:		}
+        -:  960:#		else
+      68*:  961:		if (jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX) && jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
+    #####:  962:			errno = ENAMETOOLONG;
+    #####:  963:			closedir(dp);
+    #####:  964:			JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -:  965:		}
+        -:  966:#		endif
+        -:  967:		/* We must stat to get the type if we don't have d_type. */
+        -:  968:#		if !JSTR_HAVE_DIRENT_D_TYPE
+        -:  969:		/* We must construct the full path for stat if we
+        -:  970:		 * don't have *_at functions. */
+        -:  971:		if (!USE_ATFILE)
+        -:  972:			FILL_PATH_ALWAYS(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
+      68*:  973:		STAT_DO((struct stat *)a->ftw.st,
+        -:  974:		        dirfd,
+        -:  975:		        a->ftw.ep,
+        -:  976:		        a->ftw.dirpath,
+        -:  977:		        /* If stat fails. */
+        -:  978:		        if (FLAG(JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG)) goto next_entry;
+        -:  979:		        else goto func;);
+        -:  980:#		endif
+       68:  981:		if (IS_REG(a->ftw.ep, a->ftw.st))
+       42:  982:			goto reg;
+       26:  983:		if (IS_DIR(a->ftw.ep, a->ftw.st))
+       26:  984:			goto dir;
+        -:  985:		/* If true, ignore other types of files. */
+    #####:  986:		if (FLAG(JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG))
+    #####:  987:			goto next_entry;
+    #####:  988:		goto do_reg;
+       42:  989:reg:
+       42:  990:		if (FLAG(JSTR_IO_FTW_DIR))
+        5:  991:			if (!(FLAG(JSTR_IO_FTW_REG)))
+        5:  992:				goto next_entry;
+      37*:  993:do_reg:
+       37:  994:		if (a->func_match) {
+       15:  995:			if (FLAG(JSTR_IO_FTW_MATCHPATH)) {
+        -:  996:				/* FILL_PATH will construct the full path if
+        -:  997:				 * either *_at functions or d_type aren't
+        -:  998:				 * available. */
+        5:  999:				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
+        5: 1000:				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
+        2: 1001:					goto next_entry;
+        -: 1002:			} else {
+       10: 1003:				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep);
+       10: 1004:				if (a->func_match(a->ftw.ep->d_name, fname_len, a->func_match_args))
+        6: 1005:					goto next_entry;
+        -: 1006:				/* We haven't constructed the full path since we
+        -: 1007:				 * have *_at functions. */
+        -: 1008:				if (USE_ATFILE)
+        4: 1009:					a->ftw.dirpath_len = jstr_io_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, a->ftw.ep->d_name, fname_len) - a->ftw.dirpath;
+        -: 1010:			}
+        -: 1011:		} else {
+        -: 1012:			/* Construct the full path when needed. If we don't have
+        -: 1013:			 * *_at functions, we have already constructed it and
+        -: 1014:			 * this will be a no-op. */
+       22: 1015:			FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
+        -: 1016:		}
+       29: 1017:		if (FLAG(JSTR_IO_FTW_STATREG)) {
+        -: 1018:			/* We must stat. */
+    #####: 1019:			if (IS_REG(a->ftw.ep, a->ftw.st))
+        -: 1020:				STAT((struct stat *)a->ftw.st, dirfd, a->ftw.ep, a->ftw.dirpath);
+        -: 1021:			/* Only the st_mode is guaranteed to be initialized.
+        -: 1022:			 * This is so that we can avoid the stat when d_type is
+        -: 1023:			 * available. */
+        -: 1024:			else
+        -: 1025:				STAT_MODE((struct stat *)a->ftw.st, a->ftw.ep);
+        -: 1026:		} else {
+        -: 1027:			/* If the NOSTAT flag is passed, only guarantee st_mode. */
+        -: 1028:			STAT_OR_MODE((struct stat *)a->ftw.st, dirfd, a->ftw.ep, a->ftw.dirpath);
+        -: 1029:		}
+       29: 1030:func:
+       29: 1031:		tmp = a->func(&a->ftw, a->func_args);
+        -: 1032:		/* ACTIONRETVAL according to glibc ftw. */
+       29: 1033:		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
+    #####: 1034:			if (tmp == JSTR_IO_FTW_RET_CONTINUE || tmp == JSTR_IO_FTW_RET_SKIP_SUBTREE) {
+    #####: 1035:				goto next_entry;
+    #####: 1036:			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS) {
+    #####: 1037:				break;
+        -: 1038:			} else /* tmp == RET_STOP */ {
+    #####: 1039:				closedir(dp);
+    #####: 1040:				return JSTR_IO_FTW_RET_STOP;
+        -: 1041:			}
+        -: 1042:		} else {
+       29: 1043:			if (jstr_chk(tmp)) {
+    #####: 1044:				closedir(dp);
+    #####: 1045:				JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1046:			}
+        -: 1047:		}
+       29: 1048:		goto next_entry;
+       26: 1049:dir:
+        -: 1050:		/* Go to next entry if we don't traverse subdirectories and
+        -: 1051:		 * don't need to call FUNC on directories. */
+       26: 1052:		if (FLAG(JSTR_IO_FTW_NOSUBDIR) && FLAG(JSTR_IO_FTW_REG) && !FLAG(JSTR_IO_FTW_DIR))
+        2: 1053:			goto next_entry;
+       24: 1054:		FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
+       24: 1055:		if (FLAG(JSTR_IO_FTW_STATREG))
+        -: 1056:			STAT_MODE(a->ftw.st, a->ftw.ep);
+        -: 1057:		else
+        -: 1058:			STAT_OR_MODE(a->ftw.st, dirfd, a->ftw.ep, a->ftw.dirpath);
+        -: 1059:		/* Don't call FUNC on directory if we don't need to. */
+       24: 1060:		if (FLAG(JSTR_IO_FTW_REG) && !FLAG(JSTR_IO_FTW_DIR))
+       10: 1061:			goto skip_fn;
+       14: 1062:		tmp = a->func(&a->ftw, a->func_args);
+       14: 1063:		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
+    #####: 1064:			if (tmp == JSTR_IO_FTW_RET_CONTINUE) {
+    #####: 1065:				goto next_entry;
+    #####: 1066:			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SUBTREE || tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS) {
+        -: 1067:				break;
+        -: 1068:			} else /* tmp == RET_STOP */ {
+    #####: 1069:				closedir(dp);
+    #####: 1070:				return JSTR_IO_FTW_RET_STOP;
+        -: 1071:			}
+        -: 1072:		} else {
+       14: 1073:			if (jstr_chk(tmp)) {
+    #####: 1074:				closedir(dp);
+    #####: 1075:				JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1076:			}
+        -: 1077:		}
+       14: 1078:skip_fn:
+        -: 1079:		/* Don't traverse subdirectories when we don't need to. */
+       24: 1080:		if (FLAG(JSTR_IO_FTW_NOSUBDIR))
+        2: 1081:			goto next_entry;
+        -: 1082:		/* If we have *_at functions, open d_name to get the fd.
+        -: 1083:		 * Otherwise, no-op. */
+       22: 1084:		int filefd = -1;
+        -: 1085:		(void)filefd;
+      22*: 1086:		OPENAT(filefd, dirfd, a->ftw.ep->d_name, O_RDONLY | JSTR_INTERNAL_IO_O_DIRECTORY, goto next_entry);
+       22: 1087:		tmp = jstr_internal_io_ftw_len(a, a->ftw.dirpath_len, filefd);
+       22: 1088:		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
+    #####: 1089:			if (jstr_unlikely(tmp == JSTR_IO_FTW_RET_STOP)) {
+    #####: 1090:				closedir(dp);
+    #####: 1091:				return JSTR_IO_FTW_RET_STOP;
+        -: 1092:			}
+        -: 1093:		} else {
+       22: 1094:			if (jstr_chk(tmp)) {
+    #####: 1095:				closedir(dp);
+    #####: 1096:				JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1097:			}
+        -: 1098:		}
+      135: 1099:next_entry:;
+        -: 1100:	}
+       33: 1101:	closedir(dp);
+       33: 1102:	return JSTR_RET_SUCC;
+        -: 1103:}
+        -: 1104:#	else
+        -: 1105:;
+        -: 1106:#	endif
+        -: 1107:
+        -: 1108:#	undef OPENDIR
+        -: 1109:#	undef NONFATAL_ERR
+        -: 1110:#	undef IS_DIR
+        -: 1111:#	undef IS_REG
+        -: 1112:#	undef FILL_PATH
+        -: 1113:#	undef FILL_PATH_ALWAYS
+        -: 1114:#	undef STAT_DO
+        -: 1115:#	undef STAT
+        -: 1116:#	undef STAT_ALWAYS
+        -: 1117:#	undef STAT_MODE
+        -: 1118:#	undef STAT_OR_MODE
+        -: 1119:#	undef JSTR_INTERNAL_IO_O_DIRECTORY
+        -: 1120:#	undef FLAG
+        -: 1121:
+        -: 1122:#	define FLAG(x) (jstr_io_ftw_flags & (x))
+        -: 1123:
+        -: 1124:/* Call FUNC on files found recursively where FUNC_MATCH returns 0.
+        -: 1125: * If FUNC_MATCH is NULL, it behaves as if it matches.
+        -: 1126: * If FUNC returns JSTR_RET_ERR, stop processing.
+        -: 1127: * Return value:
+        -: 1128: * JSTR_RET_ERR on error.
+        -: 1129: * JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered
+        -: 1130: * on some entries. JSTR_RET_STOP if FUNC returns RET_STOP and
+        -: 1131: * JSTR_IO_FTW_ACTIONRETVAL is used. or the return value of FUNC if DIRPATH is
+        -: 1132: * not a directory and FUNC is executed. If a non-fatal error is encountered,
+        -: 1133: * continue processing other entries. */
+        -: 1134:JSTR_FUNC_MAY_NULL
+        -: 1135:JSTR_NONNULL((1))
+        -: 1136:JSTR_NONNULL((4))
+        -: 1137:int
+       14: 1138:jstr_io_ftw_len(const char *R dirpath, jstr_io_path_size_ty dirpath_len, jstr_io_ftw_func_ty func, const void *func_args, int jstr_io_ftw_flags, jstr_io_ftw_func_match_ty func_match, const void *func_match_args) JSTR_NOEXCEPT
+        -: 1139:#	ifdef JSTR_IMPLEMENTATION
+        -: 1140:{
+       14: 1141:	if (jstr_unlikely(dirpath_len == 0)) {
+    #####: 1142:		errno = ENOENT;
+    #####: 1143:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1144:	}
+       14: 1145:	if (jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX)) {
+    #####: 1146:		errno = ENAMETOOLONG;
+    #####: 1147:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1148:	}
+        -: 1149:	/* Don't copy trailing // to FULPATH. */
+      14*: 1150:	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/'; --dirpath_len) {}
+        -: 1151:	char fulpath[JSTR_IO_PATH_MAX];
+       14: 1152:	jstr_strcpy_len(fulpath, dirpath, dirpath_len);
+       14: 1153:	int dirfd = -1;
+        -: 1154:	(void)dirfd;
+       14: 1155:	OPEN(dirfd, fulpath, O_RDONLY, JSTR_RETURN_ERR(JSTR_RET_ERR));
+        -: 1156:	struct stat st;
+        -: 1157:	struct jstr_internal_io_ftw_data data;
+       13: 1158:	data.ftw.dirpath = fulpath;
+       13: 1159:	data.ftw.st = &st;
+        -: 1160:	/* This will avoid things like //some/path if DIRPATH is /. */
+      13*: 1161:	if (jstr_unlikely(dirpath_len == 1) && jstr_unlikely(*dirpath == '/')) {
+    #####: 1162:		data.ftw.dirpath_len = 0;
+    #####: 1163:		goto ftw;
+        -: 1164:	}
+       13: 1165:	data.ftw.dirpath_len = dirpath_len;
+        -: 1166:#		if USE_ATFILE
+       13: 1167:	if (jstr_unlikely(fstat(dirfd, &st))) {
+    #####: 1168:		CLOSE(dirfd, );
+    #####: 1169:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1170:	}
+        -: 1171:#		else
+        -: 1172:	if (jstr_unlikely(stat(fulpath, &st)))
+        -: 1173:		JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1174:#		endif
+        -: 1175:	/* If DIRPATH is a directory, call FUNC on directory when needed and
+        -: 1176:	 * call ftw. */
+       13: 1177:	if (jstr_likely(S_ISDIR(data.ftw.st->st_mode))) {
+       12: 1178:ftw:;
+       12: 1179:		if (FLAG(JSTR_IO_FTW_REG))
+        5: 1180:			if (!FLAG(JSTR_IO_FTW_DIR))
+        5: 1181:				goto file;
+        -: 1182:		int tmp;
+        7: 1183:		tmp = func(&data.ftw, func_args);
+        7: 1184:		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
+        1: 1185:			if (jstr_unlikely(tmp != JSTR_IO_FTW_RET_CONTINUE)) {
+        1: 1186:				CLOSE(dirfd, );
+        1: 1187:				JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1188:			}
+        -: 1189:		} else {
+        6: 1190:			if (jstr_chk(tmp)) {
+    #####: 1191:				CLOSE(dirfd, );
+    #####: 1192:				JSTR_RETURN_ERR(JSTR_RET_ERR);
+        -: 1193:			}
+        -: 1194:		}
+        6: 1195:file:;
+       11: 1196:		data.func = func;
+       11: 1197:		data.func_args = func_args;
+       11: 1198:		data.func_match = func_match;
+       11: 1199:		data.ftw_flags = jstr_io_ftw_flags;
+       11: 1200:		data.func_match_args = func_match_args;
+       11: 1201:		tmp = jstr_internal_io_ftw_len(&data, dirpath_len, dirfd);
+       11: 1202:		return tmp;
+        -: 1203:	}
+        -: 1204:	/* DIRPATH is not a directory. */
+       1*: 1205:	CLOSE(dirfd, JSTR_RETURN_ERR(JSTR_RET_ERR));
+        1: 1206:	if (FLAG(JSTR_IO_FTW_REG))
+    #####: 1207:		if (jstr_unlikely(!S_ISREG(data.ftw.st->st_mode)))
+    #####: 1208:			return JSTR_RET_SUCC;
+        1: 1209:	if (func_match) {
+    #####: 1210:		if (FLAG(JSTR_IO_FTW_MATCHPATH)) {
+    #####: 1211:			if (func_match(fulpath, dirpath_len, func_match_args))
+    #####: 1212:				return JSTR_RET_SUCC;
+        -: 1213:		} else {
+    #####: 1214:			dirpath = (char *)jstr_memrchr(fulpath, '/', dirpath_len);
+    #####: 1215:			const char *end = (char *)dirpath + dirpath_len;
+    #####: 1216:			if (dirpath) {
+    #####: 1217:				if (*++dirpath && func_match(dirpath, end - dirpath, func_match_args))
+    #####: 1218:					return JSTR_RET_SUCC;
+        -: 1219:			} else {
+    #####: 1220:				if (func_match(fulpath, dirpath_len, func_match_args))
+    #####: 1221:					return JSTR_RET_SUCC;
+        -: 1222:			}
+        -: 1223:		}
+        -: 1224:	}
+        1: 1225:	return (jstr_ret_ty)func(&data.ftw, func_args);
+        -: 1226:}
+        -: 1227:#	else
+        -: 1228:;
+        -: 1229:#	endif
+        -: 1230:
+        -: 1231:#	undef OPEN
+        -: 1232:#	undef OPENAT
+        -: 1233:#	undef CLOSE
+        -: 1234:#	undef USE_ATFILE
+        -: 1235:#	undef FLAG
+        -: 1236:
+        -: 1237:JSTR_INTERNAL_END_DECLS
+        -: 1238:
+        -: 1239:#	undef R
+        -: 1240:
+        -: 1241:#endif /* JSTR_IO_H */

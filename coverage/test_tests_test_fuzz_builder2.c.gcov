@@ -1,0 +1,284 @@
+        -:    0:Source:tests/test-fuzz-builder2.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-builder2.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-builder2.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for builder functions: reserve variants, asprintf/sprintf,
+        -:    5: * pop, trim, assignnchr, pushbackn/pushfrontn, prepend, cat. */
+        -:    6:
+        -:    7:#define __STDC_NO_VLA__ 1
+        -:    8:
+        -:    9:#include "test.h"
+        -:   10:#include "../include/jstr.h"
+        -:   11:#include "../include/macros.h"
+        -:   12:#include "fuzz-shared.h"
+        -:   13:
+        -:   14:JSTR_ATTR_MAYBE_UNUSED
+        -:   15:static void
+        1:   16:fuzz_builder2(size_t iter)
+        -:   17:{
+        -:   18:	char h[FSTR];
+     2561:   19:	for (size_t i = 0; i < iter; ++i) {
+     2560:   20:		enum gen_mode hmode = (enum gen_mode)(rand() % 4);
+     2560:   21:		size_t hl = gen_str(h, FSTR - 1, hmode);
+        -:   22:
+        -:   23:		/* --- reservealways / reserveexact / reserveexactalways / shrink_to_fit --- */
+     2560:   24:		char *s = NULL;
+     2560:   25:		size_t sz = 0, cap = 0;
+     2560:   26:		int ret = jstr_assign_len(&s, &sz, &cap, h, hl);
+    2560*:   27:		assert(ret == JSTR_RET_SUCC);
+        -:   28:
+     2560:   29:		ret = jstr_reservealways(&s, &sz, &cap, 100);
+    2560*:   30:		assert(ret == JSTR_RET_SUCC);
+    2560*:   31:		assert(cap >= 100);
+        -:   32:
+     2560:   33:		ret = jstr_reserveexact(&s, &sz, &cap, 200);
+    2560*:   34:		assert(ret == JSTR_RET_SUCC);
+    2560*:   35:		assert(cap >= 200);
+        -:   36:
+     2560:   37:		ret = jstr_reserveexactalways(&s, &sz, &cap, 150);
+    2560*:   38:		assert(ret == JSTR_RET_SUCC);
+    2560*:   39:		assert(cap == 150);
+     2560:   40:		if (sz >= cap) {
+     1022:   41:			sz = cap - 1;
+     1022:   42:			s[sz] = '\0';
+        -:   43:		}
+        -:   44:
+     2560:   45:		ret = jstr_shrink_to_fit(&s, &sz, &cap);
+    2560*:   46:		assert(ret == JSTR_RET_SUCC);
+    2560*:   47:		assert(cap == sz + 1);
+        -:   48:
+        -:   49:		/* --- strset --- */
+     2560:   50:		if (sz > 0 && strlen(s) == sz) {
+     2551:   51:			char *copy = malloc(sz + 1);
+     2551:   52:			memcpy(copy, s, sz);
+     2551:   53:			copy[sz] = '\0';
+     2551:   54:			jstr_strset(copy, 'X');
+   269432:   55:			for (size_t j = 0; j < sz; ++j)
+  266881*:   56:				assert(copy[j] == 'X');
+     2551:   57:			free(copy);
+        -:   58:		}
+        -:   59:
+        -:   60:		/* --- assignnchr_unsafe_p --- */
+        -:   61:		char buf_j[FSTR];
+     2560:   62:		memcpy(buf_j, h, hl + 1);
+     2560:   63:		size_t nfill = (size_t)(rand() % 10);
+    2560*:   64:		assert(nfill < FSTR);
+     2560:   65:		int fillc = 'a' + (rand() % 26);
+     2560:   66:		char *end = jstr_assignnchr_unsafe_p(buf_j, fillc, nfill);
+        -:   67:
+        -:   68:		// The new length of the string will be the larger of the two
+     2560:   69:		size_t new_len = nfill;
+        -:   70:		// The end pointer should point to the null-terminator of the resulting string
+    2560*:   71:		assert(end == buf_j + new_len);
+        -:   72:		// The null terminator must be at the end of the new length
+    2560*:   73:		assert(buf_j[new_len] == '\0');
+        -:   74:		// Verify the fill characters were actually written
+    14155:   75:		for (size_t i = 0; i < nfill; i++)
+   11595*:   76:			assert(buf_j[i] == fillc);
+        -:   77:
+     2560:   78:		free(s);
+        -:   79:		/* --- assignnchr (safe) --- */
+     2560:   80:		s = NULL;
+     2560:   81:		sz = 0;
+     2560:   82:		cap = 0;
+     2560:   83:		ret = jstr_assign_len(&s, &sz, &cap, h, hl);
+    2560*:   84:		assert(ret == JSTR_RET_SUCC);
+     2560:   85:		nfill = (size_t)(rand() % 10);
+     2560:   86:		fillc = 'a' + (rand() % 26);
+     2560:   87:		ret = jstr_assignnchr(&s, &sz, &cap, fillc, nfill);
+    2560*:   88:		assert(ret == JSTR_RET_SUCC);
+    2560*:   89:		assert(sz >= nfill);
+    14074:   90:		for (size_t j = 0; j < nfill; ++j)
+   11514*:   91:			assert(s[j] == (char)fillc);
+    2560*:   92:		assert(s[sz] == '\0');
+        -:   93:
+        -:   94:		/* --- pushbackn / pushfrontn --- */
+     2560:   95:		size_t nrep = (size_t)(rand() % 8);
+     2560:   96:		int repc = '0' + (rand() % 10);
+     2560:   97:		size_t sz_before = sz;
+     2560:   98:		ret = jstr_pushbackn(&s, &sz, &cap, repc, nrep);
+    2560*:   99:		assert(ret == JSTR_RET_SUCC);
+    2560*:  100:		assert(sz == sz_before + nrep);
+    11298:  101:		for (size_t j = 0; j < nrep; ++j)
+    8738*:  102:			assert(s[sz_before + j] == (char)repc);
+        -:  103:
+     2560:  104:		size_t fnrep = (size_t)(rand() % 6);
+     2560:  105:		int frep_ch = '!' + (rand() % 10);
+     2560:  106:		sz_before = sz;
+     2560:  107:		ret = jstr_pushfrontn(&s, &sz, &cap, frep_ch, fnrep);
+    2560*:  108:		assert(ret == JSTR_RET_SUCC);
+    2560*:  109:		assert(sz == sz_before + fnrep);
+     8915:  110:		for (size_t j = 0; j < fnrep; ++j)
+    6355*:  111:			assert(s[j] == (char)frep_ch);
+        -:  112:
+        -:  113:		/* --- prepend_len_unsafe_p --- */
+        -:  114:		char prepend_src[32];
+     2560:  115:		size_t pl = gen_str(prepend_src, 31, hmode);
+     2560:  116:		sz = JSTR_MIN(sizeof(buf_j), sz + 1) / 2;
+     2560:  117:		memcpy(buf_j, s, sz + 1);
+     2560:  118:		pl = JSTR_MIN(sizeof(buf_j) - pl, pl) / 2;
+     2560:  119:		char *ep = jstr_prepend_len_unsafe_p(buf_j, sz, prepend_src, pl);
+    2560*:  120:		assert(ep == buf_j + sz + pl);
+    2560*:  121:		assert(memcmp(buf_j, prepend_src, pl) == 0);
+    2560*:  122:		assert(memcmp(buf_j + pl, s, sz) == 0);
+        -:  123:
+        -:  124:		/* --- prepend_len (safe) --- */
+     2560:  125:		sz_before = sz;
+     2560:  126:		ret = jstr_prepend_len(&s, &sz, &cap, prepend_src, pl);
+    2560*:  127:		assert(ret == JSTR_RET_SUCC);
+    2560*:  128:		assert(sz == sz_before + pl);
+    2560*:  129:		assert(memcmp(s, prepend_src, pl) == 0);
+        -:  130:
+        -:  131:		/* --- cat (variadic) --- */
+     2560:  132:		char *t = NULL;
+     2560:  133:		size_t tsz = 0, tcap = 0;
+     2560:  134:		ret = jstr_cat(&t, &tsz, &tcap, "AB", "CD", "EF", NULL);
+    2560*:  135:		assert(ret == JSTR_RET_SUCC);
+    2560*:  136:		assert(tsz == 6);
+    2560*:  137:		assert(memcmp(t, "ABCDEF", 6) == 0);
+     2560:  138:		free(t);
+        -:  139:
+     2560:  140:		free(s);
+        -:  141:		/* --- asprintf / asprintf_append / asprintf_from --- */
+     2560:  142:		s = NULL;
+     2560:  143:		sz = 0;
+     2560:  144:		cap = 0;
+     2560:  145:		ret = jstr_assign_len(&s, &sz, &cap, "start", 5);
+    2560*:  146:		assert(ret == JSTR_RET_SUCC);
+        -:  147:
+     2560:  148:		ret = jstr_asprintf_append(&s, &sz, &cap, "|%d|", 42);
+    2560*:  149:		assert(ret == JSTR_RET_SUCC);
+    2560*:  150:		assert(sz == 9);
+    2560*:  151:		assert(memcmp(s, "start|42|", 9) == 0);
+        -:  152:
+     2560:  153:		ret = jstr_asprintf(&s, &sz, &cap, "num=%d", 99);
+    2560*:  154:		assert(ret == JSTR_RET_SUCC);
+    2560*:  155:		assert(sz == 6);
+    2560*:  156:		assert(memcmp(s, "num=99", 6) == 0);
+        -:  157:
+     2560:  158:		ret = jstr_asprintf_from(&s, &sz, &cap, 2, "test%d", 123);
+    2560*:  159:		assert(ret == JSTR_RET_SUCC);
+    2560*:  160:		assert(sz == 2 + 7);
+    2560*:  161:		assert(memcmp(s + 2, "test123", 7) == 0);
+        -:  162:
+     2560:  163:		free(s);
+        -:  164:		/* --- sprintf / sprintf_j / sprintf_from / sprintf_from_j --- */
+     2560:  165:		s = NULL;
+     2560:  166:		sz = 0;
+     2560:  167:		cap = 0;
+     2560:  168:		ret = jstr_reserve(&s, &sz, &cap, 100);
+    2560*:  169:		assert(ret == JSTR_RET_SUCC);
+     2560:  170:		ret = jstr_sprintf(&s, &sz, &cap, "val=%d", 777);
+    2560*:  171:		assert(ret == JSTR_RET_SUCC);
+    2560*:  172:		assert(sz == 7);
+    2560*:  173:		assert(memcmp(s, "val=777", 7) == 0);
+        -:  174:
+     2560:  175:		ret = jstr_sprintf_from(&s, &sz, &cap, 3, "x%dy", 5);
+    2560*:  176:		assert(ret == JSTR_RET_SUCC);
+    2560*:  177:		assert(sz == 3 + 3);
+    2560*:  178:		assert(memcmp(s + 3, "x5y", 3) == 0);
+        -:  179:
+        -:  180:		/* --- popback_p / popfront_p --- */
+     2560:  181:		if (sz > 0) {
+     2560:  182:			char *pbp = jstr_popback_p(s, sz);
+    2560*:  183:			assert(pbp == s + sz - 1);
+    2560*:  184:			assert(s[sz - 1] == '\0');
+     2560:  185:			--sz;
+        -:  186:		}
+     2560:  187:		if (sz > 0) {
+     2560:  188:			char *pfp = jstr_popfront_p(s, sz);
+    2560*:  189:			assert(pfp == s + sz - 1);
+    2560*:  190:			assert(s[0] == '\0' || s[sz - 1] == '\0');
+     2560:  191:			--sz;
+        -:  192:		}
+        -:  193:
+        -:  194:		/* --- trim functions --- */
+     2560:  195:		ret = jstr_assign_len(&s, &sz, &cap, "  hello  ", 9);
+    2560*:  196:		assert(ret == JSTR_RET_SUCC);
+     2560:  197:		char *tep = jstr_trimend_p(s);
+    2560*:  198:		assert(tep == s + 7);
+    2560*:  199:		assert(memcmp(s, "  hello", 7) == 0);
+        -:  200:
+     2560:  201:		ret = jstr_assign_len(&s, &sz, &cap, "  hello  ", 9);
+    2560*:  202:		assert(ret == JSTR_RET_SUCC);
+     2560:  203:		tep = jstr_trimend_len_p(s, sz);
+    2560*:  204:		assert(tep == s + 7);
+        -:  205:
+     2560:  206:		ret = jstr_assign_len(&s, &sz, &cap, "  hello  ", 9);
+    2560*:  207:		assert(ret == JSTR_RET_SUCC);
+     2560:  208:		tep = jstr_trimstart_p(s);
+    2560*:  209:		assert(tep == s + 7);
+    2560*:  210:		assert(memcmp(s, "hello  ", 7) == 0);
+        -:  211:
+     2560:  212:		ret = jstr_assign_len(&s, &sz, &cap, "  hello  ", 9);
+    2560*:  213:		assert(ret == JSTR_RET_SUCC);
+     2560:  214:		tep = jstr_trimstart_len_p(s, sz);
+    2560*:  215:		assert(tep == s + 7);
+        -:  216:
+     2560:  217:		ret = jstr_assign_len(&s, &sz, &cap, "  hello  ", 9);
+    2560*:  218:		assert(ret == JSTR_RET_SUCC);
+     2560:  219:		tep = jstr_trim_p(s);
+    2560*:  220:		assert(tep == s + 5);
+    2560*:  221:		assert(memcmp(s, "hello", 5) == 0);
+        -:  222:
+     2560:  223:		ret = jstr_assign_len(&s, &sz, &cap, "  hello  ", 9);
+    2560*:  224:		assert(ret == JSTR_RET_SUCC);
+     2560:  225:		tep = jstr_trim_len_p(s, sz);
+    2560*:  226:		assert(tep == s + 5);
+        -:  227:
+     2560:  228:		free(s);
+        -:  229:	}
+        1:  230:}
+        -:  231:
+        -:  232:#ifndef FUZZ_LIBFUZZER
+        -:  233:
+        -:  234:int
+        1:  235:main(int argc, char **argv)
+        -:  236:{
+        -:  237:	START();
+        1:  238:	unsigned seed = 0;
+        1:  239:	if (argc > 1)
+    #####:  240:		seed = (unsigned)atoi(argv[1]);
+        1:  241:	size_t iter = FITER;
+        -:  242:#	ifdef JSTR_TEST_SLOW
+        1:  243:	iter *= 10;
+        -:  244:#	else
+        -:  245:	if (iter > 500)
+        -:  246:		iter = 500;
+        -:  247:#	endif
+        1:  248:	if (iter < 1)
+    #####:  249:		iter = 1;
+        -:  250:#	ifdef FUZZ_AFL
+        -:  251:	while (__AFL_LOOP(10000))
+        -:  252:#	endif
+        -:  253:	{
+        1:  254:		srand(seed);
+        -:  255:		TESTING(fuzz_builder2);
+        1:  256:		fuzz_builder2(iter);
+        -:  257:	}
+        -:  258:	SUCCESS();
+        1:  259:	return EXIT_SUCCESS;
+        -:  260:}
+        -:  261:
+        -:  262:#else
+        -:  263:
+        -:  264:int
+        -:  265:LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
+        -:  266:{
+        -:  267:	if (size < 4)
+        -:  268:		return 0;
+        -:  269:	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+        -:  270:	srand(seed);
+        -:  271:	data += 4;
+        -:  272:	size -= 4;
+        -:  273:	size_t iter = size > 0 ? size : 10;
+        -:  274:	if (iter > 100)
+        -:  275:		iter = 100;
+        -:  276:	fuzz_builder2(iter);
+        -:  277:	return 0;
+        -:  278:}
+        -:  279:
+        -:  280:#endif

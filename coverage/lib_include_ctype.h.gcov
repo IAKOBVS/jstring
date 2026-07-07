@@ -1,0 +1,160 @@
+        -:    0:Source:include/ctype.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/obj/ctype.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/obj/ctype.gcda
+        -:    0:Runs:39
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#include "internal/musl/ctype.h"
+        -:    5:
+        -:    6:#ifndef JSTR_CTYPE_H
+        -:    7:#	define JSTR_CTYPE_H 1
+        -:    8:
+        -:    9:#	include "macros.h"
+        -:   10:
+        -:   11:#	define R JSTR_RESTRICT
+        -:   12:
+        -:   13:JSTR_INTERNAL_BEGIN_DECLS
+        -:   14:
+        -:   15:/* ASCII. */
+        -:   16:JSTR_FUNC_VOID
+        -:   17:char *
+     2555:   18:jstr_toupperstr_p(char *s) JSTR_NOEXCEPT
+        -:   19:#ifdef JSTR_IMPLEMENTATION
+        -:   20:{
+     2555:   21:	unsigned char *p = (unsigned char *)s;
+   327132:   22:	for (; (*p = jstr_toupper(*p)); ++p) {}
+     2555:   23:	return (char *)p;
+        -:   24:}
+        -:   25:#else
+        -:   26:;
+        -:   27:#endif
+        -:   28:
+        -:   29:/* ASCII. */
+        -:   30:JSTR_FUNC_VOID
+        -:   31:char *
+     2555:   32:jstr_tolowerstr_p(char *s) JSTR_NOEXCEPT
+        -:   33:#ifdef JSTR_IMPLEMENTATION
+        -:   34:{
+     2555:   35:	unsigned char *p = (unsigned char *)s;
+   327132:   36:	for (; (*p = jstr_tolower(*p)); ++p) {}
+     2555:   37:	return (char *)p;
+        -:   38:}
+        -:   39:#else
+        -:   40:;
+        -:   41:#endif
+        -:   42:
+        -:   43:/* Auto-vectorized at -O2 by GCC >= 15.1 and Clang >= 3.6. */
+        -:   44:/* ASCII. */
+        -:   45:JSTR_FUNC_VOID
+        -:   46:void
+     2551:   47:jstr_tolowerstr_len(char *s, size_t n) JSTR_NOEXCEPT
+        -:   48:#ifdef JSTR_IMPLEMENTATION
+        -:   49:{
+     2551:   50:	unsigned char *p = (unsigned char *)s;
+   324573:   51:	for (; n--; ++p)
+   644044:   52:		*p = jstr_tolower(*p);
+     2551:   53:}
+        -:   54:#else
+        -:   55:;
+        -:   56:#endif
+        -:   57:
+        -:   58:#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(15, 1))
+        -:   59:|| defined __clang__
+        -:   60:#		define JSTR_HAVE_TOLOWER_AUTOVECTORIZATION 1
+        -:   61:#		define JSTR_HAVE_TOUPPER_AUTOVECTORIZATION 1
+        -:   62:#	else
+        -:   63:#		define JSTR_HAVE_TOLOWER_AUTOVECTORIZATION 0
+        -:   64:#		define JSTR_HAVE_TOUPPER_AUTOVECTORIZATION 0
+        -:   65:#	endif
+        -:   66:
+        -:   67:/* Auto-vectorized at -O2 by GCC >= 15.1 and Clang >= 3.6. */
+        -:   68:/* ASCII. */
+        -:   69:JSTR_FUNC_VOID void
+     2551:   70:jstr_tolowerstrcpy_len(char *R dst, char *R src, size_t n) JSTR_NOEXCEPT
+        -:   71:#ifdef JSTR_IMPLEMENTATION
+        -:   72:{
+     2551:   73:	if (n) {
+     2551:   74:		unsigned char *d = (unsigned char *)dst;
+     2551:   75:		const unsigned char *s = (unsigned char *)src;
+   324573:   76:		while (n--)
+   644044:   77:			*d++ = jstr_tolower(*s++);
+     2551:   78:		*d = '\0';
+        -:   79:	}
+     2551:   80:}
+        -:   81:#else
+        -:   82:;
+        -:   83:#endif
+        -:   84:
+        -:   85:/* Auto-vectorized at -O2 by GCC >= 15.1 and Clang >= 3.6. */
+        -:   86:/* ASCII. */
+        -:   87:JSTR_FUNC_VOID
+        -:   88:void
+     2551:   89:jstr_toupperstr_len(char *s, size_t n) JSTR_NOEXCEPT
+        -:   90:#ifdef JSTR_IMPLEMENTATION
+        -:   91:{
+     2551:   92:	unsigned char *p = (unsigned char *)s;
+   324573:   93:	for (; n--; ++p)
+   644044:   94:		*p = jstr_toupper(*p);
+     2551:   95:}
+        -:   96:#else
+        -:   97:;
+        -:   98:#endif
+        -:   99:
+        -:  100:/* Auto-vectorized at -O2 by GCC >= 15.1 and Clang >= 3.6. */
+        -:  101:/* ASCII. */
+        -:  102:JSTR_FUNC_VOID
+        -:  103:void
+     2551:  104:jstr_toupperstrcpy_len(char *R dst, char *R src, size_t n) JSTR_NOEXCEPT
+        -:  105:#ifdef JSTR_IMPLEMENTATION
+        -:  106:{
+     2551:  107:	if (n) {
+     2551:  108:		unsigned char *d = (unsigned char *)dst;
+     2551:  109:		const unsigned char *s = (unsigned char *)src;
+   324573:  110:		while (n--)
+   644044:  111:			*d++ = jstr_toupper(*s++);
+     2551:  112:		*d = '\0';
+        -:  113:	}
+     2551:  114:}
+        -:  115:#else
+        -:  116:;
+        -:  117:#endif
+        -:  118:
+        -:  119:/* Copy SRC to DST touppered.
+        -:  120: * Return ptr to '\0' in DST. */
+        -:  121:JSTR_FUNC
+        -:  122:char *
+     2551:  123:jstr_toupperstrcpy_p(char *R dst, const char *R src) JSTR_NOEXCEPT
+        -:  124:#ifdef JSTR_IMPLEMENTATION
+        -:  125:{
+     2551:  126:	unsigned char *d = (unsigned char *)dst;
+     2551:  127:	const unsigned char *s = (const unsigned char *)src;
+   327124:  128:	while ((*d++ = jstr_toupper(*s++))) {}
+     2551:  129:	return (char *)d - 1;
+        -:  130:}
+        -:  131:#else
+        -:  132:;
+        -:  133:#endif
+        -:  134:
+        -:  135:/* Copy SRC to DST tolowered.
+        -:  136: * Return ptr to '\0' in DST. */
+        -:  137:JSTR_FUNC
+        -:  138:char *
+     2551:  139:jstr_tolowerstrcpy_p(char *R dst, const char *R src) JSTR_NOEXCEPT
+        -:  140:#ifdef JSTR_IMPLEMENTATION
+        -:  141:{
+     2551:  142:	unsigned char *d = (unsigned char *)dst;
+     2551:  143:	const unsigned char *s = (const unsigned char *)src;
+   327124:  144:	while ((*d++ = jstr_tolower(*s++))) {}
+     2551:  145:	return (char *)d - 1;
+        -:  146:}
+        -:  147:#else
+        -:  148:;
+        -:  149:#endif
+        -:  150:
+        -:  151:JSTR_INTERNAL_END_DECLS
+        -:  152:
+        -:  153:#	undef JSTR_INTERNAL_DEFINE_REPEAT_CTYPE
+        -:  154:#	undef R
+        -:  155:
+        -:  156:#endif /* JSTR_CTYPE_H */

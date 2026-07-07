@@ -1,0 +1,248 @@
+#!/bin/sh
+set -eu
+
+cd "$(dirname "$0")/.."
+REPOROOT=$PWD
+export REPOROOT
+
+SKIP_BUILD=${SKIP_BUILD:-0}
+SKIP_TEST=${SKIP_TEST:-0}
+MAX_JOBS=$(nproc 2>/dev/null || echo 4)
+
+if [ "$SKIP_BUILD" != "1" ]; then
+	echo "=== Cleaning ==="
+	scripts/clean
+
+	echo "=== Generating headers ==="
+	scripts/setup
+	PATH_BUILD=build/include/jstr
+	PATH_SRC=include
+	mkdir -p "$PATH_BUILD" "$PATH_BUILD/internal" "$PATH_BUILD/internal/musl"
+
+	# Generate headers in parallel (scripts use jlib.pl, must run from scripts/ dir)
+	SCRIPTDIR=scripts
+	export SCRIPTDIR
+	gen_ret=0
+	find "$PATH_SRC" -type f -name '*.h' -print0 | xargs -0 -P "$MAX_JOBS" -I{} sh -c '
+		bf=$(basename "$1")
+		case "$1" in
+			*/internal/musl/*.h) d="internal/musl"; t="n";;
+			*/internal/*.h)      d="internal";       t="n";;
+			*/*macro*.h)         d=".";              t="n";;
+			*)                   d=".";              t="g";;
+		esac
+		if [ "$t" = "g" ]; then
+			(cd "$SCRIPTDIR" && perl gen-func.pl "../$1" | perl namespace-macros.pl) > "build/include/jstr/$bf"
+		else
+			(cd "$SCRIPTDIR" && perl namespace-macros.pl "../$1") > "build/include/jstr/$d/$bf"
+		fi
+	' _ {} || gen_ret=$?
+	[ "$gen_ret" -eq 0 ] || { echo "Header generation failed (exit $gen_ret)"; exit 1; }
+
+	echo "=== Building library with coverage ==="
+	mkdir -p build/obj build/lib build/src
+
+	for file in include/*.h; do
+		if ! echo "$file" | grep -qF -e 'struct' -e 'macros' -e 'pointer' -e 'config' -e 'jstr'; then
+			printf '#define JSTR_IMPLEMENTATION 1\n#include "../../include/%s"' "$(basename "$file")" > "build/src/$(basename "$file" | sed 's/\.h$/.c/')"
+		fi
+	done
+
+	COV_CFLAGS="-O0 -g -fno-inline -fno-default-inline -fPIC --coverage -std=c99 -Wall -Wextra -Wpedantic -Wsign-conversion -D_XOPEN_SOURCE=700"
+
+	echo "Compiling with: $COV_CFLAGS"
+	export COV_CFLAGS
+	find build/src/ -maxdepth 1 -name '*.c' -print0 | xargs -0 -P "$MAX_JOBS" -I{} sh -c '
+		base=$(basename "$1" .c)
+		cc -DJSTR_IMPLEMENTATION=1 -c "$1" -o "build/obj/$base.o" $COV_CFLAGS
+	' _ {}
+
+	cc --coverage -shared -Wl,-soname,libjstr.so -o "build/lib/libjstr.so" build/obj/*.o
+	echo "Library built: $(wc -c < build/lib/libjstr.so) bytes"
+fi
+
+export LD_LIBRARY_PATH="$REPOROOT/build/lib"
+
+if [ "$SKIP_TEST" != "1" ]; then
+	echo "=== Running tests ==="
+	mkdir -p build/tests
+	TEST_CFLAGS="-std=c99 -Wall -Wextra -Wno-unused-result -O0 -g --coverage -D_XOPEN_SOURCE=700 -I$REPOROOT/tests"
+
+	testdir=$(mktemp -d "$REPOROOT/build/tests/.run.XXXXXX")
+	export REPOROOT TEST_CFLAGS testdir
+	find tests/ -maxdepth 1 \( -name 'test-*.c' -o -name 'repro-*.c' \) -print0 | xargs -0 -P "$MAX_JOBS" -I{} sh -c '
+		tbase=$(basename "$1" .c)
+		cc -DJSTR_DECL_ONLY -include "$REPOROOT/build/include/jstr/jstr.h" \
+			-iquote "$REPOROOT/build/include/jstr" \
+			-c "$1" -o "build/tests/$tbase.o" \
+			$TEST_CFLAGS 2>"$testdir/$tbase.err" || {
+				echo "compile $tbase" > "$testdir/$tbase.status"
+				exit 1
+			}
+		cc "build/tests/$tbase.o" -o "build/tests/$tbase" \
+			$TEST_CFLAGS -L"$REPOROOT/build/lib" -ljstr 2>>"$testdir/$tbase.err" || {
+				echo "link $tbase" > "$testdir/$tbase.status"
+				exit 1
+			}
+		if "build/tests/$tbase" >/dev/null 2>&1; then
+			echo "ok $tbase" > "$testdir/$tbase.status"
+		else
+			echo "runtime $tbase" > "$testdir/$tbase.status"
+		fi
+	' _ {}
+	passed=0
+	failed=0
+	for sf in "$testdir"/*.status; do
+		[ -f "$sf" ] || continue
+		read -r outcome name < "$sf"
+		case "$outcome" in
+		ok)   passed=$((passed + 1)) ;;
+		compile)
+			echo "  FAIL (compile): $name"
+			head -3 "$testdir/$name.err" 2>/dev/null
+			failed=$((failed + 1))
+			;;
+		link)
+			echo "  FAIL (link): $name"
+			head -3 "$testdir/$name.err" 2>/dev/null
+			failed=$((failed + 1))
+			;;
+		runtime)
+			echo "  FAIL (runtime): $name"
+			failed=$((failed + 1))
+			;;
+		esac
+	done
+	rm -rf "$testdir"
+	echo "  Tests: $passed passed, $failed failed"
+fi
+
+echo "=== Generating coverage ==="
+mkdir -p coverage
+
+# Remove old gcov outputs from repo root (gcov writes to CWD)
+rm -f "$REPOROOT"/*.gcov
+
+# Helper: rename gcov files by their Source: path to avoid overwrites
+# Mode: "path" (default, use full path for disambiguation) or "base" (use basename only)
+rename_gcov_files() {
+	local prefix="$1"
+	local dest="$2"
+	local mode="${3:-path}"
+	for gcovfile in "$REPOROOT"/*.gcov; do
+		[ -f "$gcovfile" ] || continue
+		source_path=$(sed -n 's/.*Source:\(.*\)/\1/p' "$gcovfile" | head -1)
+		if [ -n "$source_path" ]; then
+			if [ "$mode" = "base" ]; then
+				bf=$(basename "$source_path")
+				cp "$gcovfile" "$dest/${prefix}${bf}.gcov" 2>/dev/null || true
+			else
+				safe_name=$(echo "$source_path" | tr '/' '_' | tr '-' '_' | sed 's/^_//')
+				cp "$gcovfile" "$dest/${prefix}${safe_name}.gcov" 2>/dev/null || true
+			fi
+		else
+			bf=$(basename "$gcovfile")
+			cp "$gcovfile" "$dest/${prefix}${bf}" 2>/dev/null || true
+		fi
+		rm -f "$gcovfile"
+	done
+}
+
+# Run gcov for library modules from repo root (gcov resolves relative Source: paths)
+for gcda in "$REPOROOT"/build/obj/*.gcda; do
+	[ -f "$gcda" ] || continue
+	base=$(basename "$gcda" .gcda)
+	gcov -p "$REPOROOT/build/src/${base}.c" --object-directory "$REPOROOT/build/obj" 2>/dev/null || true
+done
+# Rename and copy library .gcov files to coverage/
+rename_gcov_files "lib_" "$REPOROOT/coverage"
+
+# Remove and regenerate test coverage
+rm -f "$REPOROOT"/build/tests/*.gcov
+for gcda in "$REPOROOT"/build/tests/*.gcda; do
+	[ -f "$gcda" ] || continue
+	tbase=$(basename "$gcda" .gcda)
+	tsrc="$REPOROOT/tests/${tbase}.c"
+	[ -f "$tsrc" ] || continue
+	gcov -p "$tsrc" --object-directory "$REPOROOT/build/tests" 2>/dev/null || true
+done
+# Rename and copy test .gcov files to coverage/
+rename_gcov_files "test_" "$REPOROOT/coverage" path
+
+exec_line_count() {
+	local f="$1"
+	# Count executable lines (lines with count*:  or #####:)
+	sed -n 's/^[[:space:]]*\([0-9]*\|#####\)[:\*].*//p' "$f" 2>/dev/null | wc -l
+}
+
+covered_line_count() {
+	local f="$1"
+	# Count covered lines (lines with count*: where count > 0)
+	sed -n 's/^[[:space:]]*\([1-9][0-9]*\)[*:].*//p' "$f" 2>/dev/null | wc -l
+}
+
+uncovered_line_count() {
+	local f="$1"
+	# Count uncovered lines (lines with #####:)
+	grep -c '^[[:space:]]*#####:' "$f" 2>/dev/null || true
+}
+
+echo ""
+echo "================ Coverage Summary ================="
+
+echo ""
+echo "Library modules (original headers):"
+echo "----------------------------------------------------"
+total_lines=0
+total_exec=0
+for f in "$REPOROOT"/coverage/lib_*.gcov; do
+	[ -f "$f" ] || continue
+	bn=$(basename "$f")
+	# Get Source: path for display
+	source_path=$(sed -n 's/.*Source:\(.*\)/\1/p' "$f" | head -1)
+	cover_count=$(covered_line_count "$f" | tr -d ' \n')
+	uncover_count=$(uncovered_line_count "$f" | tr -d ' \n')
+	total=$((cover_count + uncover_count))
+	if [ "$total" -gt 0 ]; then
+		pct=$(awk "BEGIN {printf \"%.1f\", 100 * $cover_count / $total}" 2>/dev/null || echo "0")
+		printf "  %-50s %6s%%  (%4d uncovered / %5d total)\n" "$source_path" "$pct" "$uncover_count" "$total"
+		total_lines=$((total_lines + total))
+		total_exec=$((total_exec + cover_count))
+	fi
+done
+echo "----------------------------------------------------"
+if [ "$total_lines" -gt 0 ]; then
+	pct=$(awk "BEGIN {printf \"%.1f\", 100 * $total_exec / $total_lines}" 2>/dev/null || echo "0")
+	echo "LIBRARY line coverage: $total_exec / $total_lines = ${pct}%"
+fi
+
+echo ""
+echo "Test coverage:"
+echo "----------------------------------------------------"
+test_total=0
+test_exec=0
+for f in "$REPOROOT"/coverage/test_*.gcov; do
+	[ -f "$f" ] || continue
+	bn=$(basename "$f")
+	source_path=$(sed -n 's/.*Source:\(.*\)/\1/p' "$f" | head -1)
+	cover_count=$(covered_line_count "$f" | tr -d ' \n')
+	uncover_count=$(uncovered_line_count "$f" | tr -d ' \n')
+	total=$((cover_count + uncover_count))
+	if [ "$total" -gt 0 ]; then
+		pct=$(awk "BEGIN {printf \"%.1f\", 100 * $cover_count / $total}" 2>/dev/null || echo "0")
+		printf "  %-50s %6s%%  (%4d uncovered / %5d total)\n" "$source_path" "$pct" "$uncover_count" "$total"
+		test_total=$((test_total + total))
+		test_exec=$((test_exec + cover_count))
+	fi
+done
+echo "----------------------------------------------------"
+if [ "$test_total" -gt 0 ]; then
+	pct=$(awk "BEGIN {printf \"%.1f\", 100 * $test_exec / $test_total}" 2>/dev/null || echo "0")
+	echo "TEST line coverage: $test_exec / $test_total = ${pct}%"
+fi
+
+cd "$REPOROOT"
+echo ""
+echo "Coverage reports in: $REPOROOT/coverage/
+  Library: coverage/lib_*.gcov
+  Tests:   coverage/test_*.gcov"

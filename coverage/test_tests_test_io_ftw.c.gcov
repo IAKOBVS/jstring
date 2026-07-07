@@ -1,0 +1,530 @@
+        -:    0:Source:tests/test-io-ftw.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-io-ftw.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-io-ftw.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Tests for jstr_io_ftw_len and other io.h I/O functions
+        -:    5: * not covered by test-fuzz-io.c (readfile, writefile, expandtilde). */
+        -:    6:
+        -:    7:#define _POSIX_C_SOURCE 200809L
+        -:    8:
+        -:    9:#include "test.h"
+        -:   10:#include "../include/io.h"
+        -:   11:
+        -:   12:#include <dirent.h>
+        -:   13:#include <errno.h>
+        -:   14:#include <stdio.h>
+        -:   15:#include <stdlib.h>
+        -:   16:#include <string.h>
+        -:   17:#include <sys/stat.h>
+        -:   18:#include <unistd.h>
+        -:   19:
+        -:   20:enum { MAX_ENTRIES = 64 };
+        -:   21:
+        -:   22:/* ---------- test helpers ---------- */
+        -:   23:
+        -:   24:static char tmpdir_root[JSTR_IO_PATH_MAX];
+        -:   25:static size_t tmpdir_root_len;
+        -:   26:
+        -:   27:/* Append SRC (with known length SRC_LEN) to DST starting at offset OFF.
+        -:   28: * DST must have space.  NUL-terminates.  Returns new end offset. */
+        -:   29:static size_t
+       18:   30:pathcat(char *dst, size_t off, const char *src, size_t src_len)
+        -:   31:{
+       18:   32:	memcpy(dst + off, src, src_len);
+       18:   33:	off += src_len;
+       18:   34:	dst[off] = '\0';
+       18:   35:	return off;
+        -:   36:}
+        -:   37:
+        -:   38:static int
+        1:   39:setup_tree(void)
+        -:   40:{
+        1:   41:	memcpy(tmpdir_root, "/tmp/jstr_test_io_XXXXXX", 25);
+        1:   42:	if (!mkdtemp(tmpdir_root)) {
+    #####:   43:		perror("mkdtemp");
+    #####:   44:		return -1;
+        -:   45:	}
+        1:   46:	tmpdir_root_len = strlen(tmpdir_root);
+        -:   47:
+        -:   48:	/* Tree:
+        -:   49:	 * root/
+        -:   50:	 *   .hidden
+        -:   51:	 *   file_a.txt
+        -:   52:	 *   file_b.bin
+        -:   53:	 *   subdir/
+        -:   54:	 *     file_c.txt
+        -:   55:	 *     subsubdir/
+        -:   56:	 *       file_d.txt
+        -:   57:	 *   empty_subdir/
+        -:   58:	 */
+        -:   59:	char p[JSTR_IO_PATH_MAX];
+        1:   60:	size_t rl = tmpdir_root_len;
+        1:   61:	memcpy(p, tmpdir_root, rl + 1);
+        -:   62:
+        -:   63:	size_t off;
+        1:   64:	off = pathcat(p, rl, "/subdir", 7);
+       1*:   65:	if (mkdir(p, 0755) && errno != EEXIST) return -1;
+        1:   66:	off = pathcat(p, rl, "/subdir/subsubdir", 17);
+       1*:   67:	if (mkdir(p, 0755) && errno != EEXIST) return -1;
+        1:   68:	off = pathcat(p, rl, "/empty_subdir", 13);
+       1*:   69:	if (mkdir(p, 0755) && errno != EEXIST) return -1;
+        -:   70:
+        -:   71:	int fd;
+        1:   72:	off = pathcat(p, rl, "/file_a.txt", 11);
+        1:   73:	fd = creat(p, 0644);
+        1:   74:	if (fd >= 0) close(fd);
+        1:   75:	off = pathcat(p, rl, "/file_b.bin", 11);
+        1:   76:	fd = creat(p, 0644);
+        1:   77:	if (fd >= 0) close(fd);
+        1:   78:	off = pathcat(p, rl, "/.hidden", 8);
+        1:   79:	fd = creat(p, 0644);
+        1:   80:	if (fd >= 0) close(fd);
+        1:   81:	off = pathcat(p, rl, "/subdir/file_c.txt", 18);
+        1:   82:	fd = creat(p, 0644);
+        1:   83:	if (fd >= 0) close(fd);
+        1:   84:	off = pathcat(p, rl, "/subdir/subsubdir/file_d.txt", 28);
+        1:   85:	fd = creat(p, 0644);
+        1:   86:	if (fd >= 0) close(fd);
+        -:   87:	(void)off;
+        1:   88:	return 0;
+        -:   89:}
+        -:   90:
+        -:   91:static void
+        1:   92:teardown_tree(void)
+        -:   93:{
+        -:   94:	char cmd[JSTR_IO_PATH_MAX + 20];
+        1:   95:	memcpy(cmd, "rm -rf '", 8);
+        1:   96:	size_t off = 8;
+        1:   97:	memcpy(cmd + off, tmpdir_root, tmpdir_root_len);
+        1:   98:	off += tmpdir_root_len;
+        1:   99:	memcpy(cmd + off, "'", 2);
+        1:  100:	system(cmd);
+        1:  101:}
+        -:  102:
+        -:  103:/* ---------- ftw callback harness ---------- */
+        -:  104:
+        -:  105:struct ftw_result {
+        -:  106:	char paths[MAX_ENTRIES][JSTR_IO_PATH_MAX];
+        -:  107:	size_t path_lens[MAX_ENTRIES];
+        -:  108:	int is_dirs[MAX_ENTRIES];
+        -:  109:	size_t count;
+        -:  110:};
+        -:  111:
+        -:  112:static int
+       50:  113:collect_cb(const struct JSTR_IO_FTW *ftw, const void *args)
+        -:  114:{
+       50:  115:	struct ftw_result *r = (struct ftw_result *)args;
+      50*:  116:	assert(r->count < MAX_ENTRIES);
+       50:  117:	size_t i = r->count++;
+       50:  118:	memcpy(r->paths[i], ftw->dirpath, ftw->dirpath_len);
+       50:  119:	r->paths[i][ftw->dirpath_len] = '\0';
+       50:  120:	r->path_lens[i] = ftw->dirpath_len;
+       50:  121:	r->is_dirs[i] = S_ISDIR(ftw->st->st_mode);
+       50:  122:	return JSTR_RET_SUCC;
+        -:  123:}
+        -:  124:
+        -:  125:static int
+        1:  126:skip_cb(const struct JSTR_IO_FTW *ftw, const void *args)
+        -:  127:{
+        -:  128:	(void)ftw;
+        -:  129:	(void)args;
+        1:  130:	return JSTR_IO_FTW_RET_STOP;
+        -:  131:}
+        -:  132:
+        -:  133:/* match files ending in ".txt" — return 0 to accept */
+        -:  134:static int
+       10:  135:match_txt(const char *fname, jstr_io_path_size_ty fname_len, const void *args)
+        -:  136:{
+        -:  137:	(void)args;
+       10:  138:	return fname_len < 4 || memcmp(fname + fname_len - 4, ".txt", 4) != 0;
+        -:  139:}
+        -:  140:
+        -:  141:/* match files ending in ".bin" */
+        -:  142:static int
+        5:  143:match_bin(const char *fname, jstr_io_path_size_ty fname_len, const void *args)
+        -:  144:{
+        -:  145:	(void)args;
+        5:  146:	return fname_len < 4 || memcmp(fname + fname_len - 4, ".bin", 4) != 0;
+        -:  147:}
+        -:  148:
+        -:  149:/* ---------- ftw tests ---------- */
+        -:  150:
+        -:  151:static void
+        1:  152:test_basic_traversal(void)
+        -:  153:{
+        -:  154:	struct ftw_result r;
+        1:  155:	memset(&r, 0, sizeof(r));
+        1:  156:	int ret = jstr_io_ftw_len(
+        -:  157:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  158:		collect_cb, &r,
+        -:  159:		0, NULL, NULL);
+       1*:  160:	ASSERT_ERRFUNC(test_basic_traversal, ret == JSTR_RET_SUCC);
+        -:  161:	/* root + 5 files + 3 subdirs = 9 */
+       1*:  162:	ASSERT_ERRFUNC(test_basic_traversal, r.count == 9);
+        1:  163:}
+        -:  164:
+        -:  165:static void
+        1:  166:test_nohidden(void)
+        -:  167:{
+        -:  168:	struct ftw_result r;
+        1:  169:	memset(&r, 0, sizeof(r));
+        1:  170:	int ret = jstr_io_ftw_len(
+        -:  171:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  172:		collect_cb, &r,
+        -:  173:		JSTR_IO_FTW_NOHIDDEN, NULL, NULL);
+       1*:  174:	ASSERT_ERRFUNC(test_nohidden, ret == JSTR_RET_SUCC);
+        -:  175:	/* root + 5 files (no .hidden) + 3 subdirs = 8 */
+       1*:  176:	ASSERT_ERRFUNC(test_nohidden, r.count == 8);
+        9:  177:	for (size_t i = 0; i < r.count; ++i) {
+        8:  178:		const char *base = r.paths[i] + tmpdir_root_len + 1;
+       8*:  179:		ASSERT_ERRFUNC(test_nohidden, strcmp(base, ".hidden") != 0);
+        -:  180:	}
+        1:  181:}
+        -:  182:
+        -:  183:static void
+        1:  184:test_reg_only(void)
+        -:  185:{
+        -:  186:	struct ftw_result r;
+        1:  187:	memset(&r, 0, sizeof(r));
+        1:  188:	int ret = jstr_io_ftw_len(
+        -:  189:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  190:		collect_cb, &r,
+        -:  191:		JSTR_IO_FTW_REG, NULL, NULL);
+       1*:  192:	ASSERT_ERRFUNC(test_reg_only, ret == JSTR_RET_SUCC);
+       1*:  193:	ASSERT_ERRFUNC(test_reg_only, r.count == 5);
+        6:  194:	for (size_t i = 0; i < r.count; ++i)
+       5*:  195:		ASSERT_ERRFUNC(test_reg_only, !r.is_dirs[i]);
+        1:  196:}
+        -:  197:
+        -:  198:static void
+        1:  199:test_dir_only(void)
+        -:  200:{
+        -:  201:	struct ftw_result r;
+        1:  202:	memset(&r, 0, sizeof(r));
+        1:  203:	int ret = jstr_io_ftw_len(
+        -:  204:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  205:		collect_cb, &r,
+        -:  206:		JSTR_IO_FTW_DIR, NULL, NULL);
+       1*:  207:	ASSERT_ERRFUNC(test_dir_only, ret == JSTR_RET_SUCC);
+        -:  208:	/* root + subdir + subsubdir + empty_subdir = 4 */
+       1*:  209:	ASSERT_ERRFUNC(test_dir_only, r.count == 4);
+        5:  210:	for (size_t i = 0; i < r.count; ++i)
+       4*:  211:		ASSERT_ERRFUNC(test_dir_only, r.is_dirs[i]);
+        1:  212:}
+        -:  213:
+        -:  214:static void
+        1:  215:test_nosubdir(void)
+        -:  216:{
+        -:  217:	struct ftw_result r;
+        1:  218:	memset(&r, 0, sizeof(r));
+        1:  219:	int ret = jstr_io_ftw_len(
+        -:  220:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  221:		collect_cb, &r,
+        -:  222:		JSTR_IO_FTW_NOSUBDIR, NULL, NULL);
+       1*:  223:	ASSERT_ERRFUNC(test_nosubdir, ret == JSTR_RET_SUCC);
+        -:  224:	/* root + .hidden + file_a.txt + file_b.bin + subdir + empty_subdir = 6 */
+       1*:  225:	ASSERT_ERRFUNC(test_nosubdir, r.count == 6);
+        1:  226:}
+        -:  227:
+        -:  228:static void
+        1:  229:test_nosubdir_reg(void)
+        -:  230:{
+        -:  231:	struct ftw_result r;
+        1:  232:	memset(&r, 0, sizeof(r));
+        1:  233:	int ret = jstr_io_ftw_len(
+        -:  234:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  235:		collect_cb, &r,
+        -:  236:		JSTR_IO_FTW_NOSUBDIR | JSTR_IO_FTW_REG, NULL, NULL);
+       1*:  237:	ASSERT_ERRFUNC(test_nosubdir_reg, ret == JSTR_RET_SUCC);
+        -:  238:	/* root reg files only */
+       1*:  239:	ASSERT_ERRFUNC(test_nosubdir_reg, r.count == 3);
+        1:  240:}
+        -:  241:
+        -:  242:static void
+        1:  243:test_func_match_dname(void)
+        -:  244:{
+        -:  245:	struct ftw_result r;
+        1:  246:	memset(&r, 0, sizeof(r));
+        1:  247:	int ret = jstr_io_ftw_len(
+        -:  248:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  249:		collect_cb, &r,
+        -:  250:		JSTR_IO_FTW_REG, match_txt, NULL);
+       1*:  251:	ASSERT_ERRFUNC(test_func_match_dname, ret == JSTR_RET_SUCC);
+        -:  252:	/* only .txt reg files: file_a.txt, file_c.txt, file_d.txt */
+       1*:  253:	ASSERT_ERRFUNC(test_func_match_dname, r.count == 3);
+        1:  254:}
+        -:  255:
+        -:  256:static void
+        1:  257:test_func_match_path(void)
+        -:  258:{
+        -:  259:	struct ftw_result r;
+        1:  260:	memset(&r, 0, sizeof(r));
+        1:  261:	int ret = jstr_io_ftw_len(
+        -:  262:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  263:		collect_cb, &r,
+        -:  264:		JSTR_IO_FTW_REG | JSTR_IO_FTW_MATCHPATH, match_txt, NULL);
+       1*:  265:	ASSERT_ERRFUNC(test_func_match_path, ret == JSTR_RET_SUCC);
+       1*:  266:	ASSERT_ERRFUNC(test_func_match_path, r.count == 3);
+        1:  267:}
+        -:  268:
+        -:  269:static void
+        1:  270:test_func_match_noflags(void)
+        -:  271:{
+        -:  272:	/* func_match without REG or DIR: filters reg files only */
+        -:  273:	struct ftw_result r;
+        1:  274:	memset(&r, 0, sizeof(r));
+        1:  275:	int ret = jstr_io_ftw_len(
+        -:  276:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  277:		collect_cb, &r,
+        -:  278:		0, match_bin, NULL);
+       1*:  279:	ASSERT_ERRFUNC(test_func_match_noflags, ret == JSTR_RET_SUCC);
+        -:  280:	/* dirs pass through, only file_b.bin passes match among reg files */
+        1:  281:	size_t ndirs = 0, nfiles = 0;
+        6:  282:	for (size_t i = 0; i < r.count; ++i)
+        5:  283:		if (r.is_dirs[i])
+        4:  284:			++ndirs;
+        -:  285:		else
+        1:  286:			++nfiles;
+       1*:  287:	ASSERT_ERRFUNC(test_func_match_noflags, ndirs == 4);
+       1*:  288:	ASSERT_ERRFUNC(test_func_match_noflags, nfiles == 1);
+       1*:  289:	ASSERT_ERRFUNC(test_func_match_noflags, r.count == 5);
+        1:  290:}
+        -:  291:
+        -:  292:static void
+        1:  293:test_actionretval_stop(void)
+        -:  294:{
+        1:  295:	int ret = jstr_io_ftw_len(
+        -:  296:		tmpdir_root, (jstr_io_path_size_ty)tmpdir_root_len,
+        -:  297:		skip_cb, NULL,
+        -:  298:		JSTR_IO_FTW_ACTIONRETVAL, NULL, NULL);
+        -:  299:	/* stop from root callback → converted to jstr_ret_ty error in outer handler */
+       1*:  300:	ASSERT_ERRFUNC(test_actionretval_stop, jstr_chk(ret));
+        1:  301:}
+        -:  302:
+        -:  303:static void
+        1:  304:test_non_dir_path(void)
+        -:  305:{
+        -:  306:	char path[JSTR_IO_PATH_MAX];
+        1:  307:	size_t plen = pathcat(path, 0, tmpdir_root, tmpdir_root_len);
+        1:  308:	plen = pathcat(path, plen, "/file_a.txt", 11);
+        -:  309:	struct ftw_result r;
+        1:  310:	memset(&r, 0, sizeof(r));
+        1:  311:	int ret = jstr_io_ftw_len(
+        -:  312:		path, (jstr_io_path_size_ty)plen,
+        -:  313:		collect_cb, &r,
+        -:  314:		0, NULL, NULL);
+       1*:  315:	ASSERT_ERRFUNC(test_non_dir_path, ret == JSTR_RET_SUCC);
+       1*:  316:	ASSERT_ERRFUNC(test_non_dir_path, r.count == 1);
+       1*:  317:	ASSERT_ERRFUNC(test_non_dir_path, !r.is_dirs[0]);
+        1:  318:}
+        -:  319:
+        -:  320:static void
+        1:  321:test_reg_only_on_nonreg(void)
+        -:  322:{
+        -:  323:	char path[JSTR_IO_PATH_MAX];
+        1:  324:	size_t plen = pathcat(path, 0, tmpdir_root, tmpdir_root_len);
+        1:  325:	plen = pathcat(path, plen, "/subdir", 7);
+        -:  326:	struct ftw_result r;
+        1:  327:	memset(&r, 0, sizeof(r));
+        1:  328:	int ret = jstr_io_ftw_len(
+        -:  329:		path, (jstr_io_path_size_ty)plen,
+        -:  330:		collect_cb, &r,
+        -:  331:		JSTR_IO_FTW_REG, NULL, NULL);
+       1*:  332:	ASSERT_ERRFUNC(test_reg_only_on_nonreg, ret == JSTR_RET_SUCC);
+        -:  333:	/* subdir is a dir, REG-only skips dir callback but still recurses
+        -:  334:	 * into subdirs to find regular files: file_c.txt + file_d.txt = 2 */
+       1*:  335:	ASSERT_ERRFUNC(test_reg_only_on_nonreg, r.count == 2);
+        1:  336:}
+        -:  337:
+        -:  338:static void
+        1:  339:test_nonfatal_err(void)
+        -:  340:{
+        -:  341:	struct ftw_result r;
+        1:  342:	memset(&r, 0, sizeof(r));
+        -:  343:	/* open(2) on a non-existent path fails → returns error */
+        1:  344:	int ret = jstr_io_ftw_len(
+        -:  345:		"/nonexistent_path_xyzzy", 23,
+        -:  346:		collect_cb, &r,
+        -:  347:		0, NULL, NULL);
+       1*:  348:	ASSERT_ERRFUNC(test_nonfatal_err, ret != JSTR_RET_SUCC);
+       1*:  349:	ASSERT_ERRFUNC(test_nonfatal_err, r.count == 0);
+        1:  350:}
+        -:  351:
+        -:  352:static void
+        1:  353:test_empty_dir(void)
+        -:  354:{
+        -:  355:	char path[JSTR_IO_PATH_MAX];
+        1:  356:	size_t plen = pathcat(path, 0, tmpdir_root, tmpdir_root_len);
+        1:  357:	plen = pathcat(path, plen, "/empty_subdir", 13);
+        -:  358:	struct ftw_result r;
+        1:  359:	memset(&r, 0, sizeof(r));
+        1:  360:	int ret = jstr_io_ftw_len(
+        -:  361:		path, (jstr_io_path_size_ty)plen,
+        -:  362:		collect_cb, &r,
+        -:  363:		0, NULL, NULL);
+       1*:  364:	ASSERT_ERRFUNC(test_empty_dir, ret == JSTR_RET_SUCC);
+       1*:  365:	ASSERT_ERRFUNC(test_empty_dir, r.count == 1);
+       1*:  366:	ASSERT_ERRFUNC(test_empty_dir, r.is_dirs[0]);
+        1:  367:}
+        -:  368:
+        -:  369:/* ---------- readfile / writefile / expandtilde tests ---------- */
+        -:  370:
+        -:  371:static void
+        1:  372:test_writefile_readfile(void)
+        -:  373:{
+        1:  374:	char *r = NULL;
+        1:  375:	size_t rsz = 0, rcap = 0;
+        1:  376:	const char *data = "hello world\n";
+        1:  377:	size_t dlen = 12;
+        -:  378:
+        -:  379:	char fpath[JSTR_IO_PATH_MAX];
+        1:  380:	size_t plen = pathcat(fpath, 0, tmpdir_root, tmpdir_root_len);
+        1:  381:	plen = pathcat(fpath, plen, "/write_test.txt", 15);
+        -:  382:
+        1:  383:	int ret = jstr_io_writefile_len(data, dlen, fpath, O_CREAT | O_TRUNC, 0644);
+       1*:  384:	ASSERT_ERRFUNC(test_writefile_readfile, ret == JSTR_RET_SUCC);
+        -:  385:
+        1:  386:	ret = jstr_io_readfile_len(&r, &rsz, &rcap, fpath, O_RDONLY, dlen);
+       1*:  387:	ASSERT_ERRFUNC(test_writefile_readfile, ret == JSTR_RET_SUCC);
+       1*:  388:	ASSERT_ERRFUNC(test_writefile_readfile, rsz == dlen);
+       1*:  389:	ASSERT_ERRFUNC(test_writefile_readfile, memcmp(r, data, dlen) == 0);
+        -:  390:
+        1:  391:	jstr_free(&r, &rsz, &rcap);
+        1:  392:}
+        -:  393:
+        -:  394:static void
+        1:  395:test_writefile_append_newline(void)
+        -:  396:{
+        1:  397:	char *r = NULL;
+        1:  398:	size_t rsz = 0, rcap = 0;
+        1:  399:	const char *data = "no newline";
+        1:  400:	size_t dlen = 10;
+        -:  401:
+        -:  402:	char fpath[JSTR_IO_PATH_MAX];
+        1:  403:	size_t plen = pathcat(fpath, 0, tmpdir_root, tmpdir_root_len);
+        1:  404:	plen = pathcat(fpath, plen, "/write_nonl.txt", 15);
+        -:  405:
+        1:  406:	int ret = jstr_io_writefile_len(data, dlen, fpath, O_CREAT | O_TRUNC, 0644);
+       1*:  407:	ASSERT_ERRFUNC(test_writefile_append_newline, ret == JSTR_RET_SUCC);
+        -:  408:
+        1:  409:	ret = jstr_io_readfile_len(&r, &rsz, &rcap, fpath, O_RDONLY, dlen + 1);
+       1*:  410:	ASSERT_ERRFUNC(test_writefile_append_newline, ret == JSTR_RET_SUCC);
+       1*:  411:	ASSERT_ERRFUNC(test_writefile_append_newline, rsz == dlen + 1);
+       1*:  412:	ASSERT_ERRFUNC(test_writefile_append_newline, memcmp(r, data, dlen) == 0);
+       1*:  413:	ASSERT_ERRFUNC(test_writefile_append_newline, r[dlen] == '\n');
+        -:  414:
+        1:  415:	jstr_free(&r, &rsz, &rcap);
+        1:  416:}
+        -:  417:
+        -:  418:static void
+        1:  419:test_expandtilde(void)
+        -:  420:{
+        1:  421:	char *s = NULL;
+        1:  422:	size_t sz = 0, cap = 0;
+        -:  423:
+        1:  424:	int ret = jstr_assign_len(&s, &sz, &cap, "~/file.txt", 10);
+       1*:  425:	ASSERT_ERRFUNC(test_expandtilde, ret == JSTR_RET_SUCC);
+        -:  426:
+        1:  427:	ret = jstr_io_expandtildefirst(&s, &sz, &cap);
+       1*:  428:	ASSERT_ERRFUNC(test_expandtilde, ret == JSTR_RET_SUCC);
+       1*:  429:	ASSERT_ERRFUNC(test_expandtilde, sz > 0 && s[0] == '/');
+       1*:  430:	ASSERT_ERRFUNC(test_expandtilde, strstr(s, "/file.txt") != NULL);
+        -:  431:
+        1:  432:	jstr_free(&s, &sz, &cap);
+        1:  433:}
+        -:  434:
+        -:  435:static void
+        1:  436:test_expandtilde_no_tilde(void)
+        -:  437:{
+        1:  438:	char *s = NULL;
+        1:  439:	size_t sz = 0, cap = 0;
+        -:  440:
+        1:  441:	int ret = jstr_assign_len(&s, &sz, &cap, "/no/tilde", 9);
+       1*:  442:	ASSERT_ERRFUNC(test_expandtilde_no_tilde, ret == JSTR_RET_SUCC);
+        -:  443:
+        1:  444:	ret = jstr_io_expandtildefirst(&s, &sz, &cap);
+       1*:  445:	ASSERT_ERRFUNC(test_expandtilde_no_tilde, ret == JSTR_RET_SUCC);
+       1*:  446:	ASSERT_ERRFUNC(test_expandtilde_no_tilde, sz == 9);
+       1*:  447:	ASSERT_ERRFUNC(test_expandtilde_no_tilde, strcmp(s, "/no/tilde") == 0);
+        -:  448:
+        1:  449:	jstr_free(&s, &sz, &cap);
+        1:  450:}
+        -:  451:
+        -:  452:static void
+        1:  453:test_appendpath(void)
+        -:  454:{
+        1:  455:	char *s = NULL;
+        1:  456:	size_t sz = 0, cap = 0;
+        -:  457:
+        1:  458:	int ret = jstr_assign_len(&s, &sz, &cap, "/base", 5);
+       1*:  459:	ASSERT_ERRFUNC(test_appendpath, ret == JSTR_RET_SUCC);
+        -:  460:
+        1:  461:	ret = jstr_io_appendpath_len(&s, &sz, &cap, "subdir", 6);
+       1*:  462:	ASSERT_ERRFUNC(test_appendpath, ret == JSTR_RET_SUCC);
+       1*:  463:	ASSERT_ERRFUNC(test_appendpath, sz == 12);
+       1*:  464:	ASSERT_ERRFUNC(test_appendpath, strcmp(s, "/base/subdir") == 0);
+       1*:  465:	ASSERT_ERRFUNC(test_appendpath, s[sz] == '\0');
+        -:  466:
+        1:  467:	jstr_free(&s, &sz, &cap);
+        1:  468:}
+        -:  469:
+        -:  470:/* ---------- main ---------- */
+        -:  471:
+        -:  472:int
+        1:  473:main(int argc, char **argv)
+        -:  474:{
+        -:  475:	START();
+        -:  476:	(void)argc;
+        -:  477:	(void)argv;
+        -:  478:
+        1:  479:	if (setup_tree()) {
+    #####:  480:		PRINTERR("test-io-ftw: failed to set up temp tree\n");
+    #####:  481:		return EXIT_FAILURE;
+        -:  482:	}
+        -:  483:
+        -:  484:	TESTING(test_basic_traversal);
+        1:  485:	test_basic_traversal();
+        -:  486:	TESTING(test_nohidden);
+        1:  487:	test_nohidden();
+        -:  488:	TESTING(test_reg_only);
+        1:  489:	test_reg_only();
+        -:  490:	TESTING(test_dir_only);
+        1:  491:	test_dir_only();
+        -:  492:	TESTING(test_nosubdir);
+        1:  493:	test_nosubdir();
+        -:  494:	TESTING(test_nosubdir_reg);
+        1:  495:	test_nosubdir_reg();
+        -:  496:	TESTING(test_func_match_dname);
+        1:  497:	test_func_match_dname();
+        -:  498:	TESTING(test_func_match_path);
+        1:  499:	test_func_match_path();
+        -:  500:	TESTING(test_func_match_noflags);
+        1:  501:	test_func_match_noflags();
+        -:  502:	TESTING(test_actionretval_stop);
+        1:  503:	test_actionretval_stop();
+        -:  504:	TESTING(test_non_dir_path);
+        1:  505:	test_non_dir_path();
+        -:  506:	TESTING(test_reg_only_on_nonreg);
+        1:  507:	test_reg_only_on_nonreg();
+        -:  508:	TESTING(test_empty_dir);
+        1:  509:	test_empty_dir();
+        -:  510:	TESTING(test_writefile_readfile);
+        1:  511:	test_writefile_readfile();
+        -:  512:	TESTING(test_writefile_append_newline);
+        1:  513:	test_writefile_append_newline();
+        -:  514:	TESTING(test_expandtilde);
+        1:  515:	test_expandtilde();
+        -:  516:	TESTING(test_expandtilde_no_tilde);
+        1:  517:	test_expandtilde_no_tilde();
+        -:  518:	TESTING(test_appendpath);
+        1:  519:	test_appendpath();
+        -:  520:	TESTING(test_nonfatal_err);
+        1:  521:	test_nonfatal_err();
+        -:  522:
+        1:  523:	teardown_tree();
+        -:  524:	SUCCESS();
+        1:  525:	return EXIT_SUCCESS;
+        -:  526:}

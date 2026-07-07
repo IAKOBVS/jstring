@@ -1,0 +1,151 @@
+        -:    0:Source:tests/test-fuzz-search.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-search.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-search.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for search functions: memmem, memrmem, strstr_len,
+        -:    5: * strrstr_len, strcasestr_len, countchr_len, count_len,
+        -:    6: * starts_len, ends_len. */
+        -:    7:
+        -:    8:#define __STDC_NO_VLA__ 1
+        -:    9:
+        -:   10:#include "test.h"
+        -:   11:#include "../include/jstr.h"
+        -:   12:#include "fuzz-shared.h"
+        -:   13:
+        -:   14:JSTR_ATTR_MAYBE_UNUSED
+        -:   15:static void
+        1:   16:fuzz_search(size_t iter)
+        -:   17:{
+        -:   18:	char h[FSTR], n_small[FSTR];
+     2561:   19:	for (size_t i = 0; i < iter; ++i) {
+     2560:   20:		enum gen_mode hmode = (enum gen_mode)(rand() % 4);
+     2560:   21:		enum gen_mode nmode = (enum gen_mode)(rand() % 4);
+     2560:   22:		size_t hl = gen_str(h, FSTR - 1, hmode);
+     2560:   23:		size_t nl = gen_str(n_small, FSTR - 1, nmode);
+        -:   24:
+        -:   25:		/* --- memmem --- */
+     2560:   26:		void *got = jstr_memmem(h, hl, n_small, nl);
+     2560:   27:		void *exp = simple_memmem(h, hl, n_small, nl);
+    2560*:   28:		assert(got == exp);
+        -:   29:
+        -:   30:		/* --- memrmem --- */
+     2560:   31:		void *got_rm = jstr_memrmem(h, hl, n_small, nl);
+     2560:   32:		void *exp_rm = fuzz_memrmem(h, hl, n_small, nl);
+    2560*:   33:		assert(got_rm == exp_rm);
+        -:   34:
+        -:   35:		/* --- strstr_len --- */
+     2560:   36:		got = jstr_strstr_len(h, hl, n_small, nl);
+     2560:   37:		exp = simple_memmem(h, hl, n_small, nl);
+    2560*:   38:		assert(got == exp);
+        -:   39:
+        -:   40:		/* --- strrstr_len --- */
+     2560:   41:		got = jstr_strrstr_len(h, hl, n_small, nl);
+     2560:   42:		exp = fuzz_memrmem(h, hl, n_small, nl);
+    2560*:   43:		assert(got == exp);
+        -:   44:
+        -:   45:		/* --- strcasestr_len --- */
+     2560:   46:		if (nl > 0 && hl >= nl) {
+     1273:   47:			got = jstr_strcasestr_len(h, hl, n_small, nl);
+     1273:   48:			int found_g = got != NULL;
+     1273:   49:			int found_e = 0;
+   111683:   50:			for (size_t j = 0; j <= hl - nl; ++j) {
+   110417:   51:				int match = 1;
+   111987:   52:				for (size_t k = 0; k < nl; ++k)
+   335940:   53:					if (jstr_tolower((unsigned char)h[j + k]) != jstr_tolower((unsigned char)n_small[k])) {
+   110410:   54:						match = 0;
+   110410:   55:						break;
+        -:   56:					}
+   110417:   57:				if (match) {
+        7:   58:					found_e = 1;
+        7:   59:					break;
+        -:   60:				}
+        -:   61:			}
+    1273*:   62:			assert(found_g == found_e);
+        -:   63:		}
+        -:   64:
+        -:   65:		/* --- countchr_len --- */
+     2560:   66:		if (hl > 0) {
+     2548:   67:			size_t cnt_g = jstr_countchr_len(h, (unsigned char)n_small[0], hl);
+     2548:   68:			size_t cnt_e = simple_countchr_len(h, (unsigned char)n_small[0], hl);
+    2548*:   69:			assert(cnt_g == cnt_e);
+        -:   70:		}
+        -:   71:
+        -:   72:		/* --- count_len (skips by find_len, no overlap) --- */
+     2560:   73:		if (nl > 0) {
+     2543:   74:			size_t cl_g = jstr_count_len(h, hl, n_small, nl);
+     2543:   75:			void *p = h;
+     2543:   76:			size_t cl_e = 0;
+     2560:   77:			while ((p = simple_memmem(p, JSTR_PTR_DIFF(h + hl, p), n_small, nl))) {
+       17:   78:				++cl_e;
+       17:   79:				p = (char *)p + nl;
+        -:   80:			}
+    2543*:   81:			assert(cl_g == cl_e);
+        -:   82:		}
+        -:   83:
+        -:   84:		/* --- starts / ends --- */
+     2560:   85:		if (nl > 0) {
+     2543:   86:			int sg = jstr_starts_len(h, hl, n_small, nl);
+     2543:   87:			int se = (hl >= nl && memcmp(h, n_small, nl) == 0);
+    2543*:   88:			assert(!!sg == !!se);
+        -:   89:
+     2543:   90:			int eg = jstr_ends_len(h, hl, n_small, nl);
+     2543:   91:			int ee = (hl >= nl && memcmp(h + hl - nl, n_small, nl) == 0);
+    2543*:   92:			assert(!!eg == !!ee);
+        -:   93:		}
+        -:   94:	}
+        1:   95:}
+        -:   96:
+        -:   97:#ifndef FUZZ_LIBFUZZER
+        -:   98:
+        -:   99:int
+        1:  100:main(int argc, char **argv)
+        -:  101:{
+        -:  102:	START();
+        1:  103:	unsigned seed = 0;
+        1:  104:	if (argc > 1)
+    #####:  105:		seed = (unsigned)atoi(argv[1]);
+        1:  106:	size_t iter = FITER;
+        -:  107:#ifdef JSTR_TEST_SLOW
+        1:  108:	iter *= 10;
+        -:  109:#else
+        -:  110:	if (iter > 500)
+        -:  111:		iter = 500;
+        -:  112:#endif
+        1:  113:	if (iter < 1)
+    #####:  114:		iter = 1;
+        -:  115:	/* PRINTERR("seed=%u iter=%zu\n", seed, iter); */
+        -:  116:#ifdef FUZZ_AFL
+        -:  117:	while (__AFL_LOOP(10000))
+        -:  118:#endif
+        -:  119:	{
+        1:  120:		srand(seed);
+        -:  121:		TESTING(fuzz_search);
+        1:  122:		fuzz_search(iter);
+        -:  123:	}
+        -:  124:	SUCCESS();
+        1:  125:	return EXIT_SUCCESS;
+        -:  126:}
+        -:  127:
+        -:  128:#else
+        -:  129:
+        -:  130:int
+        -:  131:LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
+        -:  132:{
+        -:  133:	if (size < 4)
+        -:  134:		return 0;
+        -:  135:	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
+        -:  136:	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+        -:  137:	srand(seed);
+        -:  138:	data += 4;
+        -:  139:	size -= 4;
+        -:  140:	size_t iter = size > 0 ? size : 10;
+        -:  141:	if (iter > 100)
+        -:  142:		iter = 100;
+        -:  143:	fuzz_search(iter);
+        -:  144:	return 0;
+        -:  145:}
+        -:  146:
+        -:  147:#endif

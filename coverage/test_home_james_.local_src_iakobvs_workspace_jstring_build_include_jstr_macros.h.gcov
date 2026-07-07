@@ -1,0 +1,1555 @@
+        -:    0:Source:/home/james/.local/src/iakobvs-workspace/jstring/build/include/jstr/macros.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#ifndef JSTR_MACROS_H
+        -:    5:#	define JSTR_MACROS_H 1
+        -:    6:
+        -:    7:#	include "config.h"
+        -:    8:#	include "macros-arch.h"
+        -:    9:#	include "macros-os.h"
+        -:   10:#	include "pointer-arith.h"
+        -:   11:
+        -:   12:#	ifdef __cplusplus
+        -:   13:#		define JSTR_INTERNAL_BEGIN_DECLS extern "C" {
+        -:   14:#		define JSTR_INTERNAL_END_DECLS   }
+        -:   15:#	else
+        -:   16:#		define JSTR_INTERNAL_BEGIN_DECLS
+        -:   17:#		define JSTR_INTERNAL_END_DECLS
+        -:   18:#	endif
+        -:   19:
+        -:   20:JSTR_INTERNAL_BEGIN_DECLS
+        -:   21:#	include <assert.h>
+        -:   22:#	include <errno.h>
+        -:   23:#	include <stdio.h>
+        -:   24:#	include <stdlib.h>
+        -:   25:#	include <string.h>
+        -:   26:#	include <stdarg.h>
+        -:   27:JSTR_INTERNAL_END_DECLS
+        -:   28:
+        -:   29:#	if defined _LP64 || defined __LP64__
+        -:   30:#		define JSTR_LP64 1
+        -:   31:#	elif defined _ILP32 || defined __ILP32__
+        -:   32:#		define JSTR_LP32 1
+        -:   33:#	else
+        -:   34:#		define JSTR_LP_UNKNOWN 1
+        -:   35:#	endif
+        -:   36:
+        -:   37:JSTR_INTERNAL_BEGIN_DECLS
+        -:   38:typedef enum {
+        -:   39:	JSTR_RET_ERR = -1,
+        -:   40:	JSTR_RET_SUCC = 0
+        -:   41:} jstr_ret_ty;
+        -:   42:JSTR_INTERNAL_END_DECLS
+        -:   43:
+        -:   44:#	if defined __GLIBC__ || JSTR_ENV_BSD
+        -:   45:JSTR_INTERNAL_BEGIN_DECLS
+        -:   46:#		include <sys/cdefs.h>
+        -:   47:JSTR_INTERNAL_END_DECLS
+        -:   48:#	endif
+        -:   49:
+        -:   50:JSTR_INTERNAL_BEGIN_DECLS
+        -:   51:#	if JSTR_OS_SOLARIS
+        -:   52:#		include <sys/int_types.h>
+        -:   53:#	else
+        -:   54:#		include <stdint.h>
+        -:   55:#	endif
+        -:   56:JSTR_INTERNAL_END_DECLS
+        -:   57:
+        -:   58:#	ifdef __GLIBC_PREREQ
+        -:   59:#		define JSTR_GLIBC_PREREQ(maj, min) __GLIBC_PREREQ(maj, min)
+        -:   60:#	elif defined __GLIBC__
+        -:   61:#		define JSTR_GLIBC_PREREQ(maj, min) ((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
+        -:   62:#	else
+        -:   63:#		define JSTR_GLIBC_PREREQ(maj, min) 0
+        -:   64:#	endif
+        -:   65:
+        -:   66:#	ifdef __GNUC_PREREQ
+        -:   67:#		define JSTR_GNUC_PREREQ(maj, min) __GNUC_PREREQ(maj, min)
+        -:   68:#	elif defined __GNUC__
+        -:   69:#		define JSTR_GNUC_PREREQ(maj, min) ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+        -:   70:#	else
+        -:   71:#		define JSTR_GNUC_PREREQ(maj, min) (0)
+        -:   72:#	endif
+        -:   73:
+        -:   74:#	if JSTR_ENV_BSD
+        -:   75:JSTR_INTERNAL_BEGIN_DECLS
+        -:   76:#		include <sys/endian.h>
+        -:   77:JSTR_INTERNAL_END_DECLS
+        -:   78:#	elif defined __GLIBC__ && ((JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) || defined _DEFAULT_SOURCE)
+        -:   79:JSTR_INTERNAL_BEGIN_DECLS
+        -:   80:#		include <endian.h>
+        -:   81:JSTR_INTERNAL_END_DECLS
+        -:   82:#	elif JSTR_OS_MAC
+        -:   83:#		include <machine/endian.h>
+        -:   84:#	endif
+        -:   85:
+        -:   86:#	if JSTR_DEBUG
+        -:   87:#		undef JSTR_PANIC
+        -:   88:#		define JSTR_PANIC 1
+        -:   89:#	endif
+        -:   90:
+        -:   91:#	define JSTR_SWAP(T, x, y)        \
+        -:   92:		do {                      \
+        -:   93:			T const _TMP = x; \
+        -:   94:			x = y;            \
+        -:   95:			y = _TMP;         \
+        -:   96:		} while (0)
+        -:   97:
+        -:   98:#	ifdef __BYTE_ORDER
+        -:   99:#		define JSTR_WORD_ORDER __BYTE_ORDER
+        -:  100:#	elif defined _BYTE_ORDER
+        -:  101:#		define JSTR_WORD_ORDER _BYTE_ORDER
+        -:  102:#	endif
+        -:  103:
+        -:  104:#	ifdef __BIG_ENDIAN
+        -:  105:#		define JSTR_BIG_ENDIAN __BIG_ENDIAN
+        -:  106:#	elif defined _BIG_ENDIAN
+        -:  107:#		define JSTR_BIG_ENDIAN _BIG_ENDIAN
+        -:  108:#	endif
+        -:  109:
+        -:  110:#	ifdef __LITTLE_ENDIAN
+        -:  111:#		define JSTR_LITTLE_ENDIAN __LITTLE_ENDIAN
+        -:  112:#	elif defined _LITTLE_ENDIAN
+        -:  113:#		define JSTR_LITTLE_ENDIAN _LITTLE_ENDIAN
+        -:  114:#	endif
+        -:  115:
+        -:  116:#	ifdef JSTR_WORD_ORDER
+        -:  117:#		if JSTR_WORD_ORDER == JSTR_BIG_ENDIAN                               \
+        -:  118:		|| defined __BIG_ENDIAN__                                            \
+        -:  119:		|| defined __ARMEB__ || defined __THUMBEB__ || defined __AARCH64EB__ \
+        -:  120:		|| defined _MIBSEB || defined __MIBSEB || defined __MIBSEB__
+        -:  121:#			undef JSTR_ENDIAN_BIG
+        -:  122:#			undef JSTR_ENDIAN_LITTLE
+        -:  123:#			define JSTR_ENDIAN_BIG 1
+        -:  124:#		elif JSTR_WORD_ORDER == JSTR_LITTLE_ENDIAN                          \
+        -:  125:		|| defined __LITTLE_ENDIAN__                                         \
+        -:  126:		|| defined __ARMEL__ || defined __THUMBEL__ || defined __AARCH64EL__ \
+        -:  127:		|| defined _MIPSEL || defined __MIPSEL || defined __MIPSEL__
+        -:  128:#			undef JSTR_ENDIAN_LITTLE
+        -:  129:#			undef JSTR_ENDIAN_BIG
+        -:  130:#			define JSTR_ENDIAN_LITTLE 1
+        -:  131:#		endif
+        -:  132:#	endif /* byte_order */
+        -:  133:
+        -:  134:#	if !JSTR_ENDIAN_LITTLE && !JSTR_ENDIAN_BIG
+        -:  135:#		define JSTR_ENDIAN_UNKNOWN 1
+        -:  136:#	endif
+        -:  137:
+        -:  138:#	define jstr_err(fmt, ...)    jstr_internal_err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, fmt, __VA_ARGS__)
+        -:  139:#	define jstr_errdie(fmt, ...) jstr_internal_errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, fmt, __VA_ARGS__)
+        -:  140:
+        -:  141:#	define jstr_chk(ret)                     jstr_unlikely(ret == -1)
+        -:  142:#	define jstr_nullchk(p)                   jstr_unlikely((p) == NULL)
+        -:  143:#define JSTR_PAGE_SIZE 4096
+        -:  144:#	define JSTR_ARRAY_COUNT(array)           (sizeof(array) / sizeof(array[0]))
+        -:  145:#	define JSTR_INTERNAL_CONCAT_HELPER(x, y) x##y
+        -:  146:#	define JSTR_CONCAT(x, y)                 JSTR_INTERNAL_CONCAT_HELPER(x, y)
+        -:  147:#	define JSTR_STRING(x)                    #x
+        -:  148:
+        -:  149:#	define JSTR_MAX(x, y)        (((x) > (y)) ? (x) : (y))
+        -:  150:#	define JSTR_MIN(x, y)        (((x) < (y)) ? (x) : (y))
+        -:  151:#	define JSTR_BETWEEN(x, a, b) (((a) <= (x)) && ((x) <= (b)))
+        -:  152:#	define JSTR_MIN3(x, y, z)    (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
+        -:  153:#	define JSTR_MAX3(x, y, z)    (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
+        -:  154:#	define JSTR_MID3(x, y, z)    (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
+        -:  155:
+        -:  156:#	define JSTR_IO_KB (1000)
+        -:  157:#	define JSTR_IO_MB (JSTR_IO_KB * JSTR_IO_KB)
+        -:  158:#	define JSTR_IO_GB (JSTR_IO_MB * JSTR_IO_KB)
+        -:  159:#	define JSTR_IO_TB (JSTR_IO_GB * JSTR_IO_KB)
+        -:  160:#	define JSTR_IO_PB (JSTR_IO_TB * JSTR_IO_KB)
+        -:  161:#	define JSTR_IO_EB (JSTR_IO_PB * JSTR_IO_KB)
+        -:  162:#	define JSTR_IO_ZB (JSTR_IO_EB * JSTR_IO_KB)
+        -:  163:#	define JSTR_IO_YB (JSTR_IO_ZB * JSTR_IO_KB)
+        -:  164:#	define JSTR_IO_RB (JSTR_IO_YB * JSTR_IO_KB)
+        -:  165:#	define JSTR_IO_QB (JSTR_IO_RB * JSTR_IO_KB)
+        -:  166:
+        -:  167:#	define JSTR_IO_KIB (1024)
+        -:  168:#	define JSTR_IO_MIB (JSTR_IO_KIB * JSTR_IO_KIB)
+        -:  169:#	define JSTR_IO_GIB (JSTR_IO_MIB * JSTR_IO_KIB)
+        -:  170:#	define JSTR_IO_TIB (JSTR_IO_GIB * JSTR_IO_KIB)
+        -:  171:#	define JSTR_IO_PIB (JSTR_IO_TIB * JSTR_IO_KIB)
+        -:  172:#	define JSTR_IO_EIB (JSTR_IO_PIB * JSTR_IO_KIB)
+        -:  173:#	define JSTR_IO_ZIB (JSTR_IO_EIB * JSTR_IO_KIB)
+        -:  174:#	define JSTR_IO_YIB (JSTR_IO_ZIB * JSTR_IO_KIB)
+        -:  175:#	define JSTR_IO_RIB (JSTR_IO_YIB * JSTR_IO_KIB)
+        -:  176:#	define JSTR_IO_QIB (JSTR_IO_RIB * JSTR_IO_KIB)
+        -:  177:
+        -:  178:#	define JSTR_ALPHA_VOWEL_LOWER_STR     "aiueo"
+        -:  179:#	define JSTR_ALPHA_VOWEL_UPPER_STR     "AIUEO"
+        -:  180:#	define JSTR_ALPHA_CONSONANT_LOWER_STR "bcdfghjklmnpqrstvwxyz"
+        -:  181:#	define JSTR_ALPHA_CONSONANT_UPPER_STR "BCDFGHJKLMNPQRSTVWXYZ"
+        -:  182:#	define JSTR_DIGIT_STR                 "0123456789"
+        -:  183:#	define JSTR_SPACE_STR                 " \t\n\r\f\v"
+        -:  184:#	define JSTR_PUNCT_STR                 "!\"#$%&\()*+,-./:;<=>?@[\\]^_`{|}~";
+        -:  185:#	define JSTR_XDIGIT_LOWER_STR          JSTR_DIGIT_STR "abcdef"
+        -:  186:#	define JSTR_XDIGIT_UPPER_STR          JSTR_DIGIT_STR "ABCDEF"
+        -:  187:#	define JSTR_XDIGIT_STR                JSTR_DIGIT_STR "abcdefABCDEF"
+        -:  188:#	define JSTR_ALPHA_VOWEL_STR           JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_VOWEL_UPPER_STR
+        -:  189:#	define JSTR_ALPHA_CONSONANT_STR       JSTR_ALPHA_CONSONANT_LOWER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
+        -:  190:#	define JSTR_ALPHA_LOWER_STR           JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_CONSONANT_LOWER_STR
+        -:  191:#	define JSTR_ALPHA_UPPER_STR           JSTR_ALPHA_VOWEL_UPPER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
+        -:  192:#	define JSTR_ALPHA_STR                 JSTR_ALPHA_LOWER_STR JSTR_ALPHA_UPPER_STR
+        -:  193:#	define JSTR_ALNUM_LOWER_STR           JSTR_ALPHA_LOWER_STR JSTR_DIGIT_STR
+        -:  194:#	define JSTR_ALNUM_UPPER_STR           JSTR_ALPHA_UPPER_STR JSTR_DIGIT_STR
+        -:  195:#	define JSTR_ALNUM_STR                 JSTR_ALPHA_STR JSTR_DIGIT_STR
+        -:  196:#	define JSTR_DIGIT_CASE \
+        -:  197:	case '0':               \
+        -:  198:	case '1':               \
+        -:  199:	case '2':               \
+        -:  200:	case '3':               \
+        -:  201:	case '4':               \
+        -:  202:	case '5':               \
+        -:  203:	case '6':               \
+        -:  204:	case '7':               \
+        -:  205:	case '8':               \
+        -:  206:	case '9':
+        -:  207:#	define JSTR_ALPHA_VOWEL_LOWER_CASE \
+        -:  208:	case 'a':                           \
+        -:  209:	case 'i':                           \
+        -:  210:	case 'u':                           \
+        -:  211:	case 'e':                           \
+        -:  212:	case 'o':
+        -:  213:#	define JSTR_ALPHA_VOWEL_UPPER_CASE \
+        -:  214:	case 'A':                           \
+        -:  215:	case 'I':                           \
+        -:  216:	case 'U':                           \
+        -:  217:	case 'E':                           \
+        -:  218:	case 'O':
+        -:  219:#	define JSTR_ALPHA_CONSONANT_LOWER_CASE \
+        -:  220:	case 'b':                               \
+        -:  221:	case 'c':                               \
+        -:  222:	case 'd':                               \
+        -:  223:	case 'f':                               \
+        -:  224:	case 'g':                               \
+        -:  225:	case 'h':                               \
+        -:  226:	case 'j':                               \
+        -:  227:	case 'k':                               \
+        -:  228:	case 'l':                               \
+        -:  229:	case 'm':                               \
+        -:  230:	case 'n':                               \
+        -:  231:	case 'p':                               \
+        -:  232:	case 'q':                               \
+        -:  233:	case 'r':                               \
+        -:  234:	case 's':                               \
+        -:  235:	case 't':                               \
+        -:  236:	case 'v':                               \
+        -:  237:	case 'w':                               \
+        -:  238:	case 'x':                               \
+        -:  239:	case 'y':                               \
+        -:  240:	case 'z':
+        -:  241:#	define JSTR_ALPHA_CONSONANT_UPPER_CASE \
+        -:  242:	case 'B':                               \
+        -:  243:	case 'C':                               \
+        -:  244:	case 'D':                               \
+        -:  245:	case 'F':                               \
+        -:  246:	case 'G':                               \
+        -:  247:	case 'H':                               \
+        -:  248:	case 'J':                               \
+        -:  249:	case 'K':                               \
+        -:  250:	case 'L':                               \
+        -:  251:	case 'M':                               \
+        -:  252:	case 'N':                               \
+        -:  253:	case 'P':                               \
+        -:  254:	case 'Q':                               \
+        -:  255:	case 'R':                               \
+        -:  256:	case 'S':                               \
+        -:  257:	case 'T':                               \
+        -:  258:	case 'V':                               \
+        -:  259:	case 'W':                               \
+        -:  260:	case 'X':                               \
+        -:  261:	case 'Y':                               \
+        -:  262:	case 'Z':
+        -:  263:#	define JSTR_XDIGIT_CASE  \
+        -:  264:	JSTR_DIGIT_CASE case 'a': \
+        -:  265:	case 'b':                 \
+        -:  266:	case 'c':                 \
+        -:  267:	case 'd':                 \
+        -:  268:	case 'e':                 \
+        -:  269:	case 'f':                 \
+        -:  270:	case 'A':                 \
+        -:  271:	case 'B':                 \
+        -:  272:	case 'C':                 \
+        -:  273:	case 'D':                 \
+        -:  274:	case 'E':                 \
+        -:  275:	case 'F':
+        -:  276:#	define JSTR_BLANK_CASE \
+        -:  277:	case '\t':              \
+        -:  278:	case ' ':
+        -:  279:#	define JSTR_SPACE_CASE    \
+        -:  280:	JSTR_BLANK_CASE case '\n': \
+        -:  281:	case '\v':                 \
+        -:  282:	case '\f':                 \
+        -:  283:	case '\r':
+        -:  284:#	define JSTR_GRAPH_CASE \
+        -:  285:	case 33:                \
+        -:  286:	case 34:                \
+        -:  287:	case 35:                \
+        -:  288:	case 36:                \
+        -:  289:	case 37:                \
+        -:  290:	case 38:                \
+        -:  291:	case 39:                \
+        -:  292:	case 40:                \
+        -:  293:	case 41:                \
+        -:  294:	case 42:                \
+        -:  295:	case 43:                \
+        -:  296:	case 44:                \
+        -:  297:	case 45:                \
+        -:  298:	case 46:                \
+        -:  299:	case 47:                \
+        -:  300:	case 48:                \
+        -:  301:	case 49:                \
+        -:  302:	case 50:                \
+        -:  303:	case 51:                \
+        -:  304:	case 52:                \
+        -:  305:	case 53:                \
+        -:  306:	case 54:                \
+        -:  307:	case 55:                \
+        -:  308:	case 56:                \
+        -:  309:	case 57:                \
+        -:  310:	case 58:                \
+        -:  311:	case 59:                \
+        -:  312:	case 60:                \
+        -:  313:	case 61:                \
+        -:  314:	case 62:                \
+        -:  315:	case 63:                \
+        -:  316:	case 64:                \
+        -:  317:	case 65:                \
+        -:  318:	case 66:                \
+        -:  319:	case 67:                \
+        -:  320:	case 68:                \
+        -:  321:	case 69:                \
+        -:  322:	case 70:                \
+        -:  323:	case 71:                \
+        -:  324:	case 72:                \
+        -:  325:	case 73:                \
+        -:  326:	case 74:                \
+        -:  327:	case 75:                \
+        -:  328:	case 76:                \
+        -:  329:	case 77:                \
+        -:  330:	case 78:                \
+        -:  331:	case 79:                \
+        -:  332:	case 80:                \
+        -:  333:	case 81:                \
+        -:  334:	case 82:                \
+        -:  335:	case 83:                \
+        -:  336:	case 84:                \
+        -:  337:	case 85:                \
+        -:  338:	case 86:                \
+        -:  339:	case 87:                \
+        -:  340:	case 88:                \
+        -:  341:	case 89:                \
+        -:  342:	case 90:                \
+        -:  343:	case 91:                \
+        -:  344:	case 92:                \
+        -:  345:	case 93:                \
+        -:  346:	case 94:                \
+        -:  347:	case 95:                \
+        -:  348:	case 96:                \
+        -:  349:	case 97:                \
+        -:  350:	case 98:                \
+        -:  351:	case 99:                \
+        -:  352:	case 100:               \
+        -:  353:	case 101:               \
+        -:  354:	case 102:               \
+        -:  355:	case 103:               \
+        -:  356:	case 104:               \
+        -:  357:	case 105:               \
+        -:  358:	case 106:               \
+        -:  359:	case 107:               \
+        -:  360:	case 108:               \
+        -:  361:	case 109:               \
+        -:  362:	case 110:               \
+        -:  363:	case 111:               \
+        -:  364:	case 112:               \
+        -:  365:	case 113:               \
+        -:  366:	case 114:               \
+        -:  367:	case 115:               \
+        -:  368:	case 116:               \
+        -:  369:	case 117:               \
+        -:  370:	case 118:               \
+        -:  371:	case 119:               \
+        -:  372:	case 120:               \
+        -:  373:	case 121:               \
+        -:  374:	case 122:               \
+        -:  375:	case 123:               \
+        -:  376:	case 124:               \
+        -:  377:	case 125:               \
+        -:  378:	case 126:
+        -:  379:#	define JSTR_PRINT_CASE JSTR_GRAPH_CASE case 32:
+        -:  380:#	define JSTR_CNTRL_CASE \
+        -:  381:	case 0:                 \
+        -:  382:	case 1:                 \
+        -:  383:	case 2:                 \
+        -:  384:	case 3:                 \
+        -:  385:	case 4:                 \
+        -:  386:	case 5:                 \
+        -:  387:	case 6:                 \
+        -:  388:	case 7:                 \
+        -:  389:	case 8:                 \
+        -:  390:	case 9:                 \
+        -:  391:	case 10:                \
+        -:  392:	case 11:                \
+        -:  393:	case 12:                \
+        -:  394:	case 13:                \
+        -:  395:	case 14:                \
+        -:  396:	case 15:                \
+        -:  397:	case 16:                \
+        -:  398:	case 17:                \
+        -:  399:	case 18:                \
+        -:  400:	case 19:                \
+        -:  401:	case 20:                \
+        -:  402:	case 21:                \
+        -:  403:	case 22:                \
+        -:  404:	case 23:                \
+        -:  405:	case 24:                \
+        -:  406:	case 25:                \
+        -:  407:	case 26:                \
+        -:  408:	case 27:                \
+        -:  409:	case 28:                \
+        -:  410:	case 29:                \
+        -:  411:	case 30:                \
+        -:  412:	case 31:                \
+        -:  413:	case 127:
+        -:  414:#	define JSTR_PUNCT_CASE \
+        -:  415:	case '!':               \
+        -:  416:	case '"':               \
+        -:  417:	case '#':               \
+        -:  418:	case '$':               \
+        -:  419:	case '%':               \
+        -:  420:	case '&':               \
+        -:  421:	case '\'':              \
+        -:  422:	case '(':               \
+        -:  423:	case ')':               \
+        -:  424:	case '*':               \
+        -:  425:	case '+':               \
+        -:  426:	case ',':               \
+        -:  427:	case '-':               \
+        -:  428:	case '.':               \
+        -:  429:	case '/':               \
+        -:  430:	case ':':               \
+        -:  431:	case ';':               \
+        -:  432:	case '<':               \
+        -:  433:	case '=':               \
+        -:  434:	case '>':               \
+        -:  435:	case '?':               \
+        -:  436:	case '@':               \
+        -:  437:	case '[':               \
+        -:  438:	case '\\':              \
+        -:  439:	case ']':               \
+        -:  440:	case '^':               \
+        -:  441:	case '_':               \
+        -:  442:	case '`':               \
+        -:  443:	case '{':               \
+        -:  444:	case '|':               \
+        -:  445:	case '}':               \
+        -:  446:	case '~':
+        -:  447:#	define JSTR_ALPHA_LOWER_CASE JSTR_VOWEL_LOWER_CASE JSTR_CONSONANT_LOWER_CASE
+        -:  448:#	define JSTR_ALPHA_UPPER_CASE JSTR_VOWEL_UPPER_CASE JSTR_CONSONANT_UPPER_CASE
+        -:  449:#	define JSTR_VOWEL_CASE       JSTR_VOWEL_ALPHA_UPPER_CASE JSTR_VOWEL_ALPHA_LOWER_CASE
+        -:  450:#	define JSTR_CONSONANT_CASE   JSTR_CONSONANT_ALPHA_UPPER_CASE JSTR_CONSONANT_ALPHA_LOWER_CASE
+        -:  451:#	define JSTR_ALPHA_CASE       JSTR_ALPHA_LOWER_CASE JSTR_ALPHA_UPPER_CASE
+        -:  452:#	define JSTR_ALNUM_CASE       JSTR_DIGIT_CASE JSTR_ALPHA_CASE
+        -:  453:
+        -:  454:#	define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256) ? (memset((array), (c), 64), memset((array) + 64, (c), 64), memset((array) + 64 + 64, (c), 64), memset((array) + 64 + 64 + 64, (c), 64)) : memset((array), (c), sizeof((array))))
+        -:  455:#	define JSTR_BZERO_ARRAY(array)     JSTR_MEMSET_ARRAY(array, 0)
+        -:  456:
+        -:  457:#	ifdef static_assert
+        -:  458:#		define JSTR_HAVE_STATIC_ASSERT       1
+        -:  459:#		define JSTR_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
+        -:  460:#	elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
+        -:  461:#		define JSTR_HAVE_STATIC_ASSERT       1
+        -:  462:#		define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
+        -:  463:#	else
+        -:  464:#		define JSTR_STATIC_ASSERT(expr, msg)
+        -:  465:#	endif /* static_assert */
+        -:  466:
+        -:  467:#	if JSTR_DEBUG
+        -:  468:#		define JSTR_ASSERT_DEBUG(expr, msg)           \
+        -:  469:			do {                                   \
+        -:  470:				if (jstr_unlikely(!(expr))) {  \
+        -:  471:					jstr_err("%s\n", msg); \
+        -:  472:					assert(expr);          \
+        -:  473:				}                              \
+        -:  474:			} while (0)
+        -:  475:#		define JSTR_ASSERT_DEBUG_PRINTF(expr, ...)           \
+        -:  476:			do {                                          \
+        -:  477:				if (jstr_unlikely(!(expr))) {         \
+        -:  478:					jstr_err("%s", "");           \
+        -:  479:					fprintf(stderr, __VA_ARGS__); \
+        -:  480:					assert(expr);                 \
+        -:  481:				}                                     \
+        -:  482:			} while (0)
+        -:  483:#		define JSTR_DEBUG_PRINT(fmt, ...) fprintf(stderr, fmt, __VA_ARGS__)
+        -:  484:#		define JSTR_DEBUG_JSTRING(s, sz, cap)          \
+        -:  485:			do {                                    \
+        -:  486:				fprintf(stderr, "%s.\n", s);    \
+        -:  487:				fprintf(stderr, "%zu.\n", sz);  \
+        -:  488:				fprintf(stderr, "%zu.\n", cap); \
+        -:  489:			} while (0)
+        -:  490:#	else
+        -:  491:#		define JSTR_ASSERT_DEBUG(expr, msg) \
+        -:  492:			do {                         \
+        -:  493:			} while (0)
+        -:  494:#		define JSTR_ASSERT_DEBUG_PRINTF(expr, ...) \
+        -:  495:			do {                                \
+        -:  496:			} while (0)
+        -:  497:#		define JSTR_DEBUG_JSTRING(s, sz, cap) \
+        -:  498:			do {                           \
+        -:  499:			} while (0)
+        -:  500:#		define JSTR_DEBUG_PRINT(fmt, ...) \
+        -:  501:			do {                       \
+        -:  502:			} while (0)
+        -:  503:#	endif
+        -:  504:
+        -:  505:#	if JSTR_PANIC
+        -:  506:#		define JSTR_RETURN_ERR(errcode)                                   \
+        -:  507:			do {                                                       \
+        -:  508:				jstr_errdie("Returns error (%d)\n", (int)errcode); \
+        -:  509:				return errcode;                                    \
+        -:  510:			} while (0)
+        -:  511:#		define JSTR_RETURN_ERR_P(errcode)                                    \
+        -:  512:			do {                                                          \
+        -:  513:				jstr_errdie("Returns error (%p)\n", (void *)errcode); \
+        -:  514:				return errcode;                                       \
+        -:  515:			} while (0)
+        -:  516:#		define JSTR_RETURN_ERR_ZU(errcode)                                    \
+        -:  517:			do {                                                           \
+        -:  518:				jstr_errdie("Returns error (%zu)\n", (size_t)errcode); \
+        -:  519:				return errcode;                                        \
+        -:  520:			} while (0)
+        -:  521:#	else
+        -:  522:#		define JSTR_RETURN_ERR(errcode)    return errcode
+        -:  523:#		define JSTR_RETURN_ERR_P(errcode)  return errcode
+        -:  524:#		define JSTR_RETURN_ERR_ZU(errcode) return errcode
+        -:  525:#	endif
+        -:  526:
+        -:  527:#	ifdef __cplusplus
+        -:  528:template <typename T, typename Other>
+        -:  529:static T
+        -:  530:JSTR_INTERNAL_CAST(T, Other other)
+        -:  531:{
+        -:  532:	return (T)other;
+        -:  533:}
+        -:  534:#	else
+        -:  535:#		define JSTR_INTERNAL_CAST(T, other) (other)
+        -:  536:#	endif /* cast */
+        -:  537:
+        -:  538:#	if !(defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && !defined __STDC_NO_VLA__)
+        -:  539:#		define JSTR_HAVE_VLA 1
+        -:  540:#	endif
+        -:  541:
+        -:  542:#	ifdef __GLIBC__
+        -:  543:#		include <alloca.h>
+        -:  544:#	endif
+        -:  545:#	include <stdlib.h>
+        -:  546:#	ifdef alloca
+        -:  547:#		define JSTR_HAVE_ALLOCA 1
+        -:  548:#	endif
+        -:  549:
+        -:  550:#	if !defined __cplusplus && defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
+        -:  551:#		define JSTR_HAVE_GENERIC 1
+        -:  552:#	endif /* have_generic */
+        -:  553:
+        -:  554:#	if JSTR_GNUC_PREREQ(4, 0) \
+        -:  555:	|| (defined __clang__ && (__clang_major__ >= 3))
+        -:  556:#		define JSTR_HAVE_TYPEOF 1
+        -:  557:#	endif /* have_typeof */
+        -:  558:
+        -:  559:#	if JSTR_HAVE_TYPEOF && JSTR_HAVE_GENERIC
+        -:  560:#		define JSTR_SAME_TYPE(x, y)        _Generic((x), __typeof__(y): 1, default: 0)
+        -:  561:#		define JSTR_INTERNAL_IS_TYPE(T, x) _Generic((x), T: 1, default: 0)
+        -:  562:#	else
+        -:  563:#		define JSTR_SAME_TYPE(x, y)        1
+        -:  564:#		define JSTR_INTERNAL_IS_TYPE(T, x) 1
+        -:  565:#	endif /* have_typeof && have_generic */
+        -:  566:
+        -:  567:#	if JSTR_HAVE_GENERIC
+        -:  568:#		define JSTR_GENERIC_CASE_SIZE(bool_)               int : bool_, unsigned int : bool_, size_t : bool_, long : bool_, long long : bool_, unsigned long long : bool_
+        -:  569:#		define JSTR_GENERIC_CASE_STR(bool_)                char                *: bool_, const char                *: bool_
+        -:  570:#		define JSTR_GENERIC_CASE_STR_STACK(bool_, s)       char (*)[sizeof(s)] : bool_, const char (*)[sizeof(s)] : bool_
+        -:  571:#		define JSTR_GENERIC_CASE_CHAR(bool_)               char : bool_, const char : bool_
+        -:  572:#		define JSTR_INTERNAL_IS_SIZE(expr)                 _Generic((expr), JSTR_GENERIC_CASE_SIZE(1), default: 0)
+        -:  573:#		define JSTR_INTERNAL_IS_STR(expr)                  _Generic((expr), JSTR_GENERIC_CASE_STR(1), default: 0)
+        -:  574:#		define JSTR_INTERNAL_IS_STR_STACK(expr)            _Generic((expr), JSTR_GENERIC_CASE_STR_STACK(1, expr), default: 0)
+        -:  575:#		define JSTR_INTERNAL_IS_CHAR(expr)                 _Generic((expr), JSTR_GENERIC_CASE_CHAR(1), default: 0)
+        -:  576:#		define JSTR_STATIC_ASSERT_IS_SIZE(expr)            JSTR_STATIC_ASSERT(JSTR_INTERNAL_IS_SIZE(expr), "Passing non-size_type as number argument!");
+        -:  577:#		define JSTR_STATIC_ASSERT_IS_STR(expr)             JSTR_STATIC_ASSERT(JSTR_INTERNAL_IS_STR(expr), "Passing non-string as string argument!");
+        -:  578:#		define JSTR_STATIC_ASSERT_IS_CHAR(expr)            JSTR_STATIC_ASSERT(JSTR_INTERNAL_IS_CHAR(expr), "Passing non-char as char argument!");
+        -:  579:#		define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr) JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
+        -:  580:#	else
+        -:  581:#		define JSTR_GENERIC_CASE_SIZE(bool_)
+        -:  582:#		define JSTR_GENERIC_CASE_STR(bool_)
+        -:  583:#		define JSTR_GENERIC_CASE_STR_STACK(bool_, s)
+        -:  584:#		define JSTR_GENERIC_CASE_CHAR(bool_)
+        -:  585:#		define JSTR_INTERNAL_IS_SIZE(expr)
+        -:  586:#		define JSTR_INTERNAL_IS_STR(expr)
+        -:  587:#		define JSTR_INTERNAL_IS_STR_STACK(expr)
+        -:  588:#		define JSTR_INTERNAL_IS_CHAR(expr)
+        -:  589:#		define JSTR_STATIC_ASSERT_IS_SIZE(expr)
+        -:  590:#		define JSTR_STATIC_ASSERT_IS_STR(expr)
+        -:  591:#		define JSTR_STATIC_ASSERT_IS_CHAR(expr)
+        -:  592:#		define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr)
+        -:  593:#	endif /* have_generic */
+        -:  594:
+        -:  595:#	if defined __cplusplus && __cplusplus > 199711L
+        -:  596:#		define JSTR_NOEXCEPT noexcept
+        -:  597:#	else
+        -:  598:#		define JSTR_NOEXCEPT
+        -:  599:#	endif /* noexcept */
+        -:  600:
+        -:  601:#	ifdef __ASSERT_FUNCTION
+        -:  602:#		define JSTR_ASSERT_FUNC __ASSERT_FUNCTION
+        -:  603:#	elif defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
+        -:  604:#		define JSTR_ASSERT_FUNC __func__
+        -:  605:#	else
+        -:  606:#		define JSTR_ASSERT_FUNC ""
+        -:  607:#	endif
+        -:  608:
+        -:  609:#	ifdef __ASSERT_FILE
+        -:  610:#		define JSTR_ASSERT_FILE __ASSERT_FILE
+        -:  611:#	else
+        -:  612:#		define JSTR_ASSERT_FILE __FILE__
+        -:  613:#	endif
+        -:  614:
+        -:  615:#	ifdef __ASSERT_LINE
+        -:  616:#		define JSTR_ASSERT_LINE __ASSERT_LINE
+        -:  617:#	else
+        -:  618:#		define JSTR_ASSERT_LINE __LINE__
+        -:  619:#	endif
+        -:  620:
+        -:  621:#	if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
+        -:  622:#		define JSTR_RESTRICT restrict
+        -:  623:#	elif defined __GNUC__ || defined __clang__
+        -:  624:#		define JSTR_RESTRICT __restrict
+        -:  625:#	elif defined _MSC_VER
+        -:  626:#		define JSTR_RESTRICT __restrict
+        -:  627:#	else
+        -:  628:#		define JSTR_RESTRICT
+        -:  629:#	endif /* restrict */
+        -:  630:
+        -:  631:#	ifdef __glibc_has_attribute
+        -:  632:#		define JSTR_HAS_ATTRIBUTE(attr) __glibc_has_attribute(attr)
+        -:  633:#	elif defined __has_attribute
+        -:  634:#		define JSTR_HAS_ATTRIBUTE(attr) __has_attribute(attr)
+        -:  635:#	else
+        -:  636:#		define JSTR_HAS_ATTRIBUTE(attr) 0
+        -:  637:#	endif /* has_attribute */
+        -:  638:
+        -:  639:#	ifdef __glibc_has_builtin
+        -:  640:#		define JSTR_HAS_BUILTIN(name) __glibc_has_builtin(name)
+        -:  641:#	elif defined __has_builtin
+        -:  642:#		define JSTR_HAS_BUILTIN(name) __has_builtin(name)
+        -:  643:#	else
+        -:  644:#		define JSTR_HAS_BUILTIN(name) 0
+        -:  645:#	endif /* has_builtin */
+        -:  646:
+        -:  647:#	ifdef __glibc_has_extension
+        -:  648:#		define JSTR_HAS_EXTENSION(ext) __glibc_has_extension(ext)
+        -:  649:#	elif defined __has_extension
+        -:  650:#		define JSTR_HAS_EXTENSION(ext) __has_extension(ext)
+        -:  651:#	else
+        -:  652:#		define JSTR_HAS_EXTENSION(ext)
+        -:  653:#	endif /* has_extension */
+        -:  654:
+        -:  655:#	if defined __glibc_unlikely && defined __glibc_likely
+        -:  656:#		define jstr_likely(x)   __glibc_likely(x)
+        -:  657:#		define jstr_unlikely(x) __glibc_unlikely(x)
+        -:  658:#	elif ((defined __GNUC__ && (__GNUC__ >= 3)) || defined __clang__) && JSTR_HAS_BUILTIN(__builtin_expect)
+        -:  659:#		define jstr_likely(x)   __builtin_expect((x), 1)
+        -:  660:#		define jstr_unlikely(x) __builtin_expect((x), 0)
+        -:  661:#	else
+        -:  662:#		define jstr_likely(x)   (x)
+        -:  663:#		define jstr_unlikely(x) (x)
+        -:  664:#	endif /* unlikely */
+        -:  665:
+        -:  666:#	ifndef JSTR_INTERNAL_ATTR_INLINE
+        -:  667:#		ifdef __inline
+        -:  668:#			define JSTR_INTERNAL_ATTR_INLINE __inline
+        -:  669:#		elif (defined __cplusplus || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+        -:  670:#			define JSTR_INTERNAL_ATTR_INLINE inline
+        -:  671:#		else
+        -:  672:#			define JSTR_INTERNAL_ATTR_INLINE
+        -:  673:#		endif
+        -:  674:#	endif
+        -:  675:
+        -:  676:#	if defined _MSC_VER
+        -:  677:#		define JSTR_ATTR_NOINLINE __declspec(noinline)
+        -:  678:#		define JSTR_ATTR_PURE     __declspec(noalias)
+        -:  679:#		define JSTR_ATTR_CONST    __declspec(restrict)
+        -:  680:#		define JSTR_ATTR_NOTHROW  __declspec(nothrow)
+        -:  681:#	else
+        -:  682:#		if JSTR_HAS_ATTRIBUTE(__format__)
+        -:  683:#			define JSTR_ATTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
+        -:  684:#		endif
+        -:  685:#		ifdef __always_inline
+        -:  686:#			define JSTR_ATTR_INLINE __always_inline
+        -:  687:#		elif JSTR_HAS_ATTRIBUTE(__always_inline__)
+        -:  688:#			define JSTR_ATTR_INLINE __attribute__((__always_inline__)) JSTR_INTERNAL_ATTR_INLINE
+        -:  689:#		endif
+        -:  690:#		ifdef __attribute_noinline__
+        -:  691:#			define JSTR_ATTR_NOINLINE __attribute_noinline__
+        -:  692:#		elif JSTR_HAS_ATTRIBUTE(__noinline__)
+        -:  693:#			define JSTR_ATTR_NOINLINE __attribute__((__noinline__))
+        -:  694:#		endif
+        -:  695:#		ifdef __attribute_pure__
+        -:  696:#			define JSTR_ATTR_PURE __attribute_pure__
+        -:  697:#		elif JSTR_HAS_ATTRIBUTE(__pure__)
+        -:  698:#			define JSTR_ATTR_PURE __attribute__((__pure__))
+        -:  699:#		endif
+        -:  700:#		ifdef __attribute_const__
+        -:  701:#			define JSTR_ATTR_CONST __attribute_const__
+        -:  702:#		elif JSTR_HAS_ATTRIBUTE(__const__)
+        -:  703:#			define JSTR_ATTR_CONST __attribute__((__const__))
+        -:  704:#		endif
+        -:  705:#		ifdef __attribute_flatten__
+        -:  706:#			define JSTR_ATTR_FLATTEN __attribute_flatten__
+        -:  707:#		elif JSTR_HAS_ATTRIBUTE(__flatten__)
+        -:  708:#			define JSTR_ATTR_FLATTEN __attribute__((__flatten__))
+        -:  709:#		endif
+        -:  710:#		ifdef __COLD
+        -:  711:#			define JSTR_ATTR_COLD __COLD
+        -:  712:#		elif JSTR_HAS_ATTRIBUTE(__cold__)
+        -:  713:#			define JSTR_ATTR_COLD __attribute__((__cold__))
+        -:  714:#		endif
+        -:  715:#		if JSTR_HAS_ATTRIBUTE(__sentinel__)
+        -:  716:#			define JSTR_ATTR_SENTINEL __attribute__((__sentinel__))
+        -:  717:#		endif
+        -:  718:#		if defined __attribute_nonnull__ && defined __nonnull
+        -:  719:#			define JSTR_ATTR_NONNULL(params) __nonnull(params)
+        -:  720:#		elif JSTR_HAS_ATTRIBUTE(__nonnull__)
+        -:  721:#			define JSTR_ATTR_NONNULL_ALL     __attribute__((__nonnull__))
+        -:  722:#			define JSTR_ATTR_NONNULL(params) __attribute__((__nonnull__ params))
+        -:  723:#		endif
+        -:  724:#		if JSTR_HAS_ATTRIBUTE(__malloc__)
+        -:  725:#			define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))
+        -:  726:#			define JSTR_ATTR_MALLOC_DEALLOC(deallocator)              __attribute__((__malloc__, deallocator))
+        -:  727:#			define JSTR_ATTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__, deallocator, ptr_idx))
+        -:  728:#		endif
+        -:  729:#		if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
+        -:  730:#			define JSTR_ATTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))
+        -:  731:#		endif
+        -:  732:#		ifdef __attribute_warn_unused_result__
+        -:  733:#			define JSTR_ATTR_WARN_UNUSED __attribute_warn_unused_result__
+        -:  734:#		elif JSTR_HAS_ATTRIBUTE(__warn_unused_result__)
+        -:  735:#			define JSTR_ATTR_WARN_UNUSED __attribute__((__warn_unused_result__))
+        -:  736:#		endif
+        -:  737:#		if JSTR_HAS_ATTRIBUTE(__deprecated__)
+        -:  738:#			define JSTR_ATTR_DEPRECATED(msg) __attribute__((__deprecated__(msg)))
+        -:  739:#		endif
+        -:  740:#		if JSTR_HAS_ATTRIBUTE(__nothrow__)
+        -:  741:#			define JSTR_ATTR_NOTHROW __attribute__((__nothrow__))
+        -:  742:#		endif
+        -:  743:#		if JSTR_HAS_ATTRIBUTE(__may_alias__)
+        -:  744:#			define JSTR_ATTR_MAY_ALIAS __attribute__((__may_alias__))
+        -:  745:#			ifndef JSTR_HAVE_ATTR_MAY_ALIAS
+        -:  746:#				define JSTR_HAVE_ATTR_MAY_ALIAS 1
+        -:  747:#			endif
+        -:  748:#		endif
+        -:  749:#		ifdef __attr_access
+        -:  750:#			define JSTR_ATTR_ACCESS(x) __attr_access(x)
+        -:  751:#		elif JSTR_HAS_ATTRIBUTE(__access__)
+        -:  752:#			define JSTR_ATTR_ACCESS(x) __attribute__((__access__ x))
+        -:  753:#		endif
+        -:  754:#		ifdef __attribute_maybe_unused__
+        -:  755:#			define JSTR_ATTR_MAYBE_UNUSED __attribute_maybe_unused__
+        -:  756:#		elif JSTR_HAS_ATTRIBUTE(__unused__)
+        -:  757:#			define JSTR_ATTR_MAYBE_UNUSED __attribute__((__unused__))
+        -:  758:#		endif
+        -:  759:#		if JSTR_HAS_BUILTIN(__builtin_constant_p)
+        -:  760:#			define JSTR_ATTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
+        -:  761:#		endif
+        -:  762:#		if JSTR_HAS_ATTRIBUTE(__no_sanitize_address__)
+        -:  763:#			define JSTR_ATTR_NO_SANITIZE_ADDRESS __attribute__((__no_sanitize_address__))
+        -:  764:#		elif JSTR_HAS_ATTRIBUTE(__no_sanitize__)
+        -:  765:#			define JSTR_ATTR_NO_SANITIZE_ADDRESS __attribute__((__no_sanitize__(("address"))))
+        -:  766:#		endif
+        -:  767:#	endif
+        -:  768:
+        -:  769:#	ifndef JSTR_ATTR_INLINE
+        -:  770:#		define JSTR_ATTR_INLINE JSTR_INTERNAL_ATTR_INLINE
+        -:  771:#	endif
+        -:  772:#	ifndef JSTR_ATTR_NOINLINE
+        -:  773:#		define JSTR_ATTR_NOINLINE
+        -:  774:#	endif
+        -:  775:#	ifndef JSTR_ATTR_PURE
+        -:  776:#		define JSTR_ATTR_PURE
+        -:  777:#	endif
+        -:  778:#	ifndef JSTR_ATTR_CONST
+        -:  779:#		define JSTR_ATTR_CONST
+        -:  780:#	endif
+        -:  781:#	ifndef JSTR_ATTR_NOTHROW
+        -:  782:#		define JSTR_ATTR_NOTHROW
+        -:  783:#	endif
+        -:  784:#	ifndef JSTR_ATTR_NOINLINE
+        -:  785:#		define JSTR_ATTR_NOINLINE
+        -:  786:#	endif
+        -:  787:#	ifndef JSTR_ATTR_FLATTEN
+        -:  788:#		define JSTR_ATTR_FLATTEN
+        -:  789:#	endif
+        -:  790:#	ifndef JSTR_ATTR_COLD
+        -:  791:#		define JSTR_ATTR_COLD
+        -:  792:#	endif
+        -:  793:#	ifndef JSTR_ATTR_SENTINEL
+        -:  794:#		define JSTR_ATTR_SENTINEL
+        -:  795:#	endif
+        -:  796:#	ifndef JSTR_ATTR_NONNULL_ALL
+        -:  797:#		define JSTR_ATTR_NONNULL_ALL
+        -:  798:#	endif
+        -:  799:#	ifndef JSTR_NONNULL
+        -:  800:#		define JSTR_NONNULL(args)
+        -:  801:#	endif
+        -:  802:#	ifndef JSTR_ATTR_MALLOC
+        -:  803:#		define JSTR_ATTR_MALLOC
+        -:  804:#	endif
+        -:  805:#	ifndef JSTR_ATTR_MALLOC_DEALLOC
+        -:  806:#		define JSTR_ATTR_MALLOC_DEALLOC(deallocator)
+        -:  807:#	endif
+        -:  808:#	ifndef JSTR_ATTR_MALLOC_DEALLOC_PTR
+        -:  809:#		define JSTR_ATTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
+        -:  810:#	endif
+        -:  811:#	ifndef JSTR_ATTR_RETURNS_NONNULL
+        -:  812:#		define JSTR_ATTR_RETURNS_NONNULL
+        -:  813:#	endif
+        -:  814:#	ifndef JSTR_ATTR_WARN_UNUSED
+        -:  815:#		define JSTR_ATTR_WARN_UNUSED
+        -:  816:#	endif
+        -:  817:#	ifndef JSTR_ATTR_DEPRECATED
+        -:  818:#		define JSTR_ATTR_DEPRECATED(msg, replacement)
+        -:  819:#	endif
+        -:  820:#	ifndef JSTR_ATTR_FORMAT
+        -:  821:#		define JSTR_ATTR_FORMAT(archetype, string_index, first_to_check)
+        -:  822:#	endif
+        -:  823:#	ifndef JSTR_ATTR_COLD
+        -:  824:#		define JSTR_ATTR_COLD
+        -:  825:#	endif
+        -:  826:#	ifndef JSTR_ATTR_SENTINEL
+        -:  827:#		define JSTR_ATTR_SENTINEL
+        -:  828:#	endif
+        -:  829:#	ifndef JSTR_ATTR_NONNULL_ALL
+        -:  830:#		define JSTR_ATTR_NONNULL_ALL
+        -:  831:#	endif
+        -:  832:#	ifndef JSTR_NONNULL
+        -:  833:#		define JSTR_NONNULL(args)
+        -:  834:#	endif
+        -:  835:#	ifndef JSTR_ATTR_RETURNS_NONNULL
+        -:  836:#		define JSTR_ATTR_RETURNS_NONNULL
+        -:  837:#	endif
+        -:  838:#	ifndef JSTR_ATTR_WARN_UNUSED
+        -:  839:#		define JSTR_ATTR_WARN_UNUSED
+        -:  840:#	endif
+        -:  841:#	ifndef JSTR_ATTR_DEPRECATED
+        -:  842:#		define JSTR_ATTR_DEPRECATED(msg, replacement)
+        -:  843:#	endif
+        -:  844:#	ifndef JSTR_ATTR_MAY_ALIAS
+        -:  845:#		define JSTR_ATTR_MAY_ALIAS
+        -:  846:#	endif
+        -:  847:#	ifndef JSTR_ATTR_MAYBE_UNUSED
+        -:  848:#		define JSTR_ATTR_MAYBE_UNUSED
+        -:  849:#	endif
+        -:  850:#	ifndef JSTR_ATTR_BUILTIN_CONSTANT_P
+        -:  851:#	endif
+        -:  852:#	ifndef JSTR_ATTR_ACCESS
+        -:  853:#		define JSTR_ATTR_ACCESS(x)
+        -:  854:#	endif
+        -:  855:#	ifndef JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  856:#		define JSTR_ATTR_NO_SANITIZE_ADDRESS
+        -:  857:#	endif
+        -:  858:
+        -:  859:#	define JSTR_ATTR_WUR           JSTR_ATTR_WARN_UNUSED
+        -:  860:#	define JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NOTHROW JSTR_ATTR_MAYBE_UNUSED
+        -:  861:#	define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NONNULL_ALL
+        -:  862:#	define JSTR_FUNC_CONST         JSTR_FUNC_VOID JSTR_ATTR_WUR JSTR_ATTR_CONST
+        -:  863:#	define JSTR_FUNC_PURE          JSTR_FUNC_VOID JSTR_ATTR_WUR JSTR_ATTR_PURE
+        -:  864:#	define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WUR JSTR_ATTR_PURE
+        -:  865:#	if JSTR_PANIC
+        -:  866:#		define JSTR_FUNC_MAY_NULL    JSTR_FUNC_VOID_MAY_NULL
+        -:  867:#		define JSTR_FUNC             JSTR_FUNC_VOID
+        -:  868:#		define JSTR_FUNC_RET_NONNULL JSTR_FUNC_VOID JSTR_ATTR_RETURNS_NONNULL
+        -:  869:#	else
+        -:  870:#		define JSTR_FUNC_MAY_NULL    JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WUR
+        -:  871:#		define JSTR_FUNC             JSTR_FUNC_MAY_NULL JSTR_ATTR_NONNULL_ALL
+        -:  872:#		define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_ATTR_RETURNS_NONNULL
+        -:  873:#	endif
+        -:  874:
+        -:  875:JSTR_FUNC_VOID_MAY_NULL
+        -:  876:JSTR_NONNULL((1))
+        -:  877:JSTR_NONNULL((3))
+        -:  878:JSTR_ATTR_FORMAT(printf, 4, 0)
+        -:  879:JSTR_ATTR_NOINLINE
+        -:  880:JSTR_ATTR_COLD
+        -:  881:static int
+    #####:  882:jstr_internal_verr(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT fmt, va_list args) JSTR_NOEXCEPT
+        -:  883:{
+    #####:  884:	int err = errno;
+        -:  885:	int ret;
+    #####:  886:	ret = fprintf(stderr, "%s:%d:%s(): errno (%d): %s: ", filename, line, func, err, strerror(err));
+    #####:  887:	if (ret < 0)
+    #####:  888:		return -1;
+    #####:  889:	ret = vfprintf(stderr, fmt, args);
+    #####:  890:	if (ret < 0)
+    #####:  891:		return -1;
+    #####:  892:	return 0;
+        -:  893:}
+        -:  894:
+        -:  895:JSTR_FUNC_VOID_MAY_NULL
+        -:  896:JSTR_NONNULL((1))
+        -:  897:JSTR_NONNULL((3))
+        -:  898:JSTR_ATTR_FORMAT(printf, 4, 5)
+        -:  899:JSTR_ATTR_NOINLINE
+        -:  900:JSTR_ATTR_COLD
+        -:  901:static int
+    #####:  902:jstr_internal_err(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT fmt, ...) JSTR_NOEXCEPT
+        -:  903:{
+        -:  904:	va_list args;
+    #####:  905:	va_start(args, fmt);
+    #####:  906:	const int ret = jstr_internal_verr(filename, line, func, fmt, args);
+    #####:  907:	va_end(args);
+    #####:  908:	return ret > 0 ? 0 : -1;
+        -:  909:}
+        -:  910:
+        -:  911:JSTR_FUNC_VOID_MAY_NULL
+        -:  912:JSTR_NONNULL((1))
+        -:  913:JSTR_NONNULL((3))
+        -:  914:JSTR_ATTR_FORMAT(printf, 4, 5)
+        -:  915:JSTR_ATTR_NOINLINE
+        -:  916:JSTR_ATTR_COLD
+        -:  917:static void
+    #####:  918:jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT fmt, ...) JSTR_NOEXCEPT
+        -:  919:{
+        -:  920:	va_list args;
+    #####:  921:	va_start(args, fmt);
+    #####:  922:	jstr_internal_verr(filename, line, func, fmt, args);
+    #####:  923:	va_end(args);
+    #####:  924:	exit(EXIT_FAILURE);
+        -:  925:}
+        -:  926:
+        -:  927:#	if defined _POSIX_SOURCE || defined _POSIX_C_SOURCE || defined _XOPEN_SOURCE || defined _GNU_SOURCE || defined _BSD_SOURCE
+        -:  928:#		define JSTR_HAVE_FILENO 1
+        -:  929:#	endif
+        -:  930:
+        -:  931:#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) \
+        -:  932:	|| defined _BSD_SOURCE \
+        -:  933:	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) \
+        -:  934:	|| (defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 600)
+        -:  935:#		define JSTR_HAVE_STRCASECMP  1
+        -:  936:#		define JSTR_HAVE_STRNCASECMP 1
+        -:  937:#	endif
+        -:  938:
+        -:  939:#	if defined _XOPEN_SOURCE || defined _ISOC2X_SOURCE \
+        -:  940:	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
+        -:  941:#		define JSTR_HAVE_MEMCCPY 1
+        -:  942:#	endif
+        -:  943:
+        -:  944:#	ifdef _GNU_SOURCE
+        -:  945:#		define JSTR_HAVE_MEMMEM            1
+        -:  946:#		define JSTR_HAVE_MEMRCHR           1
+        -:  947:#		define JSTR_HAVE_STRCHRNUL         1
+        -:  948:#		define JSTR_HAVE_FGETS_UNLOCKED    1
+        -:  949:#		define JSTR_HAVE_FPUTS_UNLOCKED    1
+        -:  950:#		define JSTR_HAVE_GETWC_UNLOCKED    1
+        -:  951:#		define JSTR_HAVE_GETWCHAR_UNLOCKED 1
+        -:  952:#		define JSTR_HAVE_FGETWC_UNLOCKED   1
+        -:  953:#		define JSTR_HAVE_FPUTWC_UNLOCKED   1
+        -:  954:#		define JSTR_HAVE_PUTWCHAR_UNLOCKED 1
+        -:  955:#		define JSTR_HAVE_FGETWS_UNLOCKED   1
+        -:  956:#		define JSTR_HAVE_FPUTWS_UNLOCKED   1
+        -:  957:#		define JSTR_HAVE_WMEMPCPY          1
+        -:  958:#		define JSTR_HAVE_MEMPCPY           1
+        -:  959:#		define JSTR_HAVE_STRCASESTR        1
+        -:  960:#		define JSTR_HAVE_ASPRINTF          1
+        -:  961:#		define JSTR_HAVE_VASPRINTF         1
+        -:  962:#	endif
+        -:  963:
+        -:  964:#	if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
+        -:  965:	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
+        -:  966:#		define JSTR_HAVE_SNPRINTF_STRLEN 1
+        -:  967:#	else
+        -:  968:#		define JSTR_HAVE_SNPRINTF_STRLEN 0
+        -:  969:#	endif
+        -:  970:
+        -:  971:#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 24) && (_POSIX_C_SOURCE - 0) >= 199309L)                          \
+        -:  972:	|| ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && (defined _SVID_SOURCE || defined _BSD_SOURCE)) \
+        -:  973:	|| (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
+        -:  974:#		define JSTR_HAVE_GETC_UNLOCKED    1
+        -:  975:#		define JSTR_HAVE_GETCHAR_UNLOCKED 1
+        -:  976:#		define JSTR_HAVE_PUTC_UNLOCKED    1
+        -:  977:#		define JSTR_HAVE_PUTCHAR_UNLOCKED 1
+        -:  978:#	endif
+        -:  979:
+        -:  980:#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
+        -:  981:	|| defined _SVID_SOURCE || defined _BSD_SOURCE
+        -:  982:#		define JSTR_HAVE_FREAD_UNLOCKED    1
+        -:  983:#		define JSTR_HAVE_FWRITE_UNLOCKED   1
+        -:  984:#		define JSTR_HAVE_FPUTC_UNLOCKED    1
+        -:  985:#		define JSTR_HAVE_FGETC_UNLOCKED    1
+        -:  986:#		define JSTR_HAVE_CLEARERR_UNLOCKED 1
+        -:  987:#		define JSTR_HAVE_FEOF_UNLOCKED     1
+        -:  988:#		define JSTR_HAVE_FERROR_UNLOCKED   1
+        -:  989:#		define JSTR_HAVE_FILENO_UNLOCKED   1
+        -:  990:#		define JSTR_HAVE_FFLUSH_UNLOCKED   1
+        -:  991:#	endif
+        -:  992:
+        -:  993:#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 10) && (_POSIX_C_SOURCE - 0) >= 200809L) \
+        -:  994:	|| defined _GNU_SOURCE
+        -:  995:#		define JSTR_HAVE_STPCPY  1
+        -:  996:#		define JSTR_HAVE_STRNLEN 1
+        -:  997:#		define JSTR_HAVE_STRNDUP 1
+        -:  998:#	endif
+        -:  999:
+        -: 1000:#	if (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500)                                \
+        -: 1001:	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && (_POSIX_C_SOURCE - 0) >= 200809L) \
+        -: 1002:	|| defined _BSD_SOURCE || defined _SVID_SOURCE
+        -: 1003:#		define JSTR_HAVE_STRDUP 1
+        -: 1004:#	endif
+        -: 1005:
+        -: 1006:#	ifdef _GNU_SOURCE
+        -: 1007:#		define JSTR_HAVE_STRDUPA  1
+        -: 1008:#		define JSTR_HAVE_STRNDUPA 1
+        -: 1009:#	endif
+        -: 1010:
+        -: 1011:#	if (defined __GLIBC__ && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19)) && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
+        -: 1012:	|| (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 2)
+        -: 1013:#		define JSTR_HAVE_POPEN  1
+        -: 1014:#		define JSTR_HAVE_PCLOSE 1
+        -: 1015:#	endif
+        -: 1016:
+        -: 1017:#	if defined(_GNU_SOURCE)                            \
+        -: 1018:	|| defined(_DEFAULT_SOURCE)                         \
+        -: 1019:	|| defined(_BSD_SOURCE)                             \
+        -: 1020:	|| (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) \
+        -: 1021:	|| (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
+        -: 1022:#		define JSTR_HAVE_READV  1
+        -: 1023:#		define JSTR_HAVE_WRITEV 1
+        -: 1024:#	endif
+        -: 1025:
+        -: 1026:#	if JSTR_GLIBC_PREREQ(2, 10)    \
+        -: 1027:	&& (defined(_GNU_SOURCE)        \
+        -: 1028:	    || defined(_DEFAULT_SOURCE) \
+        -: 1029:	    || defined(_BSD_SOURCE))
+        -: 1030:#		define JSTR_HAVE_PREADV  1
+        -: 1031:#		define JSTR_HAVE_PWRITEV 1
+        -: 1032:#	endif
+        -: 1033:
+        -: 1034:#	if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) \
+        -: 1035:	|| (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) \
+        -: 1036:	|| defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+        -: 1037:#		define JSTR_HAVE_PREAD  1
+        -: 1038:#		define JSTR_HAVE_PWRITE 1
+        -: 1039:#	endif
+        -: 1040:
+        -: 1041:#	if JSTR_GLIBC_PREREQ(2, 26) && defined(_GNU_SOURCE)
+        -: 1042:#		define JSTR_HAVE_PREADV2  1
+        -: 1043:#		define JSTR_HAVE_PWRITEV2 1
+        -: 1044:#	endif
+        -: 1045:
+        -: 1046:#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE)                                                                      \
+        -: 1047:	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _SVID_SOURCE)                                                                       \
+        -: 1048:	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 17) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200809L)))                          \
+        -: 1049:	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200112L)) || defined _SVID_SOURCE) \
+        -: 1050:	|| (defined _SVID_SOURCE || (_XOPEN_SOURCE - 0) >= 500)
+        -: 1051:#		define JSTR_HAVE_GCVT 1
+        -: 1052:#		define JSTR_HAVE_ECVT 1
+        -: 1053:#		define JSTR_HAVE_FCVT 1
+        -: 1054:#	endif
+        -: 1055:
+        -: 1056:#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
+        -: 1057:	|| defined _SVID_SOURCE
+        -: 1058:#		define JSTR_HAVE_QECVT 1
+        -: 1059:#		define JSTR_HAVE_QFCVT 1
+        -: 1060:#		define JSTR_HAVE_QGCVT 1
+        -: 1061:#	endif
+        -: 1062:
+        -: 1063:#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
+        -: 1064:	|| (defined _SVID_SOURCE || defined _BSD_SOURCE)
+        -: 1065:#		define JSTR_HAVE_QECVT_R 1
+        -: 1066:#		define JSTR_HAVE_QFCVT_R 1
+        -: 1067:#		define JSTR_HAVE_ECVT_R  1
+        -: 1068:#		define JSTR_HAVE_FCVT_R  1
+        -: 1069:#	endif
+        -: 1070:
+        -: 1071:#	if defined _DEFAULT_SOURCE || defined _BSD_SOURCE || defined _SVID_SOURCE || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE < 200809L) || (defined _XOPEN_SOURCE && _XOPEN_SOURCE < 700)
+        -: 1072:#		define JSTR_HAVE_BCMP  1
+        -: 1073:#		define JSTR_HAVE_BCOPY 1
+        -: 1074:#		define JSTR_HAVE_BZERO 1
+        -: 1075:#	endif
+        -: 1076:
+        -: 1077:#	ifdef _ATFILE_SOURCE
+        -: 1078:#		define JSTR_HAVE_ATFILE 1
+        -: 1079:#	endif
+        -: 1080:
+        -: 1081:#	if defined _XOPEN_SOURCE && (defined _XOPEN_SOURCE_EXTENDED || (_XOPEN_SOURCE - 0) >= 500)
+        -: 1082:#		define JSTR_HAVE_FCHDIR 1
+        -: 1083:#	endif
+        -: 1084:
+        -: 1085:#	if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 700
+        -: 1086:#		define JSTR_HAVE_FDOPENDIR 1
+        -: 1087:#	endif
+        -: 1088:
+        -: 1089:#	if defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L
+        -: 1090:#		define JSTR_HAVE_NANOSLEEP 1
+        -: 1091:#	endif
+        -: 1092:
+        -: 1093:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FREAD_UNLOCKED
+        -: 1094:#		define jstr_io_fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
+        -: 1095:#	else
+        -: 1096:#		define jstr_io_fread(ptr, size, n, stream) fread(ptr, size, n, stream)
+        -: 1097:#	endif
+        -: 1098:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FGETC_UNLOCKED
+        -: 1099:#		define jstr_io_fgetc(stream) fgetc_unlocked(stream)
+        -: 1100:#	else
+        -: 1101:#		define jstr_io_fgetc(stream) fgetc(stream)
+        -: 1102:#	endif
+        -: 1103:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FGETWS_UNLOCKED
+        -: 1104:#		define jstr_io_fgetws(ws, n, stream) fgetws_unlocked(ws, n, stream)
+        -: 1105:#	else
+        -: 1106:#		define jstr_io_fgetws(ws, n, stream) fgetws(ws, n, stream)
+        -: 1107:#	endif
+        -: 1108:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_GETC_UNLOCKED
+        -: 1109:#		define jstr_io_getc(stream) getc_unlocked(stream)
+        -: 1110:#	else
+        -: 1111:#		define jstr_io_getc(stream) getc(stream)
+        -: 1112:#	endif
+        -: 1113:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_GETCHAR_UNLOCKED
+        -: 1114:#		define jstr_io_getchar() getchar_unlocked()
+        -: 1115:#	else
+        -: 1116:#		define jstr_io_getchar() getchar()
+        -: 1117:#	endif
+        -: 1118:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FGETS_UNLOCKED
+        -: 1119:#		define jstr_io_fgets(s, n, stream) fgets_unlocked(s, n, stream)
+        -: 1120:#	else
+        -: 1121:#		define jstr_io_fgets(s, n, stream) fgets(s, n, stream)
+        -: 1122:#	endif
+        -: 1123:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_GETWC_UNLOCKED
+        -: 1124:#		define jstr_io_getwc(stream) getwc_unlocked(stream)
+        -: 1125:#	else
+        -: 1126:#		define jstr_io_getwc(stream) getwc(stream)
+        -: 1127:#	endif
+        -: 1128:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_GETWCHAR_UNLOCKED
+        -: 1129:#		define jstr_io_getwchar() getwchar_unlocked()
+        -: 1130:#	else
+        -: 1131:#		define jstr_io_getwchar() getwchar()
+        -: 1132:#	endif
+        -: 1133:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FGETWC_UNLOCKED
+        -: 1134:#		define jstr_io_fgetwc(stream) fgetwc_unlocked(stream)
+        -: 1135:#	else
+        -: 1136:#		define jstr_io_fgetwc(stream) fgetwc(stream)
+        -: 1137:#	endif
+        -: 1138:
+        -: 1139:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FPUTWC_UNLOCKED
+        -: 1140:#		define jstr_io_fputwc(wc, stream) fputwc_unlocked(wc, stream)
+        -: 1141:#	else
+        -: 1142:#		define jstr_io_fputwc(wc, stream) fputwc(wc, stream)
+        -: 1143:#	endif
+        -: 1144:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_PUTWCHAR_UNLOCKED
+        -: 1145:#		define jstr_io_putwchar(wc) putwchar_unlocked(wc)
+        -: 1146:#	else
+        -: 1147:#		define jstr_io_putwchar(wc) putwchar(wc)
+        -: 1148:#	endif
+        -: 1149:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FPUTS_UNLOCKED
+        -: 1150:#		define jstr_io_fputs(s, stream) fputs_unlocked(s, stream)
+        -: 1151:#	else
+        -: 1152:#		define jstr_io_fputs(s, stream) fputs(s, stream)
+        -: 1153:#	endif
+        -: 1154:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FPUTWS_UNLOCKED
+        -: 1155:#		define jstr_io_fputws(ws, stream) fputws_unlocked(ws, stream)
+        -: 1156:#	else
+        -: 1157:#		define jstr_io_fputws(ws, stream) fputws(ws, stream)
+        -: 1158:#	endif
+        -: 1159:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_PUTC_UNLOCKED
+        -: 1160:#		define jstr_io_putc(c, stream) putc_unlocked(c, stream)
+        -: 1161:#	else
+        -: 1162:#		define jstr_io_putc(c, stream) putc(c, stream)
+        -: 1163:#	endif
+        -: 1164:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_PUTCHAR_UNLOCKED
+        -: 1165:#		define jstr_io_putchar(c) putchar_unlocked(c)
+        -: 1166:#	else
+        -: 1167:#		define jstr_io_putchar(c) putchar(c)
+        -: 1168:#	endif
+        -: 1169:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FWRITE_UNLOCKED
+        -: 1170:#		define jstr_io_fwrite(ptr, size, n, stream) fwrite_unlocked(ptr, size, n, stream)
+        -: 1171:#	else
+        -: 1172:#		define jstr_io_fwrite(ptr, size, n, stream) fwrite(ptr, size, n, stream)
+        -: 1173:#	endif
+        -: 1174:#	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FPUTC_UNLOCKED
+        -: 1175:#		define jstr_io_fputc(c, stream) fputc_unlocked(c, stream)
+        -: 1176:#	else
+        -: 1177:#		define jstr_io_fputc(c, stream) fputc(c, stream)
+        -: 1178:#	endif
+        -: 1179:
+        -: 1180:#	if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_CLEARERR_UNLOCKED
+        -: 1181:#		define jstr_io_clearerr(stream) clearerr_unlocked(stream)
+        -: 1182:#	else
+        -: 1183:#		define jstr_io_clearerr(stream) clearerr(stream)
+        -: 1184:#	endif
+        -: 1185:#	if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FEOF_UNLOCKED
+        -: 1186:#		define jstr_io_feof(stream) feof_unlocked(stream)
+        -: 1187:#	else
+        -: 1188:#		define jstr_io_feof(stream) feof(stream)
+        -: 1189:#	endif
+        -: 1190:#	if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FERROR_UNLOCKED
+        -: 1191:#		define jstr_io_ferror(stream) ferror_unlocked(stream)
+        -: 1192:#	else
+        -: 1193:#		define jstr_io_ferror(stream) ferror(stream)
+        -: 1194:#	endif
+        -: 1195:#	if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FILENO_UNLOCKED
+        -: 1196:#		define jstr_io_fileno(stream) fileno_unlocked(stream)
+        -: 1197:#	else
+        -: 1198:#		define jstr_io_fileno(stream) fileno(stream)
+        -: 1199:#	endif
+        -: 1200:#	if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FFLUSH_UNLOCKED
+        -: 1201:#		define jstr_io_fflush(stream) fflush_unlocked(stream)
+        -: 1202:#	else
+        -: 1203:#		define jstr_io_fflush(stream) fflush(stream)
+        -: 1204:#	endif
+        -: 1205:
+        -: 1206:#	ifdef __GLIBC__
+        -: 1207:#		ifdef _DIRENT_HAVE_D_TYPE
+        -: 1208:#			define JSTR_HAVE_DIRENT_D_TYPE 1
+        -: 1209:#		endif
+        -: 1210:#		ifdef _DIRENT_HAVE_D_RECLEN
+        -: 1211:#			define JSTR_HAVE_DIRENT_D_RECLEN 1
+        -: 1212:#		endif
+        -: 1213:#		ifdef _DIRENT_HAVE_D_NAMLEN
+        -: 1214:#			define JSTR_HAVE_DIRENT_D_NAMLEN 1
+        -: 1215:#		endif
+        -: 1216:#	endif /* dirent_have */
+        -: 1217:
+        -: 1218:/* Check optimizations. */
+        -: 1219:#	ifdef __GLIBC__
+        -: 1220:#		if JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
+        -: 1221:#			define JSTR_HAVE_MEMMEM_OPTIMIZED 1
+        -: 1222:#		endif
+        -: 1223:#		if JSTR_ARCH_S390 || JSTR_ARCH_SPARC || JSTR_ARCH_X86_32 || JSTR_ARCH_X86_64 || JSTR_ARCH_ARM64 || JSTR_ARCH_ARM6 || JSTR_ARCH_ARM6T2 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_M68K || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC || JSTR_ARCH_POWERPC4 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_POWERPC10
+        -: 1224:#			define JSTR_HAVE_MEMCHR_OPTIMIZED 1
+        -: 1225:#		endif
+        -: 1226:#		if JSTR_ARCH_X86_64 || JSTR_ARCH_S390
+        -: 1227:#			define JSTR_HAVE_STRSTR_OPTIMIZED 1
+        -: 1228:#		endif
+        -: 1229:#		if JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8
+        -: 1230:#			define JSTR_HAVE_STRCSPN_OPTIMIZED 1
+        -: 1231:#		endif
+        -: 1232:#		if JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC
+        -: 1233:#			define JSTR_HAVE_STRPBRK_OPTIMIZED 1
+        -: 1234:#		endif
+        -: 1235:#		if JSTR_ARCH_ARM64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_M68K || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_S390 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_SPARC
+        -: 1236:#			define JSTR_HAVE_STRCHR_OPTIMIZED 1
+        -: 1237:#		endif
+        -: 1238:#		if JSTR_ARCH_ARM64 || JSTR_ARCH_ARM6 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_IA64 || JSTR_ARCH_I386 || JSTR_ARCH_S390 || JSTR_ARCH_SPARC || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_CSKY
+        -: 1239:#			define JSTR_HAVE_STRCPY_OPTIMIZED 1
+        -: 1240:#		endif
+        -: 1241:#		if JSTR_ARCH_ARM6T2 || JSTR_ARCH_ARM6 || JSTR_ARCH_ARM || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_SH || JSTR_ARCH_SPARC || JSTR_ARCH_CSKY
+        -: 1242:#			define JSTR_HAVE_STRLEN_OPTIMIZED 1
+        -: 1243:#		endif
+        -: 1244:#	endif /* have_optimized */
+        -: 1245:
+        -: 1246:#	if JSTR_GNUC_PREREQ(7, 1) || defined __clang__
+        -: 1247:#		define JSTR_HAVE_BUILTIN_MEMCMP 1
+        -: 1248:#	endif
+        -: 1249:
+        -: 1250:#	if JSTR_ARCH_I386 || JSTR_ARCH_X86_64 || defined __s390x__ || JSTR_ARCH_ARM64
+        -: 1251:#		define JSTR_HAVE_UNALIGNED_ACCESS 1
+        -: 1252:#	endif
+        -: 1253:
+        -: 1254:#	ifndef JSTR_LP64
+        -: 1255:#		define JSTR_LP64 0
+        -: 1256:#	endif
+        -: 1257:#	ifndef JSTR_LP32
+        -: 1258:#		define JSTR_LP32 0
+        -: 1259:#	endif
+        -: 1260:#	ifndef JSTR_LP_UNKNOWN
+        -: 1261:#		define JSTR_LP_UNKNOWN 0
+        -: 1262:#	endif
+        -: 1263:#	ifndef JSTR_PANIC
+        -: 1264:#		define JSTR_PANIC 0
+        -: 1265:#	endif
+        -: 1266:#	ifndef JSTR_ENDIAN_BIG
+        -: 1267:#		define JSTR_ENDIAN_BIG 0
+        -: 1268:#	endif
+        -: 1269:#	ifndef JSTR_ENDIAN_LITTLE
+        -: 1270:#		define JSTR_ENDIAN_LITTLE 0
+        -: 1271:#	endif
+        -: 1272:#	ifndef JSTR_ENDIAN_UNKNOWN
+        -: 1273:#		define JSTR_ENDIAN_UNKNOWN 0
+        -: 1274:#	endif
+        -: 1275:#	ifndef JSTR_HAVE_STATIC_ASSERT
+        -: 1276:#		define JSTR_HAVE_STATIC_ASSERT 0
+        -: 1277:#	endif
+        -: 1278:#	ifndef JSTR_HAVE_STATIC_ASSERT
+        -: 1279:#		define JSTR_HAVE_STATIC_ASSERT 0
+        -: 1280:#	endif
+        -: 1281:#	ifndef JSTR_HAVE_VLA
+        -: 1282:#		define JSTR_HAVE_VLA 0
+        -: 1283:#	endif
+        -: 1284:#	ifndef JSTR_HAVE_ALLOCA
+        -: 1285:#		define JSTR_HAVE_ALLOCA 0
+        -: 1286:#	endif
+        -: 1287:#	ifndef JSTR_HAVE_GENERIC
+        -: 1288:#		define JSTR_HAVE_GENERIC 0
+        -: 1289:#	endif
+        -: 1290:#	ifndef JSTR_HAVE_TYPEOF
+        -: 1291:#		define JSTR_HAVE_TYPEOF 0
+        -: 1292:#	endif
+        -: 1293:#	ifndef JSTR_HAVE_ATTR_MAY_ALIAS
+        -: 1294:#		define JSTR_HAVE_ATTR_MAY_ALIAS 0
+        -: 1295:#	endif
+        -: 1296:#	ifndef JSTR_HAVE_FILENO
+        -: 1297:#		define JSTR_HAVE_FILENO 0
+        -: 1298:#	endif
+        -: 1299:#	ifndef JSTR_HAVE_STRCASECMP
+        -: 1300:#		define JSTR_HAVE_STRCASECMP 0
+        -: 1301:#	endif
+        -: 1302:#	ifndef JSTR_HAVE_STRNCASECMP
+        -: 1303:#		define JSTR_HAVE_STRNCASECMP 0
+        -: 1304:#	endif
+        -: 1305:#	ifndef JSTR_HAVE_MEMCCPY
+        -: 1306:#		define JSTR_HAVE_MEMCCPY 0
+        -: 1307:#	endif
+        -: 1308:#	ifndef JSTR_HAVE_MEMMEM
+        -: 1309:#		define JSTR_HAVE_MEMMEM 0
+        -: 1310:#	endif
+        -: 1311:#	ifndef JSTR_HAVE_MEMRCHR
+        -: 1312:#		define JSTR_HAVE_MEMRCHR 0
+        -: 1313:#	endif
+        -: 1314:#	ifndef JSTR_HAVE_STRCHRNUL
+        -: 1315:#		define JSTR_HAVE_STRCHRNUL 0
+        -: 1316:#	endif
+        -: 1317:#	ifndef JSTR_HAVE_FGETS_UNLOCKED
+        -: 1318:#		define JSTR_HAVE_FGETS_UNLOCKED 0
+        -: 1319:#	endif
+        -: 1320:#	ifndef JSTR_HAVE_FPUTS_UNLOCKED
+        -: 1321:#		define JSTR_HAVE_FPUTS_UNLOCKED 0
+        -: 1322:#	endif
+        -: 1323:#	ifndef JSTR_HAVE_GETWC_UNLOCKED
+        -: 1324:#		define JSTR_HAVE_GETWC_UNLOCKED 0
+        -: 1325:#	endif
+        -: 1326:#	ifndef JSTR_HAVE_GETWCHAR_UNLOCKED
+        -: 1327:#		define JSTR_HAVE_GETWCHAR_UNLOCKED 0
+        -: 1328:#	endif
+        -: 1329:#	ifndef JSTR_HAVE_FGETWC_UNLOCKED
+        -: 1330:#		define JSTR_HAVE_FGETWC_UNLOCKED 0
+        -: 1331:#	endif
+        -: 1332:#	ifndef JSTR_HAVE_FPUTWC_UNLOCKED
+        -: 1333:#		define JSTR_HAVE_FPUTWC_UNLOCKED 0
+        -: 1334:#	endif
+        -: 1335:#	ifndef JSTR_HAVE_PUTWCHAR_UNLOCKED
+        -: 1336:#		define JSTR_HAVE_PUTWCHAR_UNLOCKED 0
+        -: 1337:#	endif
+        -: 1338:#	ifndef JSTR_HAVE_FGETWS_UNLOCKED
+        -: 1339:#		define JSTR_HAVE_FGETWS_UNLOCKED 0
+        -: 1340:#	endif
+        -: 1341:#	ifndef JSTR_HAVE_FPUTWS_UNLOCKED
+        -: 1342:#		define JSTR_HAVE_FPUTWS_UNLOCKED 0
+        -: 1343:#	endif
+        -: 1344:#	ifndef JSTR_HAVE_WMEMPCPY
+        -: 1345:#		define JSTR_HAVE_WMEMPCPY 0
+        -: 1346:#	endif
+        -: 1347:#	ifndef JSTR_HAVE_MEMPCPY
+        -: 1348:#		define JSTR_HAVE_MEMPCPY 0
+        -: 1349:#	endif
+        -: 1350:#	ifndef JSTR_HAVE_STRCASESTR
+        -: 1351:#		define JSTR_HAVE_STRCASESTR 0
+        -: 1352:#	endif
+        -: 1353:#	ifndef JSTR_HAVE_GETC_UNLOCKED
+        -: 1354:#		define JSTR_HAVE_GETC_UNLOCKED 0
+        -: 1355:#	endif
+        -: 1356:#	ifndef JSTR_HAVE_GETCHAR_UNLOCKED
+        -: 1357:#		define JSTR_HAVE_GETCHAR_UNLOCKED 0
+        -: 1358:#	endif
+        -: 1359:#	ifndef JSTR_HAVE_PUTC_UNLOCKED
+        -: 1360:#		define JSTR_HAVE_PUTC_UNLOCKED 0
+        -: 1361:#	endif
+        -: 1362:#	ifndef JSTR_HAVE_PUTCHAR_UNLOCKED
+        -: 1363:#		define JSTR_HAVE_PUTCHAR_UNLOCKED 0
+        -: 1364:#	endif
+        -: 1365:#	ifndef JSTR_HAVE_FREAD_UNLOCKED
+        -: 1366:#		define JSTR_HAVE_FREAD_UNLOCKED 0
+        -: 1367:#	endif
+        -: 1368:#	ifndef JSTR_HAVE_FWRITE_UNLOCKED
+        -: 1369:#		define JSTR_HAVE_FWRITE_UNLOCKED 0
+        -: 1370:#	endif
+        -: 1371:#	ifndef JSTR_HAVE_FPUTC_UNLOCKED
+        -: 1372:#		define JSTR_HAVE_FPUTC_UNLOCKED 0
+        -: 1373:#	endif
+        -: 1374:#	ifndef JSTR_HAVE_FGETC_UNLOCKED
+        -: 1375:#		define JSTR_HAVE_FGETC_UNLOCKED 0
+        -: 1376:#	endif
+        -: 1377:#	ifndef JSTR_HAVE_CLEARERR_UNLOCKED
+        -: 1378:#		define JSTR_HAVE_CLEARERR_UNLOCKED 0
+        -: 1379:#	endif
+        -: 1380:#	ifndef JSTR_HAVE_FEOF_UNLOCKED
+        -: 1381:#		define JSTR_HAVE_FEOF_UNLOCKED 0
+        -: 1382:#	endif
+        -: 1383:#	ifndef JSTR_HAVE_FERROR_UNLOCKED
+        -: 1384:#		define JSTR_HAVE_FERROR_UNLOCKED 0
+        -: 1385:#	endif
+        -: 1386:#	ifndef JSTR_HAVE_FILENO_UNLOCKED
+        -: 1387:#		define JSTR_HAVE_FILENO_UNLOCKED 0
+        -: 1388:#	endif
+        -: 1389:#	ifndef JSTR_HAVE_FFLUSH_UNLOCKED
+        -: 1390:#		define JSTR_HAVE_FFLUSH_UNLOCKED 0
+        -: 1391:#	endif
+        -: 1392:#	ifndef JSTR_HAVE_STPCPY
+        -: 1393:#		define JSTR_HAVE_STPCPY 0
+        -: 1394:#	endif
+        -: 1395:#	ifndef JSTR_HAVE_STRNLEN
+        -: 1396:#		define JSTR_HAVE_STRNLEN 0
+        -: 1397:#	endif
+        -: 1398:#	ifndef JSTR_HAVE_STRNDUP
+        -: 1399:#		define JSTR_HAVE_STRNDUP 0
+        -: 1400:#	endif
+        -: 1401:#	ifndef JSTR_HAVE_STRDUP
+        -: 1402:#		define JSTR_HAVE_STRDUP 0
+        -: 1403:#	endif
+        -: 1404:#	ifndef JSTR_HAVE_STRDUPA
+        -: 1405:#		define JSTR_HAVE_STRDUPA 0
+        -: 1406:#	endif
+        -: 1407:#	ifndef JSTR_HAVE_STRNDUPA
+        -: 1408:#		define JSTR_HAVE_STRNDUPA 0
+        -: 1409:#	endif
+        -: 1410:#	ifndef JSTR_HAVE_POPEN
+        -: 1411:#		define JSTR_HAVE_POPEN 0
+        -: 1412:#	endif
+        -: 1413:#	ifndef JSTR_HAVE_PCLOSE
+        -: 1414:#		define JSTR_HAVE_PCLOSE 0
+        -: 1415:#	endif
+        -: 1416:#	ifndef JSTR_HAVE_GCVT
+        -: 1417:#		define JSTR_HAVE_GCVT 0
+        -: 1418:#	endif
+        -: 1419:#	ifndef JSTR_HAVE_ECVT
+        -: 1420:#		define JSTR_HAVE_ECVT 0
+        -: 1421:#	endif
+        -: 1422:#	ifndef JSTR_HAVE_FCVT
+        -: 1423:#		define JSTR_HAVE_FCVT 0
+        -: 1424:#	endif
+        -: 1425:#	ifndef JSTR_HAVE_QECVT
+        -: 1426:#		define JSTR_HAVE_QECVT 0
+        -: 1427:#	endif
+        -: 1428:#	ifndef JSTR_HAVE_QFCVT
+        -: 1429:#		define JSTR_HAVE_QFCVT 0
+        -: 1430:#	endif
+        -: 1431:#	ifndef JSTR_HAVE_QGCVT
+        -: 1432:#		define JSTR_HAVE_QGCVT 0
+        -: 1433:#	endif
+        -: 1434:#	ifndef JSTR_HAVE_QECVT_R
+        -: 1435:#		define JSTR_HAVE_QECVT_R 0
+        -: 1436:#	endif
+        -: 1437:#	ifndef JSTR_HAVE_QFCVT_R
+        -: 1438:#		define JSTR_HAVE_QFCVT_R 0
+        -: 1439:#	endif
+        -: 1440:#	ifndef JSTR_HAVE_ECVT_R
+        -: 1441:#		define JSTR_HAVE_ECVT_R 0
+        -: 1442:#	endif
+        -: 1443:#	ifndef JSTR_HAVE_FCVT_R
+        -: 1444:#		define JSTR_HAVE_FCVT_R 0
+        -: 1445:#	endif
+        -: 1446:#	ifndef JSTR_HAVE_BCMP
+        -: 1447:#		define JSTR_HAVE_BCMP 0
+        -: 1448:#	endif
+        -: 1449:#	ifndef JSTR_HAVE_BCOPY
+        -: 1450:#		define JSTR_HAVE_BCOPY 0
+        -: 1451:#	endif
+        -: 1452:#	ifndef JSTR_HAVE_BZERO
+        -: 1453:#		define JSTR_HAVE_BZERO 0
+        -: 1454:#	endif
+        -: 1455:#	ifndef JSTR_HAVE_ATFILE
+        -: 1456:#		define JSTR_HAVE_ATFILE 0
+        -: 1457:#	endif
+        -: 1458:#	ifndef JSTR_HAVE_FCHDIR
+        -: 1459:#		define JSTR_HAVE_FCHDIR 0
+        -: 1460:#	endif
+        -: 1461:#	ifndef JSTR_HAVE_FDOPENDIR
+        -: 1462:#		define JSTR_HAVE_FDOPENDIR 0
+        -: 1463:#	endif
+        -: 1464:#	ifndef JSTR_HAVE_DIRENT_D_TYPE
+        -: 1465:#		define JSTR_HAVE_DIRENT_D_TYPE 0
+        -: 1466:#	endif
+        -: 1467:#	ifndef JSTR_HAVE_DIRENT_D_RECLEN
+        -: 1468:#		define JSTR_HAVE_DIRENT_D_RECLEN 0
+        -: 1469:#	endif
+        -: 1470:#	ifndef JSTR_HAVE_DIRENT_D_NAMLEN
+        -: 1471:#		define JSTR_HAVE_DIRENT_D_NAMLEN 0
+        -: 1472:#	endif
+        -: 1473:#	ifndef JSTR_HAVE_MEMMEM_OPTIMIZED
+        -: 1474:#		define JSTR_HAVE_MEMMEM_OPTIMIZED 0
+        -: 1475:#	endif
+        -: 1476:#	ifndef JSTR_HAVE_MEMCHR_OPTIMIZED
+        -: 1477:#		define JSTR_HAVE_MEMCHR_OPTIMIZED 0
+        -: 1478:#	endif
+        -: 1479:#	ifndef JSTR_HAVE_STRSTR_OPTIMIZED
+        -: 1480:#		define JSTR_HAVE_STRSTR_OPTIMIZED 0
+        -: 1481:#	endif
+        -: 1482:#	ifndef JSTR_HAVE_STRCASESTR_OPTIMIZED
+        -: 1483:#		define JSTR_HAVE_STRCASESTR_OPTIMIZED 0
+        -: 1484:#	endif
+        -: 1485:#	ifndef JSTR_HAVE_STRCSPN_OPTIMIZED
+        -: 1486:#		define JSTR_HAVE_STRCSPN_OPTIMIZED 0
+        -: 1487:#	endif
+        -: 1488:#	ifndef JSTR_HAVE_STRPBRK_OPTIMIZED
+        -: 1489:#		define JSTR_HAVE_STRPBRK_OPTIMIZED 0
+        -: 1490:#	endif
+        -: 1491:#	ifndef JSTR_HAVE_STRCHR_OPTIMIZED
+        -: 1492:#		define JSTR_HAVE_STRCHR_OPTIMIZED 0
+        -: 1493:#	endif
+        -: 1494:#	ifndef JSTR_HAVE_STRCPY_OPTIMIZED
+        -: 1495:#		define JSTR_HAVE_STRCPY_OPTIMIZED 0
+        -: 1496:#	endif
+        -: 1497:#	ifndef JSTR_HAVE_STRLEN_OPTIMIZED
+        -: 1498:#		define JSTR_HAVE_STRLEN_OPTIMIZED 0
+        -: 1499:#	endif
+        -: 1500:#	ifndef JSTR_HAVE_BUILTIN_MEMCMP
+        -: 1501:#		define JSTR_HAVE_BUILTIN_MEMCMP 0
+        -: 1502:#	endif
+        -: 1503:#	ifndef JSTR_HAVE_UNALIGNED_ACCESS
+        -: 1504:#		define JSTR_HAVE_UNALIGNED_ACCESS 0
+        -: 1505:#	endif
+        -: 1506:#	ifndef JSTR_HAVE_NANOSLEEP
+        -: 1507:#		define JSTR_HAVE_NANOSLEEP 0
+        -: 1508:#	endif
+        -: 1509:#	ifndef JSTR_HAVE_ASPRINTF
+        -: 1510:#		define JSTR_HAVE_ASPRINTF 0
+        -: 1511:#	endif
+        -: 1512:#	ifndef JSTR_HAVE_VASPRINTF
+        -: 1513:#		define JSTR_HAVE_VASPRINTF 0
+        -: 1514:#	endif
+        -: 1515:#	ifndef JSTR_HAVE_READV
+        -: 1516:#		define JSTR_HAVE_READV 0
+        -: 1517:#	endif
+        -: 1518:#	ifndef JSTR_HAVE_WRITEV
+        -: 1519:#		define JSTR_HAVE_WRITEV 0
+        -: 1520:#	endif
+        -: 1521:#	ifndef JSTR_HAVE_PREADV
+        -: 1522:#		define JSTR_HAVE_PREADV 0
+        -: 1523:#	endif
+        -: 1524:#	ifndef JSTR_HAVE_PWRITEV
+        -: 1525:#		define JSTR_HAVE_PWRITEV 0
+        -: 1526:#	endif
+        -: 1527:#	ifndef JSTR_HAVE_PREADV2
+        -: 1528:#		define JSTR_HAVE_PREADV2 0
+        -: 1529:#	endif
+        -: 1530:#	ifndef JSTR_HAVE_PWRITEV2
+        -: 1531:#		define JSTR_HAVE_PWRITEV2 0
+        -: 1532:#	endif
+        -: 1533:#ifndef JSTR_HAVE_PREAD
+        -: 1534:#	define JSTR_HAVE_PREAD 0
+        -: 1535:#endif
+        -: 1536:#ifndef JSTR_HAVE_PWRITE
+        -: 1537:#	define JSTR_HAVE_PWRITE 0
+        -: 1538:#endif
+        -: 1539:#ifndef JSTR_HAVE_PREAD
+        -: 1540:#	define JSTR_HAVE_PREAD 0
+        -: 1541:#endif
+        -: 1542:#ifndef JSTR_HAVE_PWRITE
+        -: 1543:#	define JSTR_HAVE_PWRITE 0
+        -: 1544:#endif
+        -: 1545:#ifndef JSTR_HAVE_PREAD
+        -: 1546:#	define JSTR_HAVE_PREAD 0
+        -: 1547:#endif
+        -: 1548:#ifndef JSTR_HAVE_PWRITE
+        -: 1549:#	define JSTR_HAVE_PWRITE 0
+        -: 1550:#endif
+        -: 1551:#endif /* JSTR_MACROS_H */

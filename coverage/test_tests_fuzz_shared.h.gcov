@@ -1,0 +1,96 @@
+        -:    0:Source:tests/fuzz-shared.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-tocase.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-tocase.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: * Shared helpers for fuzz test files.
+        -:    4: */
+        -:    5:
+        -:    6:#ifndef FUZZ_SHARED_H
+        -:    7:#define FUZZ_SHARED_H
+        -:    8:
+        -:    9:#include <string.h>
+        -:   10:#include <stdlib.h>
+        -:   11:
+        -:   12:#include "../include/macros.h"
+        -:   13:
+        -:   14:enum { FSTR = 256, FMEM = 128, FITER = 256 };
+        -:   15:
+        -:   16:enum gen_mode {
+        -:   17:	GEN_ASCII = 0,   /* printable ASCII (0x20-0x7E) */
+        -:   18:	GEN_MEM,          /* any non-NUL byte */
+        -:   19:	GEN_REPEAT,       /* single printable char repeated */
+        -:   20:	GEN_BINARY        /* any byte (including NUL) */
+        -:   21:};
+        -:   22:
+        -:   23:/* Fill buf with up to max_len random bytes, return <= max_len. */
+        -:   24:JSTR_ATTR_MAYBE_UNUSED
+        -:   25:static size_t
+     2560:   26:gen_str(char *buf, size_t max_len, enum gen_mode mode)
+        -:   27:{
+     2560:   28:	size_t len = (size_t)rand() % (max_len + 1);
+     2560:   29:	if (mode == GEN_REPEAT) {
+      682:   30:		memset(buf, (char)('!' + (rand() % 94)), len);
+        -:   31:	} else {
+   240206:   32:		for (size_t i = 0; i < len; ++i) {
+        -:   33:#if 0
+        -:   34:			if (mode == GEN_ASCII)
+        -:   35:				buf[i] = (char)(' ' + (rand() % 95));
+        -:   36:			else if (mode == GEN_MEM)
+        -:   37:				buf[i] = (char)(1 + (rand() % 254));
+        -:   38:			else /* GEN_BINARY */
+        -:   39:				buf[i] = (char)(rand() & 0xFF);
+        -:   40:#else
+   238328:   41:			buf[i] = (char)(' ' + (rand() % 95));
+        -:   42:#endif
+        -:   43:		}
+        -:   44:	}
+     2560:   45:	buf[len] = '\0';
+     2560:   46:	return len;
+        -:   47:}
+        -:   48:
+        -:   49:/* Simple forward memmem (no embedded-NUL hazards). */
+        -:   50:JSTR_ATTR_MAYBE_UNUSED
+        -:   51:static void *
+    #####:   52:fuzz_memmem(const void *hs, size_t hl, const void *ne, size_t nl)
+        -:   53:{
+    #####:   54:	if (!nl)
+    #####:   55:		return (char *)hs;
+    #####:   56:	if (nl > hl)
+    #####:   57:		return NULL;
+    #####:   58:	const unsigned char *h = (const unsigned char *)hs;
+    #####:   59:	const unsigned char *n = (const unsigned char *)ne;
+    #####:   60:	for (const unsigned char *p = h; p <= h + hl - nl; ++p)
+    #####:   61:		if (*p == *n && memcmp(p, n, nl) == 0)
+    #####:   62:			return (void *)p;
+    #####:   63:	return NULL;
+        -:   64:}
+        -:   65:
+        -:   66:/* Simple reverse memmem.  Empty needle -> end of haystack. */
+        -:   67:JSTR_ATTR_MAYBE_UNUSED
+        -:   68:static void *
+    #####:   69:fuzz_memrmem(const void *hs, size_t hl, const void *ne, size_t nl)
+        -:   70:{
+    #####:   71:	if (!nl)
+    #####:   72:		return (char *)hs + hl;
+    #####:   73:	if (nl > hl)
+    #####:   74:		return NULL;
+    #####:   75:	const unsigned char *h = (const unsigned char *)hs;
+    #####:   76:	for (size_t i = hl - nl; i != (size_t)-1; --i)
+    #####:   77:		if (memcmp(h + i, ne, nl) == 0)
+    #####:   78:			return (void *)(h + i);
+    #####:   79:	return NULL;
+        -:   80:}
+        -:   81:
+        -:   82:/* Shared iteration cap: NSTR caps fuzz iterations in normal (fast) mode;
+        -:   83: * SLOW_MULT is the multiplier when JSTR_TEST_SLOW is defined.
+        -:   84: * Each test main() may further clamp via its own limits. */
+        -:   85:#ifndef FUZZ_NSTR_CAP
+        -:   86:#	define FUZZ_NSTR_CAP 500
+        -:   87:#endif
+        -:   88:#ifndef FUZZ_SLOW_MULT
+        -:   89:#	define FUZZ_SLOW_MULT 10
+        -:   90:#endif
+        -:   91:
+        -:   92:#endif /* FUZZ_SHARED_H */

@@ -1,0 +1,357 @@
+        -:    0:Source:tests/test.h
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-thousep.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#ifndef JSTR_TEST_H
+        -:    5:#define JSTR_TEST_H
+        -:    6:
+        -:    7:#define JSTR_TEST  1
+        -:    8:/* Force use of slower simple functions. */
+        -:    9:#ifndef JSTR_USE_SIMPLE
+        -:   10:#	define JSTR_USE_SIMPLE 0
+        -:   11:#endif
+        -:   12:/* Do more tests. */
+        -:   13:#ifndef JSTR_TEST_SLOW
+        -:   14:#	define JSTR_TEST_SLOW 0
+        -:   15:#endif
+        -:   16:
+        -:   17:#include <assert.h>
+        -:   18:#include <ctype.h>
+        -:   19:#include <stddef.h>
+        -:   20:#include <string.h>
+        -:   21:
+        -:   22:#include "../include/jstr.h"
+        -:   23:#include "simple.h"
+        -:   24:#include "test-types.h"
+        -:   25:
+        -:   26:#if 0
+        -:   27:#	define SUCCESS()                                                   \
+        -:   28:		do {                                                        \
+        -:   29:			(void)argc;                                         \
+        -:   30:			(void)argv;                                         \
+        -:   31:			PRINT("%s ", __FILE__);                             \
+        -:   32:			for (; *argv; ++argv)                               \
+        -:   33:				if (!strncmp(*argv, "-D", 2))               \
+        -:   34:					PRINT("%s ", *argv + strlen("-D")); \
+        -:   35:			PRINT("succeeded.\n");                              \
+        -:   36:		} while (0)
+        -:   37:#else
+        -:   38:#	define SUCCESS()           \
+        -:   39:		do {                \
+        -:   40:			(void)argc; \
+        -:   41:			(void)argv; \
+        -:   42:		} while (0)
+        -:   43:#endif
+        -:   44:
+        -:   45:/* clang-format off */
+        -:   46:#define EMPTY(p)          (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
+        -:   47:#define PRINT(...)    printf(__VA_ARGS__)
+        -:   48:#define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
+        -:   49:#define START() do{}while(0)
+        -:   50:
+        -:   51:JSTR_INTERNAL_BEGIN_DECLS
+        -:   52:
+        -:   53:JSTR_ATTR_MAYBE_UNUSED
+        -:   54:JSTR_ATTR_INLINE
+        -:   55:static char *clean_func(const char *func)
+        -:   56:{
+        -:   57:	for (; !isalpha(*func); ++func);
+        -:   58:	return (char *)func;
+        -:   59:}
+        -:   60:
+        -:   61:JSTR_INTERNAL_END_DECLS
+        -:   62:
+        -:   63:#if VERBOSE
+        -:   64:#	define TESTING(func) PRINTERR("Testing %s().\n", clean_func(#func))
+        -:   65:#else
+        -:   66:#	define TESTING(func)
+        -:   67:#endif
+        -:   68:/* clang-format on */
+        -:   69:
+        -:   70:#define ASSERT_RESULT(func, expr, result, expected)                       \
+        -:   71:	do {                                                              \
+        -:   72:		if (jstr_unlikely(!(expr))) {                             \
+        -:   73:			PRINTERR("Assertion failure: %s().\nResult:%s.\n" \
+        -:   74:			         "Expected:%s.\n",                        \
+        -:   75:			         #func,                                   \
+        -:   76:			         EMPTY(result),                           \
+        -:   77:			         EMPTY(expected));                        \
+        -:   78:			assert(expr);                                     \
+        -:   79:		}                                                         \
+        -:   80:	} while (0)
+        -:   81:
+        -:   82:#define ASSERT_ERRFUNC(func, expr)                                     \
+        -:   83:	do {                                                           \
+        -:   84:		if (jstr_unlikely(!(expr))) {                          \
+        -:   85:			PRINTERR("Assertion failure: %s().\n", #func); \
+        -:   86:			assert(expr);                                  \
+        -:   87:		}                                                      \
+        -:   88:	} while (0)
+        -:   89:
+        -:   90:#define P(fmt, x)                      \
+        -:   91:	do {                           \
+        -:   92:		PRINTERR("%s:", #x);   \
+        -:   93:		PRINTERR(fmt "\n", x); \
+        -:   94:	} while (0)
+        -:   95:
+        -:   96:#define PS(x) P("%s", x)
+        -:   97:#define PZ(x) P("%zu", x)
+        -:   98:
+        -:   99:typedef struct test_ty {
+        -:  100:	const char *hs;
+        -:  101:	size_t hs_len;
+        -:  102:	const char *ne;
+        -:  103:	size_t ne_len;
+        -:  104:	const char *s1;
+        -:  105:	size_t s1_len;
+        -:  106:	const char *s2;
+        -:  107:	size_t s2_len;
+        -:  108:	const char *result;
+        -:  109:	size_t result_len;
+        -:  110:	const char *expected;
+        -:  111:	size_t expected_len;
+        -:  112:	size_t n;
+        -:  113:	size_t result_n;
+        -:  114:	size_t expected_n;
+        -:  115:	const char *src;
+        -:  116:	size_t src_len;
+        -:  117:	const char *dst;
+        -:  118:	size_t dst_len;
+        -:  119:} test_ty;
+        -:  120:static test_ty t;
+        -:  121:
+        -:  122:JSTR_ATTR_MAYBE_UNUSED
+        -:  123:static void
+    #####:  124:t_debug(void)
+        -:  125:{
+    #####:  126:	if (!t.hs_len && t.hs)
+    #####:  127:		t.hs_len = strlen(t.hs);
+    #####:  128:	if (!t.ne_len && t.ne)
+    #####:  129:		t.ne_len = strlen(t.ne);
+    #####:  130:	if (!t.result_len && t.result)
+    #####:  131:		t.result_len = strlen(t.result);
+    #####:  132:	if (!t.expected_len && t.expected)
+    #####:  133:		t.expected_len = strlen(t.expected);
+    #####:  134:	PS(t.hs);
+    #####:  135:	PZ(t.hs_len);
+    #####:  136:	PS(t.ne);
+    #####:  137:	PZ(t.ne_len);
+    #####:  138:	PZ(t.n);
+    #####:  139:	PZ(t.result_n);
+    #####:  140:	PZ(t.expected_n);
+    #####:  141:	PS(t.result);
+    #####:  142:	PZ(t.result_len);
+    #####:  143:	PS(t.expected);
+    #####:  144:	PZ(t.expected_len);
+    #####:  145:	PS(t.s1);
+    #####:  146:	PZ(t.s1_len);
+    #####:  147:	PS(t.s2);
+    #####:  148:	PZ(t.s2_len);
+    #####:  149:}
+        -:  150:
+        -:  151:JSTR_ATTR_MAYBE_UNUSED
+        -:  152:static void
+    #####:  153:t_init(void)
+        -:  154:{
+    #####:  155:	memset(&t, 0, sizeof(t));
+    #####:  156:}
+        -:  157:
+        -:  158:#define T_DEBUG(func, expr)           \
+        -:  159:	do {                          \
+        -:  160:		if (!(expr)) {        \
+        -:  161:			PS(#func);    \
+        -:  162:			t_debug();    \
+        -:  163:			assert(expr); \
+        -:  164:		}                     \
+        -:  165:	} while (0)
+        -:  166:
+        -:  167:#define T_HS(test, i) ((test)[i].hs)
+        -:  168:#define T_NE(test, i) ((test)[i].ne)
+        -:  169:#define T_S1(test, i) ((test)[i].s2)
+        -:  170:#define T_S2(test, i) ((test)[i].s2)
+        -:  171:
+        -:  172:#define T_FOREACH_NE(needle, needle_len) for (size_t _ne_i = 0; needle_len != (size_t)-1 && _ne_i < 32; ++needle, --needle_len, ++_ne_i)
+        -:  173:
+        -:  174:typedef char *(*t_strcpy_fn)(char *, const char *);
+        -:  175:typedef char *(*t_strstr_fn)(const char *, const char *);
+        -:  176:typedef void *(*t_memmem_fn)(const void *, size_t, const void *, size_t);
+        -:  177:typedef char *(*t_strnstr_fn)(const char *, const char *, size_t);
+        -:  178:typedef int (*t_memcmp_fn)(const void *, const void *, size_t);
+        -:  179:typedef int (*t_strcmp_fn)(const char *, const char *);
+        -:  180:
+        -:  181:JSTR_ATTR_MAYBE_UNUSED
+        -:  182:static void
+    #####:  183:t_strcpy(t_strcpy_fn fn, t_strcpy_fn simple_fn, const struct test_array_memmem *test_array, size_t count)
+        -:  184:{
+        -:  185:	char buf_r[4096];
+        -:  186:	char buf_e[4096];
+    #####:  187:	for (size_t i = 0; i < count; ++i) {
+    #####:  188:		t_init();
+    #####:  189:		t.src = test_array[i].hs;
+    #####:  190:		t.src_len = 0;
+    #####:  191:		T_FOREACH_NE(t.src, t.src_len)
+        -:  192:		{
+    #####:  193:			t.expected_len = JSTR_PTR_DIFF(fn(buf_r, t.src), buf_r);
+    #####:  194:			t.result_len = JSTR_PTR_DIFF(simple_fn(buf_e, t.src), buf_e);
+    #####:  195:			T_DEBUG(fn, !strcmp(buf_e, buf_r));
+    #####:  196:			T_DEBUG(fn, t.result_len == t.expected_len);
+        -:  197:			if (JSTR_TEST_SLOW == 0)
+    #####:  198:				break;
+        -:  199:		}
+        -:  200:	}
+    #####:  201:}
+        -:  202:
+        -:  203:JSTR_ATTR_MAYBE_UNUSED
+        -:  204:static void
+    #####:  205:t_strstr(t_strstr_fn fn, t_strstr_fn simple_fn, const struct test_array_memmem *test_array, size_t count)
+        -:  206:{
+    #####:  207:	for (size_t i = 0; i < count; ++i) {
+    #####:  208:		t_init();
+    #####:  209:		t.hs = test_array[i].hs;
+    #####:  210:		t.ne = test_array[i].ne;
+    #####:  211:		t.result = fn(t.hs, t.ne);
+    #####:  212:		t.expected = simple_fn(t.hs, t.ne);
+    #####:  213:		T_DEBUG(fn, t.result == t.expected);
+        -:  214:	}
+    #####:  215:}
+        -:  216:
+        -:  217:JSTR_ATTR_MAYBE_UNUSED
+        -:  218:static void
+    #####:  219:t_memmem(t_memmem_fn fn, t_memmem_fn simple_fn, const struct test_array_memmem *test_array, size_t count)
+        -:  220:{
+    #####:  221:	for (size_t i = 0; i < count; ++i) {
+    #####:  222:		t_init();
+    #####:  223:		t.hs = test_array[i].hs;
+    #####:  224:		t.ne = test_array[i].ne;
+    #####:  225:		t.hs_len = strlen(t.hs);
+    #####:  226:		t.ne_len = strlen(t.ne);
+    #####:  227:		T_FOREACH_NE(t.ne, t.ne_len)
+        -:  228:		{
+    #####:  229:			t.result = fn(t.hs, t.hs_len, t.ne, t.ne_len);
+    #####:  230:			t.expected = simple_fn(t.hs, t.hs_len, t.ne, t.ne_len);
+    #####:  231:			T_DEBUG(fn, t.result == t.expected);
+    #####:  232:			if (i < t.hs_len) {
+    #####:  233:				t.result = simple_fn(t.hs, i, t.ne, t.ne_len);
+    #####:  234:				t.expected = fn(t.hs, i, t.ne, t.ne_len);
+    #####:  235:				T_DEBUG(fn, t.result == t.expected);
+        -:  236:			}
+    #####:  237:			if (i < t.ne_len) {
+    #####:  238:				t.result = fn(t.hs, t.hs_len, t.ne, i);
+    #####:  239:				t.expected = simple_fn(t.hs, t.hs_len, t.ne, i);
+    #####:  240:				T_DEBUG(fn, t.result == t.expected);
+        -:  241:			}
+        -:  242:			if (JSTR_TEST_SLOW == 0)
+    #####:  243:				break;
+        -:  244:		}
+        -:  245:	}
+    #####:  246:}
+        -:  247:
+        -:  248:JSTR_ATTR_MAYBE_UNUSED
+        -:  249:static void
+    #####:  250:t_strnstr(t_strnstr_fn fn, t_strnstr_fn simple_fn, const struct test_array_memmem *test_array, size_t count)
+        -:  251:{
+    #####:  252:	for (size_t i = 0; i < count; ++i) {
+    #####:  253:		t_init();
+    #####:  254:		t.n = strlen(test_array[i].hs);
+    #####:  255:		t.hs = test_array[i].hs;
+    #####:  256:		t.ne = test_array[i].ne;
+    #####:  257:		t.ne_len = strlen(t.ne);
+    #####:  258:		T_FOREACH_NE(t.ne, t.ne_len)
+        -:  259:		{
+    #####:  260:			t.result = fn(t.hs, t.ne, t.n);
+    #####:  261:			t.expected = simple_fn(t.hs, t.ne, t.n);
+    #####:  262:			T_DEBUG(fn, t.result == t.expected);
+        -:  263:			if (JSTR_TEST_SLOW == 0)
+    #####:  264:				break;
+        -:  265:		}
+        -:  266:	}
+    #####:  267:}
+        -:  268:
+        -:  269:JSTR_ATTR_MAYBE_UNUSED
+        -:  270:static void
+    #####:  271:	t_memcmp(t_memcmp_fn fn, t_memcmp_fn simple_fn, const struct test_array_memcmp *test_array, size_t count, int negate)
+        -:  272:{
+    #####:  273:	for (size_t i = 0; i < count; ++i) {
+    #####:  274:		t_init();
+    #####:  275:		t.s1 = T_S1(test_array, i);
+    #####:  276:		t.s2 = T_S2(test_array, i);
+    #####:  277:		t.s1_len = strlen(t.s1);
+    #####:  278:		t.s2_len = strlen(t.s2);
+    #####:  279:		t.n = JSTR_MIN(t.s1_len, JSTR_MIN(i, t.s2_len));
+    #####:  280:		t.result_n = (size_t)(negate ? !fn(t.s1, t.s2, t.n) : fn(t.s1, t.s2, t.n));
+    #####:  281:		t.expected_n = (size_t)(negate ? !simple_fn(t.s1, t.s2, t.n) : simple_fn(t.s1, t.s2, t.n));
+    #####:  282:		T_DEBUG(fn, t.result_n == t.expected_n);
+    #####:  283:		if (i < t.n) {
+    #####:  284:			t.result_n = (size_t)(negate ? !fn(t.s1, t.s2, i) : fn(t.s1, t.s2, i));
+    #####:  285:			t.expected_n = (size_t)(negate ? !simple_fn(t.s1, t.s2, i) : simple_fn(t.s1, t.s2, i));
+    #####:  286:			T_DEBUG(fn, t.result_n == t.expected_n);
+        -:  287:		}
+        -:  288:	}
+    #####:  289:}
+        -:  290:
+        -:  291:JSTR_ATTR_MAYBE_UNUSED
+        -:  292:static void
+    #####:  293:	t_strcmp(t_strcmp_fn fn, t_strcmp_fn simple_fn, const struct test_array_memcmp *test_array, size_t count, int negate)
+        -:  294:{
+    #####:  295:	for (size_t i = 0; i < count; ++i) {
+    #####:  296:		t_init();
+    #####:  297:		t.s1 = T_S1(test_array, i);
+    #####:  298:		t.s2 = T_S2(test_array, i);
+    #####:  299:		t.result_n = (size_t)(negate ? !fn(t.s1, t.s2) : fn(t.s1, t.s2));
+    #####:  300:		t.expected_n = (size_t)(negate ? !simple_fn(t.s1, t.s2) : simple_fn(t.s1, t.s2));
+    #####:  301:		T_DEBUG(fn, t.expected_n == t.result_n);
+        -:  302:	}
+    #####:  303:}
+        -:  304:
+        -:  305:#define T_STRCPY(fn, simple_fn, test_array) \
+        -:  306:	do { \
+        -:  307:		TESTING(fn); \
+        -:  308:		t_strcpy(fn, simple_fn, test_array, JSTR_ARRAY_COUNT(test_array)); \
+        -:  309:	} while (0)
+        -:  310:
+        -:  311:#define T_STRSTR(fn, simple_fn, test_array) \
+        -:  312:	do { \
+        -:  313:		TESTING(fn); \
+        -:  314:		t_strstr(fn, simple_fn, test_array, JSTR_ARRAY_COUNT(test_array)); \
+        -:  315:	} while (0)
+        -:  316:
+        -:  317:#define T_MEMMEM(fn, simple_fn, test_array) \
+        -:  318:	do { \
+        -:  319:		TESTING(fn); \
+        -:  320:		t_memmem((t_memmem_fn)(fn), (t_memmem_fn)(simple_fn), test_array, JSTR_ARRAY_COUNT(test_array)); \
+        -:  321:	} while (0)
+        -:  322:
+        -:  323:#define T_STRNSTR(fn, simple_fn, test_array) \
+        -:  324:	do { \
+        -:  325:		TESTING(fn); \
+        -:  326:		t_strnstr(fn, simple_fn, test_array, JSTR_ARRAY_COUNT(test_array)); \
+        -:  327:	} while (0)
+        -:  328:
+        -:  329:#define T_MEMCMP(fn, simple_fn, test_array) \
+        -:  330:	do { \
+        -:  331:		TESTING(fn); \
+        -:  332:		t_memcmp((t_memcmp_fn)(fn), (t_memcmp_fn)(simple_fn), test_array, JSTR_ARRAY_COUNT(test_array), 0); \
+        -:  333:	} while (0)
+        -:  334:
+        -:  335:#define T_STRCMP(fn, simple_fn, test_array) \
+        -:  336:	do { \
+        -:  337:		TESTING(fn); \
+        -:  338:		t_strcmp(fn, simple_fn, test_array, JSTR_ARRAY_COUNT(test_array), 0); \
+        -:  339:	} while (0)
+        -:  340:
+        -:  341:#define T_MEMCMP_NEG(fn, simple_fn, test_array) \
+        -:  342:	do { \
+        -:  343:		TESTING(fn); \
+        -:  344:		t_memcmp((t_memcmp_fn)(fn), (t_memcmp_fn)(simple_fn), test_array, JSTR_ARRAY_COUNT(test_array), 1); \
+        -:  345:	} while (0)
+        -:  346:
+        -:  347:#define T_STRCMP_NEG(fn, simple_fn, test_array) \
+        -:  348:	do { \
+        -:  349:		TESTING(fn); \
+        -:  350:		t_strcmp(fn, simple_fn, test_array, JSTR_ARRAY_COUNT(test_array), 1); \
+        -:  351:	} while (0)
+        -:  352:
+        -:  353:#endif /* JSTR_TEST_H */

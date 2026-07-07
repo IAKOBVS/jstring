@@ -1,0 +1,25 @@
+        -:    0:Source:tests/repro-replace-color.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/repro-replace-color.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/repro-replace-color.gcda
+        -:    0:Runs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <string.h>
+        -:    3:#include "../include/regex.h"
+        -:    4:
+        1:    5:int main(void) {
+        1:    6:    jstr_ty s = JSTR_INIT;
+        -:    7:    jstr_re_ty preg;
+        1:    8:    if (jstr_re_comp(&preg, "colou?r", JSTR_RE_CF_EXTENDED) != JSTR_RE_RET_NOERROR) {
+    #####:    9:        fprintf(stderr, "regcomp failed\n");
+    #####:   10:        return 2;
+        -:   11:    }
+        -:   12:    /* initialize s to "color colour" */
+        1:   13:    if (jstr_assign_len(jstr_struct(&s), "color colour", strlen("color colour"))) {
+    #####:   14:        fprintf(stderr, "assign failed\n");
+    #####:   15:        return 2;
+        -:   16:    }
+        1:   17:    jstr_re_rplcall_len_exec(&preg, jstr_struct(&s), "X", 1, 0);
+        1:   18:    jstr_free_j(&s);
+        1:   19:    jstr_re_free(&preg);
+        1:   20:    return 0;
+        -:   21:}

@@ -1,0 +1,20 @@
+        -:    0:Source:tests/test-strcmp.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-strcmp.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-strcmp.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#include "test.h"
+        -:    5:#include "test-array.h"
+        -:    6:#include "../include/string.h"
+        -:    7:
+        -:    8:int
+        1:    9:main(int argc, char **argv)
+        -:   10:{
+        -:   11:	START();
+        1:   12:	T_MEMCMP(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp);
+        1:   13:	T_STRCMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp);
+        -:   14:	SUCCESS();
+        1:   15:	return EXIT_SUCCESS;
+        -:   16:}

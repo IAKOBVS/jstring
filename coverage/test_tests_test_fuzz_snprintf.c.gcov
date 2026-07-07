@@ -1,0 +1,171 @@
+        -:    0:Source:tests/test-fuzz-snprintf.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-snprintf.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-snprintf.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for sprintf/asprintf variants with format strings and random
+        -:    5: * arguments. */
+        -:    6:
+        -:    7:#define __STDC_NO_VLA__ 1
+        -:    8:
+        -:    9:#include "test.h"
+        -:   10:#include "../include/jstr.h"
+        -:   11:#include "fuzz-shared.h"
+        -:   12:
+        -:   13:#include <stdio.h>
+        -:   14:
+        -:   15:struct fmt_spec {
+        -:   16:	const char *fmt;
+        -:   17:	int nargs;
+        -:   18:	enum { ARG_INT, ARG_STR } types[4];
+        -:   19:};
+        -:   20:
+        -:   21:static const struct fmt_spec formats[] = {
+        -:   22:	{ "%d",               1, {ARG_INT} },
+        -:   23:	{ "%u",               1, {ARG_INT} },
+        -:   24:	{ "%x",               1, {ARG_INT} },
+        -:   25:	{ "%d%s",             2, {ARG_INT, ARG_STR} },
+        -:   26:	{ "%s%d",             2, {ARG_STR, ARG_INT} },
+        -:   27:	{ "|%d|%u|",          2, {ARG_INT, ARG_INT} },
+        -:   28:	{ "[%s]",             1, {ARG_STR} },
+        -:   29:	{ "%s%s",             2, {ARG_STR, ARG_STR} },
+        -:   30:	{ "pre%dmid%ssuf",    2, {ARG_INT, ARG_STR} },
+        -:   31:	{ "%d,%d,%d",         3, {ARG_INT, ARG_INT, ARG_INT} },
+        -:   32:	{ "%d%%%d",           2, {ARG_INT, ARG_INT} },
+        -:   33:};
+        -:   34:static const size_t nformats = sizeof(formats) / sizeof(formats[0]);
+        -:   35:
+        -:   36:static const char *str_args[] = {"", "x", "hello", "AB", "longer_string", "123"};
+        -:   37:static const size_t nstrargs = sizeof(str_args) / sizeof(str_args[0]);
+        -:   38:
+        -:   39:JSTR_ATTR_MAYBE_UNUSED
+        -:   40:static void
+        1:   41:fuzz_snprintf(size_t iter)
+        -:   42:{
+        -:   43:	char ref_buf[1024];
+        -:   44:
+     2561:   45:	for (size_t i = 0; i < iter; ++i) {
+     2560:   46:		const struct fmt_spec *fs = &formats[rand() % nformats];
+        -:   47:
+        -:   48:		/* Build variadic argument list values */
+        -:   49:		int iargs[4];
+        -:   50:		const char *sargs[4];
+     7014:   51:		for (int j = 0; j < fs->nargs && j < (int)(sizeof(iargs)/sizeof(iargs[0])); ++j) {
+     4454:   52:			if (fs->types[j] == ARG_INT)
+     2969:   53:				iargs[j] = (int)(rand() & 0xFFFF) - (int)(rand() & 0x7FFF);
+        -:   54:			else
+     1485:   55:				sargs[j] = str_args[rand() % nstrargs];
+        -:   56:		}
+        -:   57:
+        -:   58:		/* Build call based on argument types.
+        -:   59:		 * We test jstr_asprintf (full replacement) and compare to snprintf. */
+     2560:   60:		char *s = NULL;
+     2560:   61:		size_t sz = 0, cap = 0;
+        -:   62:		int ret;
+     2560:   63:		switch (fs->nargs) {
+      898:   64:		case 1:
+      898:   65:			if (fs->types[0] == ARG_INT) {
+      665:   66:				ret = jstr_asprintf(&s, &sz, &cap, fs->fmt, iargs[0]);
+      665:   67:				snprintf(ref_buf, sizeof(ref_buf), fs->fmt, iargs[0]);
+        -:   68:			} else {
+      233:   69:				ret = jstr_asprintf(&s, &sz, &cap, fs->fmt, sargs[0]);
+      233:   70:				snprintf(ref_buf, sizeof(ref_buf), fs->fmt, sargs[0]);
+        -:   71:			}
+      898:   72:			break;
+     1430:   73:		case 2:
+     1430:   74:			if (fs->types[0] == ARG_INT && fs->types[1] == ARG_INT) {
+      426:   75:				ret = jstr_asprintf(&s, &sz, &cap, fs->fmt, iargs[0], iargs[1]);
+      426:   76:				snprintf(ref_buf, sizeof(ref_buf), fs->fmt, iargs[0], iargs[1]);
+     1004:   77:			} else if (fs->types[0] == ARG_INT) {
+      505:   78:				ret = jstr_asprintf(&s, &sz, &cap, fs->fmt, iargs[0], sargs[1]);
+      505:   79:				snprintf(ref_buf, sizeof(ref_buf), fs->fmt, iargs[0], sargs[1]);
+      499:   80:			} else if (fs->types[1] == ARG_INT) {
+      251:   81:				ret = jstr_asprintf(&s, &sz, &cap, fs->fmt, sargs[0], iargs[1]);
+      251:   82:				snprintf(ref_buf, sizeof(ref_buf), fs->fmt, sargs[0], iargs[1]);
+        -:   83:			} else {
+      248:   84:				ret = jstr_asprintf(&s, &sz, &cap, fs->fmt, sargs[0], sargs[1]);
+      248:   85:				snprintf(ref_buf, sizeof(ref_buf), fs->fmt, sargs[0], sargs[1]);
+        -:   86:			}
+     1430:   87:			break;
+      232:   88:		case 3:
+      232:   89:			ret = jstr_asprintf(&s, &sz, &cap, fs->fmt, iargs[0], iargs[1], iargs[2]);
+      232:   90:			snprintf(ref_buf, sizeof(ref_buf), fs->fmt, iargs[0], iargs[1], iargs[2]);
+      232:   91:			break;
+    #####:   92:		default:
+    #####:   93:			ret = JSTR_RET_ERR;
+    #####:   94:			break;
+        -:   95:		}
+    2560*:   96:		assert(ret == JSTR_RET_SUCC);
+     2560:   97:		if (s) {
+    2560*:   98:			assert(strcmp(s, ref_buf) == 0);
+    2560*:   99:			assert(sz == strlen(s));
+     2560:  100:			free(s);
+        -:  101:		}
+        -:  102:	}
+        -:  103:
+        -:  104:	/* Test asprintf_append with simple formats */
+      258:  105:	for (size_t i = 0; i < iter / 10 + 1; ++i) {
+      257:  106:		char *s = NULL;
+      257:  107:		size_t sz = 0, cap = 0;
+      257:  108:		int ret = jstr_assign_len(&s, &sz, &cap, "base", 4);
+     257*:  109:		assert(ret == JSTR_RET_SUCC);
+      257:  110:		ret = jstr_asprintf_append(&s, &sz, &cap, "|%d|", 7);
+     257*:  111:		assert(ret == JSTR_RET_SUCC);
+     257*:  112:		assert(strcmp(s, "base|7|") == 0);
+     257*:  113:		assert(sz == 7);
+      257:  114:		free(s);
+        -:  115:	}
+        1:  116:}
+        -:  117:
+        -:  118:#ifndef FUZZ_LIBFUZZER
+        -:  119:
+        -:  120:int
+        1:  121:main(int argc, char **argv)
+        -:  122:{
+        -:  123:	START();
+        1:  124:	unsigned seed = 0;
+        1:  125:	if (argc > 1)
+    #####:  126:		seed = (unsigned)atoi(argv[1]);
+        1:  127:	size_t iter = FITER;
+        -:  128:#ifdef JSTR_TEST_SLOW
+        1:  129:	iter *= 10;
+        -:  130:#else
+        -:  131:	if (iter > 500)
+        -:  132:		iter = 500;
+        -:  133:#endif
+        1:  134:	if (iter < 1)
+    #####:  135:		iter = 1;
+        -:  136:#ifdef FUZZ_AFL
+        -:  137:	while (__AFL_LOOP(10000))
+        -:  138:#endif
+        -:  139:	{
+        1:  140:		srand(seed);
+        -:  141:		TESTING(fuzz_snprintf);
+        1:  142:		fuzz_snprintf(iter);
+        -:  143:	}
+        -:  144:	SUCCESS();
+        1:  145:	return EXIT_SUCCESS;
+        -:  146:}
+        -:  147:
+        -:  148:#else
+        -:  149:
+        -:  150:int
+        -:  151:LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
+        -:  152:{
+        -:  153:	if (size < 4)
+        -:  154:		return 0;
+        -:  155:	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
+        -:  156:	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+        -:  157:	srand(seed);
+        -:  158:	data += 4;
+        -:  159:	size -= 4;
+        -:  160:	size_t iter = size > 0 ? size : 10;
+        -:  161:	if (iter > 100)
+        -:  162:		iter = 100;
+        -:  163:	fuzz_snprintf(iter);
+        -:  164:	return 0;
+        -:  165:}
+        -:  166:
+        -:  167:#endif

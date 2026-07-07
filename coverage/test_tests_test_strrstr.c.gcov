@@ -1,0 +1,18 @@
+        -:    0:Source:tests/test-strrstr.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-strrstr.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-strrstr.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+        -:    3:
+        -:    4:#include "test.h"
+        -:    5:#include "test-array.h"
+        -:    6:
+        -:    7:int
+        1:    8:main(int argc, char **argv)
+        -:    9:{
+        -:   10:	START();
+        1:   11:	T_MEMMEM(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
+        -:   12:	SUCCESS();
+        1:   13:	return EXIT_SUCCESS;
+        -:   14:}

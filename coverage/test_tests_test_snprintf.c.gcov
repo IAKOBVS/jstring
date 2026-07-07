@@ -1,0 +1,224 @@
+        -:    0:Source:tests/test-snprintf.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-snprintf.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-snprintf.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* This file is part of the jstring library, and is a modified
+        -:    3: * version of functional/snprintf.c taken from musl's libc-test
+        -:    4: *
+        -:    5: * libc-test is licensed under the following standard MIT license:
+        -:    6: *
+        -:    7: * Copyright © 2005-2013 libc-test AUTHORS
+        -:    8: *
+        -:    9: * Permission is hereby granted, free of charge, to any person obtaining
+        -:   10: * a copy of this software and associated documentation files (the
+        -:   11: * "Software"), to deal in the Software without restriction, including
+        -:   12: * without limitation the rights to use, copy, modify, merge, publish,
+        -:   13: * distribute, sublicense, and/or sell copies of the Software, and to
+        -:   14: * permit persons to whom the Software is furnished to do so, subject to
+        -:   15: * the following conditions:
+        -:   16: *
+        -:   17: * The above copyright notice and this permission notice shall be
+        -:   18: * included in all copies or substantial portions of the Software.
+        -:   19: *
+        -:   20: * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        -:   21: * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        -:   22: * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+        -:   23: * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+        -:   24: * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+        -:   25: * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+        -:   26: * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+        -:   27:
+        -:   28:#ifndef _XOPEN_SOURCE
+        -:   29:#	define _XOPEN_SOURCE 700
+        -:   30:#endif
+        -:   31:
+        -:   32:#include <stdio.h>
+        -:   33:#include <string.h>
+        -:   34:#include <limits.h>
+        -:   35:#include <stdarg.h>
+        -:   36:#include <math.h>
+        -:   37:#include "test.h"
+        -:   38:#include "../include/builder.h"
+        -:   39:
+        -:   40:/* clang-format off */
+        -:   41:
+        -:   42:static const struct {
+        -:   43:	const char *fmt;
+        -:   44:	int i;
+        -:   45:	const char *expect;
+        -:   46:} int_tests[] = {
+        -:   47:	/* width, precision, alignment */
+        -:   48:	{ "%04d", 12, "0012" },
+        -:   49:	{ "%.3d", 12, "012" },
+        -:   50:	{ "%3d", 12, " 12" },
+        -:   51:	{ "%-3d", 12, "12 " },
+        -:   52:	{ "%+3d", 12, "+12" },
+        -:   53:	{ "%+-5d", 12, "+12  " },
+        -:   54:	{ "%+- 5d", 12, "+12  " },
+        -:   55:	{ "%- 5d", 12, " 12  " },
+        -:   56:	{ "% d", 12, " 12" },
+        -:   57:	{ "%0-5d", 12, "12   " },
+        -:   58:	{ "%-05d", 12, "12   " },
+        -:   59:
+        -:   60:	/* ...explicit precision of 0 shall be no characters except for alt-octal. */
+        -:   61:	{ "%.0d", 0, "" },
+        -:   62:	{ "%.0o", 0, "" },
+        -:   63:	{ "%#.0d", 0, "" },
+        -:   64:	{ "%#.0o", 0, "0" },
+        -:   65:	{ "%#.0x", 0, "" },
+        -:   66:
+        -:   67:	/* ...but it still has to honor width and flags. */
+        -:   68:	{ "%2.0u", 0, "  " },
+        -:   69:	{ "%02.0u", 0, "  " },
+        -:   70:	{ "%2.0d", 0, "  " },
+        -:   71:	{ "%02.0d", 0, "  " },
+        -:   72:	{ "% .0d", 0, " " },
+        -:   73:	{ "%+.0d", 0, "+" },
+        -:   74:
+        -:   75:	/* hex: test alt form and case */
+        -:   76:	{ "%x", 63, "3f" },
+        -:   77:	{ "%#x", 63, "0x3f" },
+        -:   78:	{ "%X", 63, "3F" },
+        -:   79:
+        -:   80:	/* octal: test alt form */
+        -:   81:	{ "%o", 15, "17" },
+        -:   82:	{ "%#o", 15, "017" },
+        -:   83:
+        -:   84:	/* octal: corner cases */
+        -:   85:	{ "%#o", 0, "0" },
+        -:   86:	{ "%#.0o", 0, "0" },
+        -:   87:	{ "%#.1o", 0, "0" },
+        -:   88:	{ "%#o", 1, "01" },
+        -:   89:	{ "%#.0o", 1, "01" },
+        -:   90:	{ "%#.1o", 1, "01" },
+        -:   91:	{ "%#04o", 1, "0001" },
+        -:   92:	{ "%#04.0o", 1, "  01" },
+        -:   93:	{ "%#04.1o", 1, "  01" },
+        -:   94:	{ "%04o", 1, "0001" },
+        -:   95:	{ "%04.0o", 1, "   1" },
+        -:   96:	{ "%04.1o", 1, "   1" },
+        -:   97:
+        -:   98:	{ NULL, 0.0, NULL }
+        -:   99:};
+        -:  100:
+        -:  101:static const struct {
+        -:  102:	const char *fmt;
+        -:  103:	double f;
+        -:  104:	const char *expect;
+        -:  105:} fp_tests[] = {
+        -:  106:	/* basic form, handling of exponent/precision for 0 */
+        -:  107:	{ "%a", 0.0, "0x0p+0" },
+        -:  108:	{ "%e", 0.0, "0.000000e+00" },
+        -:  109:	{ "%f", 0.0, "0.000000" },
+        -:  110:	{ "%g", 0.0, "0" },
+        -:  111:	{ "%#g", 0.0, "0.00000" },
+        -:  112:	{ "%la", 0.0, "0x0p+0" },
+        -:  113:	{ "%le", 0.0, "0.000000e+00" },
+        -:  114:	{ "%lf", 0.0, "0.000000" },
+        -:  115:	{ "%lg", 0.0, "0" },
+        -:  116:	{ "%#lg", 0.0, "0.00000" },
+        -:  117:
+        -:  118:	/* rounding */
+        -:  119:	{ "%f", 1.1, "1.100000" },
+        -:  120:	{ "%f", 1.2, "1.200000" },
+        -:  121:	{ "%f", 1.3, "1.300000" },
+        -:  122:	{ "%f", 1.4, "1.400000" },
+        -:  123:	{ "%f", 1.5, "1.500000" },
+        -:  124:	{ "%.4f", 1.06125, "1.0613" }, /* input is not representible exactly as double */
+        -:  125:	{ "%.4f", 1.03125, "1.0312" }, /* 0x1.08p0 */
+        -:  126:	{ "%.2f", 1.375, "1.38" },
+        -:  127:	{ "%.1f", 1.375, "1.4" },
+        -:  128:	{ "%.1lf", 1.375, "1.4" },
+        -:  129:	{ "%.15f", 1.1, "1.100000000000000" },
+        -:  130:	{ "%.16f", 1.1, "1.1000000000000001" },
+        -:  131:	{ "%.17f", 1.1, "1.10000000000000009" },
+        -:  132:	{ "%.2e", 1500001.0, "1.50e+06" },
+        -:  133:	{ "%.2e", 1505000.0, "1.50e+06" },
+        -:  134:	{ "%.2e", 1505000.00000095367431640625, "1.51e+06" },
+        -:  135:	{ "%.2e", 1505001.0, "1.51e+06" },
+        -:  136:	{ "%.2e", 1506000.0, "1.51e+06" },
+        -:  137:	
+        -:  138:	/* correctness in DBL_DIG places */
+        -:  139:	{ "%.15g", 1.23456789012345, "1.23456789012345" },
+        -:  140:
+        -:  141:	/* correct choice of notation for %g */
+        -:  142:	{ "%g", 0.0001, "0.0001" },
+        -:  143:	{ "%g", 0.00001, "1e-05" },
+        -:  144:	{ "%g", 123456, "123456" },
+        -:  145:	{ "%g", 1234567, "1.23457e+06" },
+        -:  146:	{ "%.7g", 1234567, "1234567" },
+        -:  147:	{ "%.7g", 12345678, "1.234568e+07" },
+        -:  148:	{ "%.8g", 0.1, "0.1" },
+        -:  149:	{ "%.9g", 0.1, "0.1" },
+        -:  150:	{ "%.10g", 0.1, "0.1" },
+        -:  151:	{ "%.11g", 0.1, "0.1" },
+        -:  152:
+        -:  153:	/* pi in double precision, printed to a few extra places */
+        -:  154:	{ "%.15f", M_PI, "3.141592653589793" },
+        -:  155:	{ "%.18f", M_PI, "3.141592653589793116" },
+        -:  156:
+        -:  157:	/* exact conversion of large integers */
+        -:  158:	{ "%.0f", 340282366920938463463374607431768211456.0,
+        -:  159:	         "340282366920938463463374607431768211456" },
+        -:  160:
+        -:  161:	{ NULL, 0.0, NULL }
+        -:  162:};
+        -:  163:
+        -:  164:/* clang-format on */
+        -:  165:
+        -:  166:#define T(func, simple_func, fmt, ...)                                                     \
+        -:  167:	do {                                                                               \
+        -:  168:		int result, expected;                                                      \
+        -:  169:		result = func(0, 0, fmt, __VA_ARGS__);                                     \
+        -:  170:		if (jstr_unlikely(result == -1)) {                                         \
+        -:  171:			PRINTERR("fmt:%s\n", fmt);                                         \
+        -:  172:			jstr_err("%s", "");                                                \
+        -:  173:			assert(result != -1);                                              \
+        -:  174:		}                                                                          \
+        -:  175:		expected = simple_func(0, 0, fmt, __VA_ARGS__);                            \
+        -:  176:		if (jstr_unlikely(expected == -1)) {                                       \
+        -:  177:			PRINTERR("%s\n", strerror(expected));                              \
+        -:  178:			assert(expected != -1);                                            \
+        -:  179:		}                                                                          \
+        -:  180:		assert(-1 != sprintf(result_num, "%d", result));                           \
+        -:  181:		assert(-1 != sprintf(expected_num, "%d", expected));                       \
+        -:  182:		if (jstr_unlikely(result < expected)) {                                    \
+        -:  183:			PRINTERR("fmt:%s\n", fmt);                                         \
+        -:  184:			ASSERT_RESULT(func, result >= expected, result_num, expected_num); \
+        -:  185:		}                                                                          \
+        -:  186:	} while (0)
+        -:  187:
+        -:  188:static int
+       86:  189:jstr_sprintfstrlen(char *s, size_t n, const char *fmt, ...)
+        -:  190:{
+        -:  191:	va_list ap;
+       86:  192:	va_start(ap, fmt);
+       86:  193:	int ret = jstr_vsprintf_maxlen(ap, fmt);
+       86:  194:	va_end(ap);
+       86:  195:	return ret;
+        -:  196:	(void)s;
+        -:  197:	(void)n;
+        -:  198:}
+        -:  199:
+        -:  200:int
+        1:  201:main(int argc, char **argv)
+        -:  202:{
+        -:  203:	START();
+        -:  204:	TESTING(jstr_vsprintf_maxlen);
+        -:  205:	char result_num[sizeof(size_t) * 8 + 1];
+        -:  206:	char expected_num[sizeof(size_t) * 8 + 1];
+       1*:  207:	T(jstr_sprintfstrlen, snprintf, "%d", 123456);
+       1*:  208:	T(jstr_sprintfstrlen, snprintf, "%.4s", "hello");
+       1*:  209:	T(jstr_sprintfstrlen, snprintf, "%.0s", "goodbye");
+        -:  210:	/* Perform ascii arithmetic to test printing tiny doubles */
+       1*:  211:	T(jstr_sprintfstrlen, snprintf, "%.1022f", 0x1p-1021);
+       40:  212:	for (int i = 0; int_tests[i].fmt; i++)
+      39*:  213:		T(jstr_sprintfstrlen, snprintf, int_tests[i].fmt, int_tests[i].i);
+       43:  214:	for (int i = 0; fp_tests[i].fmt; i++)
+      42*:  215:		T(jstr_sprintfstrlen, snprintf, fp_tests[i].fmt, fp_tests[i].f);
+       1*:  216:	T(jstr_sprintfstrlen, snprintf, "%.4a", 1.0);
+        -:  217:	SUCCESS();
+        1:  218:	return EXIT_SUCCESS;
+        -:  219:	(void)argc;
+        -:  220:}

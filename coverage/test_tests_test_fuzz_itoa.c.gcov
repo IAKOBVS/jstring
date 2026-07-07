@@ -1,0 +1,243 @@
+        -:    0:Source:tests/test-fuzz-itoa.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-itoa.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-itoa.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for itoa.h: ulltoa/lltoa/utoa/ltoa/itoa with various bases,
+        -:    5: * thousand-separator variants, atou/atoi/atol/atoull _len variants. */
+        -:    6:
+        -:    7:#define __STDC_NO_VLA__ 1
+        -:    8:
+        -:    9:#include "test.h"
+        -:   10:#include "../include/jstr.h"
+        -:   11:#include "fuzz-shared.h"
+        -:   12:
+        -:   13:static char *
+    15360:   14:ref_ulltoa_p(unsigned long long n, char *buf, unsigned int base)
+        -:   15:{
+        -:   16:	char tmp[64];
+    15360:   17:	size_t i = 0;
+    15360:   18:	if (n == 0) {
+        2:   19:		tmp[i++] = '0';
+        -:   20:	} else {
+   262296:   21:		while (n) {
+   246938:   22:			unsigned int d = (unsigned int)(n % base);
+  246938*:   23:			tmp[i++] = (char)(d < 10 ? '0' + d : 'a' + d - 10);
+   246938:   24:			n /= base;
+        -:   25:		}
+        -:   26:	}
+   262300:   27:	while (i)
+   246940:   28:		*buf++ = tmp[--i];
+    15360:   29:	*buf = '\0';
+    15360:   30:	return buf;
+        -:   31:}
+        -:   32:
+        -:   33:static int
+    20480:   34:ref_streq(const char *a, const char *b)
+        -:   35:{
+   308350:   36:	while (*a && *b && *a == *b) { ++a; ++b; }
+    20480:   37:	return *a == *b;
+        -:   38:}
+        -:   39:
+        -:   40:JSTR_ATTR_MAYBE_UNUSED
+        -:   41:static void
+        1:   42:fuzz_itoa(size_t iter)
+        -:   43:{
+        -:   44:	char ref_buf[128], j_buf[128];
+        -:   45:
+     2561:   46:	for (size_t i = 0; i < iter; ++i) {
+     2560:   47:		unsigned long long val = (unsigned long long)rand();
+     2560:   48:		val |= ((unsigned long long)rand()) << 32;
+        -:   49:		/* jstr_ulltoa_p only handles digits 0-9 (no a-f), so restrict to bases 2-10 */
+     2560:   50:		unsigned int base = (unsigned int)(rand() % 9) + 2;
+        -:   51:
+        -:   52:		/* --- ulltoa_p --- */
+     2560:   53:		memset(j_buf, 0xAA, sizeof(j_buf));
+     2560:   54:		char *je = jstr_ulltoa_p(val, j_buf, base);
+     2560:   55:		char *re = ref_ulltoa_p(val, ref_buf, base);
+    2560*:   56:		assert(ref_streq(j_buf, ref_buf));
+    2560*:   57:		assert(*je == '\0');
+    2560*:   58:		assert((size_t)(je - j_buf) == (size_t)(re - ref_buf));
+        -:   59:		(void)re;
+        -:   60:
+        -:   61:		/* --- utoa_p (unsigned int) --- */
+     2560:   62:		memset(j_buf, 0xAA, sizeof(j_buf));
+     2560:   63:		unsigned int uval = (unsigned int)(val & 0xFFFFFFFF);
+     2560:   64:		je = jstr_utoa_p(uval, j_buf, base);
+     2560:   65:		ref_ulltoa_p(uval, ref_buf, base);
+    2560*:   66:		assert(ref_streq(j_buf, ref_buf));
+    2560*:   67:		assert(*je == '\0');
+        -:   68:
+        -:   69:		/* --- lltoa_p (signed) --- */
+     2560:   70:		long long sval = (long long)val;
+     2560:   71:		memset(j_buf, 0xAA, sizeof(j_buf));
+     2560:   72:		je = jstr_lltoa_p(sval, j_buf, base);
+        -:   73:		/* reference for signed */
+     2560:   74:		if (sval == 0) {
+    #####:   75:			ref_buf[0] = '0';
+    #####:   76:			ref_buf[1] = '\0';
+    #####:   77:			re = ref_buf + 1;
+     2560:   78:		} else if (sval < 0) {
+    #####:   79:			ref_buf[0] = '-';
+    #####:   80:			re = ref_ulltoa_p((unsigned long long)(-sval), ref_buf + 1, base);
+        -:   81:		} else {
+     2560:   82:			re = ref_ulltoa_p((unsigned long long)sval, ref_buf, base);
+        -:   83:		}
+    2560*:   84:		assert(ref_streq(j_buf, ref_buf));
+    2560*:   85:		assert(*je == '\0');
+        -:   86:
+        -:   87:		/* --- itoa_p (int) --- */
+     2560:   88:		int ival = (int)(sval & 0x7FFFFFFF);
+     2560:   89:		if (rand() % 2) ival = -ival;
+     2560:   90:		memset(j_buf, 0xAA, sizeof(j_buf));
+     2560:   91:		je = jstr_itoa_p(ival, j_buf, base);
+     2560:   92:		if (ival == 0) {
+    #####:   93:			ref_buf[0] = '0';
+    #####:   94:			ref_buf[1] = '\0';
+    #####:   95:			re = ref_buf + 1;
+     2560:   96:		} else if (ival < 0) {
+     1244:   97:			ref_buf[0] = '-';
+     1244:   98:			re = ref_ulltoa_p((unsigned long long)(-(long long)ival), ref_buf + 1, base);
+        -:   99:		} else {
+     1316:  100:			re = ref_ulltoa_p((unsigned long long)ival, ref_buf, base);
+        -:  101:		}
+    2560*:  102:		assert(ref_streq(j_buf, ref_buf));
+    2560*:  103:		assert(*je == '\0');
+        -:  104:
+        -:  105:		/* --- thousand-sep variants --- */
+     2560:  106:		char sep = ',';
+     2560:  107:		memset(j_buf, 0xAA, sizeof(j_buf));
+     2560:  108:		je = jstr_ulltoa_thousep_p(val, j_buf, base, sep);
+    2560*:  109:		assert(*je == '\0');
+     2560:  110:		if (val <= 999) {
+    #####:  111:			assert(ref_streq(j_buf, ref_buf));
+        -:  112:		} else {
+        -:  113:			/* at least check format: groups of 3 separated by sep */
+     2560:  114:			size_t jl = (size_t)(je - j_buf);
+     2560:  115:			if (jl > 3) {
+    2560*:  116:				assert(j_buf[jl - 4] == sep);
+        -:  117:			}
+        -:  118:		}
+        -:  119:	}
+        -:  120:
+        -:  121:	/* --- safe variants (dynamic allocation, each call appends at *s+*sz) --- */
+        1:  122:	char *s = NULL;
+        1:  123:	size_t sz = 0, cap = 0;
+     2561:  124:	for (size_t i = 0; i < iter; ++i) {
+     2560:  125:		unsigned int uval = (unsigned int)(rand() & 0xFFFF);
+     2560:  126:		unsigned int base = 10;
+        -:  127:		int ret;
+        -:  128:
+     2560:  129:		sz = 0;
+     2560:  130:		ret = jstr_utoa(&s, &sz, &cap, uval, base);
+    2560*:  131:		assert(ret == JSTR_RET_SUCC);
+     2560:  132:		{char *re = ref_ulltoa_p(uval, ref_buf, base);(void)re;}
+    2560*:  133:		assert(ref_streq(s, ref_buf));
+    2560*:  134:		assert(sz == strlen(s));
+        -:  135:
+     2560:  136:		long long sval = (long long)(int)(rand() & 0x7FFF);
+     2560:  137:		if (rand() % 2) sval = -sval;
+     2560:  138:		sz = 0;
+     2560:  139:		ret = jstr_lltoa(&s, &sz, &cap, sval, base);
+    2560*:  140:		assert(ret == JSTR_RET_SUCC);
+     2560:  141:		if (sval < 0) {
+     1286:  142:			ref_buf[0] = '-';
+     1286:  143:			ref_ulltoa_p((unsigned long long)(-sval), ref_buf + 1, base);
+        -:  144:		} else {
+     1274:  145:			ref_ulltoa_p((unsigned long long)sval, ref_buf, base);
+        -:  146:		}
+    2560*:  147:		assert(ref_streq(s, ref_buf));
+    2560*:  148:		assert(sz == strlen(s));
+        -:  149:
+        -:  150:		/* thousand-sep safe */
+     2560:  151:		sz = 0;
+     2560:  152:		ret = jstr_ulltoa_thousep(&s, &sz, &cap, 123456, 10, ',');
+    2560*:  153:		assert(ret == JSTR_RET_SUCC);
+    2560*:  154:		assert(ref_streq(s, "123,456"));
+        -:  155:
+     2560:  156:		sz = 0;
+     2560:  157:		ret = jstr_lltoa_thousep(&s, &sz, &cap, -123456, 10, ',');
+    2560*:  158:		assert(ret == JSTR_RET_SUCC);
+    2560*:  159:		assert(ref_streq(s, "-123,456"));
+        -:  160:	}
+        1:  161:	free(s);
+        -:  162:
+        -:  163:	/* --- _len conversion variants --- */
+     2561:  164:	for (size_t i = 0; i < iter; ++i) {
+        -:  165:		char num_buf[32];
+     2560:  166:		size_t nl = gen_str(num_buf, 30, GEN_ASCII);
+    41893:  167:		for (size_t j = 0; j < nl; ++j) {
+    39333:  168:			if (num_buf[j] < '0' || num_buf[j] > '9') {
+    35107:  169:				if (j > 0 || num_buf[j] != '-')
+    35083:  170:					num_buf[j] = '0' + (rand() % 10);
+        -:  171:			}
+        -:  172:		}
+     2560:  173:		num_buf[nl] = '\0';
+        -:  174:
+     2560:  175:		unsigned int u = jstr_atou_len(num_buf, nl);
+     2560:  176:		unsigned long ul = jstr_atoul_len(num_buf, nl);
+     2560:  177:		unsigned long long ull = jstr_atoull_len(num_buf, nl);
+     2560:  178:		int i2 = jstr_atoi_len(num_buf, nl);
+     2560:  179:		long l = jstr_atol_len(num_buf, nl);
+     2560:  180:		long long ll = jstr_atoll_len(num_buf, nl);
+        -:  181:		(void)u;
+        -:  182:		(void)ul;
+        -:  183:		(void)ull;
+        -:  184:		(void)i2;
+        -:  185:		(void)l;
+        -:  186:		(void)ll;
+        -:  187:	}
+        1:  188:}
+        -:  189:
+        -:  190:#ifndef FUZZ_LIBFUZZER
+        -:  191:
+        -:  192:int
+        1:  193:main(int argc, char **argv)
+        -:  194:{
+        -:  195:	START();
+        1:  196:	unsigned seed = 0;
+        1:  197:	if (argc > 1)
+    #####:  198:		seed = (unsigned)atoi(argv[1]);
+        1:  199:	size_t iter = FITER;
+        -:  200:#ifdef JSTR_TEST_SLOW
+        1:  201:	iter *= 10;
+        -:  202:#else
+        -:  203:	if (iter > 500)
+        -:  204:		iter = 500;
+        -:  205:#endif
+        1:  206:	if (iter < 1)
+    #####:  207:		iter = 1;
+        -:  208:#ifdef FUZZ_AFL
+        -:  209:	while (__AFL_LOOP(10000))
+        -:  210:#endif
+        -:  211:	{
+        1:  212:		srand(seed);
+        -:  213:		TESTING(fuzz_itoa);
+        1:  214:		fuzz_itoa(iter);
+        -:  215:	}
+        -:  216:	SUCCESS();
+        1:  217:	return EXIT_SUCCESS;
+        -:  218:}
+        -:  219:
+        -:  220:#else
+        -:  221:
+        -:  222:int
+        -:  223:LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
+        -:  224:{
+        -:  225:	if (size < 4)
+        -:  226:		return 0;
+        -:  227:	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
+        -:  228:	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+        -:  229:	srand(seed);
+        -:  230:	data += 4;
+        -:  231:	size -= 4;
+        -:  232:	size_t iter = size > 0 ? size : 10;
+        -:  233:	if (iter > 100)
+        -:  234:		iter = 100;
+        -:  235:	fuzz_itoa(iter);
+        -:  236:	return 0;
+        -:  237:}
+        -:  238:
+        -:  239:#endif

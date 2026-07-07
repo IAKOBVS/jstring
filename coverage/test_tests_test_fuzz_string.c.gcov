@@ -1,0 +1,417 @@
+        -:    0:Source:tests/test-fuzz-string.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-string.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-string.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for string manipulation functions: trim, camelCase/snake_case,
+        -:    5: * strtok, thousep, unescape, rev, basename, starts/ends, count, line. */
+        -:    6:
+        -:    7:#define __STDC_NO_VLA__ 1
+        -:    8:#define _GNU_SOURCE
+        -:    9:
+        -:   10:#include "test.h"
+        -:   11:#include "../include/jstr.h"
+        -:   12:#include "fuzz-shared.h"
+        -:   13:#include <ctype.h>
+        -:   14:
+        -:   15:/* Simple reference implementations */
+        -:   16:static void
+    10204:   17:simple_trimend_len_p(char *s, size_t sz)
+        -:   18:{
+    10204:   19:	unsigned char *p = (unsigned char *)s + sz;
+    20480:   20:	for (; sz && jstr_isspace(*(p - 1)); --p, --sz) {}
+    10204:   21:	*p = '\0';
+    10204:   22:}
+        -:   23:
+        -:   24:static void
+    10204:   25:simple_trimstart_len_p(char *s, size_t sz)
+        -:   26:{
+    10204:   27:	const unsigned char *p = (const unsigned char *)s;
+    20464:   28:	for (; sz && jstr_isspace(*p); ++p, --sz) {}
+    10204:   29:	if (p != (unsigned char *)s) {
+       56:   30:		memmove(s, p, sz + 1);
+        -:   31:	}
+    10204:   32:}
+        -:   33:
+        -:   34:static size_t
+     4456:   35:simple_count_len(const char *s, size_t sz, const char *find, size_t find_len)
+        -:   36:{
+     4456:   37:	if (find_len == 0 || sz == 0 || find_len > sz)
+       36:   38:		return 0;
+     4420:   39:	size_t cnt = 0;
+   561802:   40:	for (size_t i = 0; i <= sz - find_len;) {
+   557382:   41:		if (memcmp(s + i, find, find_len) == 0) {
+     1318:   42:			++cnt;
+     1318:   43:			i += find_len;
+        -:   44:		} else {
+   556064:   45:			++i;
+        -:   46:		}
+        -:   47:	}
+     4420:   48:	return cnt;
+        -:   49:}
+        -:   50:
+        -:   51:static size_t
+     3598:   52:simple_thousep_len_p(char *nptr, size_t sz, char separator)
+        -:   53:{
+     3598:   54:	if (sz == 0)
+    #####:   55:		return 0;
+        -:   56:
+     3598:   57:	char *orig = nptr;
+     3598:   58:	char *end = nptr + sz;
+     3598:   59:	if (*nptr == '-') {
+       34:   60:		++nptr;
+       34:   61:		--sz;
+        -:   62:	}
+     3598:   63:	if (sz < 4)
+       64:   64:		return (size_t)(end - orig);
+        -:   65:
+     3534:   66:	size_t dif = (sz - 1) / 3;
+     3534:   67:	end += dif;
+     3534:   68:	char *start = nptr;
+     3534:   69:	nptr += sz - 1;
+     3534:   70:	int n = 0;
+   319722:   71:	for (; nptr >= start;) {
+   319722:   72:		*(nptr + dif) = *nptr;
+   319722:   73:		--nptr;
+   319722:   74:		if (++n == 3) {
+   106574:   75:			*(nptr + dif) = separator;
+   106574:   76:			if (--dif == 0)
+     3534:   77:				break;
+   103040:   78:			n = 0;
+        -:   79:		}
+        -:   80:	}
+     3534:   81:	*end = '\0';
+     3534:   82:	return (size_t)(end - orig);
+        -:   83:}
+        -:   84:
+        -:   85:static void
+     2538:   86:simple_unescape_p(char *s)
+        -:   87:{
+     2538:   88:	char *dst = s;
+   323104:   89:	for (; *s; ++s) {
+   320600:   90:		if (*s != '\\') {
+   317192:   91:			*dst++ = *s;
+   317192:   92:			continue;
+        -:   93:		}
+     3408:   94:		if (!s[1])
+       34:   95:			break;
+     3374:   96:		++s;
+     3374:   97:		switch (*s) {
+      200:   98:		case '0': case '1': case '2': case '3':
+        -:   99:		case '4': case '5': case '6': case '7':
+        -:  100:		{
+      200:  101:			*dst = '\0';
+      413:  102:			for (int o = 3; o-- && *s >= '0' && *s <= '7'; ++s)
+      213:  103:				*dst = (*dst << 3) + (*s - '0');
+      200:  104:			++dst;
+      200:  105:			--s;
+      200:  106:			break;
+        -:  107:		}
+       18:  108:		case 'b': *dst++ = '\b'; break;
+       31:  109:		case 'f': *dst++ = '\f'; break;
+       25:  110:		case 'n': *dst++ = '\n'; break;
+       24:  111:		case 'r': *dst++ = '\r'; break;
+       29:  112:		case 't': *dst++ = '\t'; break;
+       26:  113:		case 'v': *dst++ = '\v'; break;
+     3021:  114:		default:  *dst++ = *s;   break;
+        -:  115:		}
+        -:  116:	}
+     2538:  117:	*dst = '\0';
+     2538:  118:}
+        -:  119:
+        -:  120:JSTR_ATTR_MAYBE_UNUSED
+        -:  121:static void
+        1:  122:fuzz_string(size_t iter)
+        -:  123:{
+        -:  124:	char h[FSTR], buf_j[FSTR], buf_s[FSTR];
+     2561:  125:	for (size_t i = 0; i < iter; ++i) {
+     2560:  126:		enum gen_mode mode = (enum gen_mode)(rand() % 4);
+     2560:  127:		size_t hl = gen_str(h, FSTR - 1, mode);
+     2560:  128:		if (hl == 0)
+        9:  129:			continue;
+        -:  130:
+        -:  131:		/* --- trimend_len_p / trimend_p --- */
+     2551:  132:		memcpy(buf_j, h, hl + 1);
+     2551:  133:		memcpy(buf_s, h, hl + 1);
+     2551:  134:		char *j_end = jstr_trimend_len_p(buf_j, hl);
+     2551:  135:		simple_trimend_len_p(buf_s, hl);
+        -:  136:		{
+     2551:  137:			size_t trimlen = hl;
+     5138:  138:			while (trimlen > 0 && jstr_isspace((unsigned char)h[trimlen - 1]))
+       18:  139:				--trimlen;
+    2551*:  140:			assert(trimlen == 0 || memcmp(buf_j, buf_s, trimlen) == 0);
+    2551*:  141:			assert(buf_j[trimlen] == '\0');
+    2551*:  142:			assert(j_end - buf_j == (ptrdiff_t)trimlen);
+        -:  143:		}
+        -:  144:
+     2551:  145:		if (hl == strlen(h)) {
+     2551:  146:			memcpy(buf_j, h, hl + 1);
+     2551:  147:			memcpy(buf_s, h, hl + 1);
+     2551:  148:			j_end = jstr_trimend_p(buf_j);
+     2551:  149:			simple_trimend_len_p(buf_s, hl);
+    2551*:  150:			assert(strcmp(buf_j, buf_s) == 0);
+    2551*:  151:			assert(j_end - buf_j == (ptrdiff_t)strlen(buf_s));
+        -:  152:		}
+        -:  153:
+        -:  154:		/* --- trimstart_len_p / trimstart_p --- */
+     2551:  155:		memcpy(buf_j, h, hl + 1);
+     2551:  156:		memcpy(buf_s, h, hl + 1);
+     2551:  157:		j_end = jstr_trimstart_len_p(buf_j, hl);
+     2551:  158:		simple_trimstart_len_p(buf_s, hl);
+        -:  159:		{
+     2551:  160:			size_t nlead = 0;
+     5130:  161:			while (nlead < hl && jstr_isspace((unsigned char)h[nlead]))
+       14:  162:				++nlead;
+     2551:  163:			size_t trimlen = hl - nlead;
+    2551*:  164:			assert(trimlen == 0 || memcmp(buf_j, buf_s, trimlen) == 0);
+    2551*:  165:			assert(buf_j[trimlen] == '\0');
+    2551*:  166:			assert(j_end - buf_j == (ptrdiff_t)trimlen);
+        -:  167:		}
+        -:  168:
+     2551:  169:		if (hl == strlen(h)) {
+     2551:  170:			memcpy(buf_j, h, hl + 1);
+     2551:  171:			memcpy(buf_s, h, hl + 1);
+     2551:  172:			j_end = jstr_trimstart_p(buf_j);
+     2551:  173:			simple_trimstart_len_p(buf_s, hl);
+    2551*:  174:			assert(strcmp(buf_j, buf_s) == 0);
+    2551*:  175:			assert(j_end - buf_j == (ptrdiff_t)strlen(buf_s));
+        -:  176:		}
+        -:  177:
+        -:  178:		/* --- trim_len_p / trim_p --- */
+     2551:  179:		memcpy(buf_j, h, hl + 1);
+     2551:  180:		memcpy(buf_s, h, hl + 1);
+     2551:  181:		j_end = jstr_trim_len_p(buf_j, hl);
+     2551:  182:		simple_trimend_len_p(buf_s, hl);
+     2551:  183:		simple_trimstart_len_p(buf_s, hl);
+        -:  184:		{
+     2551:  185:			size_t nlead = 0;
+     5130:  186:			while (nlead < hl && jstr_isspace((unsigned char)h[nlead]))
+       14:  187:				++nlead;
+     2551:  188:			size_t nend = hl;
+     5138:  189:			while (nend > nlead && jstr_isspace((unsigned char)h[nend - 1]))
+       18:  190:				--nend;
+     2551:  191:			size_t trimlen = nend - nlead;
+    2551*:  192:			assert(trimlen == 0 || memcmp(buf_j, buf_s, trimlen) == 0);
+    2551*:  193:			assert(buf_j[trimlen] == '\0');
+    2551*:  194:			assert(j_end - buf_j == (ptrdiff_t)trimlen);
+        -:  195:		}
+        -:  196:
+     2551:  197:		if (hl == strlen(h)) {
+     2551:  198:			memcpy(buf_j, h, hl + 1);
+     2551:  199:			memcpy(buf_s, h, hl + 1);
+     2551:  200:			j_end = jstr_trim_p(buf_j);
+     2551:  201:			simple_trimend_len_p(buf_s, hl);
+     2551:  202:			simple_trimstart_len_p(buf_s, strlen(buf_s));
+    2551*:  203:			assert(strcmp(buf_j, buf_s) == 0);
+    2551*:  204:			assert(j_end - buf_j == (ptrdiff_t)strlen(buf_s));
+        -:  205:		}
+        -:  206:
+        -:  207:		/* --- countchr / countchr_len --- */
+     2551:  208:		if (hl > 0) {
+     2551:  209:			unsigned char c = (unsigned char)h[rand() % hl];
+     2551:  210:			size_t j_cnt = jstr_countchr_len(h, c, hl);
+     2551:  211:			size_t s_cnt = simple_countchr_len(h, c, hl);
+    2551*:  212:			assert(j_cnt == s_cnt);
+        -:  213:
+     2551:  214:			if (hl == strlen(h)) {
+     2551:  215:				j_cnt = jstr_countchr(h, c);
+     2551:  216:				s_cnt = simple_countchr_len(h, c, hl);
+    2551*:  217:				assert(j_cnt == s_cnt);
+        -:  218:			}
+        -:  219:		}
+        -:  220:
+        -:  221:		/* --- count_len / count --- */
+     2551:  222:		if (hl > 1) {
+        -:  223:			char find[8];
+     2541:  224:			size_t fl = gen_str(find, 7, GEN_ASCII);
+     2541:  225:			if (fl > 0) {
+     2228:  226:				find[fl] = '\0';
+     2228:  227:				size_t j_cnt = jstr_count_len(h, hl, find, fl);
+     2228:  228:				size_t s_cnt = simple_count_len(h, hl, find, fl);
+    2228*:  229:				assert(j_cnt == s_cnt);
+        -:  230:
+     2228:  231:				if (hl == strlen(h)) {
+     2228:  232:					j_cnt = jstr_count(h, find);
+     2228:  233:					s_cnt = simple_count_len(h, hl, find, fl);
+    2228*:  234:					assert(j_cnt == s_cnt);
+        -:  235:				}
+        -:  236:			}
+        -:  237:		}
+        -:  238:
+        -:  239:
+        -:  240:		/* --- thousep --- */
+     2551:  241:		if (hl > 0 && hl < 180) {
+     1799:  242:			memcpy(buf_j, h, hl + 1);
+     1799:  243:			memcpy(buf_s, h, hl + 1);
+     1799:  244:			char sep = ',';
+     1799:  245:			char *j_ep = jstr_thousep_len_p(buf_j, hl, sep);
+     1799:  246:			size_t s_len = simple_thousep_len_p(buf_s, hl, sep);
+    1799*:  247:			assert((size_t)(j_ep - buf_j) == s_len);
+    1799*:  248:			assert(memcmp(buf_j, buf_s, s_len) == 0);
+        -:  249:
+     1799:  250:			if (hl == strlen(h)) {
+     1799:  251:				memcpy(buf_j, h, hl + 1);
+     1799:  252:				memcpy(buf_s, h, hl + 1);
+     1799:  253:				j_ep = jstr_thousep_p(buf_j, sep);
+     1799:  254:				s_len = simple_thousep_len_p(buf_s, hl, sep);
+    1799*:  255:				assert(strcmp(buf_j, buf_s) == 0);
+    1799*:  256:				assert((size_t)(j_ep - buf_j) == s_len);
+        -:  257:			}
+        -:  258:		}
+        -:  259:
+        -:  260:		/* --- unescape --- */
+     2551:  261:		if (hl == strlen(h) && hl < FSTR - 1) {
+        -:  262:			/* Add some escape sequences */
+     2538:  263:			memcpy(buf_j, h, hl + 1);
+     2538:  264:			memcpy(buf_s, h, hl + 1);
+     2538:  265:			char *j_ep = jstr_unescape_p(buf_j);
+     2538:  266:			simple_unescape_p(buf_s);
+    2538*:  267:			assert(strcmp(buf_j, buf_s) == 0);
+    2538*:  268:			assert(j_ep == buf_j + strlen(buf_s));
+        -:  269:		}
+        -:  270:
+        -:  271:		/* --- starts_len / starts / endscase_len / ends --- */
+     2551:  272:		if (hl > 1) {
+        -:  273:			char find[8];
+     2541:  274:			size_t fl = gen_str(find, 7, GEN_ASCII);
+     2541:  275:			if (fl > 0 && fl <= hl) {
+     2170:  276:				find[fl] = '\0';
+     2170:  277:				int j_starts = jstr_starts_len(h, hl, find, fl);
+    2170*:  278:				int s_starts = (hl >= fl && memcmp(h, find, fl) == 0);
+    2170*:  279:				assert(!!j_starts == !!s_starts);
+        -:  280:
+     2170:  281:				if (hl == strlen(h)) {
+     2170:  282:					j_starts = jstr_starts(h, find);
+    2170*:  283:					s_starts = (strlen(h) >= fl && strncmp(h, find, fl) == 0);
+    2170*:  284:					assert(!!j_starts == !!s_starts);
+        -:  285:				}
+        -:  286:
+     2170:  287:				int j_ends = jstr_ends_len(h, hl, find, fl);
+     2170:  288:				int s_ends = (hl >= fl && memcmp(h + hl - fl, find, fl) == 0);
+    2170*:  289:				assert(!!j_ends == !!s_ends);
+        -:  290:
+     2170:  291:				if (hl == strlen(h)) {
+     2170:  292:					j_ends = jstr_ends(h, find);
+     2170:  293:					s_ends = (strlen(h) >= fl && strcmp(h + strlen(h) - fl, find) == 0);
+    2170*:  294:					assert(!!j_ends == !!s_ends);
+        -:  295:				}
+        -:  296:
+        -:  297:				/* case-insensitive */
+     2170:  298:				j_starts = jstr_startscase_len(h, hl, find, fl);
+     2170:  299:				s_starts = (hl >= fl && jstr_strcasecmpeq_len(h, find, fl) == 0);
+    2170*:  300:				assert(!!j_starts == !!s_starts);
+        -:  301:
+     2170:  302:				j_ends = jstr_endscase_len(h, hl, find, fl);
+     2170:  303:				s_ends = (hl >= fl && jstr_strcasecmpeq_len(h + hl - fl, find, fl) == 0);
+    2170*:  304:				assert(!!j_ends == !!s_ends);
+        -:  305:			}
+        -:  306:		}
+        -:  307:
+        -:  308:		/* --- rev / revcpy --- */
+     2551:  309:		memcpy(buf_j, h, hl + 1);
+     2551:  310:		memcpy(buf_s, h, hl + 1);
+     2551:  311:		jstr_rev_len(buf_j, hl);
+   165572:  312:		for (size_t j = 0; j < hl / 2; ++j) {
+   163021:  313:			char tmp = buf_s[j];
+   163021:  314:			buf_s[j] = buf_s[hl - 1 - j];
+   163021:  315:			buf_s[hl - 1 - j] = tmp;
+        -:  316:		}
+    2551*:  317:		assert(memcmp(buf_j, buf_s, hl) == 0);
+    2551*:  318:		assert(buf_j[hl] == '\0');
+        -:  319:
+     2551:  320:		if (hl == strlen(h)) {
+     2551:  321:			memcpy(buf_j, h, hl + 1);
+     2551:  322:			memcpy(buf_s, h, hl + 1);
+     2551:  323:			char *j_ep = jstr_rev_p(buf_j);
+   165572:  324:			for (size_t j = 0; j < hl / 2; ++j) {
+   163021:  325:				char tmp = buf_s[j];
+   163021:  326:				buf_s[j] = buf_s[hl - 1 - j];
+   163021:  327:				buf_s[hl - 1 - j] = tmp;
+        -:  328:			}
+    2551*:  329:			assert(strcmp(buf_j, buf_s) == 0);
+    2551*:  330:			assert(j_ep == buf_j + hl);
+        -:  331:		}
+        -:  332:
+        -:  333:		/* --- basename --- */
+     2551:  334:		if (hl == strlen(h)) {
+     2551:  335:			char *j_bn = jstr_basename(h);
+     2551:  336:			char *s_bn = strrchr(h, '/');
+     2551:  337:			s_bn = s_bn ? s_bn + 1 : h;
+    2551*:  338:			assert(strcmp(j_bn, s_bn) == 0);
+        -:  339:		}
+        -:  340:
+        -:  341:		/* --- linestart / linenext / linenumber --- */
+     2551:  342:		if (hl > 0) {
+     2551:  343:			char *p = (char *)memchr(h, '\n', hl);
+     2551:  344:			if (p) {
+    #####:  345:				char *j_ls = jstr_linestart(h, p);
+        -:  346:				/* jstr_linestart searches backwards excluding p itself */
+    #####:  347:				char *s_ls = h;
+    #####:  348:				for (char *q = p; q > h; --q) {
+    #####:  349:					if (*(q - 1) == '\n') {
+    #####:  350:						s_ls = q;
+    #####:  351:						break;
+        -:  352:					}
+        -:  353:				}
+    #####:  354:				assert(j_ls == s_ls);
+        -:  355:			}
+        -:  356:
+     2551:  357:			size_t j_ln = jstr_linenumber(h, h + hl);
+     2551:  358:			size_t s_ln = simple_countchr_len(h, '\n', hl) + 1;
+    2551*:  359:			assert(j_ln == s_ln);
+        -:  360:		}
+        -:  361:	}
+        1:  362:}
+        -:  363:
+        -:  364:#ifndef FUZZ_LIBFUZZER
+        -:  365:
+        -:  366:int
+        1:  367:main(int argc, char **argv)
+        -:  368:{
+        -:  369:	START();
+        1:  370:	unsigned seed = 0;
+        1:  371:	if (argc > 1)
+    #####:  372:		seed = (unsigned)atoi(argv[1]);
+        1:  373:	size_t iter = FITER;
+        -:  374:#ifdef JSTR_TEST_SLOW
+        1:  375:	iter *= 10;
+        -:  376:#else
+        -:  377:	if (iter > 500)
+        -:  378:		iter = 500;
+        -:  379:#endif
+        1:  380:	if (iter < 1)
+    #####:  381:		iter = 1;
+        -:  382:#ifdef FUZZ_AFL
+        -:  383:	while (__AFL_LOOP(10000))
+        -:  384:#endif
+        -:  385:	{
+        1:  386:		srand(seed);
+        -:  387:		TESTING(fuzz_string);
+        1:  388:		fuzz_string(iter);
+        -:  389:	}
+        -:  390:	SUCCESS();
+        1:  391:	return EXIT_SUCCESS;
+        -:  392:}
+        -:  393:
+        -:  394:#else
+        -:  395:
+        -:  396:int
+        -:  397:LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
+        -:  398:{
+        -:  399:	if (size < 4)
+        -:  400:		return 0;
+        -:  401:	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
+        -:  402:	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+        -:  403:	srand(seed);
+        -:  404:	data += 4;
+        -:  405:	size -= 4;
+        -:  406:	size_t iter = size > 0 ? size : 10;
+        -:  407:	if (iter > 100)
+        -:  408:		iter = 100;
+        -:  409:	fuzz_string(iter);
+        -:  410:	return 0;
+        -:  411:}
+        -:  412:
+        -:  413:#endif

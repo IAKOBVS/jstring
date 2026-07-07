@@ -1,0 +1,50 @@
+        -:    0:Source:tests/test-fuzz-regex-p1.c
+        -:    0:Graph:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-regex-p1.gcno
+        -:    0:Data:/home/james/.local/src/iakobvs-workspace/jstring/build/tests/test-fuzz-regex-p1.gcda
+        -:    0:Runs:1
+        -:    1:/* SPDX-License-Identifier: MIT */
+        -:    2:/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+        -:    3: *
+        -:    4: * Fuzz test for regex functions — patterns 8-14 only. */
+        -:    5:
+        -:    6:#define __STDC_NO_VLA__ 1
+        -:    7:
+        -:    8:#include "test.h"
+        -:    9:#include "../include/regex.h"
+        -:   10:#include "fuzz-regex.h"
+        -:   11:
+        -:   12:static const struct regex_pattern patterns[] = {
+        -:   13:	{ "world$",                              0,                       0 },
+        -:   14:	{ "[a-z]+",                              JSTR_RE_CF_EXTENDED,     0 },
+        -:   15:	{ "[0-9]+",                              JSTR_RE_CF_EXTENDED,     0 },
+        -:   16:	{ "colou?r",                             JSTR_RE_CF_EXTENDED,     0 },
+        -:   17:	{ "(foo|bar)",                           JSTR_RE_CF_EXTENDED,     0 },
+        -:   18:	{ "^.",                                  JSTR_RE_CF_EXTENDED,     0 },
+        -:   19:	{ "hello",                               JSTR_RE_CF_ICASE,        0 },
+        -:   20:};
+        -:   21:static const size_t npatterns = sizeof(patterns) / sizeof(patterns[0]);
+        -:   22:
+        -:   23:int
+        1:   24:main(int argc, char **argv)
+        -:   25:{
+        -:   26:	START();
+        1:   27:	unsigned seed = 0;
+        1:   28:	if (argc > 1)
+    #####:   29:		seed = (unsigned)atoi(argv[1]);
+        1:   30:	size_t iter = FITER;
+        -:   31:#ifdef JSTR_TEST_SLOW
+        1:   32:	iter *= 2;
+        -:   33:#else
+        -:   34:	if (iter > 50)
+        -:   35:		iter = 50;
+        -:   36:#endif
+        1:   37:	if (iter < 1)
+    #####:   38:		iter = 1;
+        -:   39:	{
+        1:   40:		srand(seed);
+        -:   41:		TESTING(fuzz_regex_p1);
+        1:   42:		fuzz_regex_patterns(iter, patterns, npatterns);
+        -:   43:	}
+        -:   44:	SUCCESS();
+        1:   45:	return EXIT_SUCCESS;
+        -:   46:}
