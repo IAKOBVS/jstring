@@ -129,7 +129,7 @@ typedef enum {
 
 JSTR_FUNC_PURE
 int
-jstr_internal_re_notbol(const char *str, size_t curr_idx, int cflags) JSTR_NOEXCEPT JSTR_NOEXCEPT
+jstr_internal_re_notbol(const char *str, size_t curr_idx, int cflags) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
 	if (curr_idx) {
@@ -146,7 +146,7 @@ jstr_internal_re_notbol(const char *str, size_t curr_idx, int cflags) JSTR_NOEXC
 
 JSTR_FUNC_PURE
 int
-jstr_internal_re_notbol_inloop(const char *str, size_t curr_idx, int cflags) JSTR_NOEXCEPT JSTR_NOEXCEPT
+jstr_internal_re_notbol_inloop(const char *str, size_t curr_idx, int cflags) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
 	if (cflags & JSTR_RE_CF_NEWLINE && curr_idx > 0)
@@ -179,12 +179,12 @@ jstr_re_free(jstr_re_ty *preg) JSTR_NOEXCEPT
 ;
 #	endif
 
+#	ifdef JSTR_IMPLEMENTATION
 JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
 static int
 jstr_re_verr(jstr_re_ret_ty errcode, const jstr_re_ty *preg, const char *fmt, va_list args) JSTR_NOEXCEPT
-#	ifdef JSTR_IMPLEMENTATION
 {
 	char buf[128];
 	regerror(errcode, &preg->reg, buf, sizeof(buf));
@@ -195,8 +195,6 @@ jstr_re_verr(jstr_re_ret_ty errcode, const jstr_re_ty *preg, const char *fmt, va
 	ret = vfprintf(stderr, fmt, args);
 	return ret > 0 ? 0 : -1;
 }
-#	else
-;
 #	endif
 
 JSTR_FUNC_VOID
@@ -244,7 +242,7 @@ jstr_re_comp(jstr_re_ty *R preg, const char *R ptn, int cflags) JSTR_NOEXCEPT
 	preg->cflags = cflags;
 #		if JSTR_PANIC
 	const jstr_re_ret_ty ret = (jstr_re_ret_ty)regcomp(&preg->reg, ptn, cflags);
-	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR))
+	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR) && ret != JSTR_RE_RET_NOMATCH)
 		jstr_re_errdie(ret, preg, "regcomp(preg, pattern: \"%s\", cflags: %d) failed\n", ptn ? ptn : "(null)", cflags);
 	return ret;
 #		else
@@ -255,7 +253,9 @@ jstr_re_comp(jstr_re_ty *R preg, const char *R ptn, int cflags) JSTR_NOEXCEPT
 ;
 #	endif
 
-#define JSTR_IMPLEMENTATION 1
+#	ifdef JSTR_IMPLEMENTATION
+#		define JSTR_IMPLEMENTATION 1
+#	endif
 
 JSTR_NONNULL((1))
 JSTR_NONNULL((2))
@@ -268,7 +268,7 @@ jstr_re_exec(const jstr_re_ty *R preg, const char *R s, size_t nmatch, regmatch_
 {
 #		if JSTR_PANIC
 	const jstr_re_ret_ty ret = (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags);
-	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR))
+	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR) && ret != JSTR_RE_RET_NOMATCH)
 		jstr_re_errdie(ret, preg, "regexec(preg, string: \"%.128s\", nmatch: %zu, pmatch, cflags: %d) failed\n", s ? s : "(null)", nmatch, eflags);
 	return ret;
 #		else
