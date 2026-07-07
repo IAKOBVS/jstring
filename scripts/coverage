@@ -8,6 +8,7 @@ export REPOROOT
 SKIP_BUILD=${SKIP_BUILD:-0}
 SKIP_TEST=${SKIP_TEST:-0}
 MAX_JOBS=$(nproc 2>/dev/null || echo 4)
+COVERAGE_DIR=$(mktemp -d /tmp/jstr-coverage.XXXXXX)
 
 if [ "$SKIP_BUILD" != "1" ]; then
 	echo "=== Cleaning ==="
@@ -118,18 +119,16 @@ if [ "$SKIP_TEST" != "1" ]; then
 fi
 
 echo "=== Generating coverage ==="
-mkdir -p coverage
-
-# Remove old gcov outputs from repo root (gcov writes to CWD)
-rm -f "$REPOROOT"/*.gcov
+mkdir -p "$COVERAGE_DIR/lib" "$COVERAGE_DIR/test"
 
 # Helper: rename gcov files by their Source: path to avoid overwrites
 # Mode: "path" (default, use full path for disambiguation) or "base" (use basename only)
 rename_gcov_files() {
-	local prefix="$1"
-	local dest="$2"
-	local mode="${3:-path}"
-	for gcovfile in "$REPOROOT"/*.gcov; do
+	local src_dir="$1"
+	local prefix="$2"
+	local dest="$3"
+	local mode="${4:-path}"
+	for gcovfile in "$src_dir"/*.gcov; do
 		[ -f "$gcovfile" ] || continue
 		source_path=$(sed -n 's/.*Source:\(.*\)/\1/p' "$gcovfile" | head -1)
 		if [ -n "$source_path" ]; then
@@ -148,26 +147,30 @@ rename_gcov_files() {
 	done
 }
 
-# Run gcov for library modules from repo root (gcov resolves relative Source: paths)
-for gcda in "$REPOROOT"/build/obj/*.gcda; do
-	[ -f "$gcda" ] || continue
-	base=$(basename "$gcda" .gcda)
-	gcov -p "$REPOROOT/build/src/${base}.c" --object-directory "$REPOROOT/build/obj" 2>/dev/null || true
-done
-# Rename and copy library .gcov files to coverage/
-rename_gcov_files "lib_" "$REPOROOT/coverage"
+# Run gcov for library modules
+(
+	cd "$COVERAGE_DIR/lib"
+	for gcda in "$REPOROOT"/build/obj/*.gcda; do
+		[ -f "$gcda" ] || continue
+		base=$(basename "$gcda" .gcda)
+		gcov -p "$REPOROOT/build/src/${base}.c" --object-directory "$REPOROOT/build/obj" 2>/dev/null || true
+	done
+)
+rename_gcov_files "$COVERAGE_DIR/lib" "lib_" "$COVERAGE_DIR"
 
 # Remove and regenerate test coverage
-rm -f "$REPOROOT"/build/tests/*.gcov
-for gcda in "$REPOROOT"/build/tests/*.gcda; do
-	[ -f "$gcda" ] || continue
-	tbase=$(basename "$gcda" .gcda)
-	tsrc="$REPOROOT/tests/${tbase}.c"
-	[ -f "$tsrc" ] || continue
-	gcov -p "$tsrc" --object-directory "$REPOROOT/build/tests" 2>/dev/null || true
-done
-# Rename and copy test .gcov files to coverage/
-rename_gcov_files "test_" "$REPOROOT/coverage" path
+(
+	cd "$COVERAGE_DIR/test"
+	for gcda in "$REPOROOT"/build/tests/*.gcda; do
+		[ -f "$gcda" ] || continue
+		tbase=$(basename "$gcda" .gcda)
+		tsrc="$REPOROOT/tests/${tbase}.c"
+		[ -f "$tsrc" ] || continue
+		gcov -p "$tsrc" --object-directory "$REPOROOT/build/tests" 2>/dev/null || true
+	done
+)
+rename_gcov_files "$COVERAGE_DIR/test" "test_" "$COVERAGE_DIR" path
+rm -rf "$COVERAGE_DIR/lib" "$COVERAGE_DIR/test"
 
 exec_line_count() {
 	local f="$1"
@@ -195,7 +198,7 @@ echo "Library modules (original headers):"
 echo "----------------------------------------------------"
 total_lines=0
 total_exec=0
-for f in "$REPOROOT"/coverage/lib_*.gcov; do
+for f in "$COVERAGE_DIR"/lib_*.gcov; do
 	[ -f "$f" ] || continue
 	bn=$(basename "$f")
 	# Get Source: path for display
@@ -221,7 +224,7 @@ echo "Test coverage:"
 echo "----------------------------------------------------"
 test_total=0
 test_exec=0
-for f in "$REPOROOT"/coverage/test_*.gcov; do
+for f in "$COVERAGE_DIR"/test_*.gcov; do
 	[ -f "$f" ] || continue
 	bn=$(basename "$f")
 	source_path=$(sed -n 's/.*Source:\(.*\)/\1/p' "$f" | head -1)
@@ -243,6 +246,6 @@ fi
 
 cd "$REPOROOT"
 echo ""
-echo "Coverage reports in: $REPOROOT/coverage/
-  Library: coverage/lib_*.gcov
-  Tests:   coverage/test_*.gcov"
+echo "Coverage reports in: $COVERAGE_DIR/
+  Library: lib_*.gcov
+  Tests:   test_*.gcov"
