@@ -9,6 +9,7 @@ SKIP_BUILD=${SKIP_BUILD:-0}
 SKIP_TEST=${SKIP_TEST:-0}
 MAX_JOBS=$(nproc 2>/dev/null || echo 4)
 COVERAGE_DIR=$(mktemp -d /tmp/jstr-coverage.XXXXXX)
+trap 'rm -f "$REPOROOT"/*.gcov' EXIT INT TERM
 
 if [ "$SKIP_BUILD" != "1" ]; then
 	echo "=== Cleaning ==="
@@ -147,28 +148,24 @@ rename_gcov_files() {
 	done
 }
 
-# Run gcov for library modules
-(
-	cd "$COVERAGE_DIR/lib"
-	for gcda in "$REPOROOT"/build/obj/*.gcda; do
-		[ -f "$gcda" ] || continue
-		base=$(basename "$gcda" .gcda)
-		gcov -p "$REPOROOT/build/src/${base}.c" --object-directory "$REPOROOT/build/obj" 2>/dev/null || true
-	done
-)
+# Run gcov for library modules (from REPOROOT so Source: paths resolve correctly)
+for gcda in "$REPOROOT"/build/obj/*.gcda; do
+	[ -f "$gcda" ] || continue
+	base=$(basename "$gcda" .gcda)
+	gcov -p "$REPOROOT/build/src/${base}.c" --object-directory "$REPOROOT/build/obj" 2>/dev/null || true
+done
+mv "$REPOROOT"/*.gcov "$COVERAGE_DIR/lib/" 2>/dev/null || true
 rename_gcov_files "$COVERAGE_DIR/lib" "lib_" "$COVERAGE_DIR"
 
-# Remove and regenerate test coverage
-(
-	cd "$COVERAGE_DIR/test"
-	for gcda in "$REPOROOT"/build/tests/*.gcda; do
-		[ -f "$gcda" ] || continue
-		tbase=$(basename "$gcda" .gcda)
-		tsrc="$REPOROOT/tests/${tbase}.c"
-		[ -f "$tsrc" ] || continue
-		gcov -p "$tsrc" --object-directory "$REPOROOT/build/tests" 2>/dev/null || true
-	done
-)
+# Remove and regenerate test coverage (from REPOROOT so Source: paths resolve correctly)
+for gcda in "$REPOROOT"/build/tests/*.gcda; do
+	[ -f "$gcda" ] || continue
+	tbase=$(basename "$gcda" .gcda)
+	tsrc="$REPOROOT/tests/${tbase}.c"
+	[ -f "$tsrc" ] || continue
+	gcov -p "$tsrc" --object-directory "$REPOROOT/build/tests" 2>/dev/null || true
+done
+mv "$REPOROOT"/*.gcov "$COVERAGE_DIR/test/" 2>/dev/null || true
 rename_gcov_files "$COVERAGE_DIR/test" "test_" "$COVERAGE_DIR" path
 rm -rf "$COVERAGE_DIR/lib" "$COVERAGE_DIR/test"
 
