@@ -493,7 +493,7 @@ start:
 		i.src += j + 1;
 		++i.src_e;
 	}
-	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, (size_t)((s + *sz) - i.src)), s);
 	return changed;
 }
 #else
@@ -628,7 +628,7 @@ start:
 		++i.src_e;
 	}
 	if (changed)
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, (size_t)((s + *sz) - i.src)), s);
 	return changed;
 }
 #else
@@ -679,7 +679,7 @@ jstr_rm_len_from_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, size_t
 	char *p = (char *)jstr_memmem_exec(t, s + start_idx, *sz - start_idx, find, find_len);
 	if (p == NULL)
 		return 0;
-	*sz = JSTR_DIFF(jstr_rmat_len_p(s, *sz, JSTR_DIFF(p, *s), find_len), *s);
+	*sz = JSTR_DIFF(jstr_rmat_len_p(s, *sz, JSTR_DIFF(p, s), find_len), s);
 	return 1;
 }
 #else
@@ -1313,11 +1313,14 @@ jstr_ret_ty
 jstr_place_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R src, size_t src_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	size_t old_sz = *sz;
 	if (at + src_len > *sz) {
 		if (jstr_chk(jstr_reservealways(s, sz, cap, at + src_len)))
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		*sz = at + src_len;
 		*(*s + *sz) = '\0';
+		if (at > old_sz)
+			memset(*s + old_sz, 0, at - old_sz);
 	}
 	jstr_place_len_unsafe(*s, at, src, src_len);
 	return JSTR_RET_SUCC;

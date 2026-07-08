@@ -501,9 +501,10 @@ jstr_io_expandtildefirst_len_unsafe_p(char *s, size_t sz) JSTR_NOEXCEPT
 	if (jstr_nullchk(home))
 		JSTR_RETURN_ERR_P(NULL);
 	const size_t len = strlen(home);
-	jstr_strmove_len(s + len, s + 1, JSTR_DIFF(s + sz, s + 1));
+	const size_t remaining = strlen(s + 1) + 1;
+	jstr_strmove_len(s + len, s + 1, remaining);
 	memcpy(s, home, len);
-	return s + sz + len - 1;
+	return s + len + remaining - 1;
 }
 #	else
 ;
@@ -1157,6 +1158,7 @@ jstr_io_ftw_len(const char *R dirpath, jstr_io_path_size_ty dirpath_len, jstr_io
 	struct jstr_internal_io_ftw_data data;
 	data.ftw.dirpath = fulpath;
 	data.ftw.st = &st;
+	data.ftw.ep = NULL;
 	/* This will avoid things like //some/path if DIRPATH is /. */
 	if (jstr_unlikely(dirpath_len == 1) && jstr_unlikely(*dirpath == '/')) {
 		data.ftw.dirpath_len = 0;

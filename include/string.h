@@ -595,11 +595,11 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 void *
-jstr_memmemnul(const void *hs, size_t hs_len, const void *ne, size_t ne_len) JSTR_NOEXCEPT
+	jstr_memmemnul(const void *hs, size_t hs_len, const void *ne, size_t ne_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	hs = jstr_memmem(hs, hs_len, ne, ne_len);
-	return (void *)(hs ? hs : (char *)hs + hs_len);
+	const void *r = jstr_memmem(hs, hs_len, ne, ne_len);
+	return (void *)(r ? r : (const char *)hs + hs_len);
 }
 #else
 ;
@@ -1523,7 +1523,7 @@ jstr_trim_p(char *s) JSTR_NOEXCEPT
  * END must be NUL terminated.
  * Instead of nul-termination, use the save_ptr to know the length of the
  * string. */
-JSTR_FUNC_PURE
+JSTR_FUNC
 char *
 jstr_strtok_ne_len(const char **R const save_ptr, const char *R const end, const char *R ne, size_t ne_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
@@ -1543,7 +1543,7 @@ jstr_strtok_ne_len(const char **R const save_ptr, const char *R const end, const
 /* Non-destructive strtok.
  * Instead of nul-termination, use the save_ptr to know the length of the
  * string. */
-JSTR_FUNC_PURE
+JSTR_FUNC
 char *
 jstr_strtok_ne(const char **R const save_ptr, const char *R ne) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
@@ -1563,7 +1563,7 @@ jstr_strtok_ne(const char **R const save_ptr, const char *R ne) JSTR_NOEXCEPT
 /* Non-destructive strtok.
  * Instead of nul-termination, use the save_ptr to know the length of the
  * string. */
-JSTR_FUNC_PURE
+JSTR_FUNC
 char *
 jstr_strtok(const char **R save_ptr, const char *R delim) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
@@ -1591,12 +1591,22 @@ jstr_repeat_len_unsafe_p(char *s, size_t sz, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n < 2))
 		return s + sz;
-	--n;
-	if (jstr_likely(sz > 1))
-		while (n--)
-			s = (char *)jstr_mempmove(s + sz, s, sz);
-	else if (sz == 1)
-		s = (char *)memset(s, *s, n) + n;
+	size_t total = sz * n;
+	char *R start = s;
+	s += sz;
+	if (jstr_likely(sz > 1)) {
+		while (s < start + total) {
+			size_t rem = (size_t)(start + total - s);
+			size_t to_copy = sz;
+			if (to_copy > rem)
+				to_copy = rem;
+			memcpy(s, start, to_copy);
+			s += to_copy;
+		}
+	} else {
+		memset(s - sz, *start, n);
+		s += total - sz;
+	}
 	*s = '\0';
 	return s;
 }

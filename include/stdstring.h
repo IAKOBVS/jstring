@@ -515,9 +515,15 @@ jstr_strdup(const char *R s) JSTR_NOEXCEPT
 ;
 #endif
 
+#ifdef JSTR_IMPLEMENTATION
 #	define JSTR_INTERNAL_DEFINE_ATOI(T, name, func) \
 		JSTR_FUNC_PURE                   \
-		static T jstr_##name(const char *s) JSTR_NOEXCEPT { return func; }
+		T jstr_##name(const char *s) JSTR_NOEXCEPT { return func; }
+#else
+#	define JSTR_INTERNAL_DEFINE_ATOI(T, name, func) \
+		JSTR_FUNC_PURE                   \
+		T jstr_##name(const char *s) JSTR_NOEXCEPT;
+#endif
 
 JSTR_INTERNAL_DEFINE_ATOI(unsigned int, atou, strtoul(s, NULL, 0))
 JSTR_INTERNAL_DEFINE_ATOI(unsigned long, atoul, strtoul(s, NULL, 0))
