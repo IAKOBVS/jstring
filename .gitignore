@@ -3,7 +3,7 @@ out/
 t
 bench/result*
 *.gcov*
-coverage
+*coverage*
 *__pycache__*
 # Prerequisites
 *.d
