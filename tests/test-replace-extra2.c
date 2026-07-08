@@ -126,7 +126,7 @@ int main(void) {
 	}
 	/* jstr_rm_len_from_exec: find_len == 0 */
 	{
-		jstr_twoway_ty t = JSTR_INIT;
+		jstr_twoway_ty t;
 		jstr_memmem_comp(&t, "", 0);
 		char s[] = "hello";
 		size_t sz = 5;
@@ -143,7 +143,7 @@ int main(void) {
 	}
 	/* jstr_rplc_len_from_exec: find_len == 0 */
 	{
-		jstr_twoway_ty t = JSTR_INIT;
+		jstr_twoway_ty t;
 		jstr_memmem_comp(&t, "", 0);
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -154,7 +154,7 @@ int main(void) {
 	}
 	/* jstr_rplcn_len_from_exec: find_len == 0 */
 	{
-		jstr_twoway_ty t = JSTR_INIT;
+		jstr_twoway_ty t;
 		jstr_memmem_comp(&t, "", 0);
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -165,7 +165,7 @@ int main(void) {
 	}
 	/* jstr_rplcall_len_from_exec */
 	{
-		jstr_twoway_ty t = JSTR_INIT;
+		jstr_twoway_ty t;
 		jstr_memmem_comp(&t, "x", 1);
 		char *s = NULL;
 		size_t sz = 0, cap = 0;

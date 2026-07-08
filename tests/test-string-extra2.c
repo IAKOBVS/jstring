@@ -26,7 +26,7 @@ int main(void) {
 	}
 	/* jstr_strcasestr_len_comp + exec: ne_len == 2 */
 	{
-		jstr_twoway_ty t = JSTR_INIT;
+		jstr_twoway_ty t;
 		jstr_strcasestr_len_comp(&t, "aB", 2);
 		const char *hs = "xABy";
 		char *r = jstr_strcasestr_len_exec(&t, hs, 4, "aB", 2);
@@ -34,7 +34,7 @@ int main(void) {
 	}
 	/* jstr_strcasestr_len_comp + exec: ne_len == 1 */
 	{
-		jstr_twoway_ty t = JSTR_INIT;
+		jstr_twoway_ty t;
 		jstr_strcasestr_len_comp(&t, "X", 1);
 		const char *hs = "abcXyz";
 		char *r = jstr_strcasestr_len_exec(&t, hs, 6, "X", 1);
@@ -42,7 +42,7 @@ int main(void) {
 	}
 	/* jstr_strcasestr_len_comp + exec: ne_len == 0 */
 	{
-		jstr_twoway_ty t = JSTR_INIT;
+		jstr_twoway_ty t;
 		jstr_strcasestr_len_comp(&t, "", 0);
 		const char *hs = "anything";
 		char *r = jstr_strcasestr_len_exec(&t, hs, 8, "", 0);
@@ -75,7 +75,7 @@ int main(void) {
 	}
 	/* jstr_strcasestr_len_exec: ne_len == 2, hs_len < 2 (covers line 746) */
 	{
-		jstr_twoway_ty t = JSTR_INIT;
+		jstr_twoway_ty t;
 		jstr_strcasestr_len_comp(&t, "ab", 2);
 		const char *hs = "x";
 		char *r = jstr_strcasestr_len_exec(&t, hs, 1, "ab", 2);
