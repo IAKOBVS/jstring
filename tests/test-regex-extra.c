@@ -20,7 +20,7 @@ main(int argc, char **argv)
 		jstr_re_ret_ty err = jstr_re_comp(&preg, "\\", JSTR_RE_CF_EXTENDED);
 		assert(jstr_re_chkcomp(err));
 		assert(err != JSTR_RE_RET_NOERROR);
-		assert(jstr_re_err(err, &preg, "error code: %d\n", (int)err) == -1);
+		assert(jstr_re_err(err, &preg, "error code: %d\n", (int)err) == 0);
 		jstr_re_free(&preg);
 	}
 	{
@@ -31,7 +31,7 @@ main(int argc, char **argv)
 		assert(jstr_re_chkcomp(err));
 		pid_t pid = fork();
 		if (pid == 0) {
-			jstr_re_errdie(err, &preg, "dying: %d", 99);
+			jstr_re_errdie(err, &preg, "dying: %d\n", 99);
 			_exit(0);
 		}
 		int status;

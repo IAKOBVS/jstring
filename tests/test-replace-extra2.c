@@ -130,7 +130,7 @@ int main(void) {
 		jstr_memmem_comp(&t, "", 0);
 		char s[] = "hello";
 		size_t sz = 5;
-		size_t n = jstr_rm_len_from_exec(&t, s, &sz, 0, "", 0);
+		size_t n = (size_t)jstr_rm_len_from_exec(&t, s, &sz, 0, "", 0);
 		assert(n == 0);
 	}
 	/* jstr_rmlast_len_from: not found */

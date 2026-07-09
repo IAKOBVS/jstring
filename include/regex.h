@@ -209,7 +209,7 @@ jstr_re_err(jstr_re_ret_ty errcode, const jstr_re_ty *R preg, const char *R fmt,
 	va_start(args, fmt);
 	const int ret = jstr_re_verr(errcode, preg, fmt, args);
 	va_end(args);
-	return ret > 0 ? 0 : -1;
+	return ret < 0 ? -1 : 0;
 }
 #	else
 ;
@@ -225,10 +225,9 @@ jstr_re_errdie(jstr_re_ret_ty errcode, const jstr_re_ty *R preg, const char *R f
 {
 	va_list args;
 	va_start(args, fmt);
-	const int ret = jstr_re_verr(errcode, preg, fmt, args);
+	jstr_re_verr(errcode, preg, fmt, args);
 	va_end(args);
 	exit(EXIT_FAILURE);
-	(void)ret;
 }
 #	else
 ;

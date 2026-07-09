@@ -1184,7 +1184,15 @@ ftw:;
 		int tmp;
 		tmp = func(&data.ftw, func_args);
 		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
-			if (jstr_unlikely(tmp != JSTR_IO_FTW_RET_CONTINUE)) {
+			if (tmp == JSTR_IO_FTW_RET_STOP) {
+				CLOSE(dirfd, );
+				return (jstr_ret_ty)tmp;
+			}
+			/* SKIP_SUBTREE/SKIP_SIBLINGS at root mean continue
+			 * (no parent/siblings to skip, recursion hasn't started) */
+			if (jstr_unlikely(tmp != JSTR_IO_FTW_RET_CONTINUE &&
+					 tmp != JSTR_IO_FTW_RET_SKIP_SUBTREE &&
+					 tmp != JSTR_IO_FTW_RET_SKIP_SIBLINGS)) {
 				CLOSE(dirfd, );
 				JSTR_RETURN_ERR(JSTR_RET_ERR);
 			}

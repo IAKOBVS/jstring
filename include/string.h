@@ -668,13 +668,6 @@ jstr_strrstr_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) J
 ;
 #endif
 
-#	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED \
-	|| (JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD)
-#		define JSTR_USE_MEMMEM_OPTIMIZED 1
-#	else
-#		define JSTR_USE_MEMMEM_OPTIMIZED 0
-#	endif
-
 #ifdef JSTR_IMPLEMENTATION
 #	define JSTR_INTERNAL_MUSL_FUNC_NAME jstr_internal_strcasestr_len_musl
 #	define JSTR_INTERNAL_MUSL_CANON     jstr_tolower

@@ -31,12 +31,7 @@ JSTR_INTERNAL_END_DECLS
 
 #	define JSTR_GROWTH 2
 
-#	define JSTR_INIT  \
-		{          \
-			0, \
-			0, \
-			0  \
-		}
+#	define JSTR_INIT {0}
 
 #	define jstr_foreach(j, p) \
 		for (char *p = ((j)->data), *_jstr_internal_foreach_end_##p = ((j)->data) + ((j)->size); p < _jstr_internal_foreach_end_##p; ++p)

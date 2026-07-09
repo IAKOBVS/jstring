@@ -18,7 +18,7 @@ LIBDIR="$OUTDIR/lib"
 SRCDIR="$OUTDIR/src"
 INCDIR="$OUTDIR/include"
 OBJDIR="$OUTDIR/obj"
-CFLAGS="-O2 -flto -fanalyzer -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
+CFLAGS="-O2 -fanalyzer -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
 
 has_prog() { type "$1" >/dev/null 2>/dev/null; }
 

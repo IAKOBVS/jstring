@@ -476,7 +476,7 @@ static void
 jstr_internal_simd_tolowerstr_len(char *s, size_t n)
 JSTR_NOEXCEPT
 {
-	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
+	int off = (int)JSTR_DIFF(JSTR_PTR_ALIGN_UP(s, VEC_SIZE), s);
 	for (; off--; ++s) {
 		if (n-- == 0)
 			return;
@@ -495,7 +495,7 @@ static char *
 jstr_internal_simd_tolowerstr_p(char *s)
 JSTR_NOEXCEPT
 {
-	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
+	int off = (int)JSTR_DIFF(JSTR_PTR_ALIGN_UP(s, VEC_SIZE), s);
 	for (; off--; ++s)
 		if ((*s = (char)jstr_tolower(*s)) == '\0')
 			return s;

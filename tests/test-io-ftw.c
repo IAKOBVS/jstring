@@ -9,6 +9,7 @@
 
 static int count;
 static int ftw_cb_all(const struct JSTR_IO_FTW *ftw, const void *args) {
+	(void)ftw;
 	(void)args;
 	++count;
 	return 0;

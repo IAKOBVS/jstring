@@ -81,5 +81,17 @@ int main(void) {
 		char *r = jstr_strcasestr_len_exec(&t, hs, 1, "ab", 2);
 		assert(r == NULL);
 	}
+	/* jstr_strcasestr_len: ne_len == 2, alphabetic needle (covers lt8 _2 path) */
+	{
+		const char *hs = "xABy";
+		char *r = jstr_strcasestr_len(hs, 4, "aB", 2);
+		assert(r == hs + 1);
+	}
+	/* jstr_strcasestr_len: ne_len == 4, alphabetic needle (covers lt8 generic path) */
+	{
+		const char *hs = "xxABCDefghXx";
+		char *r = jstr_strcasestr_len(hs, 12, "aBcD", 4);
+		assert(r == hs + 2);
+	}
 	return 0;
 }
