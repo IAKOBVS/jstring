@@ -1,0 +1,41 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+
+/* Cover replace.h allocation-failure error paths reachable by sz overflow.
+ * jstr_insert_len and jstr_rplcat_len check jstr_reserve before accessing *s,
+ * so they can be tested. Others access *s + *sz first and require mocking. */
+
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include "jstr.h"
+
+static char *mkstr(const char *s) {
+	size_t n = strlen(s);
+	char *p = (char *)malloc(n + 1);
+	assert(p);
+	memcpy(p, s, n + 1);
+	return p;
+}
+
+int main(void) {
+	/* jstr_insert_len — line 90: jstr_reserve failure */
+	{
+		char *s = mkstr("hello");
+		size_t sz = (size_t)-1 / 2;
+		size_t cap = 0;
+		int ret = jstr_insert_len(&s, &sz, &cap, 0, "x", 1);
+		assert(ret < 0);
+		free(s);
+	}
+	/* jstr_rplcat_len — line 109: jstr_reserve failure */
+	{
+		char *s = mkstr("hello");
+		size_t sz = (size_t)-1 / 2;
+		size_t cap = 0;
+		char *r = jstr_rplcat_len(&s, &sz, &cap, 0, "xx", 2, 1);
+		assert(r == NULL);
+		free(s);
+	}
+	return EXIT_SUCCESS;
+}

@@ -1,0 +1,28 @@
+#define _POSIX_C_SOURCE 200809L
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "jstr.h"
+#include "stdstring.h"
+
+int
+main(void)
+{
+	/* string.h:701 — jstr_strcasestr_len ne_len == 0 path */
+	{
+		const char *hs = "hello";
+		char *r = jstr_strcasestr_len(hs, 5, "", 0);
+		assert(r == hs);
+	}
+
+	/* stdstring.h:500 — jstr_strdup_len malloc failure
+	 * Fails under ASan (allocator refuses huge size), but passes in coverage build. */
+	{
+		char *r = jstr_strdup_len("x", (size_t)-2);
+		assert(r == NULL);
+	}
+
+	printf("PASS\n");
+	return 0;
+}

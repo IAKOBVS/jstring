@@ -29,16 +29,53 @@ Custom shell+Perl scripts (no Makefile, no CMake). Run from repo root:
 ./test                  # all tests, 4 combos: {normal, -march=native} × {fast, -DJSTR_TEST_SLOW=1}
 ./test-check-fail       # runs all tests, shows only failures (filters PASS)
 scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
+./scripts/compile-nosimd  # build no-SIMD coverage library in build-nosimd/
 ```
 
 - Every test in `tests/*.c` is compiled and run from `/tmp`.
 - Tests using `mkdtemp` must `#define _POSIX_C_SOURCE 200809L` before any includes.
 - New tests ARE automatically picked up — `./test` globs `tests/*.c`.
 - For manual compilation of test-only files: use `-DJSTR_DECL_ONLY -include build/include/jstr/jstr.h -iquote build/include/jstr`.
+- **No-SIMD test compilation** (not compatible with `scripts/test1`): use `-DJSTR_DECL_ONLY -include build-nosimd/include/jstr/jstr.h -iquote build-nosimd/include/jstr` and link with `-Lbuild-nosimd/lib -ljstr`, setting `LD_LIBRARY_PATH=build-nosimd/lib`.
 - Default CFLAGS: `-std=c99 -Wall -Wextra -Wpedantic -O2 -g -fsanitize=address`.
 - All 4 variants run in parallel; tests can take a while.
 - Order: `./scripts/compile && ./test`.
 - Use `./test-check-fail` (not `./test`) when checking for errors — it filters out passing tests so failures are immediately visible.
+
+### Debugging test failures
+
+When a test assertion fails:
+1. Extract the failing sub-test and compile it standalone with `-D_XOPEN_SOURCE=700` (not `--coverage`)
+2. Add `printf` to the callback and check `ftw->dirpath` and `ftw->st` info
+3. The exact callback count depends on flags: `REG|DIR` counts root dir, `REG` skip root, no flags counts everything
+4. `stat` follows symlinks, so symlinks appear as `S_IFREG` unless `lstat` is used
+5. Use `cat > /tmp/test-debug.c << 'EOF' ... EOF` approach for rapid iteration
+
+## Test-Driven Development
+
+All new features, bug fixes, and changes **must** come with a test. Write the test first, verify it fails, then implement the fix/feature, then verify it passes.
+
+Workflow:
+
+1. Write a failing test in `tests/`.
+2. Run `./compile && ./test-check-fail` to confirm the new test fails.
+3. Implement the feature/fix.
+4. Run `./compile && ./test-check-fail` to confirm the new test passes and no existing tests break.
+
+Do not submit or consider a change complete without a corresponding test.
+
+## Parallel Coverage Work
+
+When working toward 100% line coverage, spin up to **5 subagents in parallel** to explore different coverage gaps simultaneously. Assign each agent a focused area (e.g., one module per agent) and have them return a detailed plan with specific file paths and line numbers for uncovered code, ordered by ease of coverage. Then implement tests serially.
+
+Coverage priority order (highest ROI first):
+1. **FTW edge cases** in `include/io.h` — NONFATAL_ERR, STATREG, symlink/socket types, non-dir func_match paths
+2. **`include/builder.h`** — `jstr_reserve`/`jstr_reserveexactalways` failure paths, `jstr_shrink`, `jstr_grow`
+3. **`include/regex.h`** — remaining 12 uncovered lines (error paths in compile/exec/replace)
+4. **`include/replace.h`** — remaining 12 uncovered lines (allocation failure paths)
+5. **`include/internal/musl/`** — vendored musl code (memrchr, twoway, strstr-lt8). Verify correctness by comparing against known musl sources and add edge-case tests for alignment branches, short needles, and long patterns.
+
+Use `scripts/coverage` to measure results: build with `--coverage -fno-inline -D_XOPEN_SOURCE=700`, run all tests, check `lib_include_*.h.gcov` in the temp output directory.
 
 ## Language & toolchain
 
