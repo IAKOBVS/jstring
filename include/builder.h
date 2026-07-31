@@ -94,7 +94,7 @@ jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0)) {
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	ret = fputs("data       :", stderr);
+	ret = fputs("data     :", stderr);
 	if (jstr_unlikely(ret < 0)) {
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
