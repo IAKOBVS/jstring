@@ -108,7 +108,7 @@ jstr_lltoa_p(long long number, char *R buf, unsigned int base) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
 	if (number < 0) {
-		number = -number;
+		number = (long long)-(unsigned long long)number;
 		*buf++ = '-';
 	}
 	return jstr_ulltoa_p((unsigned long long)number, buf, base);
@@ -196,7 +196,7 @@ jstr_lltoa_thousep_p(long long number, char *R buf, unsigned int base, char sepa
 #	ifdef JSTR_IMPLEMENTATION
 {
 	if (number < 0) {
-		number = -number;
+		number = (long long)-(unsigned long long)number;
 		*buf++ = '-';
 	}
 	return jstr_ulltoa_thousep_p((unsigned long long)number, buf, base, separator);
