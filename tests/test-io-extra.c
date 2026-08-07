@@ -64,9 +64,9 @@ test_elf_signature(void)
 	const unsigned char uelf[] = { 0x7F, 'E', 'L', 'F', 0x00, 0x00, 0x00, 0x00 };
 	const char *elf = (const char *)uelf;
 	int ret = jstr_io_isbinary_maybe(elf, sizeof(uelf));
-	assert(ret == 0);
+	assert(ret == 1);
 	ret = jstr_io_isbinary(elf, sizeof(uelf));
-	assert(ret == 0);
+	assert(ret == 1);
 }
 
 static void
@@ -75,9 +75,9 @@ test_utf8_bom_signature(void)
 	const unsigned char ubom[] = { 0xEF, 0xBB, 0xBF, 'a', 'b', 'c' };
 	const char *bom = (const char *)ubom;
 	int ret = jstr_io_isbinary_maybe(bom, sizeof(ubom));
-	assert(ret == 1);
+	assert(ret == 0);
 	ret = jstr_io_isbinary(bom, sizeof(ubom));
-	assert(ret == 1);
+	assert(ret == 0);
 }
 
 static void
