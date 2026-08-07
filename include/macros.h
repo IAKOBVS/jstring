@@ -153,7 +153,7 @@ JSTR_INTERNAL_END_DECLS
 #	define JSTR_MAX3(x, y, z)    (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
 #	define JSTR_MID3(x, y, z)    (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
 
-#	define JSTR_IO_KB (1000U)
+#	define JSTR_IO_KB ((size_t)1000)
 #	define JSTR_IO_MB (JSTR_IO_KB * JSTR_IO_KB)
 #	define JSTR_IO_GB (JSTR_IO_MB * JSTR_IO_KB)
 #	define JSTR_IO_TB (JSTR_IO_GB * JSTR_IO_KB)
@@ -164,7 +164,7 @@ JSTR_INTERNAL_END_DECLS
 #	define JSTR_IO_RB (JSTR_IO_YB * JSTR_IO_KB)
 #	define JSTR_IO_QB (JSTR_IO_RB * JSTR_IO_KB)
 
-#	define JSTR_IO_KIB (1024U)
+#	define JSTR_IO_KIB ((size_t)1024)
 #	define JSTR_IO_MIB (JSTR_IO_KIB * JSTR_IO_KIB)
 #	define JSTR_IO_GIB (JSTR_IO_MIB * JSTR_IO_KIB)
 #	define JSTR_IO_TIB (JSTR_IO_GIB * JSTR_IO_KIB)
