@@ -358,6 +358,7 @@ jstr_re_off_ty
 jstr_re_rm_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
+	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
 	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
 	assert(strlen(*s) == *sz);
@@ -402,6 +403,7 @@ jstr_re_off_ty
 jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags, size_t n) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
+	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
 	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
 	regmatch_t rm;
@@ -409,6 +411,7 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 	const char *end = *s + *sz;
 	if (jstr_unlikely(n == 0))
 		return 0;
+	/* If empty string, process at max once. */
 	if (jstr_unlikely(*sz == 0))
 		n = 1;
 	if (n == 1)
@@ -428,6 +431,7 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 			--n;
 			++changed;
 			i.src = i.src_e + rm.rm_eo;
+			/* To avoid infinite loops on empty/zero-length matches, advance search past 1 char. */
 			if (jstr_unlikely(find_len == 0)) {
 				if (i.src < end) {
 					*i.dst = *i.src;
@@ -505,6 +509,7 @@ jstr_re_off_ty
 jstr_re_rplc_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
+	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
 	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
 	regmatch_t rm;
@@ -663,8 +668,10 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		return 0;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
+	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
 	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
+	/* If empty string, process at max once. */
 	if (jstr_unlikely(*sz == 0))
 		n = 1;
 	const unsigned char *rplc_backref1;
@@ -740,6 +747,7 @@ check:
 			--n;
 			++changed;
 			i.src = i.src_e + rm[0].rm_eo;
+			/* To avoid infinite loops on empty/zero-length matches, advance search past 1 char. */
 			if (jstr_unlikely(find_len == 0)) {
 				if (i.src < end) {
 					*i.dst = *i.src;
