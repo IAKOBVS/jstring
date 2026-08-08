@@ -427,16 +427,6 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 	}
 	/* Use the same algorithm as rmn, only replacing memmem with regex. */
 	for (; n && i.src_e < end; ) {
-		if ((preg->cflags & JSTR_RE_CF_NEWLINE) && *i.src_e == '\n') {
-			/* Skip newline char: copy unmatched up to it, and copy the newline itself. */
-			const size_t run_len = JSTR_DIFF(i.src_e, i.src);
-			memmove(i.dst, i.src, run_len);
-			i.dst += run_len;
-			*i.dst++ = '\n';
-			i.src_e++;
-			i.src = i.src_e;
-			continue;
-		}
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 			;
@@ -447,6 +437,11 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 		}
 		/* Get length of FIND. */
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
+		/* Edge case. */
+		if (jstr_unlikely(find_len == 0)) {
+			++i.src_e;
+			continue;
+		}
 		/* Advance SRC_E to the match. */
 		i.src_e += rm.rm_so;
 		/* Length of previous SRC that needs to be copied to DST. */
@@ -459,9 +454,6 @@ start:
 		/* Advance SRC and SRC_E to the next SRC to find. */
 		i.src += prev_len + find_len;
 		i.src_e += find_len;
-		/* Edge case. */
-		if (jstr_unlikely(find_len == 0))
-			++i.src_e;
 		--n;
 		++changed;
 	}
@@ -740,16 +732,6 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 	/* Use the same algorithm as rplcn, only replacing memmem with regex,
 	 * with backreference handling. */
 	for (; n && i.src_e < end; ) {
-		if ((preg->cflags & JSTR_RE_CF_NEWLINE) && *i.src_e == '\n') {
-			/* Skip newline char: copy unmatched up to it, and copy the newline itself. */
-			const size_t run_len = JSTR_DIFF(i.src_e, i.src);
-			memmove(i.dst, i.src, run_len);
-			i.dst += run_len;
-			*i.dst++ = '\n';
-			i.src_e++;
-			i.src = i.src_e;
-			continue;
-		}
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 			;
@@ -789,6 +771,11 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 			end = *s + JSTR_DIFF(end, tmp);
 		}
 start:
+		/* Edge case. */
+		if (jstr_unlikely(find_len == 0)) {
+			++i.src_e;
+			continue;
+		}
 		/* Length of previous SRC that needs to be copied to DST. */
 		prev_len = JSTR_DIFF(i.src_e, i.src);
 		/* Copy to DST the previous SRC. */
@@ -805,9 +792,6 @@ start:
 		/* Advance SRC and SRC_E to the next SRC to find. */
 		i.src += prev_len + (size_t)find_len;
 		i.src_e += find_len;
-		/* Edge case. */
-		if (jstr_unlikely(find_len == 0))
-			++i.src_e;
 		--n;
 		++changed;
 	}
