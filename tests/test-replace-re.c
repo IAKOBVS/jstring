@@ -70,6 +70,25 @@ main(int argc, char **argv)
 	T_RE("hello_hello_hello_hello", "(.*)", "worl", "hello_hello_hello_hello", (size_t)-1);
 	T_RE("hello_hello_hello_hello", "\\(.*\\)", "worl", "worl", (size_t)-1);
 	T_RE("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", (size_t)-1);
+
+	/* test REG_NEWLINE replace bug: .* b should result in b\nb rather than bb */
+	{
+		jstr_re_ty preg;
+		const char *expected = "b\nb";
+		FILL(result, " b\n b");
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".* b", REG_NEWLINE | REG_EXTENDED)));
+		T_APPEND_NORET(jstr_re_rplcn_len_exec, &preg, jstr_struct(&result), "b", 1, 0, (size_t)-1);
+		jstr_re_free(&preg);
+	}
+	{
+		jstr_re_ty preg;
+		const char *expected = "\n";
+		FILL(result, " b\n b");
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".* b", REG_NEWLINE | REG_EXTENDED)));
+		T_APPEND_NORET(jstr_re_rmn_exec, &preg, jstr_struct(&result), 0, (size_t)-1);
+		jstr_re_free(&preg);
+	}
+
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;
