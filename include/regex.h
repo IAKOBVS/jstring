@@ -407,10 +407,12 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 	regmatch_t rm;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	const char *end = *s + *sz;
-	if (n == 1)
-		return jstr_re_rm_from_exec(preg, s, sz, cap, start_idx, eflags);
 	if (jstr_unlikely(n == 0))
 		return 0;
+	if (jstr_unlikely(*sz == 0))
+		n = 1;
+	if (n == 1)
+		return jstr_re_rm_from_exec(preg, s, sz, cap, start_idx, eflags);
 	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
 	jstr_re_off_ty changed = 0;
 	size_t prev_len;
@@ -679,12 +681,14 @@ jstr_re_off_ty
 jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_unlikely(rplc_len == 0))
-		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
 	if (jstr_unlikely(n == 0))
 		return 0;
+	if (jstr_unlikely(rplc_len == 0))
+		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
 	if (jstr_unlikely(start_idx >= *sz))
 		return 0;
+	if (jstr_unlikely(*sz == 0))
+		n = 1;
 	const unsigned char *rplc_backref1;
 	const unsigned char *rplc_backref1_e;
 	if (backref) {
@@ -692,13 +696,15 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		rplc_backref1 = (const unsigned char *)jstr_internal_re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
 		if (jstr_nullchk(rplc_backref1)) {
 			backref = 0;
+			goto check;
 		} else {
 			rplc_backref1_e = (const unsigned char *)jstr_internal_re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
 			if (rplc_backref1_e == NULL)
 				rplc_backref1_e = rplc_backref1 + 2;
 		}
 	} else {
-		if (n == 1)
+check:
+		if (n == 1 || *sz == 0)
 			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	}
 	regmatch_t rm[10];

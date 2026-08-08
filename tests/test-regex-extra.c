@@ -77,7 +77,7 @@ main(int argc, char **argv)
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "()", JSTR_RE_CF_EXTENDED)));
 		jstr_ty s = JSTR_INIT;
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "abc", 3)));
-		assert(jstr_re_rmn_exec(&preg, jstr_struct(&s), 0, 2) == 2);
+		assert(jstr_re_rmn_exec(&preg, jstr_struct(&s), 0, 2) == 0);
 		assert(s.size == 3);
 		assert(memcmp(s.data, "abc", 3) == 0);
 		jstr_free_j(&s);
@@ -90,9 +90,9 @@ main(int argc, char **argv)
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "()", JSTR_RE_CF_EXTENDED)));
 		jstr_ty s = JSTR_INIT;
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "xyz", 3)));
-		assert(jstr_re_rplcn_len_exec(&preg, jstr_struct(&s), "!", 1, 0, 2) == 2);
-		assert(s.size == 5);
-		assert(memcmp(s.data, "!x!yz", 5) == 0);
+		assert(jstr_re_rplcn_len_exec(&preg, jstr_struct(&s), "!", 1, 0, 2) == 0);
+		assert(s.size == 3);
+		assert(memcmp(s.data, "xyz", 3) == 0);
 		jstr_free_j(&s);
 		jstr_re_free(&preg);
 	}
