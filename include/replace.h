@@ -1000,20 +1000,27 @@ j_rplc_grow_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *
                  const char *R rplc, size_t rplc_len, size_t n, size_t changed,
                  const char *last_match) JSTR_NOEXCEPT
 {
+	/* Calculate where the last match ends in the original string. */
 	const char *last_match_end = last_match + find_len;
+	/* Calculate final string size after all replacements (each match grows the string by rplc_len - find_len). */
 	const size_t new_size = *sz + changed * (rplc_len - find_len);
+	/* suffix_len is the length from the first match to the very end of the original string. */
 	const size_t suffix_len = *sz - JSTR_DIFF(first_match, *s);
+	/* Store the old buffer address to handle potential pointer adjustments if jstr_reserve reallocates. */
 	const uintptr_t s_old = (uintptr_t)*s;
-	/* Reserve space for final string and moved suffix + NUL terminator. */
+	/* Reserve space for final string and moved suffix + NUL terminator.
+	 * The safety zone must contain both the rebuilt string (new_size) and the temporary moved suffix (suffix_len). */
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_size + suffix_len + 1))) {
 		JSTR_RETURN_ERR_ZU((size_t)-1);
 	}
-	/* Write pointer starts at the first match in the buffer. */
+	/* write_ptr starts at the location of the first match in the (potentially reallocated) buffer. */
 	char *write_ptr = *s + JSTR_DIFF(first_match, s_old);
-	/* Move original suffix to end of buffer to avoid overlapping. */
+	/* Move original suffix to end of buffer (suffix_start).
+	 * Since rplc_len > find_len, writing replacements from left to right would overwrite unprocessed characters.
+	 * Shifting the suffix to suffix_start (at s + new_size) isolates the source characters in a safe non-overlapping zone. */
 	char *suffix_start = *s + new_size;
 	memmove(suffix_start, write_ptr, suffix_len);
-	/* Adjust suffix-relative pointers. */
+	/* Rebase pointers to be relative to the shifted suffix inside the temporary safe zone. */
 	const char *last_match_end_in_suffix = suffix_start + (last_match_end - first_match);
 	const char *suffix_end = suffix_start + suffix_len;
 	const char *source_ptr = suffix_start;
@@ -1021,13 +1028,17 @@ j_rplc_grow_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *
 	size_t prev_len;
 	/* Second pass: perform replacements from left to right. */
 	do {
+		/* Calculate unmatched segment length before the current match. */
 		prev_len = JSTR_DIFF(search_ptr, source_ptr);
+		/* Copy the unmatched segment from the safe zone to our destination. */
 		memmove(write_ptr, source_ptr, prev_len);
+		/* Write the replacement string and advance the write cursor. */
 		write_ptr = (char *)jstr_mempmove(write_ptr + prev_len, rplc, rplc_len);
+		/* Advance source pointer past the match in the safe zone. */
 		source_ptr += prev_len + find_len;
 		search_ptr += find_len;
 	} while (--n && (search_ptr = (char *)jstr_memmem_exec(t, search_ptr, JSTR_DIFF(last_match_end_in_suffix, search_ptr), find, find_len)));
-	/* Copy remaining unmatched tail. */
+	/* Copy the remaining unmatched tail from the safe zone to the destination. */
 	*sz = JSTR_DIFF(jstr_stpmove_len(write_ptr, source_ptr, JSTR_DIFF(suffix_end, source_ptr)), *s);
 	return changed;
 }

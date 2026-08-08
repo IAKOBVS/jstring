@@ -719,8 +719,10 @@ check:
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
 		JSTR_RE_RETURN_ERR(JSTR_RE_RET_ESPACE, preg);
 	}
-	/* Build destination string safely in higher part of the buffer.
-	 * This prevents any overlap/overwriting hazards with the source cursors. */
+	/* Build destination string safely in higher part of the buffer (write_ptr starts at *s + *sz + 1).
+	 * Reading from the unmodified original lower part (*s) and writing to the higher part (*s + *sz + 1)
+	 * ensures that the faster-moving write cursor can NEVER overwrite unread source characters,
+	 * completely eliminating any overlap, corruption, or read-after-write hazards when replacements grow. */
 	char *write_ptr = *s + *sz + 1;
 	const char *dst_s = write_ptr;
 	const char *source_ptr = *s;
@@ -764,6 +766,7 @@ check:
 					JSTR_RE_RETURN_ERR(ret, preg);
 				}
 				*sz = saved_sz;
+				/* Adjust pointers and boundaries to the new reallocated buffer address. */
 				source_ptr = *s + JSTR_DIFF(source_ptr, tmp);
 				search_ptr = *s + JSTR_DIFF(search_ptr, tmp);
 				write_ptr = *s + JSTR_DIFF(write_ptr, tmp);
@@ -812,7 +815,7 @@ check:
 	memmove(write_ptr, source_ptr, remaining_len);
 	write_ptr += remaining_len;
 	*sz = JSTR_DIFF(write_ptr, dst_s);
-	/* Move built string back to the start of s. */
+	/* Move completed string from the higher part of the buffer back to the start (*s). */
 	jstr_strmove_len(*s, dst_s, *sz);
 	return changed;
 }
