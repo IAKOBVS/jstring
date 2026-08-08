@@ -715,16 +715,15 @@ check:
 			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	}
 	regmatch_t rm[10];
-	size_t new_cap = *sz * 2 + 2;
-	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
+	/* Allocate a separate growing temporary buffer to build the new string.
+	 * This completely eliminates pointer rebasing, offset shifting, and overlap hazards. */
+	char *new_s = NULL;
+	size_t new_sz = 0;
+	size_t new_cap = 0;
+	if (jstr_chk(jstr_reserve(&new_s, &new_sz, &new_cap, *sz * 2 + 2))) {
 		JSTR_RE_RETURN_ERR(JSTR_RE_RET_ESPACE, preg);
 	}
-	/* Build destination string safely in higher part of the buffer (write_ptr starts at *s + *sz + 1).
-	 * Reading from the unmodified original lower part (*s) and writing to the higher part (*s + *sz + 1)
-	 * ensures that the faster-moving write cursor can NEVER overwrite unread source characters,
-	 * completely eliminating any overlap, corruption, or read-after-write hazards when replacements grow. */
-	char *write_ptr = *s + *sz + 1;
-	const char *dst_s = write_ptr;
+	char *write_ptr = new_s;
 	const char *source_ptr = *s;
 	const char *search_ptr = *s + start_idx;
 	const char *end = *s + *sz;
@@ -753,25 +752,19 @@ check:
 				rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 			else
 				rplcwbackref_len = rplc_len;
-			/* Check and reserve capacity if needed. */
-			new_cap = JSTR_DIFF(write_ptr, *s) + JSTR_DIFF(end, source_ptr) + 2;
+			/* Reserve capacity on the temporary buffer if needed. */
+			size_t req_cap = JSTR_DIFF(write_ptr, new_s) + JSTR_DIFF(end, source_ptr) + 2;
 			if (rplcwbackref_len > find_len)
-				new_cap += rplcwbackref_len - find_len;
-			if (jstr_unlikely(*cap < new_cap)) {
-				const uintptr_t tmp = (uintptr_t)*s;
-				const size_t saved_sz = *sz;
-				*sz = JSTR_DIFF(write_ptr, *s);
-				if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
+				req_cap += rplcwbackref_len - find_len;
+			if (jstr_unlikely(new_cap < req_cap)) {
+				size_t saved_sz = JSTR_DIFF(write_ptr, new_s);
+				new_sz = saved_sz;
+				if (jstr_chk(jstr_reserve(&new_s, &new_sz, &new_cap, req_cap))) {
 					ret = JSTR_RE_RET_ESPACE;
+					free(new_s);
 					JSTR_RE_RETURN_ERR(ret, preg);
 				}
-				*sz = saved_sz;
-				/* Adjust pointers and boundaries to the new reallocated buffer address. */
-				source_ptr = *s + JSTR_DIFF(source_ptr, tmp);
-				search_ptr = *s + JSTR_DIFF(search_ptr, tmp);
-				write_ptr = *s + JSTR_DIFF(write_ptr, tmp);
-				dst_s = *s + JSTR_DIFF(dst_s, tmp);
-				end = *s + JSTR_DIFF(end, tmp);
+				write_ptr = new_s + saved_sz;
 			}
 			/* Copy unmatched prefix up to the start of the current match. */
 			const size_t prev_len = JSTR_DIFF(search_ptr + rm[0].rm_so, source_ptr);
@@ -807,6 +800,7 @@ check:
 		} else if (ret == JSTR_RE_RET_NOMATCH) {
 			break;
 		} else {
+			free(new_s);
 			JSTR_RE_RETURN_ERR(ret, preg);
 		}
 	}
@@ -814,9 +808,12 @@ check:
 	const size_t remaining_len = JSTR_DIFF(end, source_ptr);
 	memmove(write_ptr, source_ptr, remaining_len);
 	write_ptr += remaining_len;
-	*sz = JSTR_DIFF(write_ptr, dst_s);
-	/* Move completed string from the higher part of the buffer back to the start (*s). */
-	jstr_strmove_len(*s, dst_s, *sz);
+	*write_ptr = '\0';
+	/* Swap the temporary buffer with the original buffer. */
+	free(*s);
+	*s = new_s;
+	*sz = JSTR_DIFF(write_ptr, new_s);
+	*cap = new_cap;
 	return changed;
 }
 #	else
