@@ -993,6 +993,46 @@ jstr_rplc_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t
 ;
 #endif
 
+#ifdef JSTR_IMPLEMENTATION
+static inline size_t
+j_rplc_grow_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap,
+                 char *first_match, const char *R find, size_t find_len,
+                 const char *R rplc, size_t rplc_len, size_t n, size_t changed,
+                 const char *last_match) JSTR_NOEXCEPT
+{
+	const char *last_match_end = last_match + find_len;
+	const size_t new_size = *sz + changed * (rplc_len - find_len);
+	const size_t suffix_len = *sz - JSTR_DIFF(first_match, *s);
+	const uintptr_t s_old = (uintptr_t)*s;
+	/* Reserve space for final string and moved suffix + NUL terminator. */
+	if (jstr_chk(jstr_reserve(s, sz, cap, new_size + suffix_len + 1))) {
+		JSTR_RETURN_ERR_ZU((size_t)-1);
+	}
+	/* Write pointer starts at the first match in the buffer. */
+	char *write_ptr = *s + JSTR_DIFF(first_match, s_old);
+	/* Move original suffix to end of buffer to avoid overlapping. */
+	char *suffix_start = *s + new_size;
+	memmove(suffix_start, write_ptr, suffix_len);
+	/* Adjust suffix-relative pointers. */
+	const char *last_match_end_in_suffix = suffix_start + (last_match_end - first_match);
+	const char *suffix_end = suffix_start + suffix_len;
+	const char *source_ptr = suffix_start;
+	const char *search_ptr = suffix_start;
+	size_t prev_len;
+	/* Second pass: perform replacements from left to right. */
+	do {
+		prev_len = JSTR_DIFF(search_ptr, source_ptr);
+		memmove(write_ptr, source_ptr, prev_len);
+		write_ptr = (char *)jstr_mempmove(write_ptr + prev_len, rplc, rplc_len);
+		source_ptr += prev_len + find_len;
+		search_ptr += find_len;
+	} while (--n && (search_ptr = (char *)jstr_memmem_exec(t, search_ptr, JSTR_DIFF(last_match_end_in_suffix, search_ptr), find, find_len)));
+	/* Copy remaining unmatched tail. */
+	*sz = JSTR_DIFF(jstr_stpmove_len(write_ptr, source_ptr, JSTR_DIFF(suffix_end, source_ptr)), *s);
+	return changed;
+}
+#endif
+
 /* Replace N SEARCH in S with REPLACE from S + START_IDX.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
@@ -1017,96 +1057,57 @@ jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, 
 	} else if (jstr_unlikely(find_len == 0)) {
 		return 0;
 	}
-	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	size_t changed = 0;
 	const char *end = *s + *sz;
 	if (rplc_len <= find_len) {
-		/* Do an in-place replacement, with no allocation. */
-		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)))
+		/* Do an in-place replacement with no reallocation. */
+		char *match = (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find, find_len);
+		if (!match)
 			return 0;
-		size_t prev_len = JSTR_DIFF(i.src_e, i.src);
-		goto start;
-		for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)); --n, ++changed) {
-			/* Length of previous SRC that needs to be copied to DST. */
-			prev_len = JSTR_DIFF(i.src_e, i.src);
-			/* No need to move string when FIND and RPLC have equal lengths. */
+		char *write_ptr = *s + start_idx;
+		const char *source_ptr = *s + start_idx;
+		const char *search_ptr = match;
+		/* 1. Process first match (no memmove needed as write_ptr and source_ptr are identical). */
+		size_t prev_len = JSTR_DIFF(search_ptr, source_ptr);
+		write_ptr = (char *)jstr_mempcpy(write_ptr + prev_len, rplc, rplc_len);
+		source_ptr += prev_len + find_len;
+		search_ptr += find_len;
+		changed = 1;
+		--n;
+		/* 2. Process subsequent matches. */
+		while (n && (match = (char *)jstr_memmem_exec(t, search_ptr, JSTR_DIFF(end, search_ptr), find, find_len))) {
+			prev_len = JSTR_DIFF(match, source_ptr);
 			if (find_len != rplc_len)
-				/* Copy to DST the previous SRC. */
-				memmove(i.dst, i.src, prev_len);
-start:
-			/* Copy to DST RPLC and advance. */
-			i.dst = (char *)jstr_mempcpy(i.dst + prev_len, rplc, rplc_len);
-			/* Advance SRC and SRC_E to the next SRC to find. */
-			i.src += prev_len + find_len;
-			i.src_e += find_len;
+				memmove(write_ptr, source_ptr, prev_len);
+			write_ptr = (char *)jstr_mempcpy(write_ptr + prev_len, rplc, rplc_len);
+			source_ptr += prev_len + find_len;
+			search_ptr = match + find_len;
+			++changed;
+			--n;
 		}
-		/* Copy to DST the remaining SRC. */
+		/* 3. Copy remaining unmatched tail. */
 		if (jstr_likely(rplc_len != find_len))
-			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
+			*sz = JSTR_DIFF(jstr_stpmove_len(write_ptr, source_ptr, JSTR_DIFF(end, source_ptr)), *s);
 	} else {
-		/* May need to allocate. */
-		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len);
-		if (jstr_nullchk(first))
+		/* May need to allocate/grow. */
+		char *first = (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find, find_len);
+		if (!first)
 			return 0;
-		i.src_e = first;
+		/* First pass: count matches and track last match. */
+		const char *search_ptr = first;
 		const char *last;
-		/* Do two passes, first to get the new size, second to do the replacements.
-		 * Doing O(2 * n) memmem should be fine, since good memmem implementations
-		 * should be O(n + m), whereas the O(n^2) replacements are guaranteed.
-		 * First pass, get the new size. */
 		do {
 			++changed;
-			last = i.src_e;
-			i.src_e += find_len;
-		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)));
-		if (!changed)
-			return 0;
+			last = search_ptr;
+			search_ptr += find_len;
+		} while (--n && (search_ptr = (char *)jstr_memmem_exec(t, search_ptr, JSTR_DIFF(end, search_ptr), find, find_len)));
 		if (changed == 1) {
 			if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(first, *s), rplc, rplc_len, find_len))) {
 				JSTR_RETURN_ERR_ZU((size_t)-1);
 			}
 			return 1;
 		}
-		/* Currently last points to the last match. We are going to make it point
-		 * to the end of the last match. */
-		last += find_len;
-		const size_t new_size = *sz + changed * (rplc_len - find_len);
-		const size_t first_len = *sz - JSTR_DIFF(first, *s);
-		const uintptr_t s_old = (uintptr_t)*s;
-		/* Try to avoid allocation by pushing back the source string to make room
-		 * for the destination string. If need to allocate, realloc will try to
-		 * grow in-place. */
-		if (jstr_chk(jstr_reserve(s, sz, cap, new_size + first_len + 1))) {
-			JSTR_RETURN_ERR_ZU((size_t)-1);
-		}
-		i.dst = *s + JSTR_DIFF(first, s_old);
-		/* DST and SRC exist in the same buffer *s, where DST + SRC + NUL. */
-		i.src = *s + new_size;
-		/* Move back the source string so we have enough
-		 * space for the destination string. */
-		memmove((void *)i.src, i.dst, first_len);
-		/* Update the ptrs to point to SRC. */
-		last = i.src + (last - first);
-		end = i.src + (end - first);
-		first = (char *)i.src;
-		n = changed;
-		/* Cache first match. */
-		i.src_e = first;
-		size_t prev_len;
-		/* Second pass, do the replacements. */
-		do {
-			/* Length of previous SRC that needs to be copied to DST. */
-			prev_len = JSTR_DIFF(i.src_e, i.src);
-			/* Copy to DST the previous SRC. */
-			memmove(i.dst, i.src, prev_len);
-			/* Copy to DST RPLC and advance. */
-			i.dst = (char *)jstr_mempmove(i.dst + prev_len, rplc, rplc_len);
-			/* Advance SRC and SRC_E to the next SRC to find. */
-			i.src += prev_len + find_len;
-			i.src_e += find_len;
-		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(last, i.src_e), find, find_len)));
-		/* Copy to DST the remaining SRC. */
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
+		return j_rplc_grow_exec(t, s, sz, cap, first, find, find_len, rplc, rplc_len, changed, changed, last);
 	}
 	return changed;
 }
