@@ -449,6 +449,11 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 		/* Copy to DST the previous SRC. */
 		memmove(i.dst, i.src, prev_len);
 start:
+		/* Edge case. */
+		if (jstr_unlikely(find_len == 0)) {
+			++i.src_e;
+			continue;
+		}
 		/* Advance DST after the copy. */
 		i.dst += prev_len;
 		/* Advance SRC and SRC_E to the next SRC to find. */
@@ -742,6 +747,11 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		}
 		/* Get length of FIND. */
 		find_len = rm[0].rm_eo - rm[0].rm_so;
+		/* Edge case. */
+		if (jstr_unlikely(find_len == 0)) {
+			++i.src_e;
+			continue;
+		}
 		/* Advance SRC_E to the match. */
 		i.src_e += rm[0].rm_so;
 		/* Get length of RPLC. */
