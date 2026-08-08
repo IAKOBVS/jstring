@@ -358,7 +358,8 @@ jstr_re_off_ty
 jstr_re_rm_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_unlikely(start_idx >= *sz))
+	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
+	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
 	assert(strlen(*s) == *sz);
 	assert(*cap > *sz);
@@ -402,68 +403,72 @@ jstr_re_off_ty
 jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags, size_t n) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_unlikely(start_idx >= *sz))
+	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
+	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
 	regmatch_t rm;
+	/* i holds cursors for dst (writing cursor), src (copy cursor), and src_e (search cursor). */
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	const char *end = *s + *sz;
 	if (jstr_unlikely(n == 0))
 		return 0;
+	/* If empty string haystack, process at max once. */
 	if (jstr_unlikely(*sz == 0))
 		n = 1;
+	/* Fall back to single removal if n == 1. */
 	if (n == 1)
 		return jstr_re_rm_from_exec(preg, s, sz, cap, start_idx, eflags);
-	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
 	jstr_re_off_ty changed = 0;
-	size_t prev_len;
-	size_t find_len;
-	if (ret == JSTR_RE_RET_NOERROR) {
-		find_len = (size_t)(rm.rm_eo - rm.rm_so);
-		i.src_e += rm.rm_so;
-		prev_len = JSTR_DIFF(i.src_e, i.src);
-		goto start;
-	} else if (ret == JSTR_RE_RET_NOMATCH) {
-		return 0;
-	} else {
-		JSTR_RE_RETURN_ERR(ret, preg);
-	}
-	/* Use the same algorithm as rmn, only replacing memmem with regex. */
-	for (; n && i.src_e < end; ) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
+	int ret;
+	/* Flag tracking if the previous match was zero-length. */
+	int prev_zero = 1;
+	while (n) {
+		/* Track if we are starting search from the end of the string. */
+		int matched_at_end = (i.src_e == end);
+		if (matched_at_end) {
+			/* If the previous match was not zero-length, stop. */
+			if (!prev_zero)
+				break;
+		} else if (i.src_e > end) {
+			/* Stop if search cursor went past end. */
+			break;
+		}
+		/* Compute NOTBOL flag dynamically based on current search position. */
+		const int eflags_curr = eflags | IS_NOTBOL(*s, JSTR_DIFF(i.src_e, *s), preg->cflags);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags_curr);
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
-			;
+			const size_t find_len = (size_t)(rm.rm_eo - rm.rm_so);
+			/* Copy unmatched prefix up to the start of the current match. */
+			const size_t prev_len_total = JSTR_DIFF(i.src_e + rm.rm_so, i.src);
+			if (prev_len_total > 0) {
+				memmove(i.dst, i.src, prev_len_total);
+				i.dst += prev_len_total;
+			}
+			--n;
+			++changed;
+			/* Set copy pointer to end of the match. */
+			i.src = i.src_e + rm.rm_eo;
+			/* To avoid infinite loops on empty/zero-length matches, advance search past 1 char. */
+			if (jstr_unlikely(find_len == 0)) {
+				if (i.src < end) {
+					*i.dst = *i.src;
+					++i.dst;
+					++i.src;
+				}
+			}
+			/* Set next search pointer. */
+			i.src_e = (char *)i.src;
+			/* If we matched at end, stop immediately. */
+			if (matched_at_end)
+				break;
+			prev_zero = (find_len == 0);
 		} else if (ret == JSTR_RE_RET_NOMATCH) {
 			break;
 		} else {
 			JSTR_RE_RETURN_ERR(ret, preg);
 		}
-		/* Get length of FIND. */
-		find_len = (size_t)(rm.rm_eo - rm.rm_so);
-		/* Edge case. */
-		if (jstr_unlikely(find_len == 0)) {
-			++i.src_e;
-			continue;
-		}
-		/* Advance SRC_E to the match. */
-		i.src_e += rm.rm_so;
-		/* Length of previous SRC that needs to be copied to DST. */
-		prev_len = JSTR_DIFF(i.src_e, i.src);
-		/* Copy to DST the previous SRC. */
-		memmove(i.dst, i.src, prev_len);
-start:
-		/* Edge case. */
-		if (jstr_unlikely(find_len == 0)) {
-			++i.src_e;
-			continue;
-		}
-		/* Advance DST after the copy. */
-		i.dst += prev_len;
-		/* Advance SRC and SRC_E to the next SRC to find. */
-		i.src += prev_len + find_len;
-		i.src_e += find_len;
-		--n;
-		++changed;
 	}
+	/* Copy any remaining unmatched tail portion. */
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	return changed;
 }
@@ -527,7 +532,8 @@ jstr_re_off_ty
 jstr_re_rplc_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_unlikely(start_idx >= *sz))
+	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
+	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
 	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
@@ -685,15 +691,16 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		return 0;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
-	if (jstr_unlikely(start_idx >= *sz))
+	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
+	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
+	/* If empty string, process at max once. */
 	if (jstr_unlikely(*sz == 0))
 		n = 1;
 	const unsigned char *rplc_backref1;
 	const unsigned char *rplc_backref1_e;
 	if (backref) {
-		/* Check if we have backrefs in RPLC. */
-		rplc_backref1 = (const unsigned char *)jstr_internal_re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
+		rplc_backref1 = (const unsigned char *)jstr_internal_re_rplcbackreffirst(rplc, rplc_len);
 		if (jstr_nullchk(rplc_backref1)) {
 			backref = 0;
 			goto check;
@@ -708,113 +715,103 @@ check:
 			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	}
 	regmatch_t rm[10];
+	/* i holds dst (built destination cursor), src (source cursor), and src_e (search cursor). */
 	jstr_internal_inplace_ty i;
-	i.src_e = *s + start_idx;
-	const char *end = *s + *sz;
-	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
-	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
-		return 0;
-	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
-		JSTR_RE_RETURN_ERR(ret, preg);
-	}
-	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
-	size_t prev_len;
-	jstr_re_off_ty changed = 0;
-	size_t rplcwbackref_len;
-	if (backref)
-		rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
-	else
-		rplcwbackref_len = rplc_len;
-	/* SRC and DST exist in the same buffer *S, where SRC + NUL + DST + NUL.
-	 * The size of DST may change because of backreferences. */
 	size_t new_cap = *sz * 2 + 2;
-	if (rplcwbackref_len > (size_t)find_len)
-		new_cap += rplcwbackref_len - (size_t)find_len;
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
-		JSTR_RE_RETURN_ERR(ret, preg);
+		JSTR_RE_RETURN_ERR(JSTR_RE_RET_ESPACE, preg);
 	}
+	/* Move source string to higher part of buffer so we can build destination safely in lower part. */
 	memmove(*s + *sz + 1, *s, *sz);
 	i.dst = *s + *sz + 1;
 	const char *dst_s = i.dst;
 	i.src = *s;
-	i.src_e = *s + start_idx + rm[0].rm_so;
-	end = *s + *sz;
-	goto start;
-	/* Use the same algorithm as rplcn, only replacing memmem with regex,
-	 * with backreference handling. */
-	for (; n && i.src_e < end; ) {
-		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
+	i.src_e = *s + start_idx;
+	const char *end = *s + *sz;
+	jstr_re_off_ty changed = 0;
+	size_t rplcwbackref_len;
+	int ret;
+	/* Flag tracking if the previous match was zero-length. */
+	int prev_zero = 1;
+	while (n) {
+		/* Track if we are starting search from the end of the string. */
+		int matched_at_end = (i.src_e == end);
+		if (matched_at_end) {
+			/* If the previous match was not zero-length, stop. */
+			if (!prev_zero)
+				break;
+		} else if (i.src_e > end) {
+			/* Stop if search cursor went past end. */
+			break;
+		}
+		/* Compute NOTBOL flag dynamically based on current search position. */
+		const int eflags_curr = eflags | IS_NOTBOL(*s, JSTR_DIFF(i.src_e, *s), preg->cflags);
+		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags_curr);
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
-			;
+			const size_t find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
+			if (backref)
+				rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+			else
+				rplcwbackref_len = rplc_len;
+			/* Check and reserve capacity if needed. */
+			new_cap = JSTR_DIFF(i.dst, *s) + JSTR_DIFF(end, i.src) + 2;
+			if (rplcwbackref_len > find_len)
+				new_cap += rplcwbackref_len - find_len;
+			if (jstr_unlikely(*cap < new_cap)) {
+				const uintptr_t tmp = (uintptr_t)*s;
+				const size_t saved_sz = *sz;
+				*sz = JSTR_DIFF(i.dst, *s);
+				if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
+					ret = JSTR_RE_RET_ESPACE;
+					JSTR_RE_RETURN_ERR(ret, preg);
+				}
+				*sz = saved_sz;
+				i.src = *s + JSTR_DIFF(i.src, tmp);
+				i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
+				i.dst = *s + JSTR_DIFF(i.dst, tmp);
+				dst_s = *s + JSTR_DIFF(dst_s, tmp);
+				end = *s + JSTR_DIFF(end, tmp);
+			}
+			/* Copy unmatched prefix up to the start of the current match. */
+			const size_t prev_len = JSTR_DIFF(i.src_e + rm[0].rm_so, i.src);
+			if (prev_len > 0) {
+				memmove(i.dst, i.src, prev_len);
+				i.dst += prev_len;
+			}
+			/* Copy replacement string (handling backreferences). */
+			if (backref) {
+				jstr_internal_re_rplcbackrefcpy(rm, (unsigned char *)i.src_e, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
+				i.dst += rplcwbackref_len;
+			} else {
+				i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
+			}
+			--n;
+			++changed;
+			/* Set copy pointer to end of the match. */
+			i.src = i.src_e + rm[0].rm_eo;
+			/* To avoid infinite loops on empty/zero-length matches, advance search past 1 char. */
+			if (jstr_unlikely(find_len == 0)) {
+				if (i.src < end) {
+					*i.dst = *i.src;
+					++i.dst;
+					++i.src;
+				}
+			}
+			/* Set next search pointer. */
+			i.src_e = (char *)i.src;
+			/* If we matched at end, stop immediately. */
+			if (matched_at_end)
+				break;
+			prev_zero = (find_len == 0);
 		} else if (ret == JSTR_RE_RET_NOMATCH) {
 			break;
 		} else {
 			JSTR_RE_RETURN_ERR(ret, preg);
 		}
-		/* Get length of FIND. */
-		find_len = rm[0].rm_eo - rm[0].rm_so;
-		/* Edge case. */
-		if (jstr_unlikely(find_len == 0)) {
-			++i.src_e;
-			continue;
-		}
-		/* Advance SRC_E to the match. */
-		i.src_e += rm[0].rm_so;
-		/* Get length of RPLC. */
-		if (backref)
-			rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
-		else
-			rplcwbackref_len = rplc_len;
-		/* Check if needs reallocation. Track cumulative destination size and remaining source size. */
-		new_cap = JSTR_DIFF(i.dst, *s) + JSTR_DIFF(end, i.src) + 2;
-		if (rplcwbackref_len > (size_t)find_len)
-			new_cap += rplcwbackref_len - (size_t)find_len;
-		if (jstr_unlikely(*cap < new_cap)) {
-			const uintptr_t tmp = (uintptr_t)*s;
-			const size_t saved_sz = *sz;
-			/* Set sz to the total utilized buffer span to prevent truncation during reservation copy logic */
-			*sz = JSTR_DIFF(i.dst, *s);
-			if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
-				ret = JSTR_RE_RET_ESPACE;
-				JSTR_RE_RETURN_ERR(ret, preg);
-			}
-			*sz = saved_sz;
-			/* Update the ptrs after realloc. */
-			i.src = *s + JSTR_DIFF(i.src, tmp);
-			i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
-			i.dst = *s + JSTR_DIFF(i.dst, tmp);
-			dst_s = *s + JSTR_DIFF(dst_s, tmp);
-			end = *s + JSTR_DIFF(end, tmp);
-		}
-start:
-		/* Edge case. */
-		if (jstr_unlikely(find_len == 0)) {
-			++i.src_e;
-			continue;
-		}
-		/* Length of previous SRC that needs to be copied to DST. */
-		prev_len = JSTR_DIFF(i.src_e, i.src);
-		/* Copy to DST the previous SRC. */
-		memmove(i.dst, i.src, prev_len);
-		/* Advance DST after the copy. */
-		i.dst += prev_len;
-		/* Copy to DST RPLC and advance. */
-		if (backref) {
-			jstr_internal_re_rplcbackrefcpy(rm, (unsigned char *)i.src_e - rm[0].rm_so, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
-			i.dst += rplcwbackref_len;
-		} else {
-			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
-		}
-		/* Advance SRC and SRC_E to the next SRC to find. */
-		i.src += prev_len + (size_t)find_len;
-		i.src_e += find_len;
-		--n;
-		++changed;
 	}
-	/* Copy to DST the remaining SRC. */
+	/* Copy any remaining unmatched tail portion. */
 	*sz = JSTR_DIFF(jstr_mempmove(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
-	/* Move back DST to the start of the string since we don't need SRC
-	 * anymore. */
+	/* Move built string back to the start of s. */
 	jstr_strmove_len(*s, dst_s, *sz);
 	return changed;
 }

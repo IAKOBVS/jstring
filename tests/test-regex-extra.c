@@ -55,6 +55,18 @@ main(int argc, char **argv)
 		jstr_re_free(&preg);
 	}
 	{
+		/* Match empty pattern () globally on "hell" (like sed 's/()/_x_/g'). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "()", JSTR_RE_CF_EXTENDED)));
+		jstr_ty s = JSTR_INIT;
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "hell", 4)));
+		assert(jstr_re_rplcall_len_exec(&preg, jstr_struct(&s), "_x_", 3, 0) == 5);
+		assert(s.size == 19);
+		assert(memcmp(s.data, "_x_h_x_e_x_l_x_l_x_", 19) == 0);
+		jstr_free_j(&s);
+		jstr_re_free(&preg);
+	}
+	{
 		/* IS_NOTBOL_INLOOP returning 0 after newline (line 154).
 		 * String "xa\nab\na\nc", rmall with pattern "a\n" + REG_NEWLINE.
 		 * First match "a\n" at absolute pos1-2. After removal, loop
@@ -77,7 +89,7 @@ main(int argc, char **argv)
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "()", JSTR_RE_CF_EXTENDED)));
 		jstr_ty s = JSTR_INIT;
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "abc", 3)));
-		assert(jstr_re_rmn_exec(&preg, jstr_struct(&s), 0, 2) == 0);
+		assert(jstr_re_rmn_exec(&preg, jstr_struct(&s), 0, 2) == 2);
 		assert(s.size == 3);
 		assert(memcmp(s.data, "abc", 3) == 0);
 		jstr_free_j(&s);
@@ -90,9 +102,32 @@ main(int argc, char **argv)
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "()", JSTR_RE_CF_EXTENDED)));
 		jstr_ty s = JSTR_INIT;
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "xyz", 3)));
-		assert(jstr_re_rplcn_len_exec(&preg, jstr_struct(&s), "!", 1, 0, 2) == 0);
-		assert(s.size == 3);
-		assert(memcmp(s.data, "xyz", 3) == 0);
+		assert(jstr_re_rplcn_len_exec(&preg, jstr_struct(&s), "!", 1, 0, 2) == 2);
+		assert(s.size == 5);
+		assert(memcmp(s.data, "!x!yz", 5) == 0);
+		jstr_free_j(&s);
+		jstr_re_free(&preg);
+	}
+	{
+		/* Empty string haystack, zero-length match removal. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "()", JSTR_RE_CF_EXTENDED)));
+		jstr_ty s = JSTR_INIT;
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "", 0)));
+		assert(jstr_re_rmn_exec(&preg, jstr_struct(&s), 0, 2) == 1);
+		assert(s.size == 0);
+		jstr_free_j(&s);
+		jstr_re_free(&preg);
+	}
+	{
+		/* Empty string haystack, zero-length match replacement. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "()", JSTR_RE_CF_EXTENDED)));
+		jstr_ty s = JSTR_INIT;
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "", 0)));
+		assert(jstr_re_rplcn_len_exec(&preg, jstr_struct(&s), "!", 1, 0, 2) == 1);
+		assert(s.size == 1);
+		assert(memcmp(s.data, "!", 1) == 0);
 		jstr_free_j(&s);
 		jstr_re_free(&preg);
 	}
