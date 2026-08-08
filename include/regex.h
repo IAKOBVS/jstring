@@ -426,7 +426,17 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	/* Use the same algorithm as rmn, only replacing memmem with regex. */
-	for (; n && i.src_e < end; --n, ++changed) {
+	for (; n && i.src_e < end; ) {
+		if ((preg->cflags & JSTR_RE_CF_NEWLINE) && *i.src_e == '\n') {
+			/* Skip newline char: copy unmatched up to it, and copy the newline itself. */
+			const size_t run_len = JSTR_DIFF(i.src_e, i.src);
+			memmove(i.dst, i.src, run_len);
+			i.dst += run_len;
+			*i.dst++ = '\n';
+			i.src_e++;
+			i.src = i.src_e;
+			continue;
+		}
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 			;
@@ -452,6 +462,8 @@ start:
 		/* Edge case. */
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
+		--n;
+		++changed;
 	}
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	return changed;
@@ -727,7 +739,17 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 	goto start;
 	/* Use the same algorithm as rplcn, only replacing memmem with regex,
 	 * with backreference handling. */
-	for (; n && i.src_e < end; --n, ++changed) {
+	for (; n && i.src_e < end; ) {
+		if ((preg->cflags & JSTR_RE_CF_NEWLINE) && *i.src_e == '\n') {
+			/* Skip newline char: copy unmatched up to it, and copy the newline itself. */
+			const size_t run_len = JSTR_DIFF(i.src_e, i.src);
+			memmove(i.dst, i.src, run_len);
+			i.dst += run_len;
+			*i.dst++ = '\n';
+			i.src_e++;
+			i.src = i.src_e;
+			continue;
+		}
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 			;
@@ -743,6 +765,8 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		/* Get length of RPLC. */
 		if (backref)
 			rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+		else
+			rplcwbackref_len = rplc_len;
 		/* Check if needs reallocation. Track cumulative destination size and remaining source size. */
 		new_cap = JSTR_DIFF(i.dst, *s) + JSTR_DIFF(end, i.src) + 2;
 		if (rplcwbackref_len > (size_t)find_len)
@@ -784,6 +808,8 @@ start:
 		/* Edge case. */
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
+		--n;
+		++changed;
 	}
 	/* Copy to DST the remaining SRC. */
 	*sz = JSTR_DIFF(jstr_mempmove(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
