@@ -259,7 +259,7 @@ jstr_re_comp(jstr_re_ty *R preg, const char *R ptn, int cflags) JSTR_NOEXCEPT
 JSTR_NONNULL((1))
 JSTR_NONNULL((2))
 JSTR_ATTR_WARN_UNUSED
-JSTR_FUNC_PURE_MAY_NULL
+JSTR_FUNC_MAY_NULL
 JSTR_ATTR_NOTHROW
 jstr_re_ret_ty
 jstr_re_exec(const jstr_re_ty *R preg, const char *R s, size_t nmatch, regmatch_t *R pmatch, int eflags) JSTR_NOEXCEPT
@@ -278,7 +278,7 @@ jstr_re_exec(const jstr_re_ty *R preg, const char *R s, size_t nmatch, regmatch_
 ;
 #	endif
 
-JSTR_FUNC_PURE
+JSTR_FUNC
 jstr_re_ret_ty
 jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nmatch, regmatch_t *R pmatch, int eflags) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
@@ -309,7 +309,7 @@ jstr_re_match(const jstr_re_ty *R preg, const char *R s, int eflags) JSTR_NOEXCE
 /* Search pattern in S.
  * Return return value of regexec.
  * Store offset of matched pattern in pmatch. */
-JSTR_FUNC_PURE
+JSTR_FUNC
 jstr_re_ret_ty
 jstr_re_search(const jstr_re_ty *R preg, const char *R s, regmatch_t *R pmatch, int eflags) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
