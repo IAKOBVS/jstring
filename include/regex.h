@@ -418,7 +418,15 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 		return jstr_re_rm_from_exec(preg, s, sz, cap, start_idx, eflags);
 	jstr_re_off_ty changed = 0;
 	int ret;
-	while (n && i.src_e < end) {
+	int prev_zero = 1;
+	while (n) {
+		int matched_at_end = (i.src_e == end);
+		if (matched_at_end) {
+			if (!prev_zero)
+				break;
+		} else if (i.src_e > end) {
+			break;
+		}
 		const int eflags_curr = eflags | IS_NOTBOL(*s, JSTR_DIFF(i.src_e, *s), preg->cflags);
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags_curr);
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
@@ -440,6 +448,9 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 				}
 			}
 			i.src_e = (char *)i.src;
+			if (matched_at_end)
+				break;
+			prev_zero = (find_len == 0);
 		} else if (ret == JSTR_RE_RET_NOMATCH) {
 			break;
 		} else {
@@ -706,7 +717,15 @@ check:
 	jstr_re_off_ty changed = 0;
 	size_t rplcwbackref_len;
 	int ret;
-	while (n && i.src_e < end) {
+	int prev_zero = 1;
+	while (n) {
+		int matched_at_end = (i.src_e == end);
+		if (matched_at_end) {
+			if (!prev_zero)
+				break;
+		} else if (i.src_e > end) {
+			break;
+		}
 		const int eflags_curr = eflags | IS_NOTBOL(*s, JSTR_DIFF(i.src_e, *s), preg->cflags);
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags_curr);
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
@@ -756,6 +775,9 @@ check:
 				}
 			}
 			i.src_e = (char *)i.src;
+			if (matched_at_end)
+				break;
+			prev_zero = (find_len == 0);
 		} else if (ret == JSTR_RE_RET_NOMATCH) {
 			break;
 		} else {
