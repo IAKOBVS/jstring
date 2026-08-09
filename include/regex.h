@@ -407,7 +407,6 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
 	regmatch_t rm;
-	/* i holds cursors for dst (writing cursor), src (copy cursor), and src_e (search cursor). */
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	const char *end = *s + *sz;
 	if (jstr_unlikely(n == 0))
@@ -424,22 +423,22 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 	int prev_zero = 1;
 	while (n) {
 		/* Track if we are starting search from the end of the string. */
-		int matched_at_end = (i.src_e == end);
+		int matched_at_end = (i.src == end);
 		if (matched_at_end) {
 			/* If the previous match was not zero-length, stop. */
 			if (!prev_zero)
 				break;
-		} else if (i.src_e > end) {
+		} else if (i.src > end) {
 			/* Stop if search cursor went past end. */
 			break;
 		}
 		/* Compute NOTBOL flag dynamically based on current search position. */
-		const int eflags_curr = eflags | IS_NOTBOL(*s, JSTR_DIFF(i.src_e, *s), preg->cflags);
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags_curr);
+		const int eflags_curr = eflags | IS_NOTBOL(*s, JSTR_DIFF(i.src, *s), preg->cflags);
+		ret = jstr_re_search_len(preg, i.src, JSTR_DIFF(end, i.src), &rm, eflags_curr);
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 			const size_t find_len = (size_t)(rm.rm_eo - rm.rm_so);
 			/* Copy unmatched prefix up to the start of the current match. */
-			const size_t prev_len_total = JSTR_DIFF(i.src_e + rm.rm_so, i.src);
+			const size_t prev_len_total = (size_t)rm.rm_so;
 			if (prev_len_total > 0) {
 				memmove(i.dst, i.src, prev_len_total);
 				i.dst += prev_len_total;
@@ -447,7 +446,7 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 			--n;
 			++changed;
 			/* Set copy pointer to end of the match. */
-			i.src = i.src_e + rm.rm_eo;
+			i.src += rm.rm_eo;
 			/* To avoid infinite loops on empty/zero-length matches, advance search past 1 char. */
 			if (jstr_unlikely(find_len == 0)) {
 				if (i.src < end) {
@@ -456,8 +455,6 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 					++i.src;
 				}
 			}
-			/* Set next search pointer. */
-			i.src_e = (char *)i.src;
 			/* If we matched at end, stop immediately. */
 			if (matched_at_end)
 				break;
@@ -715,7 +712,6 @@ check:
 			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	}
 	regmatch_t rm[10];
-	/* i holds dst (built destination cursor), src (source cursor), and src_e (search cursor). */
 	jstr_internal_inplace_ty i;
 	size_t new_cap = *sz * 2 + 2;
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
@@ -726,7 +722,7 @@ check:
 	i.dst = *s + *sz + 1;
 	const char *dst_s = i.dst;
 	i.src = *s;
-	i.src_e = *s + start_idx;
+	char *search = *s + start_idx;
 	const char *end = *s + *sz;
 	jstr_re_off_ty changed = 0;
 	size_t rplcwbackref_len;
@@ -735,18 +731,18 @@ check:
 	int prev_zero = 1;
 	while (n) {
 		/* Track if we are starting search from the end of the string. */
-		int matched_at_end = (i.src_e == end);
+		int matched_at_end = (search == end);
 		if (matched_at_end) {
 			/* If the previous match was not zero-length, stop. */
 			if (!prev_zero)
 				break;
-		} else if (i.src_e > end) {
+		} else if (search > end) {
 			/* Stop if search cursor went past end. */
 			break;
 		}
 		/* Compute NOTBOL flag dynamically based on current search position. */
-		const int eflags_curr = eflags | IS_NOTBOL(*s, JSTR_DIFF(i.src_e, *s), preg->cflags);
-		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags_curr);
+		const int eflags_curr = eflags | IS_NOTBOL(*s, JSTR_DIFF(search, *s), preg->cflags);
+		ret = jstr_re_exec_len(preg, search, JSTR_DIFF(end, search), nmatch, rm, eflags_curr);
 		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 			const size_t find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 			if (backref)
@@ -767,20 +763,20 @@ check:
 				}
 				*sz = saved_sz;
 				i.src = *s + JSTR_DIFF(i.src, tmp);
-				i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
+				search = *s + JSTR_DIFF(search, tmp);
 				i.dst = *s + JSTR_DIFF(i.dst, tmp);
 				dst_s = *s + JSTR_DIFF(dst_s, tmp);
 				end = *s + JSTR_DIFF(end, tmp);
 			}
 			/* Copy unmatched prefix up to the start of the current match. */
-			const size_t prev_len = JSTR_DIFF(i.src_e + rm[0].rm_so, i.src);
+			const size_t prev_len = JSTR_DIFF(search + rm[0].rm_so, i.src);
 			if (prev_len > 0) {
 				memmove(i.dst, i.src, prev_len);
 				i.dst += prev_len;
 			}
 			/* Copy replacement string (handling backreferences). */
 			if (backref) {
-				jstr_internal_re_rplcbackrefcpy(rm, (unsigned char *)i.src_e, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
+				jstr_internal_re_rplcbackrefcpy(rm, (unsigned char *)search, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
 				i.dst += rplcwbackref_len;
 			} else {
 				i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
@@ -788,7 +784,7 @@ check:
 			--n;
 			++changed;
 			/* Set copy pointer to end of the match. */
-			i.src = i.src_e + rm[0].rm_eo;
+			i.src = search + rm[0].rm_eo;
 			/* To avoid infinite loops on empty/zero-length matches, advance search past 1 char. */
 			if (jstr_unlikely(find_len == 0)) {
 				if (i.src < end) {
@@ -798,7 +794,7 @@ check:
 				}
 			}
 			/* Set next search pointer. */
-			i.src_e = (char *)i.src;
+			search = (char *)i.src;
 			/* If we matched at end, stop immediately. */
 			if (matched_at_end)
 				break;

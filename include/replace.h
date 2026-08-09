@@ -29,35 +29,13 @@ JSTR_INTERNAL_BEGIN_DECLS
 typedef struct jstr_internal_inplace_ty {
 	char *dst;
 	const char *src;
-	char *src_e;
 } jstr_internal_inplace_ty;
 
 #	define JSTR_INTERNAL_INPLACE_INIT(str) \
 		{                       \
 			str,            \
-			str,            \
 			str             \
 		}
-
-#	define JSTR_INTERNAL_INPLACE_RMALL(i, find_len)                         \
-		do {                                                     \
-			const size_t _n = JSTR_DIFF((i).src_e, (i).src); \
-			if (jstr_likely((i).dst != (i).src))             \
-				memmove((i).dst, (i).src, _n);           \
-			(i).dst += _n;                                   \
-			(i).src += _n + find_len;                        \
-			(i).src_e += find_len;                           \
-		} while (0)
-
-#	define JSTR_INTERNAL_INPLACE_RPLCALL(i, rplc, rplc_len, find_len)                                \
-		do {                                                                              \
-			const size_t _n = JSTR_DIFF((i).src_e, (i).src);                          \
-			if (jstr_likely(find_len != rplc_len) && jstr_likely((i).dst != (i).src)) \
-				memmove((i).dst, (i).src, _n);                                    \
-			(i).dst = (char *)jstr_mempcpy((i).dst + _n, rplc, rplc_len);             \
-			(i).src += _n + find_len;                                                 \
-			(i).src_e += find_len;                                                    \
-		} while (0)
 
 /* TODO: optimize memory allocation for *all* functions. */
 
@@ -352,25 +330,22 @@ jstr_rmallspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reje
 	if (jstr_unlikely(start_idx >= *sz))
 		return 0;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
-	if (jstr_unlikely(*i.src_e == '\0') || !(*(i.src_e += strcspn(i.src_e, reject))))
+	char *match = (char *)i.src + strcspn(i.src, reject);
+	if (!*match)
 		return 0;
-	size_t find_len;
 	size_t changed = 0;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
-	find_len = strspn(i.src_e, reject);
-	changed += find_len;
-	goto start;
-	while (*i.src_e && (*(i.src_e += strcspn(i.src_e, reject)))) {
-		find_len = strspn(i.src_e, reject);
+	do {
+		size_t find_len = strspn(match, reject);
 		changed += find_len;
-		j = JSTR_DIFF(i.src_e, i.src);
-		memmove(i.dst, i.src, j);
-start:
-		i.dst += j;
-		i.src += j + find_len;
-		i.src_e += find_len;
-	}
-	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
+		size_t j = JSTR_DIFF(match, i.src);
+		if (j > 0) {
+			memmove(i.dst, i.src, j);
+			i.dst += j;
+		}
+		i.src = match + find_len;
+		match = (char *)i.src + strcspn(i.src, reject);
+	} while (*match);
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, strlen(i.src)), s);
 	return changed;
 }
 #else
@@ -400,23 +375,27 @@ size_t
 jstr_rmnchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_unlikely(start_idx >= *sz))
+	if (jstr_unlikely(start_idx >= *sz) || jstr_unlikely(n == 0))
 		return 0;
 	const char *end = s + *sz;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
-	if (jstr_unlikely(n == 0) || jstr_unlikely(*i.src_e == '\0') || !(i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))))
+	char *match = (char *)memchr(i.src, c, JSTR_DIFF(end, i.src));
+	if (!match)
 		return 0;
 	size_t changed = 0;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
-	goto start;
-	for (; n && (i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))); --n, ++changed) {
-		j = JSTR_DIFF(i.src_e, i.src);
-		memmove(i.dst, i.src, j);
-start:
-		i.dst += j;
-		i.src += j + 1;
-		++i.src_e;
-	}
+	do {
+		size_t j = JSTR_DIFF(match, i.src);
+		if (j > 0) {
+			memmove(i.dst, i.src, j);
+			i.dst += j;
+		}
+		i.src = match + 1;
+		++changed;
+		--n;
+		if (n == 0)
+			break;
+		match = (char *)memchr(i.src, c, JSTR_DIFF(end, i.src));
+	} while (match);
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), s);
 	return changed;
 }
@@ -475,22 +454,26 @@ size_t
 jstr_rmnchr_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_unlikely(start_idx >= *sz))
+	if (jstr_unlikely(start_idx >= *sz) || jstr_unlikely(n == 0))
 		return 0;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
-	if (jstr_unlikely(n == 0) || jstr_unlikely(*i.src_e == '\0') || !*(i.src_e = jstr_strchrnul((char *)i.src_e, c)))
+	char *match = jstr_strchrnul((char *)i.src, c);
+	if (!*match)
 		return 0;
 	size_t changed = 0;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
-	goto start;
-	for (; n && *(i.src_e = jstr_strchrnul((char *)i.src_e, c)); --n, ++changed) {
-		j = JSTR_DIFF(i.src_e, i.src);
-		memmove(i.dst, i.src, j);
-start:
-		i.dst += j;
-		i.src += j + 1;
-		++i.src_e;
-	}
+	do {
+		size_t j = JSTR_DIFF(match, i.src);
+		if (j > 0) {
+			memmove(i.dst, i.src, j);
+			i.dst += j;
+		}
+		i.src = match + 1;
+		++changed;
+		--n;
+		if (n == 0)
+			break;
+		match = jstr_strchrnul((char *)i.src, c);
+	} while (*match);
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, (size_t)((s + *sz) - i.src)), s);
 	return changed;
 }
@@ -607,21 +590,23 @@ size_t
 jstr_stripspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	if (jstr_unlikely(start_idx >= *sz))
+		return 0;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
-	if (jstr_unlikely(*i.src_e == '\0') || !*(i.src_e += strcspn(i.src_e, reject)))
+	char *match = (char *)i.src + strcspn(i.src, reject);
+	if (!*match)
 		return 0;
 	size_t changed = 0;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
-	goto start;
-	for (; *(i.src_e += strcspn(i.src_e, reject)); ++changed) {
-		j = JSTR_DIFF(i.src_e, i.src);
-		memmove(i.dst, i.src, j);
-start:
-		i.dst += j;
-		i.src += j + 1;
-		++i.src_e;
-	}
-	if (changed)
+	do {
+		size_t j = JSTR_DIFF(match, i.src);
+		if (j > 0) {
+			memmove(i.dst, i.src, j);
+			i.dst += j;
+		}
+		i.src = match + 1;
+		++changed;
+		match = (char *)i.src + strcspn(i.src, reject);
+	} while (*match);
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, (size_t)((s + *sz) - i.src)), s);
 	return changed;
 }
@@ -851,28 +836,27 @@ jstr_rmn_len_from_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, size_
 		return 0;
 	if (find_len == 1)
 		return jstr_rmnchr_len_from(s, sz, start_idx, *find, n);
-	if (jstr_unlikely(find_len == 0))
+	if (jstr_unlikely(find_len == 0) || jstr_unlikely(n == 0))
 		return 0;
 	const char *end = s + *sz;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
-	if (jstr_unlikely(n == 0) || !(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)))
+	char *match = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(end, i.src), find, find_len);
+	if (!match)
 		return 0;
 	size_t changed = 0;
-	size_t prev_len = JSTR_DIFF(i.src_e, i.src);
-	goto start;
-	for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)); --n, ++changed) {
-		/* Length of previous SRC that needs to be copied to DST. */
-		prev_len = JSTR_DIFF(i.src_e, i.src);
-		/* Copy to DST the previous SRC. */
-		memmove(i.dst, i.src, prev_len);
-start:
-		/* Advance DST after the copy. */
-		i.dst += prev_len;
-		/* Advance SRC and SRC_E to the next SRC to find. */
-		i.src += prev_len + find_len;
-		i.src_e += find_len;
-	}
-	/* Copy to DST the remaining SRC. */
+	do {
+		size_t prev_len = JSTR_DIFF(match, i.src);
+		if (prev_len > 0) {
+			memmove(i.dst, i.src, prev_len);
+			i.dst += prev_len;
+		}
+		i.src = match + find_len;
+		++changed;
+		--n;
+		if (n == 0)
+			break;
+		match = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(end, i.src), find, find_len);
+	} while (match);
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), s);
 	return changed;
 }
@@ -1022,43 +1006,42 @@ jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, 
 	const char *end = *s + *sz;
 	if (rplc_len <= find_len) {
 		/* Do an in-place replacement, with no allocation. */
-		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)))
+		char *match = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(end, i.src), find, find_len);
+		if (!match)
 			return 0;
-		size_t prev_len = JSTR_DIFF(i.src_e, i.src);
-		goto start;
-		for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)); --n, ++changed) {
-			/* Length of previous SRC that needs to be copied to DST. */
-			prev_len = JSTR_DIFF(i.src_e, i.src);
+		do {
+			size_t prev_len = JSTR_DIFF(match, i.src);
 			/* No need to move string when FIND and RPLC have equal lengths. */
-			if (find_len != rplc_len)
-				/* Copy to DST the previous SRC. */
+			if (find_len != rplc_len && prev_len > 0)
 				memmove(i.dst, i.src, prev_len);
-start:
 			/* Copy to DST RPLC and advance. */
 			i.dst = (char *)jstr_mempcpy(i.dst + prev_len, rplc, rplc_len);
-			/* Advance SRC and SRC_E to the next SRC to find. */
-			i.src += prev_len + find_len;
-			i.src_e += find_len;
-		}
+			i.src = match + find_len;
+			++changed;
+			--n;
+			if (n == 0)
+				break;
+			match = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(end, i.src), find, find_len);
+		} while (match);
 		/* Copy to DST the remaining SRC. */
 		if (jstr_likely(rplc_len != find_len))
 			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	} else {
 		/* May need to allocate. */
-		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len);
+		char *first = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(end, i.src), find, find_len);
 		if (jstr_nullchk(first))
 			return 0;
-		i.src_e = first;
-		const char *last;
+		char *match = first;
+		const char *last = NULL;
 		/* Do two passes, first to get the new size, second to do the replacements.
 		 * Doing O(2 * n) memmem should be fine, since good memmem implementations
 		 * should be O(n + m), whereas the O(n^2) replacements are guaranteed.
 		 * First pass, get the new size. */
 		do {
 			++changed;
-			last = i.src_e;
-			i.src_e += find_len;
-		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)));
+			last = match;
+			match = (char *)jstr_memmem_exec(t, match + find_len, JSTR_DIFF(end, match + find_len), find, find_len);
+		} while (--n && match);
 		if (!changed)
 			return 0;
 		if (changed == 1) {
@@ -1091,20 +1074,21 @@ start:
 		first = (char *)i.src;
 		n = changed;
 		/* Cache first match. */
-		i.src_e = first;
+		match = first;
 		size_t prev_len;
 		/* Second pass, do the replacements. */
 		do {
 			/* Length of previous SRC that needs to be copied to DST. */
-			prev_len = JSTR_DIFF(i.src_e, i.src);
+			prev_len = JSTR_DIFF(match, i.src);
 			/* Copy to DST the previous SRC. */
-			memmove(i.dst, i.src, prev_len);
+			if (prev_len > 0)
+				memmove(i.dst, i.src, prev_len);
 			/* Copy to DST RPLC and advance. */
 			i.dst = (char *)jstr_mempmove(i.dst + prev_len, rplc, rplc_len);
-			/* Advance SRC and SRC_E to the next SRC to find. */
-			i.src += prev_len + find_len;
-			i.src_e += find_len;
-		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(last, i.src_e), find, find_len)));
+			/* Advance SRC to the next SRC to find. */
+			i.src = match + find_len;
+			match = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find, find_len);
+		} while (--n && match);
 		/* Copy to DST the remaining SRC. */
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	}
