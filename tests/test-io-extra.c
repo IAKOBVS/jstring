@@ -93,6 +93,31 @@ test_isbinary_control_char(void)
 	assert(ret == 0);
 }
 
+static void
+test_isbinary_atleast(void)
+{
+	const char text[] = "hello world";
+	size_t tlen = strlen(text);
+	/* Pure text: never binary, regardless of window. */
+	assert(jstr_io_isbinary_atleast(text, tlen, tlen) == 0);
+	assert(jstr_io_isbinary_atleast(text, tlen, 4096) == 0);
+	/* NUL inside the window. */
+	const char data[] = { 'a', 'b', '\0', 'c', 'd' };
+	assert(jstr_io_isbinary_atleast(data, 5, 5) == 1);
+	assert(jstr_io_isbinary_atleast(data, 5, 3) == 1);
+	/* NUL beyond the window: not binary within it. */
+	const char late[] = { 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', '\0', 'b', 'b', 'b' };
+	assert(jstr_io_isbinary_atleast(late, 12, 8) == 0);
+	assert(jstr_io_isbinary_atleast(late, 12, 9) == 1);
+	/* Window larger than sz is clamped to sz. */
+	assert(jstr_io_isbinary_atleast(data, 5, 1024) == 1);
+	/* NUL at the very first byte. */
+	const char nul0[] = { '\0', 'a', 'b' };
+	assert(jstr_io_isbinary_atleast(nul0, 3, 1) == 1);
+	/* Empty buffer. */
+	assert(jstr_io_isbinary_atleast("", 0, 5) == 0);
+}
+
 /* ---------- FILE* write / read tests ---------- */
 
 static void
@@ -293,6 +318,8 @@ main(int argc, char **argv)
 	test_utf8_bom_signature();
 	TESTING(test_isbinary_control_char);
 	test_isbinary_control_char();
+	TESTING(test_isbinary_atleast);
+	test_isbinary_atleast();
 	TESTING(test_fwritefile);
 	test_fwritefile();
 	TESTING(test_fwritefile_append_newline);

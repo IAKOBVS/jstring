@@ -130,6 +130,22 @@ jstr_io_isbinary(const char *buf, size_t sz) JSTR_NOEXCEPT
 ;
 #	endif
 
+/* Check the first MIN(N, SZ) bytes for a NUL byte.
+ * File must be nul terminated. */
+JSTR_FUNC_PURE
+int
+jstr_io_isbinary_atleast(const char *buf, size_t sz, size_t n) JSTR_NOEXCEPT
+#	ifdef JSTR_IMPLEMENTATION
+{
+	const int ret = jstr_internal_io_isbinarysignature(buf, sz);
+	if (ret != -1)
+		return ret;
+	return memchr(buf, '\0', JSTR_MIN(n, sz)) != NULL;
+}
+#	else
+;
+#	endif
+
 /* Check MIN(N, SZ) bytes for any unprintable char. */
 JSTR_FUNC
 int
