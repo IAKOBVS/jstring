@@ -28,19 +28,19 @@ update() {
 	case $in_fname in
 	*/internal/musl/*.h)
 		out_fname=$PATH_BUILD/internal/musl/$base_fname
-		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		python3 ../scripts-py/namespace_macros.py "$in_fname" >"$out_fname"
 		;;
 	*/internal/*.h)
 		out_fname=$PATH_BUILD/internal/$base_fname
-		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		python3 ../scripts-py/namespace_macros.py "$in_fname" >"$out_fname"
 		;;
 	*/*macro*.h)
 		out_fname=$PATH_BUILD/$base_fname
-		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		python3 ../scripts-py/namespace_macros.py "$in_fname" >"$out_fname"
 		;;
 	*/*.h)
 		out_fname=$PATH_BUILD/$base_fname
-		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
+		python3 ../scripts-py/gen_func.py "$in_fname" | python3 ../scripts-py/namespace_macros.py >"$out_fname"
 		;;
 	*)
 		return

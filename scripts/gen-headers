@@ -2,8 +2,8 @@
 mkdir -p ../headers
 files=$(find ../include/ -type f -name '*h' -a ! -name '.' -a ! -name '_*')
 for file in $files; do
-	echo "perl ./gen-headers $file >> ../headers/$file.hh"
-	perl ./gen-headers.pl "$file" >> ../headers/$file.hh &
+	echo "python3 ./gen-headers $file >> ../headers/$file.hh"
+	python3 ../scripts-py/gen_headers.py "$file" >> ../headers/$file.hh &
 done
 wait
 mv ../include/*.hh ../headers

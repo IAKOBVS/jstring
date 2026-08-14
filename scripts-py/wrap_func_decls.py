@@ -47,32 +47,36 @@ IS_DECL_ONLY: re.Pattern[str] = re.compile(r'(?:JSTR_DECL_ONLY|JSTR_AS_LIBRARY)'
 
 
 def main() -> None:
-    file_str = sys.stdin.read()
-    out = ''
-    for block in jl_file_to_blocks(file_str):
-        m = WRAP_FN_RE.match(block)
+    file_str: str = sys.stdin.read()
+    out: str = ''
+    for block in jl_file_to_blocks(file_str):  # block: str
+        m: re.Match[str] | None = WRAP_FN_RE.match(block)
         if not m:
             out += block + '\n\n'
             continue
-        pre_attr = m.group(1)
-        rettype = m.group(2).strip()
-        name = m.group(3)
-        arg_str = m.group(4)
-        post_attr = m.group(5)
-        body = m.group(6)
+        pre_attr: str = m.group(1)
+        rettype: str = m.group(2)
+        name: str = m.group(3)
+        arg_str: str = m.group(4)
+        post_attr: str = m.group(5)
+        body: str = m.group(6)
 
-        rettype_clean = re.sub(r'\s+', '', rettype)
+        # Preprocessor directives (`#define`, `#if`, ...) match WRAP_FN_RE;
+        # detect them by the normalized return type.
+        rettype_clean: str = re.sub(r'\s+', '', rettype)
         if rettype_clean in NON_FUNCS:
             out += block + '\n\n'
             continue
         if not IS_FUNC.search(block):
-            out += block + '\n\n'
+            # Faithful to wrap-func-decls.pl: a block that matches WRAP_FN_RE
+            # without a JSTR_FUNC annotation is silently dropped (the Perl
+            # `next` emits nothing). Preserved for byte-for-byte parity.
             continue
         if IS_DECL_ONLY.search(block):
             out += block + '\n\n'
             continue
 
-        # Remove 'static' from pre-attributes
+        # Remove 'static' from pre-attributes.
         pre_attr = re.sub(r'^[ \t]*static[ \t]*\n?', '', pre_attr, flags=re.MULTILINE)
         pre_attr = re.sub(r'\n[ \t]*static[ \t]*\n?', '\n', pre_attr)
         pre_attr = re.sub(r'^[ \t]*static[ \t]*', '', pre_attr)
@@ -80,17 +84,19 @@ def main() -> None:
         pre_attr = re.sub(r'^\s+', '', pre_attr)
         pre_attr = re.sub(r'\s+$', '', pre_attr)
 
-        # Normalize arg string
+        # Normalize arg string.
         arg_str = re.sub(r',\s*$', '', arg_str)
 
-        # Declaration (extern prototype)
+        # Declaration (extern prototype).
+        decl: str
         if pre_attr:
             decl = f"{pre_attr}\nextern {rettype}\n{name}({arg_str});"
         else:
             decl = f"extern {rettype}\n{name}({arg_str});"
 
         post_attr = re.sub(r'\s+$', '', post_attr)
-        # Definition (with JSTR_API in place of static)
+        # Definition (with JSTR_API in place of static).
+        defn: str
         if pre_attr and post_attr:
             defn = f"{pre_attr}\nJSTR_API {rettype}\n{name}({arg_str}){post_attr}\n{{ {body} }}"
         elif pre_attr:
@@ -100,8 +106,11 @@ def main() -> None:
         else:
             defn = f"JSTR_API {rettype}\n{name}({arg_str})\n{{ {body} }}"
 
+        # Emit either the extern prototype (library / decl-only mode) or
+        # the full JSTR_API definition (header-only / implementation mode).
         out += f"#if defined(JSTR_AS_LIBRARY) || defined(JSTR_DECL_ONLY)\n{decl}\n#else\n{defn}\n#endif\n\n"
 
+    # Collapse trailing newlines to a single one.
     out = re.sub(r'\n\n*$', '\n', out)
     sys.stdout.write(out)
 

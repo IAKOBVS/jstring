@@ -21,7 +21,7 @@ if [ "$SKIP_BUILD" != "1" ]; then
 	PATH_SRC=include
 	mkdir -p "$PATH_BUILD" "$PATH_BUILD/internal" "$PATH_BUILD/internal/musl"
 
-	# Generate headers in parallel (scripts use jlib.pl, must run from scripts/ dir)
+	# Generate headers in parallel (scripts-py imports jlib, run from scripts/ dir)
 	SCRIPTDIR=scripts
 	export SCRIPTDIR
 	gen_ret=0
@@ -34,9 +34,9 @@ if [ "$SKIP_BUILD" != "1" ]; then
 			*)                   d=".";              t="g";;
 		esac
 		if [ "$t" = "g" ]; then
-			(cd "$SCRIPTDIR" && perl gen-func.pl "../$1" | perl namespace-macros.pl) > "build/include/jstr/$bf"
+			(cd "$SCRIPTDIR" && python3 ../scripts-py/gen_func.py "../$1" | python3 ../scripts-py/namespace_macros.py) > "build/include/jstr/$bf"
 		else
-			(cd "$SCRIPTDIR" && perl namespace-macros.pl "../$1") > "build/include/jstr/$d/$bf"
+			(cd "$SCRIPTDIR" && python3 ../scripts-py/namespace_macros.py "../$1") > "build/include/jstr/$d/$bf"
 		fi
 	' _ {} || gen_ret=$?
 	[ "$gen_ret" -eq 0 ] || { echo "Header generation failed (exit $gen_ret)"; exit 1; }

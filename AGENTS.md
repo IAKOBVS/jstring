@@ -2,7 +2,7 @@
 
 ## Build system
 
-Custom shell+Perl scripts (no Makefile, no CMake). Run from repo root:
+Custom shell scripts + Python generators (no Makefile, no CMake). Run from repo root:
 
 ```sh
 ./compile         # setup checks + generate headers + build shared library into build/
@@ -14,14 +14,15 @@ Custom shell+Perl scripts (no Makefile, no CMake). Run from repo root:
 ./uninstall             # remove installed files
 ```
 
-`./compile` runs `scripts/setup` first (checks page size, undefined macros, scoped macros), then generates headers via Perl (`gen-func.pl` + `namespace-macros.pl`), then compiles a shared library into `build/lib/`.
+`./compile` runs `scripts/setup` first (checks page size, undefined macros, scoped macros), then generates headers via Python (`scripts-py/gen_func.py` + `scripts-py/namespace_macros.py`), then compiles a shared library into `build/lib/`. Requires `python3` and `perl` is no longer needed.
 
 ## Code generation
 
 - `include/*.h` are the source-of-truth headers; `build/include/jstr/*.h` are generated.
-- `gen-func.pl` converts `JSTR_FUNC`/`JSTR_FUNC_VOID` annotations into `static inline` functions and generates `jstr_*` wrappers from annotated function blocks.
-- **Do not put blank lines inside function bodies.** The Perl codegen splits blocks by blank lines.
-- `namespace-macros.pl` renames `NAMESPACE_INTERNAL_*` → `jstr_internal_*` etc.
+- `scripts-py/gen_func.py` converts `JSTR_FUNC`/`JSTR_FUNC_VOID` annotations into `static inline` functions and generates `jstr_*` wrappers from annotated function blocks.
+- **Do not put blank lines inside function bodies.** The Python codegen splits blocks by blank lines.
+- `scripts-py/namespace_macros.py` renames `NAMESPACE_INTERNAL_*` → `jstr_internal_*` etc.
+- `scripts/check-py-parity` regenerates every header through the Python engine and the original Perl engine (re-extracted from git history) and asserts byte-identical output. Run it after any change to `scripts-py/`.
 
 ## Testing
 

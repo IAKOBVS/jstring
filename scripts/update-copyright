@@ -5,6 +5,6 @@ PS4='' set -e
 cd "$(dirname "$0")" || exit
 #shellcheck disable=SC2005
 for file in $(echo ../* ../include/* ../bin/* ../tests/*); do
-	test -f "$file" && echo "$(perl ./update-copyright.pl "$file")" >"$file" &
+	test -f "$file" && echo "$(python3 ../scripts-py/update_copyright.py "$file")" >"$file" &
 done
 wait

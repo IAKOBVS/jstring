@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Namespace internal macros as `JSTR_INTERNAL_*`.
+
+Port of `scripts/namespace-macros.pl`. Reads a header from stdin (or a
+filename) and rewrites every macro that is `#undef`'d at the end of the
+file, except those already prefixed with `JSTR`/`jstr`.
+"""
 import sys
 from pathlib import Path
 

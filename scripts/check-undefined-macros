@@ -6,7 +6,7 @@ undefine()
 {
 	#shellcheck disable=SC2005
 	mv "$2" "$2.bak"
-	perl ./check-undefined-macros.pl "$1" "$2.bak" >"$2"
+	python3 ../scripts-py/check_undefined_macros.py "$1" "$2.bak" >"$2"
 	rm "$2.bak"
 }
 
