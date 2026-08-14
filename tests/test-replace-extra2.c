@@ -194,5 +194,44 @@ int main(void) {
 		assert(r == 0);
 		free(s);
 	}
+	/* jstr_rplcn_len_from_exec with n == 0 */
+	{
+		jstr_twoway_ty t;
+		jstr_memmem_comp(&t, "x", 1);
+		char *s = NULL;
+		size_t sz = 0, cap = 0;
+		assert(!jstr_chk(jstr_assign_len(&s, &sz, &cap, "axbxc", 5)));
+		size_t r = jstr_rplcn_len_from_exec(&t, &s, &sz, &cap, 0, "x", 1, "yy", 2, 0);
+		assert(r == 0);
+		assert(sz == 5);
+		assert(!strcmp(s, "axbxc"));
+		free(s);
+	}
+	/* jstr_rplcn_len_from_exec where find is not found (changed == 0) */
+	{
+		jstr_twoway_ty t;
+		jstr_memmem_comp(&t, "z", 1);
+		char *s = NULL;
+		size_t sz = 0, cap = 0;
+		assert(!jstr_chk(jstr_assign_len(&s, &sz, &cap, "axbxc", 5)));
+		size_t r = jstr_rplcn_len_from_exec(&t, &s, &sz, &cap, 0, "z", 1, "yy", 2, 2);
+		assert(r == 0);
+		assert(sz == 5);
+		assert(!strcmp(s, "axbxc"));
+		free(s);
+	}
+	/* jstr_rplcn_len_from_exec with changed == 1 */
+	{
+		jstr_twoway_ty t;
+		jstr_memmem_comp(&t, "x", 1);
+		char *s = NULL;
+		size_t sz = 0, cap = 0;
+		assert(!jstr_chk(jstr_assign_len(&s, &sz, &cap, "axbxc", 5)));
+		size_t r = jstr_rplcn_len_from_exec(&t, &s, &sz, &cap, 0, "x", 1, "yy", 2, 1);
+		assert(r == 1);
+		assert(sz == 6);
+		assert(!strcmp(s, "ayybxc"));
+		free(s);
+	}
 	return 0;
 }
