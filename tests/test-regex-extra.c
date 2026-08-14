@@ -144,6 +144,30 @@ main(int argc, char **argv)
 		jstr_free_j(&s);
 		jstr_re_free(&preg);
 	}
+	{
+		/* Cover jstr_internal_re_notbol_inloop branch where *(str - 1) != '\n' but NEWLINE flag is on */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "a", JSTR_RE_CF_EXTENDED | JSTR_RE_CF_NEWLINE)));
+		jstr_ty s = JSTR_INIT;
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "xayaz", 5)));
+		assert(jstr_re_rmall_exec(&preg, jstr_struct(&s), 0) == 2);
+		assert(s.size == 3);
+		assert(memcmp(s.data, "xyz", 3) == 0);
+		jstr_free_j(&s);
+		jstr_re_free(&preg);
+	}
+	{
+		/* Cover jstr_internal_re_notbol_inloop branch where NEWLINE flag is off */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "a", JSTR_RE_CF_EXTENDED)));
+		jstr_ty s = JSTR_INIT;
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&s), "xayaz", 5)));
+		assert(jstr_re_rmall_exec(&preg, jstr_struct(&s), 0) == 2);
+		assert(s.size == 3);
+		assert(memcmp(s.data, "xyz", 3) == 0);
+		jstr_free_j(&s);
+		jstr_re_free(&preg);
+	}
 	SUCCESS();
 	return 0;
 	(void)argc;

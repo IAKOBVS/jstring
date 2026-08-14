@@ -227,6 +227,36 @@ main(int argc, char **argv)
 		assert(end == buf + 3);
 	}
 
+	/* --- Additional builder capacity/allocation/errors coverage --- */
+	{
+		char *tmp_s = NULL;
+		size_t tmp_sz = 0, tmp_cap = 0;
+
+#ifndef __SANITIZE_ADDRESS__
+		/* 1. jstr_reserve with a capacity that is extremely large but does not cause infinite loop (should fail or return error) */
+		/* Using a value that terminates the doubling loop but fails allocation */
+		size_t large_cap = ((size_t)1 << 40);
+		int ret = jstr_reserve(&tmp_s, &tmp_sz, &tmp_cap, large_cap);
+		assert(ret == JSTR_RET_ERR);
+#endif
+
+		/* 2. jstr_reserveexactwith same/smaller size (should be a no-op) */
+		tmp_cap = 20;
+		tmp_s = malloc(20);
+		assert(tmp_s != NULL);
+		int ret = jstr_reserveexact(&tmp_s, &tmp_sz, &tmp_cap, 15);
+		assert(ret == JSTR_RET_SUCC);
+		assert(tmp_cap == 20);
+
+#ifndef __SANITIZE_ADDRESS__
+		/* 3. jstr_reserveexactalways with extremely large capacity */
+		ret = jstr_reserveexactalways(&tmp_s, &tmp_sz, &tmp_cap, large_cap);
+		assert(ret == JSTR_RET_ERR);
+#endif
+
+		free(tmp_s);
+	}
+
 	jstr_free(&s, &sz, &cap);
 
 	SUCCESS();

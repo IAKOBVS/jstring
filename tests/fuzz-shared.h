@@ -11,7 +11,12 @@
 
 #include "../include/macros.h"
 
-enum { FSTR = 256, FMEM = 128, FITER = 256 };
+enum { FSTR = 256, FMEM = 128 };
+#if defined(JSTR_TEST_SLOW) && JSTR_TEST_SLOW
+enum { FITER = 64 };
+#else
+enum { FITER = 16 };
+#endif
 
 enum gen_mode {
 	GEN_ASCII = 0,   /* printable ASCII (0x20-0x7E) */

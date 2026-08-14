@@ -272,6 +272,79 @@ test_writefilefd_len_empty(void)
 	assert(close(fd) == 0);
 }
 
+/* ---------- additional edge case coverage for include/io.h ---------- */
+
+static void
+test_io_more_edges(void)
+{
+	/* 1. expandtildefirst error condition when $HOME is unset/missing or empty */
+	char *old_home = getenv("HOME");
+	/* Keep old home to restore it later */
+	char home_backup[JSTR_IO_PATH_MAX] = {0};
+	if (old_home) {
+		strncpy(home_backup, old_home, sizeof(home_backup) - 1);
+	}
+	unsetenv("HOME");
+	char *s = NULL;
+	size_t sz = 0, cap = 0;
+	assert(jstr_assign_len(&s, &sz, &cap, "~/test_tilde", 12) == JSTR_RET_SUCC);
+	/* Should fail/error out when HOME is unset */
+	int ret = jstr_io_expandtildefirst(&s, &sz, &cap);
+	assert(ret == JSTR_RET_ERR);
+
+	/* Restore home */
+	if (old_home) {
+		setenv("HOME", home_backup, 1);
+	}
+
+	/* 2. expandtildefirst with no tilde at the beginning */
+	sz = 0;
+	assert(jstr_assign_len(&s, &sz, &cap, "no_tilde", 8) == JSTR_RET_SUCC);
+	ret = jstr_io_expandtildefirst(&s, &sz, &cap);
+	assert(ret == JSTR_RET_SUCC);
+	assert(strcmp(s, "no_tilde") == 0);
+
+	/* 3. writefilefd_len failure with invalid fd */
+	ret = jstr_io_writefilefd_len("test", 4, -1);
+	assert(ret == JSTR_RET_ERR);
+
+	/* 4. writefile_len failure with invalid mode or path */
+	ret = jstr_io_writefile_len("test", 4, "/nonexistent_dir/nonexistent_file_xyz", O_WRONLY | O_CREAT, 0666);
+	assert(ret == JSTR_RET_ERR);
+
+	/* 5. fwritefile_len failure with invalid mode or path */
+	ret = jstr_io_fwritefile_len("test", 4, "/nonexistent_dir/nonexistent_file_xyz", "w");
+	assert(ret == JSTR_RET_ERR);
+
+	/* 6. readfilefd failure with invalid fd */
+	struct stat st;
+	ret = jstr_io_readfilefd(&s, &sz, &cap, -1, &st);
+	assert(ret == JSTR_RET_ERR);
+
+	/* 7. freadfilefp with closed/invalid fd stream to trigger fstat failure safely */
+	{
+		char fpath_dummy[JSTR_IO_PATH_MAX];
+		size_t pld = pathcat(fpath_dummy, 0, tmpdir_root, tmpdir_root_len);
+		pld = pathcat(fpath_dummy, pld, "/dummy_close.txt", 16);
+		/* Create the file first so we can open it */
+		int tmp_fd = open(fpath_dummy, O_CREAT | O_WRONLY, 0644);
+		assert(tmp_fd >= 0);
+		close(tmp_fd);
+
+		FILE *fp_dummy = fopen(fpath_dummy, "r");
+		assert(fp_dummy != NULL);
+		int inner_fd = fileno(fp_dummy);
+		assert(inner_fd >= 0);
+		close(inner_fd); /* invalidate the fd */
+
+		ret = jstr_io_freadfilefp(&s, &sz, &cap, fpath_dummy, fp_dummy, &st);
+		assert(ret == JSTR_RET_ERR);
+		fclose(fp_dummy);
+	}
+
+	jstr_free(&s, &sz, &cap);
+}
+
 /* ---------- fwritefilefp_len and freadfilefp tests ---------- */
 
 static void
@@ -336,6 +409,8 @@ main(int argc, char **argv)
 	test_writefilefd_len_empty();
 	TESTING(test_fwritefilefp_len);
 	test_fwritefilefp_len();
+	TESTING(test_io_more_edges);
+	test_io_more_edges();
 	teardown();
 	SUCCESS();
 	return EXIT_SUCCESS;
