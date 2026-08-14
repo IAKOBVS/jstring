@@ -41,6 +41,13 @@ typedef struct jstr_twoway_ty {
 	size_t _buf[4096 / sizeof(size_t)];
 } jstr_twoway_ty;
 
+typedef struct jstr_line_iter_ty {
+	const char *pos;
+	const char *end;
+	const char *line;
+	size_t len;
+} jstr_line_iter_ty;
+
 static JSTR_ATTR_INLINE void
 jstr_twoway_set_len(jstr_twoway_ty *t, size_t len)
 {

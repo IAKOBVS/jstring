@@ -1822,6 +1822,75 @@ jstr_unescape_p(char *s) JSTR_NOEXCEPT
 ;
 #endif
 
+JSTR_FUNC_VOID
+void
+jstr_line_iter_init_len(jstr_line_iter_ty *iter, const char *s, size_t sz) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
+{
+	iter->pos = s;
+	iter->end = s + sz;
+	iter->line = NULL;
+	iter->len = 0;
+}
+#else
+;
+#endif
+
+JSTR_FUNC_VOID
+void
+jstr_line_iter_init(jstr_line_iter_ty *iter, const char *s) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
+{
+	iter->pos = s;
+	iter->end = NULL;
+	iter->line = NULL;
+	iter->len = 0;
+}
+#else
+;
+#endif
+
+JSTR_FUNC
+int
+jstr_line_iter_next(jstr_line_iter_ty *iter) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
+{
+	if (iter->end) {
+		if (iter->pos >= iter->end)
+			return 0;
+		iter->line = iter->pos;
+		const char *next = (const char *)memchr(iter->pos, '\n', (size_t)(iter->end - iter->pos));
+		if (next) {
+			iter->len = (size_t)(next - iter->pos);
+			iter->pos = next + 1;
+		} else {
+			iter->len = (size_t)(iter->end - iter->pos);
+			iter->pos = iter->end;
+		}
+		if (iter->len > 0 && iter->line[iter->len - 1] == '\r')
+			iter->len--;
+		return 1;
+	} else {
+		if (*iter->pos == '\0')
+			return 0;
+		iter->line = iter->pos;
+		const char *next = strchr(iter->pos, '\n');
+		if (next) {
+			iter->len = (size_t)(next - iter->pos);
+			iter->pos = next + 1;
+		} else {
+			iter->len = strlen(iter->pos);
+			iter->pos = iter->pos + iter->len;
+		}
+		if (iter->len > 0 && iter->line[iter->len - 1] == '\r')
+			iter->len--;
+		return 1;
+	}
+}
+#else
+;
+#endif
+
 JSTR_INTERNAL_END_DECLS
 
 #	undef R
