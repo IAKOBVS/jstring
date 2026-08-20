@@ -131,7 +131,10 @@ fuzz_builder2(size_t iter)
 		/* --- cat (variadic) --- */
 		char *t = NULL;
 		size_t tsz = 0, tcap = 0;
-		ret = jstr_cat(&t, &tsz, &tcap, "AB", "CD", "EF", NULL);
+		{
+			jstr_cat_arg_ty cat_args[] = {jstr_literal_init("AB"), jstr_literal_init("CD"), jstr_literal_init("EF")};
+			ret = jstr_cat(&t, &tsz, &tcap, cat_args, 3);
+		}
 		assert(ret == JSTR_RET_SUCC);
 		assert(tsz == 6);
 		assert(memcmp(t, "ABCDEF", 6) == 0);

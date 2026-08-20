@@ -306,7 +306,10 @@ main(int argc, char **argv)
 
 	/* builder tests. */
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_cat, jstr_struct(&result), "hello", " ", "world", NULL);
+	{
+		jstr_cat_arg_ty args[] = {jstr_literal_init("hello"), jstr_literal_init(" "), jstr_literal_init("world")};
+		T_APPEND(JSTR_RET_SUCC, jstr_cat, jstr_struct(&result), args, (size_t)3);
+	}
 	expected = "hello world";
 	T_APPEND(JSTR_RET_SUCC, jstr_append_len, jstr_struct(&result), expected, strlen(expected));
 	expected = "hello world";
@@ -373,8 +376,14 @@ main(int argc, char **argv)
 
 	/* builder tests. */
 	jstr_empty(result.data, &result.size);
-	T(jstr_cat(jstr_struct(&result), "hello", " world", NULL), "hello world");
-	T(jstr_cat(jstr_struct(&result), "a", "b", NULL), "hello worldab");
+	{
+		jstr_cat_arg_ty args[] = {jstr_literal_init("hello"), jstr_literal_init(" world")};
+		T(jstr_cat(jstr_struct(&result), args, 2), "hello world");
+	}
+	{
+		jstr_cat_arg_ty args[] = {jstr_literal_init("a"), jstr_literal_init("b")};
+		T(jstr_cat(jstr_struct(&result), args, 2), "hello worldab");
+	}
 	T(jstr_asprintf(jstr_struct(&result), "%s", "c"), "c");
 	T(jstr_asprintf_append(jstr_struct(&result), "%s", "z"), "cz");
 	T(jstr_assign_len(jstr_struct(&result), "hello", strlen("hello")), "hello");

@@ -62,22 +62,25 @@ main(int argc, char **argv)
 		assert(*end == '\0');
 	}
 
-	/* --- jstr_cat with empty argument list (arg_len == 0) --- */
+	/* --- jstr_cat with empty argument list (nargs == 0) --- */
 	sz = 0;
-	assert(jstr_cat(&s, &sz, &cap, (const char *)NULL) == JSTR_RET_SUCC);
+	assert(jstr_cat(&s, &sz, &cap, NULL, 0) == JSTR_RET_SUCC);
 	assert(sz == 0);
 
-	/* --- jstr_cat_j (variadic, uses jstr_ty) --- */
+	/* --- jstr_cat_j (uses jstr_ty) --- */
 	{
 		jstr_ty j2 = JSTR_INIT;
 		assert(jstr_assign_len(&j2.data, &j2.size, &j2.capacity, "a", 1) == JSTR_RET_SUCC);
-		assert(jstr_cat_j(&j2, "b", "c", (const char *)NULL) == JSTR_RET_SUCC);
+		{
+			jstr_cat_arg_ty cat_args[] = {jstr_literal_init("b"), jstr_literal_init("c")};
+			assert(jstr_cat_j(&j2, cat_args, 2) == JSTR_RET_SUCC);
+		}
 		assert(j2.size == 3);
 		assert(memcmp(j2.data, "abc", 3) == 0);
 		assert(j2.data[3] == '\0');
 
 		/* cat_j with empty args */
-		assert(jstr_cat_j(&j2, (const char *)NULL) == JSTR_RET_SUCC);
+		assert(jstr_cat_j(&j2, NULL, 0) == JSTR_RET_SUCC);
 		assert(j2.size == 3);
 
 		jstr_free_j(&j2);

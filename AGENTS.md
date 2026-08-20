@@ -52,6 +52,33 @@ When a test assertion fails:
 4. `stat` follows symlinks, so symlinks appear as `S_IFREG` unless `lstat` is used
 5. Use `cat > /tmp/test-debug.c << 'EOF' ... EOF` approach for rapid iteration
 
+## Benchmarking
+
+```sh
+./bench          # compile and run all benchmarks in bench/
+./see result-*   # sort benchmark results by time
+```
+
+- Bench files live in `bench/` and compile with `-march=native -O2 -std=c99`, linking against `build/lib/libjstr.so`.
+- Each bench file defines `T_DEFINE_STRSTR` macro functions and calls `RUN(fn, label)` in a loop.
+- Output format: `<label> <time>`, sorted by `bench/see`.
+- Bench files cannot call `static` internal functions (e.g., `jstr_internal_simd_*`) — use only exported public API functions.
+- When adding new benchmarks, always compare jstr functions against a naive/scalar baseline of equivalent behavior.
+
+### Benchmark-driven optimization workflow
+
+When implementing optimizations documented in `OPTIMIZATIONS.md`:
+
+1. **Read the estimated improvement** from the relevant section in `OPTIMIZATIONS.md`.
+2. **Write a benchmark** in `bench/` that isolates the specific function/pattern. Include both the jstr function and a naive baseline for comparison.
+3. **Run the benchmark** before the optimization to establish a baseline. Record results.
+4. **Implement the optimization.**
+5. **Run the benchmark again** and compare against the recorded baseline.
+6. **Update `BENCHMARKS.md`** with measured results and a cross-reference row against the OPTIMIZATIONS.md estimate.
+7. **Run `./test-check-fail`** to confirm no regressions.
+
+Never estimate or claim an improvement without measured data. If the measured gain differs significantly from the estimate, update the estimate in `OPTIMIZATIONS.md` with the actual number and any notes about why.
+
 ## Test-Driven Development
 
 All new features, bug fixes, and changes **must** come with a test. Write the test first, verify it fails, then implement the fix/feature, then verify it passes.
@@ -64,6 +91,37 @@ Workflow:
 4. Run `./compile && ./test-check-fail` to confirm the new test passes and no existing tests break.
 
 Do not submit or consider a change complete without a corresponding test.
+
+## Correctness Tests for Optimizations
+
+When implementing an optimization from `OPTIMIZATIONS.md`, also write correctness tests that verify the optimization produces identical results to the original unoptimized path.
+
+### Workflow
+
+1. **Read the optimization** from `OPTIMIZATIONS.md`.
+2. **Write a correctness test** in `tests/` that covers:
+   - Empty input (`""`)
+   - Single-byte input
+   - Boundary lengths (e.g., exactly 16 bytes for SSE2, 32 for AVX2, 64 for AVX-512)
+   - Odd lengths (not aligned to SIMD width)
+   - Already-aligned inputs
+   - All-zero and all-one byte patterns
+   - Worst-case inputs (e.g., needle match at end of string, no match at all)
+   - ASCII printable, extended ASCII (0x80-0xFF), embedded NULs (for `_mem*` variants)
+3. **Run `./compile && ./test-check-fail`** to confirm the new test passes with both the optimized and unoptimized paths.
+4. **Write a benchmark** (see above) to measure the improvement.
+5. **Run the benchmark** and record the result in `BENCHMARKS.md`.
+
+### What to test per optimization type
+
+| Optimization | Test cases |
+| :--- | :--- |
+| SIMD dispatch (3a, 3b, 3c, 3d, 7c, 7d, 7e) | Exact output match vs scalar baseline for all string lengths 0-128 |
+| `strstr_comp` chain fix (1a) | Needle lengths 0, 1, 2, 3 to verify no OOB reads |
+| `memrchr` path enable (1b) | Single-char reverse cspan with match at start, middle, end, no match |
+| `insertafterallchr` single alloc (6b) | 0, 1, many matches; large haystack; empty needle |
+| Growth strategy (6a) | Builder capacity after N appends, verify no over-alloc |
+| `cat` double-strlen (5f) | `jstr_cat` with empty src, empty dst, both non-empty |
 
 ## Parallel Coverage Work
 
@@ -107,6 +165,8 @@ encounter. For data that may contain embedded NULs, use `_mem*` variants or cast
 to `void *` and use the corresponding `_mem*` / `void *` overload when available.
 
 **Always zero-initialize**: `jstr_ty j = JSTR_INIT;`
+
+**No hardcoded string lengths**: Never write literal lengths like `"hello", 5`. Use `jstr_literal(s)` which expands to `(s), (sizeof(s) - 1)` and provides both the pointer and computed length. For struct initializers use `jstr_literal_init(s)`. For just the length, use `sizeof(s) - 1`.
 
 **Error handling**: functions return negative on error. Check return values. Use `jstr_err()` to print or `jstr_errdie()` to print and exit. Set `JSTR_PANIC=1` to auto-abort on errors.
 

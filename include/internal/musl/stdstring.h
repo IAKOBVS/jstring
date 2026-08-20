@@ -252,22 +252,14 @@ JSTR_NOEXCEPT
 	if (!c[0])
 		return n;
 	if (!c[1]) {
-#if 1
-		p += (n - 1);
-		for (; n && *p != *c; n--, p--) {}
-		return n;
-		/* TODO: figure out why using memrchr fails test */
-#else
-		const unsigned char *end = p + n;
-#	if JSTR_HAVE_MEMRCHR
+#if JSTR_HAVE_MEMRCHR
 		p = (const unsigned char *)memrchr(p, *c, n);
-#	elif JSTR_HAVE_SIMD
+#elif JSTR_HAVE_SIMD
 		p = (const unsigned char *)jstr_internal_simd_memrchr(p, *c, n);
-#	else
+#else
 		p = (const unsigned char *)jstr_internal_memrchr_musl(p, *c, n);
-#	endif
-		return p ? (size_t)(end - p) : 0;
 #endif
+		return p ? (size_t)(p - (const unsigned char *)s + 1) : 0;
 	}
 	p += (n - 1);
 	size_t byteset[32 / sizeof(size_t)];

@@ -37,6 +37,11 @@ typedef struct jstr_literal_ty {
 	const unsigned int size;
 } jstr_literal_ty;
 
+typedef struct jstr_cat_arg_ty {
+	const char *ptr;
+	size_t size;
+} jstr_cat_arg_ty;
+
 typedef struct jstr_twoway_ty {
 	size_t _buf[4096 / sizeof(size_t)];
 } jstr_twoway_ty;

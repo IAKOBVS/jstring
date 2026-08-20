@@ -52,17 +52,14 @@ JSTR_INTERNAL_BEGIN_DECLS
 
 /* Set first char to NUL and size to zero. */
 JSTR_FUNC_VOID
+static JSTR_ATTR_INLINE
 void
 jstr_empty(char *R s, size_t *R sz) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(s != NULL))
 		*s = '\0';
 	*sz = 0;
 }
-#else
-;
-#endif
 
 JSTR_FUNC_VOID
 jstr_ret_ty
@@ -225,15 +222,12 @@ jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 #endif
 
 JSTR_FUNC
+static JSTR_ATTR_INLINE
 jstr_ret_ty
 jstr_io_print(const jstr_ty *j) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_io_fwrite(j->data, 1, j->size, stdout) == j->size ? JSTR_RET_SUCC : JSTR_RET_ERR;
 }
-#else
-;
-#endif
 
 JSTR_FUNC
 jstr_ret_ty
@@ -268,63 +262,44 @@ jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t 
 ;
 #endif
 
-/* Last arg must be NULL.
- * Return value:
- * JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
-JSTR_ATTR_SENTINEL
+/* ARGS must point to an array of jstr_cat_arg_ty.
+ * LAST must have .ptr == NULL. */
 JSTR_FUNC_MAY_NULL
+JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 JSTR_NONNULL((1))
 JSTR_NONNULL((2))
 JSTR_NONNULL((3))
+static JSTR_ATTR_INLINE
 jstr_ret_ty
-jstr_cat(char *R *R s, size_t *R sz, size_t *R cap, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+jstr_cat(char *R *R s, size_t *R sz, size_t *R cap, const jstr_cat_arg_ty *args, size_t nargs) JSTR_NOEXCEPT
 {
-	va_list ap;
-	va_start(ap, cap);
-	size_t arg_len = 0;
-	const char *arg;
-	for (; (arg = va_arg(ap, const char *)); arg_len += strlen(arg)) {}
-	va_end(ap);
-	if (jstr_unlikely(arg_len == 0))
+	size_t total = 0;
+	for (size_t i = 0; i < nargs; i++)
+		total += args[i].size;
+	if (jstr_unlikely(total == 0))
 		return JSTR_RET_SUCC;
-	va_start(ap, cap);
-	const jstr_ret_ty ret = jstr_internal_cat(s, sz, cap, ap, arg_len);
-	va_end(ap);
-	return ret;
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + total + 1)))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	char *p = *s + *sz;
+	*sz += total;
+	for (size_t i = 0; i < nargs; i++) {
+		memcpy(p, args[i].ptr, args[i].size);
+		p += args[i].size;
+	}
+	*p = '\0';
+	return JSTR_RET_SUCC;
 }
-#else
-;
-#endif
 
-/* Last arg must be NULL.
- * Return value:
- * JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
-JSTR_ATTR_SENTINEL
+/* ARGS must point to an array of jstr_cat_arg_ty.
+ * LAST must have .ptr == NULL. */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
+static JSTR_ATTR_INLINE
 jstr_ret_ty
-jstr_cat_j(jstr_ty *j, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+jstr_cat_j(jstr_ty *j, const jstr_cat_arg_ty *args, size_t nargs) JSTR_NOEXCEPT
 {
-	va_list ap;
-	va_start(ap, j);
-	size_t arg_len = 0;
-	const char *arg;
-	for (; (arg = va_arg(ap, const char *)); arg_len += strlen(arg)) {}
-	va_end(ap);
-	if (jstr_unlikely(arg_len == 0))
-		return JSTR_RET_SUCC;
-	va_start(ap, j);
-	const jstr_ret_ty ret = jstr_internal_cat(&j->data, &j->size, &j->capacity, ap, arg_len);
-	va_end(ap);
-	return ret;
+	return jstr_cat(&j->data, &j->size, &j->capacity, args, nargs);
 }
-#else
-;
-#endif
 
 /* Return ptr to '\0' in S. */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -340,15 +315,12 @@ jstr_append_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len
 #endif
 
 JSTR_FUNC_VOID
+static JSTR_ATTR_INLINE
 void
 jstr_append_unsafe(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	strcpy(s + sz, src);
 }
-#else
-;
-#endif
 
 /* Return ptr to '\0' in S. */
 JSTR_FUNC
@@ -381,15 +353,12 @@ jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
 #endif
 
 JSTR_FUNC_VOID
+static JSTR_ATTR_INLINE
 void
 jstr_strset(char *s, int c) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	memset(s, c, strlen(s));
 }
-#else
-;
-#endif
 
 JSTR_FUNC
 char *
@@ -424,15 +393,12 @@ jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
 
 /* Append N Cs to end of S. */
 JSTR_FUNC
+static JSTR_ATTR_INLINE
 char *
 jstr_pushbackn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	return (char *)memset(s + sz, c, n) + n;
 }
-#else
-;
-#endif
 
 /* Append N Cs to end of S. */
 JSTR_FUNC

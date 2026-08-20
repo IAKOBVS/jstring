@@ -28,6 +28,7 @@
 #include "bench.h"
 
 #include "../include/string.h"
+#include "../include/ctype.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -127,15 +128,6 @@ simple_strnstr(const char *hs,
 	return NULL;
 }
 
-static char *
-simple_stpcpy(char *JSTR_RESTRICT dst,
-              const char *JSTR_RESTRICT src)
-{
-	size_t n = strlen(src);
-	*(char *)memcpy(dst, src, n) = '\0';
-	return dst + n;
-}
-
 #define T_STRSTR()                                                  \
 	do {                                                        \
 		T_STRSTR_ALL("a");                                  \
@@ -201,6 +193,8 @@ simple_stpcpy(char *JSTR_RESTRICT dst,
 		return cs;                                    \
 	}
 
+#define T_AVX(needle)
+
 #define T_STRSTR_ALL(needle)                                          \
 	JSTR_STATIC_ASSERT(sizeof(needle) - 1 <= (BUFLEN * CNT), ""); \
 	needle_len = sizeof(needle) - 1;                              \
@@ -237,18 +231,6 @@ T_DEFINE_STRSTR(jstr_strcasestr, buf, needle)
 T_DEFINE_STRSTR(jstr_strcasestr_len, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(simple_strrstr_len, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_stpcpy, buf, buf + i)
-T_DEFINE_STRSTR(simple_stpcpy, buf, buf + i)
-
-#ifdef __AVX2__
-T_DEFINE_STRSTR(jstr_internalsimd_memmem, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_internalsimd_stpcpy, buf, buf + i)
-#	define T_AVX(needle)                    \
-		RUN(b_jstr_internalsimd_memmem, needle); \
-
-#else
-#	define T_AVX(needle)
-#endif
 
 /* clang-format off */
 #define DOUBLE(s) s#s
@@ -258,9 +240,6 @@ int
 main()
 {
 	T_STRSTR();
-	RUN(b_jstr_stpcpy, 0);
-	RUN(b_simple_stpcpy, 0);
-	RUN(b_jstr_internalsimd_stpcpy, 0);
 	free(buf);
 	return 0;
 }

@@ -156,16 +156,13 @@ jstr_memrchrnul(const void *s, int c, size_t sz) JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
+static JSTR_ATTR_INLINE
 void *
 jstr_memchrnul(const void *s, int c, size_t sz) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	const void *p = memchr(s, c, sz);
 	return (void *)(p ? p : (char *)s + sz);
 }
-#else
-;
-#endif
 
 /* Return value:
  * ptr to '\0' in DST. */
@@ -276,15 +273,12 @@ jstr_strstrnul(const char *hs, const char *ne) JSTR_NOEXCEPT
 #endif
 
 JSTR_FUNC_PURE
+static JSTR_ATTR_INLINE
 int
 jstr_cmpeq(const void *s1, size_t s1_len, const void *s2, size_t s2_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	return (s1_len == s2_len) ? memcmp(s1, s2, s1_len) : 1;
 }
-#else
-;
-#endif
 
 JSTR_FUNC_PURE
 int
@@ -336,30 +330,24 @@ jstr_endscase(const char *hs, const char *ne) JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
+static JSTR_ATTR_INLINE
 int
 jstr_ends_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_likely(hs_len >= ne_len) ? !memcmp(hs + hs_len - ne_len, ne, ne_len) : 0;
 }
-#else
-;
-#endif
 
 /* Check if S2 is in end of S1.
  * Return value:
  * 1 if true.
  * 0 if false. */
 JSTR_FUNC_PURE
+static JSTR_ATTR_INLINE
 int
 jstr_ends(const char *hs, const char *ne) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_ends_len(hs, strlen(hs), ne, strlen(ne));
 }
-#else
-;
-#endif
 
 /* Check if S1 starts with S2 case-insensitively.
  * Return value:
@@ -420,30 +408,24 @@ jstr_startscasenul(const char *hs, const char *ne) JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
+static JSTR_ATTR_INLINE
 int
 jstr_starts_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_likely(hs_len >= ne_len) ? !memcmp(hs, ne, ne_len) : 0;
 }
-#else
-;
-#endif
 
 /* Check if S1 starts with S2.
  * Return value:
  * 1 if true.
  * 0 if false. */
 JSTR_FUNC_PURE
+static JSTR_ATTR_INLINE
 int
 jstr_starts(const char *hs, const char *ne) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
 {
 	return (*hs == *ne) ? !strncmp(hs, ne, strlen(ne)) : (*ne == '\0');
 }
-#else
-;
-#endif
 
 #ifdef JSTR_IMPLEMENTATION
 #	define JSTR_INTERNAL_STRSTR234_MEMMEM    1

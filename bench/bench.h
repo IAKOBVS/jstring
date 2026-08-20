@@ -101,17 +101,6 @@ run_bench(const char *label, size_t (*bench)(void *), void *params)
 	exit(0);
 }
 
-static JSTR_ATTR_MAYBE_UNUSED void *
-xmalloc(size_t n)
-{
-	void *p = malloc(n);
-	if (jstr_unlikely(p == NULL))
-		jstr_errdie("");
-	return p;
-}
-
-#define malloc xmalloc
-
 #define RUN(a, b)                 \
 	extern size_t(a)(void *); \
 	run_bench(#a " " #b " ", (a), (void *)(b))

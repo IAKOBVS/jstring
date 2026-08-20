@@ -120,7 +120,10 @@ fuzz_builder(size_t iter)
 		/* --- cat --- */
 		ret = jstr_assign_len(&s, &sz, &cap, "AB", 2);
 		assert(ret == JSTR_RET_SUCC);
-		ret = jstr_cat(&s, &sz, &cap, "CD", "EF", (const char *)NULL);
+		{
+			jstr_cat_arg_ty cat_args[] = {jstr_literal_init("CD"), jstr_literal_init("EF")};
+			ret = jstr_cat(&s, &sz, &cap, cat_args, 2);
+		}
 		assert(ret == JSTR_RET_SUCC);
 		assert(sz == 6);
 		assert(memcmp(s, "ABCDEF", 6) == 0);
