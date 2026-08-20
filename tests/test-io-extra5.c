@@ -18,11 +18,6 @@ static int ftw_cb_count(const struct JSTR_IO_FTW *ftw, const void *args) {
 	return 0;
 }
 
-struct match_ctx {
-	const char *name;
-	int found;
-};
-
 static int ftw_match_accept_all(const char *name, jstr_io_path_size_ty name_len, const void *args) {
 	(void)name;
 	(void)name_len;
@@ -140,7 +135,6 @@ int main(void) {
 		char p[512];
 		snprintf(p, sizeof p, "%s/afile", tmpdir);
 		FILE *f = fopen(p, "w"); assert(f); fputc('x', f); fclose(f);
-		struct match_ctx mc = {"nope", 0};
 		jstr_io_path_size_ty dlen = (jstr_io_path_size_ty)strlen(p);
 		int ret = jstr_io_ftw_len(p, dlen, ftw_cb_check_dirpath, NULL,
 		    JSTR_IO_FTW_MATCHPATH, ftw_match_accept_all, NULL);

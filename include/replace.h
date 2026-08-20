@@ -1369,8 +1369,10 @@ jstr_ret_ty
 jstr_repeat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_unlikely(n <= 1))
+	if (jstr_unlikely(n <= 1) || jstr_unlikely(*sz == 0))
 		return JSTR_RET_SUCC;
+	if (jstr_unlikely(n > (SIZE_MAX - 1) / *sz))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * n + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_repeat_len_unsafe_p(*s, *sz, n), *s);
