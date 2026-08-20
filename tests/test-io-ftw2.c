@@ -42,14 +42,6 @@ static int ftw_cb_invalid_ret(const struct JSTR_IO_FTW *ftw, const void *args) {
 	return 42;
 }
 
-static int ftw_cb_fail_deep(const struct JSTR_IO_FTW *ftw, const void *args) {
-	(void)ftw;
-	(void)args;
-	if (S_ISREG(ftw->st->st_mode) && ftw->dirpath_len > 4)
-		return -1;
-	return 0;
-}
-
 static int ftw_match_skip_a(const char *name, jstr_io_path_size_ty name_len, const void *args) {
 	(void)name_len;
 	(void)args;
@@ -61,13 +53,6 @@ static int ftw_match_skip_a_matchpath(const char *path, jstr_io_path_size_ty pat
 	(void)args;
 	size_t plen = strlen(path);
 	return plen > 0 && path[plen - 1] == 'a' ? 1 : 0;
-}
-
-static int ftw_match_accept_all(const char *name, jstr_io_path_size_ty name_len, const void *args) {
-	(void)name;
-	(void)name_len;
-	(void)args;
-	return 0;
 }
 
 int main(void) {

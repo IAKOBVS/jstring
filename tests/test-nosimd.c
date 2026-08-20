@@ -1,5 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
-#include "../build-nosimd/include/jstr/jstr.h"
+#include "jstr.h"
 #include "test.h"
 #include <assert.h>
 #include <string.h>
