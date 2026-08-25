@@ -121,7 +121,7 @@ int main(void) {
 		int r = jstr_insertafterall_len(&s, &sz, &cap, "X", 1, "Y", 1);
 		assert(r == 0);
 		assert(sz == 7);
-		assert(!strcmp(s, "aYXbYXc"));
+		assert(!strcmp(s, "aXYbXYc"));
 		free(s);
 	}
 	/* jstr_rm_len_from_exec: find_len == 0 */

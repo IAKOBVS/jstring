@@ -96,7 +96,13 @@ run_bench(const char *label, size_t (*bench)(void *), void *params)
 	}
 	printf("%s", label);
 	clock_gettime(CLOCK_REALTIME, &tv0);
-	bench(params);
+	{
+		/* Consume the result: bench fns are often JSTR_FUNC_PURE or
+		 * side-effect-free, and a discarded result lets GCC delete
+		 * the entire workload (observed as ~50ns "runs"). */
+		volatile size_t sink = bench(params);
+		(void)sink;
+	}
 	print_stats(tv0);
 	exit(0);
 }

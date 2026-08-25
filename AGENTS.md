@@ -63,6 +63,7 @@ When a test assertion fails:
 - Each bench file defines `T_DEFINE_STRSTR` macro functions and calls `RUN(fn, label)` in a loop.
 - Output format: `<label> <time>`, sorted by `bench/see`.
 - Bench files cannot call `static` internal functions (e.g., `jstr_internal_simd_*`) — use only exported public API functions.
+- Beware pure/const-attributed callees: with identical arguments across iterations, GCC at -O2 will DELETE or HOIST the calls entirely (symptoms: sub-100ns runs, or totals equal to exactly one call). Defend by calling through a volatile function pointer, varying arguments per iteration, and consuming the result (see `bench/bench.h` volatile sink).
 - When adding new benchmarks, always compare jstr functions against a naive/scalar baseline of equivalent behavior.
 
 ### Benchmark-driven optimization workflow
@@ -78,6 +79,8 @@ When implementing optimizations documented in `OPTIMIZATIONS.md`:
 7. **Run `./test-check-fail`** to confirm no regressions.
 
 Never estimate or claim an improvement without measured data. If the measured gain differs significantly from the estimate, update the estimate in `OPTIMIZATIONS.md` with the actual number and any notes about why.
+
+**Performance changes MUST ship with benchmarks.** Every performance-motivated change (optimization, SIMD wiring, algorithm rewrite, strlen/realloc reduction) must be accompanied by a benchmark run that verifies whether the predicted potential improvement is actually reflected in the microbenchmarks. A change whose benchmark shows no measurable gain (or a regression) must either be reverted or have its `OPTIMIZATIONS.md` estimate corrected with the measured numbers before it can be considered done — benchmarks are part of the deliverable, not optional validation.
 
 ## Test-Driven Development
 

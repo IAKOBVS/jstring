@@ -78,7 +78,9 @@ jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
 	size_t size;
 	if (jstr_likely(j->data != NULL)) {
 		data = j->data;
-		size = strlen(data);
+		/* The struct's size field is authoritative; strlen here would
+		 * rescan the whole buffer (and lie about embedded NULs). */
+		size = j->size;
 	} else {
 		data = "(null)";
 		size = 0;
@@ -378,13 +380,13 @@ jstr_ret_ty
 jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (n > *sz) {
+	if (jstr_unlikely(n > *sz)) {
 		if (jstr_chk(jstr_reservealways(s, sz, cap, n + 1)))
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
-		*(*s + n) = '\0';
-		*sz = n;
 	}
 	memset(*s, c, n);
+	*(*s + n) = '\0';
+	*sz = n;
 	return JSTR_RET_SUCC;
 }
 #else

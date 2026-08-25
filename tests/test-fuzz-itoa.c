@@ -46,8 +46,8 @@ fuzz_itoa(size_t iter)
 	for (size_t i = 0; i < iter; ++i) {
 		unsigned long long val = (unsigned long long)rand();
 		val |= ((unsigned long long)rand()) << 32;
-		/* jstr_ulltoa_p only handles digits 0-9 (no a-f), so restrict to bases 2-10 */
-		unsigned int base = (unsigned int)(rand() % 9) + 2;
+		/* Bases 2-36: jstr_ulltoa_p renders digits >= 10 as lowercase letters. */
+		unsigned int base = (unsigned int)(rand() % 35) + 2;
 
 		/* --- ulltoa_p --- */
 		memset(j_buf, 0xAA, sizeof(j_buf));

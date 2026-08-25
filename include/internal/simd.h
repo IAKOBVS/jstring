@@ -119,6 +119,10 @@ static char *
 jstr_internal_simd_stpcpy(char *R dst, const char *R src)
 JSTR_NOEXCEPT
 {
+	/* Fallback for platforms without libc stpcpy. Keep this single-pass
+	 * vector form: a plain byte loop (musl-style) measures 10.5x slower
+	 * than libc stpcpy and ~6x slower than this function on long strings
+	 * (BENCHMARKS.md section 1b). */
 	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
 	while (i--)
 		if ((*dst++ = *src++) == '\0')
@@ -127,12 +131,12 @@ JSTR_NOEXCEPT
 	const VEC zv = SETZERO();
 	if (JSTR_PTR_IS_ALIGNED(dst, VEC_SIZE))
 		/* Aligned store to DST. */
-		for (; CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv);
+		for (; !CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv);
 		     src += VEC_SIZE, dst += VEC_SIZE)
 			STORE((VEC *)dst, sv);
 	else
 		/* Unaligned store to DST. */
-		for (; CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv);
+		for (; !CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv);
 		     src += VEC_SIZE, dst += VEC_SIZE)
 			STOREU((VEC *)dst, sv);
 	while ((*dst++ = *src++)) {}
@@ -500,7 +504,7 @@ JSTR_NOEXCEPT
 		if ((*s = (char)jstr_tolower(*s)) == '\0')
 			return s;
 	const VEC zv = SETZERO();
-	for (VEC sv; CMPEQ8_MASK(sv = LOAD((VEC *)s), zv); s += VEC_SIZE)
+	for (VEC sv; !CMPEQ8_MASK(sv = LOAD((VEC *)s), zv); s += VEC_SIZE)
 		STORE((VEC *)s, jstr_internal_simd_tolower_vec(sv));
 	for (; (*s = (char)jstr_tolower(*s)); ++s) {}
 	return s;
@@ -521,6 +525,45 @@ JSTR_NOEXCEPT
 	const VEC is_upper = AND(gt_a, lt_z);
 	const VEC cvt = AND(is_upper, SETONE8('a' - 'A'));
 	return SUB8(v, cvt);
+}
+
+#endif
+
+#if defined CMPGT8 && defined CMPLT8 && defined AND && defined ADD8 && defined SUB8
+
+JSTR_FUNC_VOID
+static void
+jstr_internal_simd_toupperstr_len(char *s, size_t n)
+JSTR_NOEXCEPT
+{
+	int off = (int)JSTR_DIFF(JSTR_PTR_ALIGN_UP(s, VEC_SIZE), s);
+	for (; off--; ++s) {
+		if (n-- == 0)
+			return;
+		*s = (char)jstr_toupper(*s);
+	}
+	for (VEC sv; n >= VEC_SIZE; n -= VEC_SIZE, s += VEC_SIZE) {
+		sv = LOAD((VEC *)s);
+		STORE((VEC *)s, jstr_internal_simd_toupper_vec(sv));
+	}
+	for (; n--; ++s)
+		*s = (char)jstr_toupper(*s);
+}
+
+JSTR_FUNC_VOID
+static char *
+jstr_internal_simd_toupperstr_p(char *s)
+JSTR_NOEXCEPT
+{
+	int off = (int)JSTR_DIFF(JSTR_PTR_ALIGN_UP(s, VEC_SIZE), s);
+	for (; off--; ++s)
+		if ((*s = (char)jstr_toupper(*s)) == '\0')
+			return s;
+	const VEC zv = SETZERO();
+	for (VEC sv; !CMPEQ8_MASK(sv = LOAD((VEC *)s), zv); s += VEC_SIZE)
+		STORE((VEC *)s, jstr_internal_simd_toupper_vec(sv));
+	for (; (*s = (char)jstr_toupper(*s)); ++s) {}
+	return s;
 }
 
 #endif
@@ -561,6 +604,18 @@ JSTR_NOEXCEPT
 		return (ret_ty)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	/* Skip to the first occurrence of NE's first byte before entering the
+	 * vector loop. The pair mask below can only fire at or after that
+	 * position, and libc memchr is a wider scan than our 16-byte loop.
+	 * When the first byte is at offset 0 this costs one call. */
+	{
+		const unsigned char *const hs0 = (const unsigned char *)hs;
+		const unsigned char *f = (const unsigned char *)memchr(hs0, *(const unsigned char *)ne, hs_len - ne_len + 1);
+		if (f == NULL)
+			return NULL;
+		hs_len -= (size_t)JSTR_DIFF(f, hs0);
+		hs = f;
+	}
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, m;
 	VEC hv, nv;

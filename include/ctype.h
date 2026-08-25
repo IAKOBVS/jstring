@@ -8,6 +8,19 @@
 
 #	include "macros.h"
 
+#ifdef JSTR_IMPLEMENTATION
+#	if defined __AVX512BW__ || defined __AVX2__ || defined __SSE2__
+#		ifndef JSTR_HAVE_SIMD
+#			define JSTR_HAVE_SIMD 1
+#		endif
+/* SIMD helpers are static; their stdstring dependency must stay
+ * declaration-only here or this TU would emit duplicate definitions. */
+#		undef JSTR_IMPLEMENTATION
+#		include "internal/simd.h"
+#		define JSTR_IMPLEMENTATION 1
+#	endif
+#endif
+
 #	define R JSTR_RESTRICT
 
 JSTR_INTERNAL_BEGIN_DECLS
@@ -18,9 +31,13 @@ char *
 jstr_toupperstr_p(char *s) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+#	if JSTR_HAVE_SIMD && defined CMPGT8 && defined CMPLT8
+	return jstr_internal_simd_toupperstr_p(s);
+#	else
 	unsigned char *p = (unsigned char *)s;
 	for (; (*p = jstr_toupper(*p)); ++p) {}
 	return (char *)p;
+#	endif
 }
 #else
 ;
@@ -32,9 +49,13 @@ char *
 jstr_tolowerstr_p(char *s) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+#	if JSTR_HAVE_SIMD && defined CMPGT8 && defined CMPLT8
+	return jstr_internal_simd_tolowerstr_p(s);
+#	else
 	unsigned char *p = (unsigned char *)s;
 	for (; (*p = jstr_tolower(*p)); ++p) {}
 	return (char *)p;
+#	endif
 }
 #else
 ;
@@ -47,9 +68,15 @@ void
 jstr_tolowerstr_len(char *s, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+#	if JSTR_HAVE_SIMD && defined CMPGT8 && defined CMPLT8
+	jstr_internal_simd_tolowerstr_len(s, n);
+	return;
+#	else
 	unsigned char *p = (unsigned char *)s;
 	for (; n--; ++p)
 		*p = jstr_tolower(*p);
+	return;
+#	endif
 }
 #else
 ;
@@ -89,9 +116,15 @@ void
 jstr_toupperstr_len(char *s, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+#	if JSTR_HAVE_SIMD && defined CMPGT8 && defined CMPLT8
+	jstr_internal_simd_toupperstr_len(s, n);
+	return;
+#	else
 	unsigned char *p = (unsigned char *)s;
 	for (; n--; ++p)
 		*p = jstr_toupper(*p);
+	return;
+#	endif
 }
 #else
 ;

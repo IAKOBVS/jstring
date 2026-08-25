@@ -1,5 +1,5 @@
 #!/bin/sh
-#shellcheck disable=disable=SC2086
+#shellcheck disable=SC2086
 
 echo 'This might take a while'
 
@@ -21,6 +21,8 @@ $CFLAGS
 # Flatten newlines to single spaces
 CFLAGS=$(echo "$CFLAGS" | tr '\n' ' ' | sed 's/  */ /g; s/^ *//; s/ *$//')
 
+INVOKEDIR=$PWD
+
 cd "$(dirname "$0")" || exit
 
 # Build shared library for test linkage
@@ -40,10 +42,19 @@ TMP_TESTDIR=$(mktemp -d "$TMPDIR/jstr.XXXXXXXXXX")
 trap 'rm -rf "$TMP_TESTDIR"' EXIT INT TERM
 
 # Test all files in arguments. Otherwise, test all.
+# Relative paths are resolved against the invocation directory (captured
+# before the cd above), so `./scripts/test tests/foo.c` works from the root.
 if [ $# -eq 0 ]; then
 	files=$(echo $PATH_TEST/*.c)
 else
-	files=$(echo "$*" | sed 's/ /\n/g')
+	files=""
+	for f in "$@"; do
+		case $f in
+		/*) files="$files $f" ;;
+		*) files="$files $INVOKEDIR/$f" ;;
+		esac
+	done
+	files=$(echo $files | sed 's/ /\n/g')
 fi
 
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo '1')
@@ -59,9 +70,15 @@ generate_jobs()
 }
 
 LOG="$TMP_TESTDIR/test.LOG"
-generate_jobs | xargs -P "$NPROC" -L 1 ./test1 "$TMP_TESTDIR" | tee $LOG
+# Capture stderr too: test1 reports COMPILE FAILED on stderr.
+generate_jobs | xargs -P "$NPROC" -L 1 ./test1 "$TMP_TESTDIR" 2>&1 | tee $LOG
+nfail=$(grep -E -c '^FAIL' $LOG)
+ncompile=$(grep -Fc 'COMPILE FAILED' $LOG)
 printf 'PASS: %d\n' "$(grep -c -F 'PASS' $LOG)"
-printf 'FAIL: %d\n' "$(grep -c -F 'FAIL' $LOG)"
+printf 'FAIL: %d\n' "$((nfail + ncompile))"
 
 # Remove stale executables but keep .o files for caching across runs
 find "$TMP_TESTDIR" -type f ! -name '*.o' -delete 2>/dev/null
+
+# Exit non-zero if any variant failed or failed to compile.
+[ "$nfail" -eq 0 ] && [ "$ncompile" -eq 0 ]

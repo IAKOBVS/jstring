@@ -51,11 +51,20 @@ update() {
 mkdir -p "$LIBDIR" "$SRCDIR" "$INCDIR" "$OBJDIR"
 mkdir -p $PATH_BUILD $PATH_BUILD/internal $PATH_BUILD/internal/musl
 
-# Generate headers in parallel
+# Generate headers in parallel, failing loudly if any generator fails.
+gen_pids=
 for file in $(find $PATH_SRC -type f); do
 	update "$file" &
+	gen_pids="$gen_pids $!"
 done
-wait
+gen_rc=0
+for pid in $gen_pids; do
+	wait "$pid" || gen_rc=1
+done
+if [ "$gen_rc" -ne 0 ]; then
+	echo 'Header generation failed.' >&2
+	exit 1
+fi
 
 # 3. Compile all .c files in parallel using nproc
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
@@ -70,21 +79,37 @@ done
 
 # PRIVDIR="$OUTDIR/private"
 
+cc_pids=
 for cfile in "$SRCDIR"/*.c; do
 	base=$(basename "$cfile" .c)
 	{
 		cc -DJSTR_IMPLEMENTATION=1 -c "$cfile" -o "$OBJDIR/$base.o" -fPIC $CFLAGS
 	} &
+	cc_pids="$cc_pids $!"
 done
-wait
+cc_rc=0
+for pid in $cc_pids; do
+	wait "$pid" || cc_rc=1
+done
+if [ "$cc_rc" -ne 0 ]; then
+	echo 'Object compilation failed.' >&2
+	exit 1
+fi
 
-# Collect .o files
+# Collect .o files; every source must have produced one.
 OFILES=
-for o in "$OBJDIR"/*.o; do
-	[ -f "$o" ] && OFILES="$OFILES $o"
+nsrc=0
+nobj=0
+for cfile in "$SRCDIR"/*.c; do
+	nsrc=$((nsrc + 1))
+	o="$OBJDIR/$(basename "$cfile" .c).o"
+	if [ -f "$o" ]; then
+		nobj=$((nobj + 1))
+		OFILES="$OFILES $o"
+	fi
 done
-if [ -z "$OFILES" ]; then
-	echo "No object files produced."
+if [ "$nobj" -ne "$nsrc" ] || [ -z "$OFILES" ]; then
+	echo "Missing object files ($nobj/$nsrc compiled)." >&2
 	exit 1
 fi
 

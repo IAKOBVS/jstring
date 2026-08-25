@@ -1,25 +1,21 @@
 #!/bin/sh
-#shellcheck disable=disable=SC2086
+#shellcheck disable=SC2086
 
-# Set the path to compile the tests to.
-if [ -z "$TMPDIR" ]; then
-	if [ -d /tmp ]; then
-		TMPDIR=/tmp/$tmp
-	else
-		TMPDIR=$PWD/$tmp
-	fi
-else
-	TMPDIR=$TMPDIR/
-fi
+# Run benchmarks in bench/. Usage: bench [file.c ...]
+# Results are written to result-<name> files and printed.
 
-tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
-FLAGS='-march=native -O2'
+cd "$(dirname "$0")" || exit
 
-mkdir "$tmp" || exit
+tmp="${TMPDIR:-/tmp}"/jstr-bench__$(echo "$PWD" | sed 's/\///g; s/\.//g')
+FLAGS='-march=native -O2 -std=c99'
+LIBS='-L../build/lib -ljstr'
 
-# Test all files in arguments. Otherwise, test all.
+rm -rf "$tmp"
+mkdir -p "$tmp" || exit
+
+# Test all files in arguments. Otherwise, all *.c sources.
 if [ $# -eq 0 ]; then
-	files=$(echo *.c)
+	files=$(ls *.c)
 else
 	files=$*
 fi
@@ -27,19 +23,26 @@ fi
 for file in $files; do
 	{
 	base=${file%.*}-exe
-	#shellcheck disable=SC2086
-	cc "$file" -o "$tmp/$base" $FLAGS
+	if ! cc "$file" -o "$tmp/$base" $FLAGS $LIBS; then
+		echo "COMPILE FAILED: $file" >&2
+	fi
 	} &
 done
 wait
 
-for file in $(echo $tmp/*); do
-	echo "Running $(echo ${file##*/} | sed 's/-[^-]*$//')"
-	output=$($file)
+LD_LIBRARY_PATH=../build/lib
+export LD_LIBRARY_PATH
+
+ret=0
+for exe in "$tmp"/*-exe; do
+	name=${exe##*/result-}
+	name=$(basename "$exe")
+	name=${name%-exe}
+	echo "== $name =="
+	output=$("$exe") || ret=1
 	echo "$output"
-	echo "$output" >"$(echo "$file" | sed 's/.*\//result-/; s/\-exe//')"
+	printf '%s\n' "$output" >"result-$name"
 done
 
-if test -d "$tmp"; then
-	rm -rf "$tmp"
-fi
+rm -rf "$tmp"
+exit $ret

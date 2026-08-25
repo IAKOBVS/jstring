@@ -181,12 +181,12 @@ main(int argc, char **argv)
 		free(s2);
 	}
 
-	/* --- assignnchr: n <= *sz (no grow) --- */
+	/* --- assignnchr: n < *sz truncates like assign_len --- */
 	{
 		assert(jstr_assign_len(&s, &sz, &cap, "hello", 5) == JSTR_RET_SUCC);
 		assert(jstr_assignnchr(&s, &sz, &cap, 'Z', 3) == JSTR_RET_SUCC);
-		assert(memcmp(s, "ZZZlo", 3) == 0);
-		assert(sz == 5);
+		assert(memcmp(s, "ZZZ", 4) == 0);
+		assert(sz == 3);
 	}
 
 	/* --- assignnchr: n > *sz (grows) --- */

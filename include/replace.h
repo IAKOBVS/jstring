@@ -126,7 +126,7 @@ jstr_insertafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const 
 {
 	const char *p = (char *)memchr(*s, c, *sz);
 	if (p != NULL)
-		return jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s + 1), src, src_len);
+		return jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s) + 1, src, src_len);
 	return JSTR_RET_SUCC;
 }
 #else
@@ -141,14 +141,38 @@ jstr_ret_ty
 jstr_insertafterallchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const char *R src, size_t src_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	size_t off = 0;
-	const char *p;
-	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
-		off = JSTR_DIFF(p, *s);
-		if (jstr_chk(jstr_insert_len(s, sz, cap, off, src, src_len)))
-			JSTR_RETURN_ERR(JSTR_RET_ERR);
-		off += src_len + 1;
+	if (jstr_unlikely(src_len == 0 || *sz == 0))
+		return JSTR_RET_SUCC;
+	/* Pass 1: count matches so the buffer can be grown exactly once. */
+	size_t cnt = 0;
+	for (const char *p = *s; (p = (const char *)memchr(p, c, (size_t)JSTR_DIFF(*s + *sz, p))) != NULL; ++cnt, ++p) {}
+	if (jstr_unlikely(cnt == 0))
+		return JSTR_RET_SUCC;
+	const size_t new_sz = *sz + cnt * src_len;
+	if (jstr_chk(jstr_reservealways(s, sz, cap, new_sz + 1)))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	char *R S = *s;
+	const size_t old_sz = *sz;
+	/* Pass 2: rebuild back-to-front. Reads always happen below writes,
+	 * so every byte of the original data is consumed before overwritten. */
+	size_t rd = old_sz;
+	size_t wr = new_sz;
+	while (rd != 0) {
+		const char *m = (const char *)jstr_memrchr(S, c, rd);
+		if (m == NULL)
+			break;
+		const size_t pos = (size_t)JSTR_DIFF(m, S);
+		const size_t seg = rd - (pos + 1);
+		if (seg != 0)
+			memmove(S + wr - seg, m + 1, seg);
+		wr -= seg;
+		memcpy(S + wr - src_len, src, src_len);
+		wr -= src_len;
+		S[--wr] = *m;
+		rd = pos;
 	}
+	*sz = new_sz;
+	S[new_sz] = '\0';
 	return JSTR_RET_SUCC;
 }
 #else
@@ -169,7 +193,7 @@ jstr_insertafter_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fi
 		return JSTR_RET_SUCC;
 	const char *p = (char *)jstr_memmem(*s, *sz, find, find_len);
 	if (p != NULL)
-		return jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len);
+		return jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s) + find_len, src, src_len);
 	return JSTR_RET_SUCC;
 }
 #else
@@ -188,16 +212,51 @@ jstr_insertafterall_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R
 		return jstr_insertafterallchr_len(s, sz, cap, *find, src, src_len);
 	if (jstr_unlikely(find_len == 0))
 		return JSTR_RET_SUCC;
-	size_t off = 0;
-	const char *p;
+	/* Pass 1: count matches so the buffer can be grown exactly once. */
 	jstr_twoway_ty t;
 	jstr_memmem_comp(&t, find, find_len);
-	while ((p = (const char *)jstr_memmem_exec(&t, *s + off, *sz - off, find, find_len))) {
-		off = JSTR_DIFF(p, *s);
-		if (jstr_chk(jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len)))
-			JSTR_RETURN_ERR(JSTR_RET_ERR);
-		off += find_len + src_len;
+	size_t cnt = 0;
+	for (const char *p = *s;
+	     (p = (const char *)jstr_memmem_exec(&t, p, (size_t)JSTR_DIFF(*s + *sz, p), find, find_len)) != NULL;
+	     ++cnt)
+		p += find_len;
+	if (jstr_unlikely(cnt == 0))
+		return JSTR_RET_SUCC;
+	const size_t new_sz = *sz + cnt * src_len;
+	if (jstr_chk(jstr_reservealways(s, sz, cap, new_sz + 1)))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	char *R S = *s;
+	const size_t old_sz = *sz;
+	/* Record match offsets (one malloc), then rebuild back-to-front:
+	 * reads always happen below writes. */
+	size_t *const offs = (size_t *)malloc(cnt * sizeof(size_t));
+	if (jstr_nullchk(offs))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	{
+		size_t k = 0;
+		const char *p = S;
+		while ((p = (const char *)jstr_memmem_exec(&t, p, (size_t)JSTR_DIFF(S + old_sz, p), find, find_len)) != NULL) {
+			offs[k++] = (size_t)JSTR_DIFF(p, S);
+			p += find_len;
+		}
 	}
+	size_t rd = old_sz;
+	size_t wr = new_sz;
+	for (size_t i = cnt; i-- > 0;) {
+		const size_t pos = offs[i];
+		const size_t seg = rd - (pos + find_len);
+		if (seg != 0)
+			memmove(S + wr - seg, S + pos + find_len, seg);
+		wr -= seg;
+		memcpy(S + wr - src_len, src, src_len);
+		wr -= src_len;
+		memmove(S + wr - find_len, S + pos, find_len);
+		wr -= find_len;
+		rd = pos;
+	}
+	free(offs);
+	*sz = new_sz;
+	S[new_sz] = '\0';
 	return JSTR_RET_SUCC;
 }
 #else
@@ -279,7 +338,7 @@ jstr_rmspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject)
 	size_t changed = 0;
 	if (jstr_likely(*p) && (*(p += strcspn(p, reject)))) {
 		changed = strspn(p, reject);
-		p = jstr_stpmove_len(p, p + changed, strlen(p) - changed);
+		p = jstr_stpmove_len(p, p + changed, (size_t)JSTR_DIFF(s + *sz, p) - changed);
 	}
 	*sz = JSTR_DIFF(p, s);
 	return changed;

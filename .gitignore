@@ -1,6 +1,6 @@
 build
+build-nosimd/
 out/
-t
 bench/result*
 *.gcov*
 *coverage*

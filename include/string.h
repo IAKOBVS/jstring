@@ -134,7 +134,18 @@ jstr_memcasechr(const void *s, int c, size_t n) JSTR_NOEXCEPT
 #	if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMCASECHR_SIMD
 	return jstr_internal_simd_memcasechr(s, c, n);
 #	else
-	return jstr_internal_memcasechr_musl(s, c, n);
+	/* Never route letters to the vendored musl byteset loop: it measures
+	 * 2-3x slower than the SIMD path and ~2x slower than this idiom
+	 * (BENCHMARKS.md section 8). Two glibc memchr passes beat it at every
+	 * working-set size. Reached only by non-SIMD builds; c is ASCII alpha
+	 * here so tolower(c) != toupper(c). */
+	const unsigned char lo = (unsigned char)jstr_tolower(c);
+	const unsigned char up = (unsigned char)jstr_toupper(c);
+	const void *r1 = memchr(s, lo, n);
+	const void *r2 = memchr(s, up, n);
+	if (r1 == NULL)
+		return (void *)r2;
+	return r2 == NULL || (const char *)r1 < (const char *)r2 ? (void *)r1 : (void *)r2;
 #	endif
 }
 #else
@@ -172,8 +183,14 @@ char *
 jstr_stpcpy(char *R dst, const char *R src) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	/* Dispatch order MUST stay: libc stpcpy -> SIMD -> scalar tail.
+	 * Never insert a plain byte-loop (musl-style) fallback here: on long
+	 * strings it measures 10.5x slower than libc stpcpy and ~6x slower
+	 * than the SIMD path below (BENCHMARKS.md section 1b). */
 #	if JSTR_HAVE_STPCPY && !JSTR_TEST
 	return stpcpy(dst, src);
+#	elif JSTR_HAVE_SIMD
+	return jstr_internal_simd_stpcpy(dst, src);
 #	else
 	return jstr_stpcpy_len(dst, src, strlen(src));
 #	endif
@@ -202,10 +219,15 @@ char *
 jstr_strnchr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	/* Never route to the vendored musl byte loop: glibc strchr + a bounds
+	 * check is faster at every size (BENCHMARKS.md section 8). Semantics
+	 * preserved: strchr stops at NUL exactly like the musl version, and
+	 * the offset check enforces the n limit (also covers n == 0). */
 #	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCHR_SIMD
 	return jstr_internal_simd_strnchr(s, c, n);
 #	else
-	return jstr_internal_strnchr_musl(s, c, n);
+	const char *p = strchr(s, c);
+	return p != NULL && (size_t)JSTR_DIFF(p, s) < n ? (char *)p : NULL;
 #	endif
 }
 #else
@@ -855,9 +877,9 @@ jstr_strstr_comp(jstr_twoway_ty *t, const char *ne) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*ne == '\0'))
 		jstr_twoway_set_len(t, 0);
-	if (*(ne + 1) == '\0')
+	else if (*(ne + 1) == '\0')
 		jstr_twoway_set_len(t, 1);
-	if (*(ne + 2) == '\0')
+	else if (*(ne + 2) == '\0')
 		jstr_twoway_set_len(t, 2);
 	else
 		jstr_internal_strstr_musl_comp((jstr_internal_twoway_ty *)t, (const unsigned char *)ne);
@@ -1456,10 +1478,9 @@ jstr_trimstart(char *s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
 		return;
-	const unsigned char *p = (const unsigned char *)s;
-	for (; jstr_isspace(*p); ++p) {}
-	if (p != (unsigned char *)s)
-		jstr_strmove_len(s, (const char *)p, strlen((char *)p));
+	const size_t k = strspn(s, " \t\n\v\f\r");
+	if (k != 0)
+		jstr_strmove_len(s, s + k, strlen(s + k));
 }
 #else
 ;

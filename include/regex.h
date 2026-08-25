@@ -284,6 +284,11 @@ jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nm
 #	ifdef JSTR_IMPLEMENTATION
 {
 #		ifdef JSTR_RE_EF_STARTEND
+	/* A zero-width REG_STARTEND window makes glibc return NOMATCH even for
+	 * epsilon-matching patterns (".*"). Match the NUL-terminated string
+	 * without STARTEND instead; S always points at a terminated buffer. */
+	if (jstr_unlikely(sz == 0))
+		return (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags);
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
 #		endif
@@ -564,15 +569,11 @@ jstr_re_rplc_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 ;
 #	endif
 
-#	if JSTR_DEBUG
-#		define NMATCH_PARAM , size_t nmatch
-#		define NMATCH_ARG   , nmatch
-#		define NMATCH       nmatch
-#	else
-#		define NMATCH_PARAM
-#		define NMATCH_ARG
-#		define NMATCH
-#	endif
+/* NMATCH is always passed: the backref engine needs it at runtime to
+ * reject references beyond nmatch (not just under JSTR_DEBUG). */
+#	define NMATCH_PARAM , size_t nmatch
+#	define NMATCH_ARG   , nmatch
+#	define NMATCH       nmatch
 
 /* Return value:
  * length of backref.
@@ -590,6 +591,10 @@ jstr_internal_re_rplcbackrefstrlen(const regmatch_t *R rm, const unsigned char *
 		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
+			/* Invalid reference (out of nmatch range or group did not
+			 * participate): the pair stays a literal 2-byte "\d". */
+			if (jstr_unlikely((size_t)c >= nmatch || rm[c].rm_so < 0))
+				continue;
 			JSTR_ASSERT_DEBUG((size_t)c < nmatch, "Using a backref higher than nmatch.");
 			rplc_len += (size_t)(rm[c].rm_eo - rm[c].rm_so - 2);
 		}
@@ -618,19 +623,24 @@ jstr_internal_re_rplcbackreffirst(const char *backref, size_t backref_len) JSTR_
 /* Return ptr to the end of the last backref. */
 JSTR_FUNC
 char *
-jstr_internal_re_rplcbackreflast(const unsigned char *backref, size_t backref_len) JSTR_NOEXCEPT
+	jstr_internal_re_rplcbackreflast(const unsigned char *backref, size_t backref_len) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
+	const unsigned char *e = backref + backref_len;
 	if (backref_len >= 4) {
-		backref += 2;
+		const unsigned char *s0 = backref + 2;
 		const unsigned char *p;
-		const unsigned char *end = backref + backref_len - 1;
-		for (;; --end) {
-			p = (const unsigned char *)jstr_memrchr(backref, '\\', JSTR_DIFF(end, backref));
-			if (jstr_unlikely(p == NULL))
+		for (;;) {
+			if (e <= s0)
 				break;
-			if (jstr_isdigit(*(p + 1)))
+			p = (const unsigned char *)jstr_memrchr(s0, '\\', JSTR_DIFF(e, s0));
+			if (p == NULL)
+				break;
+			/* Only a '\digit' pair fully inside the buffer counts;
+			 * never peek at *(p + 1) when p is the last byte. */
+			if ((size_t)JSTR_DIFF(e, p) >= 2 && jstr_isdigit(*(p + 1)))
 				return (char *)p + 2;
+			e = p;
 		}
 	}
 	return NULL;
@@ -644,7 +654,7 @@ jstr_internal_re_rplcbackreflast(const unsigned char *backref, size_t backref_le
  * On error, -errcode (negative). */
 JSTR_FUNC_VOID
 void
-jstr_internal_re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc_src, unsigned char *R mtc_dst, const unsigned char *R rplc, const unsigned char *rplc_e) JSTR_NOEXCEPT
+jstr_internal_re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc_src, unsigned char *R mtc_dst, const unsigned char *R rplc, const unsigned char *rplc_e NMATCH_PARAM) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
 	int c;
@@ -654,13 +664,25 @@ jstr_internal_re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc
 		rplc = (unsigned char *)memchr(rplc, '\\', JSTR_DIFF(rplc_e, rplc));
 		if (jstr_nullchk(rplc))
 			break;
-		/* We've checked that there's no trailing backslash. */
-		/* if (rplc == rplc_e - 1)
-		     return (size_t)-1; */
 		mtc_dst = (unsigned char *)jstr_mempcpy(mtc_dst, rplc_o, JSTR_DIFF(rplc, rplc_o));
+		/* Trailing lone backslash: emit it literally. */
+		if (jstr_unlikely(rplc == rplc_e - 1)) {
+			*mtc_dst++ = '\\';
+			rplc_o = rplc_e;
+			break;
+		}
 		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
+			/* Invalid reference (out of nmatch range or group did not
+			 * participate): emit the pair literally. Must match the
+			 * length accounting in rplcbackrefstrlen above. */
+			if (jstr_unlikely((size_t)c >= nmatch || rm[c].rm_so < 0)) {
+				*mtc_dst++ = '\\';
+				*mtc_dst++ = (unsigned char)c + '0';
+				rplc_o = rplc;
+				continue;
+			}
 			mtc_dst = (unsigned char *)jstr_mempmove(mtc_dst, mtc_src + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
 		} else {
 			*mtc_dst = '\\';
@@ -674,10 +696,6 @@ jstr_internal_re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc
 ;
 #	endif
 
-/* Avoid doing O(n) replacements as does rplcn, since doing O(2 * n) regex
- * matching, which is used to find the new size of the string, is likely to
- * dominate over O(n^2) replacements. Given the growth factor, the allocation
- * should be amortized. */
 /* Avoid doing O(n) replacements as does rplcn, since doing O(2 * n) regex
  * matching, which is used to find the new size of the string, is likely to
  * dominate over O(n^2) replacements. Given the growth factor, the allocation
@@ -753,6 +771,11 @@ check:
 				rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 			else
 				rplcwbackref_len = rplc_len;
+			/* A length error must never flow into the capacity math below. */
+			if (jstr_unlikely(rplcwbackref_len == (size_t)-1)) {
+				ret = JSTR_RE_RET_ESPACE;
+				JSTR_RE_RETURN_ERR(ret, preg);
+			}
 			/* Check and reserve capacity if needed. */
 			new_cap = JSTR_DIFF(i.dst, *s) + JSTR_DIFF(end, i.src) + 2;
 			if (rplcwbackref_len > find_len)
@@ -780,7 +803,7 @@ check:
 			}
 			/* Copy replacement string (handling backreferences). */
 			if (backref) {
-				jstr_internal_re_rplcbackrefcpy(rm, (unsigned char *)i.src_e, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
+				jstr_internal_re_rplcbackrefcpy(rm, (unsigned char *)i.src_e, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len NMATCH_ARG);
 				i.dst += rplcwbackref_len;
 			} else {
 				i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);

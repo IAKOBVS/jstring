@@ -92,12 +92,13 @@ main(int argc, char **argv)
 		assert(!jstr_chk(jstr_assign_len(&s, &sz, &cap, "a,b,c", 5)));
 		assert(!jstr_chk(jstr_insertafter_len(&s, &sz, &cap, ",", 1, "!", 1)));
 		assert(sz == 6);
-		assert(!memcmp(s, "!a,b,c", 6));
+		/* Insert AFTER the first ','. */
+		assert(!memcmp(s, "a,!b,c", 6));
 
 		assert(!jstr_chk(jstr_insertafter_len(&s, &sz, &cap, "", 0, "X", 1)));
 
 		assert(!jstr_chk(jstr_insertafter_len(&s, &sz, &cap, "ZZ", 2, "Y", 1)));
-		assert(!memcmp(s, "!a,b,c", 6));
+		assert(!memcmp(s, "a,!b,c", 6));
 		free(s);
 	}
 

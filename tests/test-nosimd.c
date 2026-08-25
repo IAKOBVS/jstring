@@ -80,7 +80,7 @@ main(int argc, char *argv[])
 		assert(p == NULL);
 	}
 
-	/* Test jstr_memcasechr (exercises jstr_internal_memcasechr_musl). */
+	/* Test jstr_memcasechr (non-SIMD builds take the memchr-twice fallback). */
 	{
 		const char *s = "ABCdef";
 		void *p = jstr_memcasechr(s, 'd', 6);
@@ -98,7 +98,7 @@ main(int argc, char *argv[])
 		assert(p == (void *)"A");
 	}
 
-	/* Test jstr_strnchr (exercises jstr_internal_strnchr_musl). */
+	/* Test jstr_strnchr (non-SIMD builds take the strchr + bounds fallback). */
 	{
 		const char *s = "hello world";
 		char *p = jstr_strnchr(s, 'w', 11);

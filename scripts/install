@@ -17,8 +17,8 @@ if [ "$(id -u)" -eq 0 ]; then
 		cp -rf '../build/lib' "$INSTALL_DIR"
 	fi
 	echo "Successfully built to $INSTALL_DIR."
-	if [ "$INSTALL_DIR" = '/usr/local' ] && [ ! -s /usr/lib ]; then
-		sudo ln -s /usr/local/lib/libjstr.so /usr/lib
+	if [ "$INSTALL_DIR" = '/usr/local' ] && [ ! -e /usr/lib/libjstr.so ]; then
+		ln -s /usr/local/lib/libjstr.so /usr/lib/libjstr.so
 	fi
 else
 	echo "Please run the command with sudo, as it requires permission to install to /usr/local/"
