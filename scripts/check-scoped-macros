@@ -2,6 +2,6 @@
 
 PS4='' set -e
 
-if python3 ../scripts-py/check_scoped_macros.py ../include/*.h | grep -v -q '^JSTR'; then
+if python3 ./check_scoped_macros.py ../include/*.h | grep -v -q '^JSTR'; then
 	exit 1
 fi

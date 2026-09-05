@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate `jstr_*` wrapper functions from annotated function blocks.
 
-Port of `scripts/gen-func.pl`. Two passes over the source header:
+Port of `scripts-perl/gen-func.pl`. Two passes over the source header:
 
   Pass 1 — for every `foo_len(...)` function that takes a `size_t` argument
            named `*_len` (or a bare `*sz`), emit a convenience `foo(...)`
@@ -10,7 +10,7 @@ Port of `scripts/gen-func.pl`. Two passes over the source header:
            wrapper that operates directly on a `jstr_ty` argument `j`.
 
 Output must stay byte-identical to the Perl engine: run
-`scripts/check-py-parity` after any change.
+`scripts-perl/check-py-parity` after any change.
 """
 import re
 import sys

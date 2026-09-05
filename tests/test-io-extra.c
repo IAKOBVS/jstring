@@ -321,7 +321,10 @@ test_io_more_edges(void)
 	ret = jstr_io_readfilefd(&s, &sz, &cap, -1, &st);
 	assert(ret == JSTR_RET_ERR);
 
-	/* 7. freadfilefp with closed/invalid fd stream to trigger fstat failure safely */
+	/* 7. freadfilefp failure. Works regardless of whether the library uses
+	 * the fd-based (JSTR_HAVE_FILENO: fstat on a closed fd) or path-based
+	 * (stat(fname)) branch: we both unlink the file (so stat fails on the
+	 * nonexistent path) and close the fd (so fstat fails with EBADF). */
 	{
 		char fpath_dummy[JSTR_IO_PATH_MAX];
 		size_t pld = pathcat(fpath_dummy, 0, tmpdir_root, tmpdir_root_len);
@@ -335,7 +338,8 @@ test_io_more_edges(void)
 		assert(fp_dummy != NULL);
 		int inner_fd = fileno(fp_dummy);
 		assert(inner_fd >= 0);
-		close(inner_fd); /* invalidate the fd */
+		unlink(fpath_dummy);  /* remove the path (path-based branch fails) */
+		close(inner_fd);      /* invalidate the fd (fd-based branch fails) */
 
 		ret = jstr_io_freadfilefp(&s, &sz, &cap, fpath_dummy, fp_dummy, &st);
 		assert(ret == JSTR_RET_ERR);

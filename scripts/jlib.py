@@ -2,7 +2,7 @@
 """Shared helpers for the jstring header generators.
 
 This is a Python port of the original `scripts/jlib.pl`. Keep it
-byte-for-byte compatible: `scripts/check-py-parity` asserts that generated
+byte-for-byte compatible: `scripts-perl/check-py-parity` asserts that generated
 output matches the Perl engine re-extracted from git history. Where a
 function deliberately differs from Perl, it carries a comment explaining
 the divergence.

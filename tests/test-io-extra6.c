@@ -75,12 +75,6 @@ static void cleanup(const char *dir) {
 	system(p);
 }
 
-static void mkdir_p(const char *path) {
-	char tmp[512];
-	snprintf(tmp, sizeof tmp, "mkdir -p %s", path);
-	system(tmp);
-}
-
 static void create_file(const char *path, char c) {
 	FILE *f = fopen(path, "w");
 	if (f) {
@@ -209,7 +203,7 @@ int main(void) {
 	/* 3-level: root/sub/deep/ — callback STOPs on deep */
 	{
 		snprintf(tmpdir, sizeof tmpdir, "/tmp/jstr_ftw6_rstop_XXXXXX");
-		mkdir_p(tmpdir);
+		assert(mkdtemp(tmpdir));
 		snprintf(p, sizeof p, "%s/a", tmpdir);
 		create_file(p, 'x');
 		snprintf(p, sizeof p, "%s/sub", tmpdir);
@@ -237,7 +231,7 @@ int main(void) {
 	/* 3-level: root/sub/deep/ — callback FAILS on deep */
 	{
 		snprintf(tmpdir, sizeof tmpdir, "/tmp/jstr_ftw6_rerr_XXXXXX");
-		mkdir_p(tmpdir);
+		assert(mkdtemp(tmpdir));
 		snprintf(p, sizeof p, "%s/a", tmpdir);
 		create_file(p, 'x');
 		snprintf(p, sizeof p, "%s/sub", tmpdir);
@@ -280,7 +274,7 @@ int main(void) {
 	/* ===== FTW: NOSUBDIR (lines 1081-1082) ===== */
 	{
 		snprintf(tmpdir, sizeof tmpdir, "/tmp/jstr_ftw6_nosub_XXXXXX");
-		mkdir_p(tmpdir);
+		assert(mkdtemp(tmpdir));
 		snprintf(p, sizeof p, "%s/sub", tmpdir);
 		mkdir(p, 0755);
 		snprintf(p, sizeof p, "%s/sub/b", tmpdir);
@@ -301,7 +295,7 @@ int main(void) {
 	/* ===== FTW: REG & !DIR skip_fn (lines 1061-1062) ===== */
 	{
 		snprintf(tmpdir, sizeof tmpdir, "/tmp/jstr_ftw6_skipfn_XXXXXX");
-		mkdir_p(tmpdir);
+		assert(mkdtemp(tmpdir));
 		snprintf(p, sizeof p, "%s/sub", tmpdir);
 		mkdir(p, 0755);
 		snprintf(p, sizeof p, "%s/sub/b", tmpdir);
@@ -363,14 +357,20 @@ int main(void) {
 
 	/* ===== FTW: ENAMETOOLONG (lines 963-965) ===== */
 	{
-		/* Create 19 levels of 200-char dirs → path length = 30 + 19*201 = 3849 >= 3841 threshold */
+		/* Create 19 levels of 200-char dirs → path length = ~30 + 19*201 = 3849 >= 3841 threshold */
 		char name200[201];
 		memset(name200, 'a', 200);
 		name200[200] = '\0';
 
+		/* Unique root per process: the suite runs 4 variants of this test in
+		 * parallel, so a hardcoded path would let one instance's `rm -rf`
+		 * clobber another's mid-walk (failing its chdir/assert). */
+		char deeproot[32];
+		snprintf(deeproot, sizeof deeproot, "/tmp/jstr_ftw6eo_XXXXXX");
+		assert(mkdtemp(deeproot));
+
 		char deep_path[4096];
-		snprintf(deep_path, sizeof deep_path, "/tmp/jstr_ftw6_enametooolong");
-		mkdir(deep_path, 0755);
+		snprintf(deep_path, sizeof deep_path, "%s", deeproot);
 		for (int i = 0; i < 19; i++) {
 			strcat(deep_path, "/");
 			strcat(deep_path, name200);
@@ -395,7 +395,8 @@ int main(void) {
 		assert(ret != 0);
 
 		/* cleanup: remove the deeply nested tree */
-		system("rm -rf /tmp/jstr_ftw6_enametooolong");
+		snprintf(p, sizeof p, "rm -rf %s", deeproot);
+		system(p);
 	}
 
 	/* ===== readstdin: read fails (line 610) ===== */

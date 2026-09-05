@@ -6,8 +6,14 @@ undefine()
 {
 	#shellcheck disable=SC2005
 	mv "$2" "$2.bak"
-	python3 ../scripts-py/check_undefined_macros.py "$1" "$2.bak" >"$2"
-	rm "$2.bak"
+	python3 ./check_undefined_macros.py "$1" "$2.bak" >"$2.tmp"
+	if cmp -s "$2.tmp" "$2.bak"; then
+		rm "$2.tmp"
+		mv "$2.bak" "$2"
+	else
+		mv "$2.tmp" "$2"
+		rm "$2.bak"
+	fi
 }
 
 cd "$(dirname "$0")" || exit

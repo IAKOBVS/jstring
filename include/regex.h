@@ -287,8 +287,14 @@ jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nm
 	/* A zero-width REG_STARTEND window makes glibc return NOMATCH even for
 	 * epsilon-matching patterns (".*"). Match the NUL-terminated string
 	 * without STARTEND instead; S always points at a terminated buffer. */
-	if (jstr_unlikely(sz == 0))
-		return (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags);
+	if (jstr_unlikely(sz == 0)) {
+		/* eflags may carry REG_STARTEND (set by callers like
+		 * jstr_re_match_len) but there is no pmatch window to scope the
+		 * match to. A stale/uninitialized pmatch would make glibc read
+		 * bogus rm_so/rm_eo bounds (SEGV on empty haystacks). Match the
+		 * NUL-terminated string with STARTEND cleared. */
+		return (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags & ~JSTR_RE_EF_STARTEND);
+	}
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
 #		endif

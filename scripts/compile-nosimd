@@ -1,0 +1,49 @@
+#!/bin/bash
+# Compile a no-SIMD build for coverage testing of musl fallback functions.
+# Usage: ./compile-nosimd [clean]
+
+set -euo pipefail
+SCRIPTDIR="$(cd "$(dirname "$0")" && pwd)"
+REPOROOT="$(cd "$SCRIPTDIR/.." && pwd)"
+cd "$REPOROOT"
+
+if [ "${1:-}" = "clean" ]; then
+	rm -rf build-nosimd
+fi
+
+mkdir -p build-nosimd/lib build-nosimd/include/jstr build-nosimd/include/jstr/internal build-nosimd/include/jstr/internal/musl build-nosimd/obj build-nosimd/src
+
+echo "=== Generating headers (no SIMD) ==="
+for file in include/*.h include/internal/*.h include/internal/musl/*.h; do
+	[ -f "$file" ] || continue
+	bf=$(basename "$file")
+	case "$file" in
+		*/internal/musl/*.h) d="internal/musl"; t="n";;
+		*/internal/*.h)      d="internal";       t="n";;
+		*/*macro*.h)         d=".";              t="n";;
+		*)                   d=".";              t="g";;
+	esac
+	if [ "$t" = "g" ]; then
+		(cd "$SCRIPTDIR" && python3 ./gen_func.py "$REPOROOT/$file" | python3 ./namespace_macros.py) > "$REPOROOT/build-nosimd/include/jstr/$bf"
+	else
+		(cd "$SCRIPTDIR" && python3 ./namespace_macros.py "$REPOROOT/$file") > "$REPOROOT/build-nosimd/include/jstr/$d/$bf"
+	fi
+done
+
+echo "=== Building library with no SIMD ==="
+for file in include/*.h; do
+	if ! echo "$file" | grep -qF -e 'struct' -e 'macros' -e 'pointer' -e 'config' -e 'jstr'; then
+		printf '#define JSTR_IMPLEMENTATION 1\n#include "../../include/%s"' "$(basename "$file")" > "build-nosimd/src/$(basename "$file" | sed 's/\.h$/.c/')"
+	fi
+done
+
+COV_CFLAGS="-O0 -g -fno-inline -fno-default-inline -fPIC --coverage -std=c99 -Wall -Wextra -Wpedantic -Wsign-conversion -D_XOPEN_SOURCE=700 -U__SSE2__ -U__AVX2__ -U__AVX512BW__"
+
+find build-nosimd/src/ -maxdepth 1 -name '*.c' -print0 | xargs -0 -P"$(nproc)" -I{} sh -c '
+	base=$(basename "$1" .c)
+	cc -DJSTR_IMPLEMENTATION=1 -c "$1" -o "build-nosimd/obj/$base.o" '"$COV_CFLAGS"'
+' _ {}
+
+cc --coverage -shared -Wl,-soname,libjstr.so -o "build-nosimd/lib/libjstr.so" build-nosimd/obj/*.o
+
+echo "Library built: $(wc -c < build-nosimd/lib/libjstr.so) bytes"

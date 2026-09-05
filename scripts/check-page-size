@@ -6,5 +6,11 @@ cd "$(dirname "$0")" || exit
 PATH_MACROS=../include/macros.h
 cc ./get-page-size.c -o ./get-page-size
 mv "$PATH_MACROS" "$PATH_MACROS.bak"
-sed "s/#[ \t]*define[ \t]*JSTR_PAGE_SIZE.*/#define JSTR_PAGE_SIZE $(./get-page-size)/" "$PATH_MACROS.bak" > "$PATH_MACROS"
-rm "$PATH_MACROS.bak"
+sed "s/#[ \t]*define[ \t]*JSTR_PAGE_SIZE.*/#define JSTR_PAGE_SIZE $(./get-page-size)/" "$PATH_MACROS.bak" > "$PATH_MACROS.tmp"
+if cmp -s "$PATH_MACROS.tmp" "$PATH_MACROS.bak"; then
+	rm "$PATH_MACROS.tmp"
+	mv "$PATH_MACROS.bak" "$PATH_MACROS"
+else
+	mv "$PATH_MACROS.tmp" "$PATH_MACROS"
+	rm "$PATH_MACROS.bak"
+fi

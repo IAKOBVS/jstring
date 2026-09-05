@@ -5,11 +5,16 @@ PS4='' set -e
 
 cd "$(dirname "$0")" || exit
 
+# POSIX staleness helpers (find -newer based, no test -nt dependence).
+newer_than() { # $1 candidate, $2 reference: true if $1 exists and is newer
+	[ -e "$1" ] && [ -n "$(find "$1" -prune -newer "$2" -print -quit 2>/dev/null)" ]
+}
+
 # 1. Run setup checks
 ./setup || exit
 
-# 2. Generate headers + build shared library
-./clean
+# 2. Generate stale headers + build shared library (incremental; use ./clean
+#    for a full rebuild)
 PATH_BUILD=../build/include/jstr
 PATH_SRC=../include
 PATH_MACROS=$PATH_BUILD/macros.h
@@ -18,7 +23,8 @@ LIBDIR="$OUTDIR/lib"
 SRCDIR="$OUTDIR/src"
 INCDIR="$OUTDIR/include"
 OBJDIR="$OUTDIR/obj"
-CFLAGS="-O2 -fanalyzer -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
+FLAGSFILE="$OBJDIR/.compile-flags"
+CFLAGS="-O2 -fanalyzer -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 -MMD -MP $CFLAGS"
 
 has_prog() { type "$1" >/dev/null 2>/dev/null; }
 
@@ -28,22 +34,44 @@ update() {
 	case $in_fname in
 	*/internal/musl/*.h)
 		out_fname=$PATH_BUILD/internal/musl/$base_fname
-		python3 ../scripts-py/namespace_macros.py "$in_fname" >"$out_fname"
 		;;
 	*/internal/*.h)
 		out_fname=$PATH_BUILD/internal/$base_fname
-		python3 ../scripts-py/namespace_macros.py "$in_fname" >"$out_fname"
 		;;
 	*/*macro*.h)
 		out_fname=$PATH_BUILD/$base_fname
-		python3 ../scripts-py/namespace_macros.py "$in_fname" >"$out_fname"
 		;;
 	*/*.h)
 		out_fname=$PATH_BUILD/$base_fname
-		python3 ../scripts-py/gen_func.py "$in_fname" | python3 ../scripts-py/namespace_macros.py >"$out_fname"
 		;;
 	*)
 		return
+		;;
+	esac
+	# Skip when the generated output is not older than the source or any
+	# generator script (gen_func.py, namespace_macros.py, jlib.py).
+	if [ -f "$out_fname" ] && ! newer_than "$in_fname" "$out_fname" \
+		&& ! newer_than ./gen_func.py "$out_fname" \
+		&& ! newer_than ./namespace_macros.py "$out_fname" \
+		&& ! newer_than ./jlib.py "$out_fname"; then
+		if [ -n "${VERBOSE:-}" ]; then
+			echo "SKIP $base_fname"
+		fi
+		return 0
+	fi
+	echo "GEN  $base_fname"
+	case $in_fname in
+	*/internal/musl/*.h)
+		python3 ./namespace_macros.py "$in_fname" >"$out_fname"
+		;;
+	*/internal/*.h)
+		python3 ./namespace_macros.py "$in_fname" >"$out_fname"
+		;;
+	*/*macro*.h)
+		python3 ./namespace_macros.py "$in_fname" >"$out_fname"
+		;;
+	*/*.h)
+		python3 ./gen_func.py "$in_fname" | python3 ./namespace_macros.py >"$out_fname"
 		;;
 	esac
 }
@@ -73,19 +101,56 @@ echo "Compiling with $CFLAGS"
 
 for file in ./../include/*.h; do
 	if ! echo $file | grep -qF -e 'struct' -e 'macros' -e 'pointer' -e 'config' -e 'jstr'; then
-		printf '#define JSTR_IMPLEMENTATION 1\n#include "../../include/%s"' "$(basename $file)" > "./../build/src/$(basename $file | sed 's/\.h$/.c/')"
+		outc="./../build/src/$(basename $file | sed 's/\.h$/.c/')"
+		if [ ! -f "$outc" ] || newer_than "$file" "$outc"; then
+			printf '#define JSTR_IMPLEMENTATION 1\n#include "../../include/%s"' "$(basename $file)" > "$outc"
+		fi
 	fi
 done
 
 # PRIVDIR="$OUTDIR/private"
 
+# Flag-mismatch detection: rebuild everything when the recorded object
+# CFLAGS differ (build/ is shared with the Makefile path).
+stale_flags=0
+if [ ! -f "$FLAGSFILE" ]; then
+	stale_flags=1
+elif [ "$(cat "$FLAGSFILE")" != "$CFLAGS" ]; then
+	stale_flags=1
+fi
+
 cc_pids=
 for cfile in "$SRCDIR"/*.c; do
 	base=$(basename "$cfile" .c)
-	{
-		cc -DJSTR_IMPLEMENTATION=1 -c "$cfile" -o "$OBJDIR/$base.o" -fPIC $CFLAGS
-	} &
-	cc_pids="$cc_pids $!"
+	o="$OBJDIR/$base.o"
+	depsf="$OBJDIR/$base.d"
+	needs_build=0
+	if [ "$stale_flags" -eq 1 ]; then
+		needs_build=1
+	elif [ ! -f "$o" ]; then
+		needs_build=1
+	elif [ ! -f "$depsf" ]; then
+		needs_build=1
+	else
+		# Rebuild when any recorded dependency is newer than the object.
+		deps=$(tr '\\' ' ' < "$depsf" | tr '\n' ' ')
+		deps=${deps#*: }
+		for dep in ${deps%;}; do
+			if newer_than "$dep" "$o"; then
+				needs_build=1
+				break
+			fi
+		done
+	fi
+	if [ "$needs_build" -eq 1 ]; then
+		echo "CC   $base"
+		{
+			cc -DJSTR_IMPLEMENTATION=1 -c "$cfile" -o "$o" -fPIC $CFLAGS
+		} &
+		cc_pids="$cc_pids $!"
+	else
+		echo "SKIP $base.o"
+	fi
 done
 cc_rc=0
 for pid in $cc_pids; do
@@ -95,29 +160,39 @@ if [ "$cc_rc" -ne 0 ]; then
 	echo 'Object compilation failed.' >&2
 	exit 1
 fi
+if [ ! -f "$FLAGSFILE" ] || [ "$(cat "$FLAGSFILE")" != "$CFLAGS" ]; then
+	printf '%s\n' "$CFLAGS" > "$FLAGSFILE"
+fi
 
 # Collect .o files; every source must have produced one.
 OFILES=
-nsrc=0
-nobj=0
 for cfile in "$SRCDIR"/*.c; do
-	nsrc=$((nsrc + 1))
 	o="$OBJDIR/$(basename "$cfile" .c).o"
-	if [ -f "$o" ]; then
-		nobj=$((nobj + 1))
-		OFILES="$OFILES $o"
+	if [ ! -f "$o" ]; then
+		echo "Missing object file for $cfile." >&2
+		exit 1
 	fi
+	OFILES="$OFILES $o"
 done
-if [ "$nobj" -ne "$nsrc" ] || [ -z "$OFILES" ]; then
-	echo "Missing object files ($nobj/$nsrc compiled)." >&2
-	exit 1
-fi
 
 # 4. Archive static library
 # ar rcs "$LIBDIR/libjstr.a" $OFILES
 
-# 5. Link shared library
-cc -fanalyzer -flto -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
+# 5. Link shared library (only when stale)
+needs_link=0
+[ -f "$LIBDIR/libjstr.so" ] || needs_link=1
+for o in $OFILES; do
+	if newer_than "$o" "$LIBDIR/libjstr.so"; then
+		needs_link=1
+		break
+	fi
+done
+if [ "$needs_link" -eq 1 ]; then
+	echo "LD   libjstr.so"
+	cc -fanalyzer -flto -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
+else
+	echo "SKIP link"
+fi
 
 echo "Library built successfully."
 # echo "Static:  $(realpath $LIBDIR/libjstr.a)"

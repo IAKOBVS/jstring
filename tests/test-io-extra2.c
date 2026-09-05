@@ -10,6 +10,13 @@
 #include "io.h"
 
 int main(void) {
+	char tmpdir[] = "/tmp/jstr_io2_XXXXXX";
+	assert(mkdtemp(tmpdir));
+	char f1[256], f2[256], f3[256];
+	snprintf(f1, sizeof f1, "%s/rw.txt", tmpdir);
+	snprintf(f2, sizeof f2, "%s/fw.txt", tmpdir);
+	snprintf(f3, sizeof f3, "%s/fd.txt", tmpdir);
+
 	/* jstr_io_isbinary_maybe: empty buffer */
 	{
 		int r = jstr_io_isbinary_maybe("", 0);
@@ -28,21 +35,20 @@ int main(void) {
 	}
 	/* Write a file and read it back via various read methods */
 	{
-		const char *fname = "/tmp/jstr_io_test.txt";
 		/* Use data ending with \n to avoid extra newline appending */
-		int r = jstr_io_writefile_len("hello\n", 6, fname, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		int r = jstr_io_writefile_len("hello\n", 6, f1, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		assert(r == 0);
 		/* Read via jstr_io_readfile */
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
-		r = jstr_io_readfile(&s, &sz, &cap, fname, O_RDONLY);
+		r = jstr_io_readfile(&s, &sz, &cap, f1, O_RDONLY);
 		assert(r == 0);
 		assert(sz == 6);
 		assert(!strcmp(s, "hello\n"));
 		free(s);
 		/* Read via jstr_io_readfile_len */
 		s = NULL; sz = 0; cap = 0;
-		r = jstr_io_readfile_len(&s, &sz, &cap, fname, O_RDONLY, 5);
+		r = jstr_io_readfile_len(&s, &sz, &cap, f1, O_RDONLY, 5);
 		assert(r == 0);
 		assert(sz == 5);
 		assert(!strcmp(s, "hello"));
@@ -51,7 +57,7 @@ int main(void) {
 		s = NULL; sz = 0; cap = 0;
 		{
 			struct stat st;
-			r = jstr_io_freadfile(&s, &sz, &cap, fname, "r", &st);
+			r = jstr_io_freadfile(&s, &sz, &cap, f1, "r", &st);
 			assert(r == 0);
 			assert(sz == 6);
 			assert(!strcmp(s, "hello\n"));
@@ -59,26 +65,25 @@ int main(void) {
 		free(s);
 		/* Read via jstr_io_freadfile_len */
 		s = NULL; sz = 0; cap = 0;
-		r = jstr_io_freadfile_len(&s, &sz, &cap, fname, "r", 5);
+		r = jstr_io_freadfile_len(&s, &sz, &cap, f1, "r", 5);
 		assert(r == 0);
 		assert(sz == 5);
 		assert(!strcmp(s, "hello"));
 		free(s);
-		unlink(fname);
+		unlink(f1);
 	}
 	/* Write via jstr_io_fwritefile_len */
 	{
-		const char *fname = "/tmp/jstr_io_fw_test.txt";
-		int r = jstr_io_fwritefile_len("world\n", 6, fname, "w");
+		int r = jstr_io_fwritefile_len("world\n", 6, f2, "w");
 		assert(r == 0);
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
-		r = jstr_io_readfile(&s, &sz, &cap, fname, O_RDONLY);
+		r = jstr_io_readfile(&s, &sz, &cap, f2, O_RDONLY);
 		assert(r == 0);
 		assert(sz == 6);
 		assert(!strcmp(s, "world\n"));
 		free(s);
-		unlink(fname);
+		unlink(f2);
 	}
 	/* jstr_io_appendpath_len */
 	{
@@ -103,12 +108,17 @@ int main(void) {
 	}
 	/* jstr_io_writefilefd_len */
 	{
-		int fd = open("/tmp/jstr_io_fd.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		int fd = open(f3, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		assert(fd >= 0);
 		int r = jstr_io_writefilefd_len("testdata", 8, fd);
 		assert(r == 0);
 		close(fd);
-		unlink("/tmp/jstr_io_fd.txt");
+		unlink(f3);
 	}
+
+	/* Cleanup */
+	char cmd[300];
+	snprintf(cmd, sizeof cmd, "rm -rf %s", tmpdir);
+	system(cmd);
 	return 0;
 }

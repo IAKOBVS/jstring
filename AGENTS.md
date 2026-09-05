@@ -2,27 +2,28 @@
 
 ## Build system
 
-Custom shell scripts + Python generators (no Makefile, no CMake). Run from repo root:
+The top-level `./compile` delegates to `make`; `scripts/compile` is the legacy shell driver. Both are **incremental**: headers, objects, and the shared library are only rebuilt when their inputs are stale (source header or generator script newer than the generated output; objects tracked via `-MMD -MP` `.d` files). Use `./clean` (`make clean`) for a full rebuild. Run from repo root:
 
 ```sh
-./compile         # setup checks + generate headers + build shared library into build/
-./test                  # run all tests (4 variants each, via scripts/test)
-./clean                 # rm -rf build/
+./compile         # incremental build: setup checks + stale headers + build shared library into build/
+./test            # run all tests (4 variants each, via scripts/test)
+./clean           # rm -rf build/
 ./scripts/fmt [files]   # clang-format (skips _jstr* and *macros* files)
 ./install               # sudo cp build/include/jstr/ → /usr/local/include/jstr
 ./install-to <dir>      # install to custom prefix
 ./uninstall             # remove installed files
+./scripts/check-incremental  # verify compile only rebuilds stale artifacts
 ```
 
-`./compile` runs `scripts/setup` first (checks page size, undefined macros, scoped macros), then generates headers via Python (`scripts-py/gen_func.py` + `scripts-py/namespace_macros.py`), then compiles a shared library into `build/lib/`. Requires `python3` and `perl` is no longer needed.
+The build runs `scripts/setup` first (checks page size, undefined macros, scoped macros), then generates headers via Python (`scripts/gen_func.py` + `scripts/namespace_macros.py`), then compiles a shared library into `build/lib/`. Requires `python3`; `perl` is no longer needed. `scripts/setup` only rewrites `include/macros*.h` when their content actually changes, so repeated builds do not churn mtimes; `scripts/gen_func.py`, `scripts/namespace_macros.py`, and `scripts/jlib.py` changes trigger header regeneration but not library object rebuilds.
 
 ## Code generation
 
 - `include/*.h` are the source-of-truth headers; `build/include/jstr/*.h` are generated.
-- `scripts-py/gen_func.py` converts `JSTR_FUNC`/`JSTR_FUNC_VOID` annotations into `static inline` functions and generates `jstr_*` wrappers from annotated function blocks.
+- `scripts/gen_func.py` converts `JSTR_FUNC`/`JSTR_FUNC_VOID` annotations into `static inline` functions and generates `jstr_*` wrappers from annotated function blocks.
 - **Do not put blank lines inside function bodies.** The Python codegen splits blocks by blank lines.
-- `scripts-py/namespace_macros.py` renames `NAMESPACE_INTERNAL_*` → `jstr_internal_*` etc.
-- `scripts/check-py-parity` regenerates every header through the Python engine and the original Perl engine (re-extracted from git history) and asserts byte-identical output. Run it after any change to `scripts-py/`.
+- `scripts/namespace_macros.py` renames `NAMESPACE_INTERNAL_*` → `jstr_internal_*` etc.
+- `scripts-perl/check-py-parity` regenerates every header through the Python engine and the original Perl engine (re-extracted from git history) and asserts byte-identical output. Run it after any change to `scripts/*.py`.
 
 ## Testing
 
@@ -31,7 +32,10 @@ Custom shell scripts + Python generators (no Makefile, no CMake). Run from repo 
 ./test-check-fail       # runs all tests, shows only failures (filters PASS)
 scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
 ./scripts/compile-nosimd  # build no-SIMD coverage library in build-nosimd/
+./scripts/check-incremental  # assert ./scripts/compile rebuilds only stale artifacts
 ```
+
+- `./scripts/check-incremental` builds once, re-runs (asserting nothing changes), then touches a header and asserts only its dependents rebuild. Some builds must be cached — do not run it right after `./clean` only for timing.
 
 - Every test in `tests/*.c` is compiled and run from `/tmp`.
 - Tests using `mkdtemp` must `#define _POSIX_C_SOURCE 200809L` before any includes.

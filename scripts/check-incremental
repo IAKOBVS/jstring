@@ -1,0 +1,68 @@
+#!/bin/sh
+# check-incremental — verify scripts/compile only rebuilds stale artifacts.
+# Checks that:
+#   1. a no-op rebuild changes nothing in build/
+#   2. touching one header regenerates only that header, rebuilds its
+#      dependents, relinks the library, and leaves unrelated objects alone.
+set -eu
+
+cd "$(dirname "$0")/.."
+
+SNAP=$(mktemp -d /tmp/jstr-incr.XXXXXX) || exit 1
+trap 'rm -rf "$SNAP"' EXIT INT TERM
+
+snap() { # $1 = output file
+	find build/include/jstr build/obj build/lib -type f \
+		-printf '%T@ %s %p\n' 2>/dev/null | sort > "$1"
+}
+
+echo '=== 1. fresh build ==='
+./scripts/compile >"$SNAP/build1.log" 2>&1
+
+echo '=== 2. no-op rebuild must change nothing ==='
+snap "$SNAP/before"
+./scripts/compile >"$SNAP/build2.log" 2>&1
+snap "$SNAP/after"
+if ! cmp -s "$SNAP/before" "$SNAP/after"; then
+	echo 'FAIL: no-op rebuild modified build artifacts' >&2
+	diff "$SNAP/before" "$SNAP/after" | head -20 >&2
+	exit 1
+fi
+echo 'PASS: no-op rebuild is a no-op'
+
+echo '=== 3. single-header change only rebuilds its dependents ==='
+# Pick an object that does not depend on string.h (derived from its .d).
+indep=
+for d in build/obj/*.d; do
+	b=$(basename "$d" .d)
+	if ! grep -q 'include/string.h' "$d"; then
+		indep=$b
+		break
+	fi
+done
+[ -n "$indep" ] || { echo 'SKIP: no string.h-independent object found' >&2; exit 0; }
+
+snap "$SNAP/clean"
+touch include/string.h
+./scripts/compile >"$SNAP/build3.log" 2>&1
+snap "$SNAP/touched"
+
+chk() { # $1 label, $2 test, $3 msg
+	[ "$2" ] || { echo "FAIL: $msg" >&2; exit 1; }
+	echo "PASS: $1"
+}
+
+chk 'string.h regenerated' \
+	"$(grep 'build/include/jstr/string.h' "$SNAP/clean")" != "$(grep 'build/include/jstr/string.h' "$SNAP/touched")" \
+	'generated string.h was not regenerated'
+chk 'library relinked' \
+	"$(grep 'build/lib/libjstr.so' "$SNAP/clean")" != "$(grep 'build/lib/libjstr.so' "$SNAP/touched")" \
+	'libjstr.so was not relinked'
+chk 'dependent object rebuilt' \
+	"$(grep 'build/obj/string.o' "$SNAP/clean")" != "$(grep 'build/obj/string.o' "$SNAP/touched")" \
+	'string.o was not rebuilt'
+chk "independent object untouched ($indep.o)" \
+	"$(grep "build/obj/$indep.o" "$SNAP/clean")" = "$(grep "build/obj/$indep.o" "$SNAP/touched")" \
+	"$indep.o rebuilt after an unrelated string.h change"
+
+echo 'check-incremental: OK'

@@ -1,84 +1,57 @@
 #!/bin/sh
 #shellcheck disable=SC2086
 
-echo 'This might take a while'
+# Run the test suite. Test compilation is handled incrementally by the
+# Makefile (see `make testbuild`); the binaries are prebuilt into
+# build/test-bin/ and each is keyed by <test>_v<n> for the four variants:
+#   v0 fast, v1 fast -march=native, v2 slow, v3 slow -march=native.
+# This script only links/runs the prebuilt binaries (it never recompiles
+# unchanged sources).
 
-PATH_TEST=../tests
+echo 'Building tests (incremental)…'
+(cd "$(dirname "$0")/.." && make testbuild) || exit 1
 
-CFLAGS="
--std=c99
--Wall
--Wextra
--Wno-unused-result
--O2
--g
--fsanitize=address
--D_XOPEN_SOURCE=700
-$CFLAGS
-"
-# -fanalyzer
+echo 'Running tests — this might take a while'
 
-# Flatten newlines to single spaces
-CFLAGS=$(echo "$CFLAGS" | tr '\n' ' ' | sed 's/  */ /g; s/^ *//; s/ *$//')
+SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
+REPOROOT=$(cd "$SCRIPTDIR/.." && pwd)
+BINDIR=$REPOROOT/build/test-bin
 
-INVOKEDIR=$PWD
-
-cd "$(dirname "$0")" || exit
-
-# Build shared library for test linkage
-echo 'Building shared library'
-CFLAGS="$CFLAGS" ./compile
-
-# Set the path to compile and run the tests to.
-if [ -z "$TMPDIR" ]; then
-	if [ -d /tmp ]; then
-		TMPDIR=/tmp
-	else
-		TMPDIR=$(echo "$PWD" | head -c 255)
-	fi
+if [ ! -d "$BINDIR" ]; then
+	echo 'No prebuilt test binaries. Run `make test` first.' >&2
+	exit 1
 fi
-# Create a secure, unique temporary directory inside TMPDIR
-TMP_TESTDIR=$(mktemp -d "$TMPDIR/jstr.XXXXXXXXXX")
-trap 'rm -rf "$TMP_TESTDIR"' EXIT INT TERM
 
-# Test all files in arguments. Otherwise, test all.
-# Relative paths are resolved against the invocation directory (captured
-# before the cd above), so `./scripts/test tests/foo.c` works from the root.
+# Which binaries to run: all by default, or the given test names/args.
 if [ $# -eq 0 ]; then
-	files=$(echo $PATH_TEST/*.c)
+	bins=$(find "$BINDIR" -maxdepth 1 -type f -name '*_v[0-3]' | sort)
 else
-	files=""
+	bins=""
 	for f in "$@"; do
-		case $f in
-		/*) files="$files $f" ;;
-		*) files="$files $INVOKEDIR/$f" ;;
-		esac
+		base=$(basename "$f" .c)
+		bins="$bins $(echo "$BINDIR"/"$base"_v[0-3])"
 	done
-	files=$(echo $files | sed 's/ /\n/g')
 fi
 
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo '1')
 
-# Generate all variant jobs and run them in a single parallel pool.
-# Each job is: ./test1 <tmpdir> <file> <cflags...>
-generate_jobs()
-{
-	for file in $files; do
-		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1"
-		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1 -march=native"
-	done
-}
+export LD_LIBRARY_PATH="$REPOROOT/build/lib"
 
-LOG="$TMP_TESTDIR/test.LOG"
-# Capture stderr too: test1 reports COMPILE FAILED on stderr.
-generate_jobs | xargs -P "$NPROC" -L 1 ./test1 "$TMP_TESTDIR" 2>&1 | tee $LOG
-nfail=$(grep -E -c '^FAIL' $LOG)
-ncompile=$(grep -Fc 'COMPILE FAILED' $LOG)
-printf 'PASS: %d\n' "$(grep -c -F 'PASS' $LOG)"
-printf 'FAIL: %d\n' "$((nfail + ncompile))"
+LOG="/tmp/jstr-test-run.$$.log"
+trap 'rm -f "$LOG"' EXIT INT TERM
 
-# Remove stale executables but keep .o files for caching across runs
-find "$TMP_TESTDIR" -type f ! -name '*.o' -delete 2>/dev/null
+# Run in parallel. Each binary is run by a fresh sh that reports PASS/FAIL;
+# the variant label is derived from the _v<n> suffix in the filename.
+run_cmd='name=$(basename "$1"); case "$name" in *_v0) b=${name%_v0}; l="fast";; *_v1) b=${name%_v1}; l="fast -march=native";; *_v2) b=${name%_v2}; l="slow";; *_v3) b=${name%_v3}; l="slow -march=native";; esac; if "$1" >/dev/null 2>&1; then echo "PASS: $b [$l]"; else echo "FAIL: $b [$l]"; fi'
 
-# Exit non-zero if any variant failed or failed to compile.
-[ "$nfail" -eq 0 ] && [ "$ncompile" -eq 0 ]
+printf '%s\n' $bins | xargs -P "$NPROC" -L 1 sh -c "$run_cmd" _ >"$LOG" 2>&1
+
+nfail=$(grep -cE '^FAIL' "$LOG" || true)
+echo
+cat "$LOG"
+echo
+# Summary lines use a non-`PASS:`/`FAIL:` prefix so external helpers that
+# grep for `^PASS`/`^FAIL` markers don't mistake the totals for results.
+printf 'SUMMARY  TOTAL: %d\n' "$(grep -cE '^(PASS|FAIL):' "$LOG" || true)"
+printf 'SUMMARY  FAIL:  %d\n' "$nfail"
+[ "$nfail" -eq 0 ]

@@ -3,8 +3,13 @@
 set -eu
 
 # test1 <tmpdir> <test.c> [cflags...]
-# Compiles, runs a single test variant. Caches .o by source+flags hash.
+# Compiles, runs a single test variant.
 # Uses JSTR_DECL_ONLY (extern declarations) and links against libjstr.so.
+# Object files are cached persistently in build/test-obj/ (keyed by
+# source+flags hash), so unchanged .c files are NOT recompiled across test
+# runs — only when the source is newer than the cached object.
+# Tests that include "fuzz-regex.h" also compile+link tests/fuzz-regex.c
+# (the shared implementation is kept out of headers).
 
 # Locate repo root (parent of scripts/ dir where this script lives)
 SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
@@ -18,19 +23,36 @@ args=$*
 base=$(basename "$file" .c)
 flatargs=$(echo "$args" | sed 's/[[:space:]][[:space:]]*/_/g')
 
+# Persistent object cache so recompilation only happens on source change.
+CACHEDIR=$REPOROOT/build/test-obj
+mkdir -p "$CACHEDIR"
+
 COMPILE_ONLY_FLAGS="-DJSTR_DECL_ONLY -include $REPOROOT/build/include/jstr/jstr.h -iquote $REPOROOT/build/include/jstr"
 hash=$(echo "$file$args $COMPILE_ONLY_FLAGS" | md5sum 2>/dev/null | cut -c1-12 || echo "$file$args $COMPILE_ONLY_FLAGS" | cksum | cut -d' ' -f1)
-obj="$TMP_TESTDIR/${base}_${hash}.o"
+
+obj="$CACHEDIR/${base}_${hash}.o"
 out="$TMP_TESTDIR/${base}_${flatargs}"
 
-# Compile .o if stale
+# Compile the test object if stale.
 if [ ! -f "$obj" ] || [ "$file" -nt "$obj" ]; then
 	cc -c "$file" -o "$obj" $args $COMPILE_ONLY_FLAGS || { echo "COMPILE FAILED: $base $args" >&2; exit 1; }
 fi
 
+# The fuzz-regex tests share fuzz_regex_patterns() from tests/fuzz-regex.c.
+EXTRA_OBJS=""
+if grep -q 'fuzz-regex\.h' "$file" 2>/dev/null; then
+	support="$REPOROOT/tests/fuzz-regex.c"
+	shash=$(echo "$support$args $COMPILE_ONLY_FLAGS" | md5sum 2>/dev/null | cut -c1-12 || echo "$support$args $COMPILE_ONLY_FLAGS" | cksum | cut -d' ' -f1)
+	support_obj="$CACHEDIR/fuzz-regex_${shash}.o"
+	if [ ! -f "$support_obj" ] || [ "$support" -nt "$support_obj" ]; then
+		cc -c "$support" -o "$support_obj" $args $COMPILE_ONLY_FLAGS || { echo "COMPILE FAILED: fuzz-regex $args" >&2; exit 1; }
+	fi
+	EXTRA_OBJS="$support_obj"
+fi
+
 export LD_LIBRARY_PATH="$REPOROOT/build/lib"
-# Link against shared library
-cc "$obj" -o "$out" $args -L"$LD_LIBRARY_PATH" -ljstr
+# Link against shared library (and the shared fuzz impl when needed).
+cc "$obj" $EXTRA_OBJS -o "$out" $args -L"$LD_LIBRARY_PATH" -ljstr
 
 # Run
 out_clean=$(echo "$out" | sed 's/.*\///' | sed 's/_/ /g')

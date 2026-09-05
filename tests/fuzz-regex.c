@@ -1,0 +1,255 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com>
+ *
+ * Shared implementation for the regex fuzz tests. This file is compiled by
+ * the test harness and linked into each fuzz-regex test binary; it holds
+ * the fuzz_regex_patterns() body and the replacement tables that would
+ * otherwise have to be duplicated (static) inside every test translation
+ * unit. */
+
+#include "fuzz-regex.h"
+
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+
+const char *const replacements[] = {
+	"", "X", "long", "AB", ".", "   "
+};
+const size_t nrepl = sizeof(replacements) / sizeof(replacements[0]);
+
+const char *const breplacements[] = {
+	"\\1\\1", "\\1", "X\\1Y", "\\1\\2"
+};
+const size_t nbrepl = sizeof(breplacements) / sizeof(breplacements[0]);
+
+void
+fuzz_regex_patterns(size_t iter,
+                    const struct regex_pattern *patterns,
+                    size_t npatterns)
+{
+	char h[FSTR];
+	for (size_t i = 0; i < iter; ++i) {
+		enum gen_mode hmode = (enum gen_mode)(rand() % 3);
+		size_t hl = gen_str(h, FSTR - 1, hmode);
+
+		for (size_t pi = 0; pi < npatterns; ++pi) {
+			jstr_re_ty preg;
+			int comp_ret = jstr_re_comp(&preg, patterns[pi].pat, patterns[pi].cflags);
+			if (comp_ret != JSTR_RE_RET_NOERROR) {
+				jstr_re_free(&preg);
+				continue;
+			}
+
+			regmatch_t rm;
+			int exec_ret = jstr_re_exec_len(&preg, h, hl, 1, &rm, 0);
+			if (exec_ret == JSTR_RE_RET_NOERROR) {
+				assert((size_t)rm.rm_so <= hl);
+				assert((size_t)rm.rm_eo <= hl);
+				assert(rm.rm_so <= rm.rm_eo);
+			}
+
+			int match_ret = jstr_re_match_len(&preg, h, hl, 0);
+			assert(match_ret == JSTR_RE_RET_NOERROR || match_ret == JSTR_RE_RET_NOMATCH);
+
+			regmatch_t rm_search;
+			int search_ret = jstr_re_search_len(&preg, h, hl, &rm_search, 0);
+			if (search_ret == JSTR_RE_RET_NOERROR) {
+				assert((size_t)rm_search.rm_so <= hl);
+				assert((size_t)rm_search.rm_eo <= hl);
+				assert(rm_search.rm_so <= rm_search.rm_eo);
+			}
+
+			char *buf = (char *)malloc(BFUZZ + 1);
+			assert(buf);
+			size_t cap = BFUZZ;
+			size_t sz;
+			(void)sz;
+			for (int ei = 0; ei < 8; ++ei) {
+				/* eflags MUST NOT BE RE_NOSUB */
+				int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) | ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0);
+
+				assert(buf);
+
+				jstr_stpcpy_len(buf, h, hl);
+				sz = hl;
+				cap = BFUZZ;
+				assert(buf);
+				jstr_re_ret_ty ret;
+				ret = jstr_re_rm_exec(&preg, &buf, &sz, &cap, eflags);
+				if (ret < 0) {
+					jstr_re_errdie(ret, &preg, "%s", "");
+				}
+				assert(buf[sz] == '\0');
+
+				jstr_stpcpy_len(buf, h, hl);
+				sz = hl;
+				cap = BFUZZ;
+				jstr_re_rmall_exec(&preg, &buf, &sz, &cap, eflags);
+				assert(buf[sz] == '\0');
+
+				size_t n = (size_t)(rand() % 5);
+				jstr_stpcpy_len(buf, h, hl);
+				sz = hl;
+				cap = BFUZZ;
+				jstr_re_rmn_exec(&preg, &buf, &sz, &cap, eflags, n);
+				assert(buf[sz] == '\0');
+
+				size_t start_idx = (size_t)(rand() % (hl + 5));
+				jstr_stpcpy_len(buf, h, hl);
+				sz = hl;
+				cap = BFUZZ;
+				jstr_re_rm_from_exec(&preg, &buf, &sz, &cap, start_idx, eflags);
+				assert(buf[sz] == '\0');
+
+				jstr_stpcpy_len(buf, h, hl);
+				sz = hl;
+				cap = BFUZZ;
+				jstr_re_rmn_from_exec(&preg, &buf, &sz, &cap, start_idx, eflags, n);
+				assert(buf[sz] == '\0');
+
+				jstr_stpcpy_len(buf, h, hl);
+				sz = hl;
+				cap = BFUZZ;
+				jstr_re_rmall_from_exec(&preg, &buf, &sz, &cap, start_idx, eflags);
+				assert(buf[sz] == '\0');
+			}
+
+			for (size_t ri = 0; ri < nrepl; ++ri) {
+				const char *rplc = replacements[ri];
+				size_t rplc_len = strlen(rplc);
+
+				for (int ei = 0; ei < 8; ++ei) {
+					int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) | ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0);
+
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+				{
+					jstr_re_off_ty _r = jstr_re_rplc_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags);
+					if (_r < 0) jstr_re_errdie((int)_r, &preg, "%s", "");
+				}
+					assert(buf[sz] == '\0');
+
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+				{
+					jstr_re_off_ty _r = jstr_re_rplcall_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags);
+					if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+				}
+					assert(buf[sz] == '\0');
+
+					size_t n = (size_t)(rand() % 5);
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+				{
+					jstr_re_off_ty _r = jstr_re_rplcn_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, n);
+					if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+				}
+					assert(buf[sz] == '\0');
+
+					size_t start_idx = (size_t)(rand() % (hl + 5));
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+				{
+					jstr_re_off_ty _r = jstr_re_rplc_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags);
+					if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+				}
+					assert(buf[sz] == '\0');
+
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+				{
+					jstr_re_off_ty _r = jstr_re_rplcn_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, n);
+					if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+				}
+					assert(buf[sz] == '\0');
+
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+				{
+					jstr_re_off_ty _r = jstr_re_rplcall_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags);
+					if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+				}
+					assert(buf[sz] == '\0');
+				}
+			}
+
+			if (patterns[pi].has_capture) {
+				for (size_t ri = 0; ri < nbrepl; ++ri) {
+					const char *rplc = breplacements[ri];
+					size_t rplc_len = strlen(rplc);
+					size_t nmatch = 10;
+
+					for (int ei = 0; ei < 8; ++ei) {
+						int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) | ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0);
+
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							jstr_re_off_ty _r = jstr_re_rplc_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch);
+							if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+						}
+						assert(buf[sz] == '\0');
+
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							jstr_re_off_ty _r = jstr_re_rplcall_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch);
+							if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+						}
+						assert(buf[sz] == '\0');
+
+						size_t n = (size_t)(rand() % 5);
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							jstr_re_off_ty _r = jstr_re_rplcn_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch, n);
+							if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+						}
+						assert(buf[sz] == '\0');
+
+						size_t start_idx = (size_t)(rand() % (hl + 5));
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							jstr_re_off_ty _r = jstr_re_rplc_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch);
+							if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+						}
+						assert(buf[sz] == '\0');
+
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							jstr_re_off_ty _r = jstr_re_rplcn_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch, n);
+							if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+						}
+						assert(buf[sz] == '\0');
+
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							jstr_re_off_ty _r = jstr_re_rplcall_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch);
+							if (_r < 0) jstr_re_errdie((jstr_re_ret_ty)_r, &preg, "%s", "");
+						}
+						assert(buf[sz] == '\0');
+					}
+				}
+			}
+
+			free(buf);
+			jstr_re_free(&preg);
+		}
+	}
+}
