@@ -899,6 +899,7 @@ struct jstr_internal_io_ftw_data {
 	const void *func_match_args;
 	struct JSTR_IO_FTW ftw;
 	int ftw_flags;
+	int action_stop;
 };
 
 #	define JSTR_IO_FTW_FUNC(func_name, ftw, func_args) \
@@ -1038,9 +1039,13 @@ func:
 				goto next_entry;
 			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS) {
 				break;
-			} else /* tmp == RET_STOP */ {
+			} else /* tmp == RET_STOP (== JSTR_RET_SUCC == 0) */ {
+				/* RET_STOP and JSTR_RET_SUCC are both 0, so the stop
+				 * cannot travel through the return value. Record it in
+				 * the shared walk data instead. */
+				a->action_stop = 1;
 				closedir(dp);
-				return JSTR_IO_FTW_RET_STOP;
+				return JSTR_RET_SUCC;
 			}
 		} else {
 			if (jstr_chk(tmp)) {
@@ -1065,12 +1070,18 @@ dir:
 		tmp = a->func(&a->ftw, a->func_args);
 		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
 			if (tmp == JSTR_IO_FTW_RET_CONTINUE) {
+				/* Recurse into this directory. */
+				goto skip_fn;
+			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SUBTREE) {
+				/* Don't recurse, but keep processing siblings. */
 				goto next_entry;
-			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SUBTREE || tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS) {
+			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS) {
+				/* Don't recurse; abort sibling iteration. */
 				break;
-			} else /* tmp == RET_STOP */ {
+			} else /* tmp == RET_STOP (== JSTR_RET_SUCC == 0) */ {
+				a->action_stop = 1;
 				closedir(dp);
-				return JSTR_IO_FTW_RET_STOP;
+				return JSTR_RET_SUCC;
 			}
 		} else {
 			if (jstr_chk(tmp)) {
@@ -1089,9 +1100,9 @@ skip_fn:
 		OPENAT(filefd, dirfd, a->ftw.ep->d_name, O_RDONLY | JSTR_INTERNAL_IO_O_DIRECTORY, goto next_entry);
 		tmp = jstr_internal_io_ftw_len(a, a->ftw.dirpath_len, filefd);
 		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
-			if (jstr_unlikely(tmp == JSTR_IO_FTW_RET_STOP)) {
+			if (jstr_unlikely(a->action_stop)) {
 				closedir(dp);
-				return JSTR_IO_FTW_RET_STOP;
+				return JSTR_RET_SUCC;
 			}
 		} else {
 			if (jstr_chk(tmp)) {
@@ -1210,6 +1221,7 @@ file:;
 		data.func_match = func_match;
 		data.ftw_flags = jstr_io_ftw_flags;
 		data.func_match_args = func_match_args;
+		data.action_stop = 0;
 		tmp = jstr_internal_io_ftw_len(&data, dirpath_len, dirfd);
 		return tmp;
 	}

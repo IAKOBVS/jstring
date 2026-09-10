@@ -14,7 +14,7 @@ from jlib import jl_file_get_str, jl_file_namespace_macros
 
 def main() -> None:
     if len(sys.argv) == 1:
-        file_str = sys.stdin.read()
+        file_str: str = sys.stdin.read()
     else:
         file_str = jl_file_get_str(sys.argv[1])
     file_str = jl_file_namespace_macros(file_str, 'JSTR_INTERNAL_', ['JSTR', 'jstr'])

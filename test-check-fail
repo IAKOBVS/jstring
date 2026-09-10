@@ -1,0 +1,24 @@
+#!/bin/sh
+# test-check-fail [test.c files...]
+# Run the test suite via scripts/test, printing ONLY failures.
+# Exit status: 0 when every variant passes, 1 otherwise.
+
+set -u
+
+SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
+LOG=$(mktemp "${TMPDIR:-/tmp}/jstr-checkfail.XXXXXXXXXX")
+trap 'rm -f "$LOG"' EXIT INT TERM
+
+"$SCRIPTDIR/scripts/test" "$@" >"$LOG" 2>&1
+
+fails=$(grep -E -c '^FAIL' "$LOG")
+compiles=$(grep -Fc 'COMPILE FAILED' "$LOG")
+
+if [ "$((fails + compiles))" -gt 0 ]; then
+	echo "== $((fails + compiles)) failing variant(s) =="
+	# Print each failure with context (compiler errors / assert output precede the marker).
+	grep -B 40 -E '^(FAIL|COMPILE FAILED)' "$LOG"
+	exit 1
+fi
+
+echo 'All test variants passed.'

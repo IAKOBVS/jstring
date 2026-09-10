@@ -9,6 +9,7 @@ file replacement).
 import re
 import subprocess
 import sys
+from typing import TextIO
 
 AUTHOR: str = 'James Tirta Halim'
 
@@ -20,6 +21,7 @@ def main() -> None:
     curr_year: str = subprocess.run(['date', '+%Y'], capture_output=True, text=True).stdout.strip()
     fname: str = sys.argv[1]
 
+    fh: TextIO
     with open(fname) as fh:
         lines: list[str] = fh.readlines()
 

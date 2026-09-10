@@ -8,7 +8,7 @@ function deliberately differs from Perl, it carries a comment explaining
 the divergence.
 """
 import re
-from typing import TypeAlias
+from typing import TextIO, TypeAlias
 
 # Match a C function definition block, capturing:
 #   1 — attributes before the return type
@@ -32,6 +32,7 @@ FnParts: TypeAlias = tuple[str, str, str, list[str], str | None]
 
 def jl_file_get_str(fname: str) -> str:
     """Read an entire file into a single string."""
+    fh: TextIO
     with open(fname) as fh:
         return fh.read()
 

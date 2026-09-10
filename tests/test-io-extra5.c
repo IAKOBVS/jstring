@@ -30,6 +30,16 @@ static int ftw_match_accept_all(const char *name, jstr_io_path_size_ty name_len,
 	return 0;
 }
 
+static int ftw_match_ctx(const char *path, jstr_io_path_size_ty path_len, const void *args) {
+	(void)path_len;
+	struct match_ctx *mc = (struct match_ctx *)args;
+	if (strstr(path, mc->name) != NULL) {
+		mc->found = 1;
+		return 1; /* reject: skip this entry */
+	}
+	return 0;
+}
+
 static int ftw_cb_check_dirpath(const struct JSTR_IO_FTW *ftw, const void *args) {
 	(void)args;
 	if (ftw->ep == NULL)
@@ -140,11 +150,21 @@ int main(void) {
 		char p[512];
 		snprintf(p, sizeof p, "%s/afile", tmpdir);
 		FILE *f = fopen(p, "w"); assert(f); fputc('x', f); fclose(f);
-		struct match_ctx mc = {"nope", 0};
 		jstr_io_path_size_ty dlen = (jstr_io_path_size_ty)strlen(p);
-		int ret = jstr_io_ftw_len(p, dlen, ftw_cb_check_dirpath, NULL,
-		    JSTR_IO_FTW_MATCHPATH, ftw_match_accept_all, NULL);
+		/* matcher matches the path -> entry rejected, func never runs */
+		struct match_ctx mc = {"afile", 0};
+		ftw_counter = 0;
+		int ret = jstr_io_ftw_len(p, dlen, ftw_cb_count, NULL,
+		    JSTR_IO_FTW_MATCHPATH, ftw_match_ctx, &mc);
 		assert(ret == 0);
+		assert(ftw_counter == 0);
+		assert(mc.found == 1);
+		/* matcher does not match -> falls through to func */
+		mc = (struct match_ctx){"nope", 0};
+		ret = jstr_io_ftw_len(p, dlen, ftw_cb_check_dirpath, NULL,
+		    JSTR_IO_FTW_MATCHPATH, ftw_match_ctx, &mc);
+		assert(ret == 0);
+		assert(mc.found == 0);
 		snprintf(p, sizeof p, "rm -rf %s", tmpdir);
 		system(p);
 	}

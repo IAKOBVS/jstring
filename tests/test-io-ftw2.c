@@ -120,6 +120,11 @@ int main(void) {
 	    JSTR_IO_FTW_REG, NULL, NULL);
 	assert(ret == -1);
 
+	/* Test 4b: error only on regular files deeper than the root */
+	ret = jstr_io_ftw_len(tmpdir, dlen, ftw_cb_fail_deep, NULL,
+	    JSTR_IO_FTW_REG, NULL, NULL);
+	assert(ret == -1);
+
 	/* Test 5: func stops on directory with ACTIONRETVAL */
 	count = 0;
 	ret = jstr_io_ftw_len(tmpdir, dlen, ftw_cb_stop_on_dir, NULL,
@@ -149,6 +154,15 @@ int main(void) {
 	assert(ret == 0);
 	/* a is skipped, b and link processed */
 	assert(count == 2);
+
+	/* Test 8b: func_match that accepts everything (identical to NULL) */
+	count = 0;
+	ret = jstr_io_ftw_len(tmpdir, dlen, ftw_cb_all, NULL,
+	    JSTR_IO_FTW_REG,
+	    ftw_match_accept_all, NULL);
+	assert(ret == 0);
+	/* root skipped, a + link processed (same as Test 3) */
+	assert(count == 3);
 
 	/* Test 9: Very long dirpath (ENAMETOOLONG) */
 	char longpath[4097];

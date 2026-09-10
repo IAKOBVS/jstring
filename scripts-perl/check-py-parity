@@ -1,0 +1,118 @@
+#!/bin/sh
+# check-py-parity — verify scripts/ produces byte-identical output to the
+# original Perl scripts-perl/ generation pipeline.
+#
+# Usage: scripts-perl/check-py-parity [git-commit]
+#
+# Reference engine selection:
+#   * If scripts-perl/*.pl exist locally, they are used directly.
+#   * Otherwise each .pl file is re-extracted from the last git commit that
+#     contained it (pass a specific commit hash to pin the base for the
+#     walk-back). This keeps the check runnable after the .pl files were
+#     deleted.
+#
+# Exit status is 0 only if every pipeline matches for every header.
+
+PS4='' set -e
+
+cd "$(dirname "$0")" || exit
+ROOT=$(cd .. && pwd)
+
+PL_COMMIT=$1
+
+# Directory containing the Perl reference sources.
+PLDIR=.
+CLEAN_PLDIR=
+if [ ! -f jlib.pl ]; then
+	CLEAN_PLDIR=$(mktemp -d /tmp/jstr-parity.XXXXXX)
+	PLDIR=$CLEAN_PLDIR
+	# Resolve each .pl file to a commit where its blob exists. Different
+	# files may have been last touched at different commits, so resolve
+	# per-file; walk backward from $PL_COMMIT when one is given.
+	extract()
+	{
+		f=$1
+		if [ -n "$PL_COMMIT" ]; then
+			c=$PL_COMMIT
+		else
+			c=$(git -C .. log -1 --format=%H -- "scripts-perl/$f" 2>/dev/null || true)
+		fi
+		while [ -n "$c" ] && ! git -C .. show "$c:scripts-perl/$f" >"$PLDIR/$f" 2>/dev/null; do
+			c=$(git -C .. rev-parse "$c~1" 2>/dev/null || true)
+		done
+		[ -n "$c" ] || { echo "error: '$f' not found in git history" >&2; exit 1; }
+	}
+	for f in jlib.pl gen-func.pl namespace-macros.pl gen-headers.pl \
+		check-undefined-macros.pl check-scoped-macros.pl \
+		update-copyright.pl wrap-func-decls.pl; do
+		extract "$f"
+	done
+fi
+
+# Gather all headers (regular + internal + internal/musl), same set as the build.
+HEADERS=$(find "$ROOT/include" -type f -name '*.h' ! -name '_*' | sort)
+
+failures=0
+
+report()
+{
+	if diff -q "$1" "$2" >/dev/null 2>&1; then
+		printf 'OK   %s\n' "$3"
+	else
+		printf 'DIFF %s\n' "$3"
+		failures=$((failures + 1))
+	fi
+}
+
+tmp=$(mktemp -d /tmp/jstr-parity-out.XXXXXX)
+if [ -n "$CLEAN_PLDIR" ]; then
+	trap 'rm -rf "$CLEAN_PLDIR" "$tmp"' EXIT INT TERM
+else
+	trap 'rm -rf "$tmp"' EXIT INT TERM
+fi
+
+# Pipeline 1: gen-func | namespace-macros (regular headers, same rule as compile)
+for f in $HEADERS; do
+	bf=$(basename "$f")
+	case "$f" in
+	*/*macro*.h) continue ;;
+	*/internal/*) continue ;;
+	esac
+	(cd "$PLDIR" && perl gen-func.pl "$f" | perl namespace-macros.pl) >"$tmp/perl"
+	python3 ../scripts/gen_func.py "$f" | python3 ../scripts/namespace_macros.py >"$tmp/py"
+	report "$tmp/perl" "$tmp/py" "gen-func|namespace $bf"
+done
+
+# Pipeline 2: namespace-macros alone (macros + internal + internal/musl)
+for f in $HEADERS; do
+	bf=$(basename "$f")
+	(cd "$PLDIR" && perl namespace-macros.pl "$f") >"$tmp/perl"
+	python3 ../scripts/namespace_macros.py "$f" >"$tmp/py"
+	report "$tmp/perl" "$tmp/py" "namespace $bf"
+done
+
+# Pipeline 3: gen-headers (standalone utility)
+for f in $HEADERS; do
+	bf=$(basename "$f")
+	(cd "$PLDIR" && perl gen-headers.pl "$f") >"$tmp/perl"
+	python3 ../scripts/gen_headers.py "$f" >"$tmp/py"
+	report "$tmp/perl" "$tmp/py" "gen-headers $bf"
+done
+
+# Pipeline 4: wrap-func-decls on generated output (post-processor)
+for f in $HEADERS; do
+	case "$f" in
+	*/*macro*.h) continue ;;
+	*/internal/*) continue ;;
+	esac
+	bf=$(basename "$f")
+	(cd "$PLDIR" && perl gen-func.pl "$f" | perl namespace-macros.pl | perl wrap-func-decls.pl) >"$tmp/perl"
+	python3 ../scripts/gen_func.py "$f" | python3 ../scripts/namespace_macros.py | python3 ../scripts/wrap_func_decls.py >"$tmp/py"
+	report "$tmp/perl" "$tmp/py" "wrap-func-decls $bf"
+done
+
+if [ "$failures" -ne 0 ]; then
+	echo "$failures pipeline mismatch(es) found" >&2
+	exit 1
+fi
+echo 'Parity check passed.'
