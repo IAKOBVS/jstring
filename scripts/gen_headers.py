@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Generate standalone single-header versions of the source headers.
 
-Port of `scripts/gen-headers.pl`. For each function block, emit the
-declaration and strip `static`/`JSTR_ATTR_INLINE`; for non-function
-blocks, drop `#include "_..."` lines that pull in internal headers.
+Port of `scripts-perl/gen-headers.pl`, invoked by `scripts/gen-headers`.
+For each function block, emit the declaration and strip
+`static`/`JSTR_ATTR_INLINE`; for non-function blocks, drop
+`#include "_..."` lines that pull in internal headers.
+
+Output must stay byte-identical to the Perl engine: run
+`scripts-perl/check-py-parity` after any change.
 """
 import re
 import sys
@@ -11,8 +15,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from jlib import jl_file_get_str, jl_file_to_blocks, jl_fn_get, jl_fn_to_string, FnParts
-
-ATTR_INLINE: str = 'JSTR_ATTR_INLINE'
 
 
 def main() -> None:
@@ -34,9 +36,6 @@ def main() -> None:
             if re.match(r'^[Pp]', name):
                 continue
             out += jl_fn_to_string(attr, rettype, name, arg_arr) + ';'
-            # The static-strip result is discarded here — kept only for
-            # parity with gen-headers.pl.
-            attr = re.sub(r'(\W|^)(?:static|' + re.escape(ATTR_INLINE) + r')(\W|$)', r'\1\2', attr)
         else:
             # Non-function block: strip internal-header includes.
             block = re.sub(r'^#[\t ]*include[ \t]*"_.*$', '', block, flags=re.MULTILINE)

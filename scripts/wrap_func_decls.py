@@ -46,6 +46,18 @@ IS_FUNC: re.Pattern[str] = re.compile(r'(?:JSTR_FUNC|JSTR_FUNC_VOID|JSTR_FUNC_PU
 IS_DECL_ONLY: re.Pattern[str] = re.compile(r'(?:JSTR_DECL_ONLY|JSTR_AS_LIBRARY)')
 
 
+def build_decl(pre_attr: str, rettype: str, name: str, arg_str: str) -> str:
+    """Assemble the extern prototype used in decl-only / library mode."""
+    head: str = pre_attr + '\n' if pre_attr else ''
+    return f"{head}extern {rettype}\n{name}({arg_str});"
+
+
+def build_defn(pre_attr: str, post_attr: str, rettype: str, name: str, arg_str: str, body: str) -> str:
+    """Assemble the full JSTR_API definition (header-only / impl mode)."""
+    head: str = pre_attr + '\n' if pre_attr else ''
+    return f"{head}JSTR_API {rettype}\n{name}({arg_str}){post_attr}\n{{ {body} }}"
+
+
 def main() -> None:
     file_str: str = sys.stdin.read()
     out: str = ''
@@ -86,29 +98,17 @@ def main() -> None:
 
         # Normalize arg string.
         arg_str = re.sub(r',\s*$', '', arg_str)
-
-        # Declaration (extern prototype).
-        decl: str
-        if pre_attr:
-            decl = f"{pre_attr}\nextern {rettype}\n{name}({arg_str});"
-        else:
-            decl = f"extern {rettype}\n{name}({arg_str});"
-
         post_attr = re.sub(r'\s+$', '', post_attr)
-        # Definition (with JSTR_API in place of static).
-        defn: str
-        if pre_attr and post_attr:
-            defn = f"{pre_attr}\nJSTR_API {rettype}\n{name}({arg_str}){post_attr}\n{{ {body} }}"
-        elif pre_attr:
-            defn = f"{pre_attr}\nJSTR_API {rettype}\n{name}({arg_str})\n{{ {body} }}"
-        elif post_attr:
-            defn = f"JSTR_API {rettype}\n{name}({arg_str}){post_attr}\n{{ {body} }}"
-        else:
-            defn = f"JSTR_API {rettype}\n{name}({arg_str})\n{{ {body} }}"
 
         # Emit either the extern prototype (library / decl-only mode) or
         # the full JSTR_API definition (header-only / implementation mode).
-        out += f"#if defined(JSTR_AS_LIBRARY) || defined(JSTR_DECL_ONLY)\n{decl}\n#else\n{defn}\n#endif\n\n"
+        out += (
+            f"#if defined(JSTR_AS_LIBRARY) || defined(JSTR_DECL_ONLY)\n"
+            f"{build_decl(pre_attr, rettype, name, arg_str)}\n"
+            f"#else\n"
+            f"{build_defn(pre_attr, post_attr, rettype, name, arg_str, body)}\n"
+            f"#endif\n\n"
+        )
 
     # Collapse trailing newlines to a single one.
     out = re.sub(r'\n\n*$', '\n', out)

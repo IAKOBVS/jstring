@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generate `jstr_*` wrapper functions from annotated function blocks.
 
-Port of `scripts-perl/gen-func.pl`. Two passes over the source header:
+Port of `scripts-perl/gen-func.pl`, invoked by the Makefile and
+`scripts/compile`. Two rewrite passes over the source header:
 
   Pass 1 — for every `foo_len(...)` function that takes a `size_t` argument
            named `*_len` (or a bare `*sz`), emit a convenience `foo(...)`
@@ -9,13 +10,13 @@ Port of `scripts-perl/gen-func.pl`. Two passes over the source header:
   Pass 2 — for every `foo(s, sz[, cap])`-style function, emit a `foo_j(...)`
            wrapper that operates directly on a `jstr_ty` argument `j`.
 
-Output must stay byte-identical to the Perl engine: run
+The passes are pure string transforms; emitted layout is preserved exactly
+so output stays byte-identical to the Perl engine. Run
 `scripts-perl/check-py-parity` after any change.
 """
 import re
 import sys
 from pathlib import Path
-
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from jlib import (
@@ -33,9 +34,7 @@ ATTR_DEFAULT: str      = 'JSTR_FUNC'
 ATTR_DEFAULT_VOID: str = 'JSTR_FUNC_VOID'
 ATTR_RET_NONNULL: str  = 'JSTR_FUNC_RET_NONNULL'
 JSTRING: str           = 'jstr_ty'
-JSTRING_LIST: str      = 'jstrlist_ty'
 VAR_JSTRING: str       = 'j'
-VAR_JSTRING_LIST: str  = 'l'
 DATA: str              = 'data'
 SIZE: str              = 'size'
 CAP: str               = 'capacity'
@@ -54,26 +53,32 @@ def add_inline(attr_str: str) -> str:
     return attr_str
 
 
-def grepped(arr: list[str], s: str) -> bool:
+def clean_attr(attr: str, ret_nonnull_to_void: bool = False) -> str:
+    """Normalize a wrapper's attribute block, then force static inline.
+
+    Both passes drop preprocessor lines and `JSTR_ATTR_ACCESS` and collapse
+    blank lines; pass 2 first rewrites `JSTR_FUNC_RET_NONNULL` to
+    `JSTR_FUNC_VOID` so `_j()` wrappers do not warn on unused results.
+    """
+    if ret_nonnull_to_void:
+        attr = re.sub(re.escape(ATTR_RET_NONNULL), ATTR_DEFAULT_VOID, attr)
+    attr = re.sub(r'^[ \t]*#.*$', '', attr, flags=re.MULTILINE)
+    attr = re.sub(r'\s*' + re.escape(ATTR_ACCESS) + r'\(\(.*?\)\)', '', attr)
+    attr = re.sub(r'\n\n', '', attr)
+    attr = re.sub(r'\n$', '', attr)
+    return add_inline(attr)
+
+
+def contains_substr(arr: list[str], s: str) -> bool:
     """True if any element of `arr` contains the substring `s`."""
     return any(s in elem for elem in arr)
 
 
-def usage() -> None:
-    if len(sys.argv) < 2:
-        sys.exit('Usage: ./' + sys.argv[0] + ' <file>')
-
-
-def main() -> None:
-    usage()
-    fname: str = sys.argv[1]
-    file_str1: str = jl_file_get_str(fname)
-    file_str2: str = ''
-    func_arr: list[str] = []
-
-    # --- pass 1: generate non-_len() wrappers for _len() functions ---
+def pass1_len_wrappers(file_str1: str, used_names: list[str]) -> str:
+    """Emit non-_len() wrappers for *_len() functions; return the result."""
+    out: str = ''
     for block in jl_file_to_blocks(file_str1):  # block: str
-        file_str2 += block + '\n\n'
+        out += block + '\n\n'
         result: FnParts | None = jl_fn_get(block)
         if not result:
             continue
@@ -85,11 +90,11 @@ def main() -> None:
         # Only jstr-prefixed names and non-variadic, non-empty arg lists.
         if not re.match(r'^jstr\w*_', name):
             continue
-        if grepped(arg_list, '..'):   # variadic
+        if contains_substr(arg_list, '..'):   # variadic
             continue
         if len(arg_list) == 0:
             continue
-        func_arr.append(name)
+        used_names.append(name)
         # Only *_len() functions get a wrapper.
         if PREFIX_LEN not in name:
             continue
@@ -101,14 +106,10 @@ def main() -> None:
             continue
         # Build the non-_len() function body, replacing size params with
         # strlen() calls.
-        body: str
-        if rettype == 'void':
-            body = ''
-        else:
-            body = 'return '
+        body: str = '' if rettype == 'void' else 'return '
         body += name + '('
         name = base_name
-        dont_make_func: bool = True
+        replaced_size: bool = False
 
         i: int = 0
         while i < len(arg_list):
@@ -118,18 +119,18 @@ def main() -> None:
                 # size_t var named `*_len`: derive length from the buffer
                 # argument whose name is `var` without the `_len` suffix.
                 if re.search(re.escape(PREFIX_LEN) + '$', var):
-                    dont_make_func = False
+                    replaced_size = True
                     base_var: str = re.sub(re.escape(PREFIX_LEN) + r'(_|$)', r'\1', var)
-                    i_str: int = jl_arg_index(arg_list, base_var)
-                    if i_str != -1:
-                        var_str: str = jl_arg_get_var(arg_list[i_str])
+                    buf_idx: int = jl_arg_index(arg_list, base_var)
+                    if buf_idx != -1:
+                        var_str: str = jl_arg_get_var(arg_list[buf_idx])
                         body += "strlen((const char *)" + var_str + ")"
                         arg_list.pop(i)
                         body += ', '
                         continue
                 # Bare `*sz` size param: length comes from the first arg.
                 elif re.match(r'^[^*]' + re.escape(VAR_SIZE) + '$', var):
-                    dont_make_func = False
+                    replaced_size = True
                     var_str = jl_arg_get_var(arg_list[0])
                     body += "strlen((const char *)" + var_str + ")"
                     arg_list.pop(i)
@@ -140,28 +141,21 @@ def main() -> None:
             i += 1
 
         # No size param was replaced — nothing to wrap.
-        if dont_make_func:
+        if not replaced_size:
             continue
         body = re.sub(r', $', '', body)
         body += ');'
-        # Clean the attribute block: drop preprocessor lines and
-        # JSTR_ATTR_ACCESS, collapse blank lines, then force static inline.
-        attr = re.sub(r'^[ \t]*#.*$', '', attr, flags=re.MULTILINE)
-        attr = re.sub(r'\s*' + re.escape(ATTR_ACCESS) + r'\(\(.*?\)\)', '', attr)
-        attr = re.sub(r'\n\n', '', attr)
-        attr = re.sub(r'\n$', '', attr)
-        attr = add_inline(attr)
-        body = re.sub(r', $', '', body)
+        out += jl_fn_to_string(clean_attr(attr), rettype, name, arg_list, body) + '\n\n'
+        used_names.append(name)
+    return out
 
-        file_str2 += jl_fn_to_string(attr, rettype, name, arg_list, body) + '\n\n'
-        func_arr.append(name)
 
-    file_str3: str = ''
-
-    # --- pass 2: generate _j() wrappers operating on a jstr_ty ---
+def pass2_j_wrappers(file_str2: str, used_names: list[str]) -> str:
+    """Emit `_j()` wrappers that operate on a `jstr_ty`; return the result."""
+    out: str = ''
     for block in jl_file_to_blocks(file_str2):  # block: str
-        file_str3 += block + '\n\n'
-        result = jl_fn_get(block)
+        out += block + '\n\n'
+        result: FnParts | None = jl_fn_get(block)
         if not result:
             continue
         attr, rettype, name, arg_list, _ = result
@@ -186,9 +180,10 @@ def main() -> None:
             continue
         j_name: str = name + PREFIX_J
         # Skip if the _j() name already exists.
-        if grepped(func_arr, j_name):
+        if contains_substr(used_names, j_name):
             continue
         returns_end_ptr: bool = False
+        body: str
         if rettype == 'void':
             body = ''
         else:
@@ -199,7 +194,7 @@ def main() -> None:
                 body = VAR_JSTRING + '->' + SIZE + ' = JSTR_DIFF('
                 rettype = 'void'
                 attr = re.sub(re.escape(ATTR_DEFAULT) + r'(\W|$)', ATTR_DEFAULT_VOID + r'\1', attr)
-            elif grepped(func_arr, name + '_p'):
+            elif contains_substr(used_names, name + '_p'):
                 continue
             else:
                 body = 'return '
@@ -253,19 +248,23 @@ def main() -> None:
         if returns_end_ptr:
             body += ', ' + VAR_JSTRING + '->' + DATA + ')'
         body += ';'
-        # Clean the attribute block (see pass 1).
-        attr = re.sub(re.escape(ATTR_RET_NONNULL), ATTR_DEFAULT_VOID, attr)
-        attr = re.sub(r'^[ \t]*#.*$', '', attr, flags=re.MULTILINE)
-        attr = re.sub(r'\s*' + re.escape(ATTR_ACCESS) + r'\(\(.*?\)\)', '', attr)
-        attr = re.sub(r'\n\n', '', attr)
-        attr = re.sub(r'\n$', '', attr)
-        attr = add_inline(attr)
-        file_str3 += jl_fn_to_string(attr, rettype, name, arg_list, body) + '\n\n'
-        func_arr.append(name)
+        out += jl_fn_to_string(clean_attr(attr, ret_nonnull_to_void=True), rettype, name, arg_list, body) + '\n\n'
+        used_names.append(name)
+    return out
 
-    # Collapse trailing newlines to a single one.
-    file_str3 = re.sub(r'\n\n*$', '\n', file_str3)
-    sys.stdout.write(file_str3)
+
+def generate(file_str1: str) -> str:
+    """Run both passes and collapse the trailing newlines to a single one."""
+    used_names: list[str] = []
+    file_str2: str = pass1_len_wrappers(file_str1, used_names)
+    file_str3: str = pass2_j_wrappers(file_str2, used_names)
+    return re.sub(r'\n\n*$', '\n', file_str3)
+
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        sys.exit('Usage: ./' + sys.argv[0] + ' <file>')
+    sys.stdout.write(generate(jl_file_get_str(sys.argv[1])))
 
 
 if __name__ == '__main__':
