@@ -48,7 +48,7 @@ PREFIX_LEN: str        = '_len'
 def add_inline(attr_str: str) -> str:
     """Turn a non-static attribute block into a static inline one."""
     if 'static' not in attr_str and ATTR_INLINE not in attr_str:
-        attr_str = re.sub(re.escape(ATTR_NOINLINE), '', attr_str)
+        attr_str = attr_str.replace(ATTR_NOINLINE, '')
         attr_str += '\nstatic ' + ATTR_INLINE
     return attr_str
 
@@ -61,17 +61,62 @@ def clean_attr(attr: str, ret_nonnull_to_void: bool = False) -> str:
     `JSTR_FUNC_VOID` so `_j()` wrappers do not warn on unused results.
     """
     if ret_nonnull_to_void:
-        attr = re.sub(re.escape(ATTR_RET_NONNULL), ATTR_DEFAULT_VOID, attr)
-    attr = re.sub(r'^[ \t]*#.*$', '', attr, flags=re.MULTILINE)
+        attr = attr.replace(ATTR_RET_NONNULL, ATTR_DEFAULT_VOID)
+    attr = _blank_preproc_lines(attr)
     attr = re.sub(r'\s*' + re.escape(ATTR_ACCESS) + r'\(\(.*?\)\)', '', attr)
-    attr = re.sub(r'\n\n', '', attr)
-    attr = re.sub(r'\n$', '', attr)
+    attr = attr.replace('\n\n', '')
+    if attr.endswith('\n'):
+        attr = attr[:-1]
     return add_inline(attr)
 
 
 def contains_substr(arr: list[str], s: str) -> bool:
     """True if any element of `arr` contains the substring `s`."""
     return any(s in elem for elem in arr)
+
+
+def _blank_preproc_lines(text: str) -> str:
+    """Turn preprocessor lines into empty lines while keeping newlines.
+
+    Faithful to Perl's `s/^[ \\t]*#.*$//mg`: only the line content is
+    removed; the following `s/\\n\\n//g` collapses the resulting blanks.
+    """
+    lines: list[str] = []
+    for line in text.split('\n'):
+        if line.lstrip(' \t').startswith('#'):
+            line = ''
+        lines.append(line)
+    return '\n'.join(lines)
+
+
+def is_jstr_name(name: str) -> bool:
+    """True if `name` matches the Perl pattern `^jstr\\w*_` (e.g. `jstr_cat`).
+
+    After the literal `jstr` prefix, identifier characters may appear before
+    the first underscore. For the current corpus that collapses to
+    `name.startswith('jstr_')`.
+    """
+    if not name.startswith('jstr'):
+        return False
+    tail: str = name[len('jstr'):]
+    first_us: int = tail.find('_')
+    return first_us != -1 and (first_us == 0 or tail[:first_us].isalnum())
+
+
+def strip_trailing_comma(body: str) -> str:
+    """Strip a trailing `, ` — faithful to Perl's `s/, $//`."""
+    if body.endswith(', '):
+        body = body[:-2]
+    return body
+
+
+def has_end_ptr_suffix(name: str) -> bool:
+    """True if `name` ends with `_p` or contains a `_p_` segment.
+
+    Replaces Perl's `_p(?:_|$)` search; a `_p` followed by any other
+    character (e.g. `_px`) does not count as an end-pointer name.
+    """
+    return name.endswith('_p') or '_p_' in name
 
 
 def pass1_len_wrappers(file_str1: str, used_names: list[str]) -> str:
@@ -88,7 +133,7 @@ def pass1_len_wrappers(file_str1: str, used_names: list[str]) -> str:
         arg_list: list[str]
         attr, rettype, name, arg_list, _ = result
         # Only jstr-prefixed names and non-variadic, non-empty arg lists.
-        if not re.match(r'^jstr\w*_', name):
+        if not is_jstr_name(name):
             continue
         if contains_substr(arg_list, '..'):   # variadic
             continue
@@ -118,7 +163,7 @@ def pass1_len_wrappers(file_str1: str, used_names: list[str]) -> str:
             if 'size_t' in arg:
                 # size_t var named `*_len`: derive length from the buffer
                 # argument whose name is `var` without the `_len` suffix.
-                if re.search(re.escape(PREFIX_LEN) + '$', var):
+                if var.endswith(PREFIX_LEN):
                     replaced_size = True
                     base_var: str = re.sub(re.escape(PREFIX_LEN) + r'(_|$)', r'\1', var)
                     buf_idx: int = jl_arg_index(arg_list, base_var)
@@ -143,7 +188,7 @@ def pass1_len_wrappers(file_str1: str, used_names: list[str]) -> str:
         # No size param was replaced — nothing to wrap.
         if not replaced_size:
             continue
-        body = re.sub(r', $', '', body)
+        body = strip_trailing_comma(body)
         body += ');'
         out += jl_fn_to_string(clean_attr(attr), rettype, name, arg_list, body) + '\n\n'
         used_names.append(name)
@@ -159,7 +204,7 @@ def pass2_j_wrappers(file_str2: str, used_names: list[str]) -> str:
         if not result:
             continue
         attr, rettype, name, arg_list, _ = result
-        if not re.match(r'^jstr\w*_', name):
+        if not is_jstr_name(name):
             continue
         if name.endswith(PREFIX_J):
             continue
@@ -189,7 +234,7 @@ def pass2_j_wrappers(file_str2: str, used_names: list[str]) -> str:
         else:
             # *_p() functions return an end pointer; convert to a jstr_ty
             # method that stores the offset in j->size.
-            if re.search(r'_p(?:_|$)', name) and rettype != 'void':
+            if has_end_ptr_suffix(name) and rettype != 'void':
                 returns_end_ptr = True
                 body = VAR_JSTRING + '->' + SIZE + ' = JSTR_DIFF('
                 rettype = 'void'
@@ -243,7 +288,7 @@ def pass2_j_wrappers(file_str2: str, used_names: list[str]) -> str:
         # No data argument — not a jstr-style function.
         if not has_data:
             continue
-        body = re.sub(r', $', '', body)
+        body = strip_trailing_comma(body)
         body += ')'
         if returns_end_ptr:
             body += ', ' + VAR_JSTRING + '->' + DATA + ')'

@@ -19,6 +19,12 @@ HDRGEN   := $(BUILD)/include/jstr
 
 CC       ?= cc
 CFLAGS   ?= -O2
+
+# Use ccache when available (override with CCACHE= to disable).
+CCACHE   ?= $(shell command -v ccache 2>/dev/null)
+ifneq ($(CCACHE),)
+CC       := $(CCACHE) $(CC)
+endif
 # -D_XOPEN_SOURCE=700 exposes POSIX-gated jstr_io_* functions (readsystem,
 # readdir, etc.) so they are exported from libjstr.so. The old ./scripts/test
 # passed this through its CFLAGS when building the library; without it the

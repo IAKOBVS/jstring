@@ -33,7 +33,7 @@ def main() -> None:
             arg_arr: list[str]
             attr, rettype, name, arg_arr, _ = result
             # Skip names starting with P/p (private/internal helpers).
-            if re.match(r'^[Pp]', name):
+            if name.startswith(('P', 'p')):
                 continue
             out += jl_fn_to_string(attr, rettype, name, arg_arr) + ';'
         else:

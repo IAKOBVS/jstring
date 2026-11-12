@@ -42,9 +42,6 @@ WRAP_FN_RE: re.Pattern[str] = re.compile(
 # Non-function patterns that can falsely match
 NON_FUNCS: set[str] = {'define', 'if', 'else', 'elif', 'for', 'while', 'switch'}
 
-IS_FUNC: re.Pattern[str] = re.compile(r'(?:JSTR_FUNC|JSTR_FUNC_VOID|JSTR_FUNC_PURE)')
-IS_DECL_ONLY: re.Pattern[str] = re.compile(r'(?:JSTR_DECL_ONLY|JSTR_AS_LIBRARY)')
-
 
 def build_decl(pre_attr: str, rettype: str, name: str, arg_str: str) -> str:
     """Assemble the extern prototype used in decl-only / library mode."""
@@ -75,16 +72,16 @@ def main() -> None:
 
         # Preprocessor directives (`#define`, `#if`, ...) match WRAP_FN_RE;
         # detect them by the normalized return type.
-        rettype_clean: str = re.sub(r'\s+', '', rettype)
+        rettype_clean: str = ''.join(rettype.split())
         if rettype_clean in NON_FUNCS:
             out += block + '\n\n'
             continue
-        if not IS_FUNC.search(block):
+        if 'JSTR_FUNC' not in block:
             # Faithful to wrap-func-decls.pl: a block that matches WRAP_FN_RE
             # without a JSTR_FUNC annotation is silently dropped (the Perl
             # `next` emits nothing). Preserved for byte-for-byte parity.
             continue
-        if IS_DECL_ONLY.search(block):
+        if 'JSTR_DECL_ONLY' in block or 'JSTR_AS_LIBRARY' in block:
             out += block + '\n\n'
             continue
 
@@ -93,12 +90,16 @@ def main() -> None:
         pre_attr = re.sub(r'\n[ \t]*static[ \t]*\n?', '\n', pre_attr)
         pre_attr = re.sub(r'^[ \t]*static[ \t]*', '', pre_attr)
         pre_attr = re.sub(r'[ \t]*static[ \t]*$', '', pre_attr)
-        pre_attr = re.sub(r'^\s+', '', pre_attr)
-        pre_attr = re.sub(r'\s+$', '', pre_attr)
+        pre_attr = pre_attr.lstrip()
+        pre_attr = pre_attr.rstrip()
 
-        # Normalize arg string.
-        arg_str = re.sub(r',\s*$', '', arg_str)
-        post_attr = re.sub(r'\s+$', '', post_attr)
+        # Normalize arg string: a trailing comma (and its whitespace) is
+        # dropped, matching Perl's `s/,\s*$//`; leaves other trailing
+        # whitespace untouched for byte parity.
+        stripped_arg: str = arg_str.rstrip()
+        if stripped_arg.endswith(','):
+            arg_str = stripped_arg[:-1]
+        post_attr = post_attr.rstrip()
 
         # Emit either the extern prototype (library / decl-only mode) or
         # the full JSTR_API definition (header-only / implementation mode).

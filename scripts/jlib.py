@@ -90,10 +90,11 @@ def jl_arg_to_string(arg_arr: list[str]) -> str:
 def jl_arg_index(arg_arr: list[str], find: str) -> int:
     # Intentional difference from the Perl original (jlib.pl): Perl's loop
     # runs `$i < $#$arg_arr_ref`, so it never examines the last element.
-    # This version checks every element and escapes `find`. No current header
-    # exercises the discrepancy; keep the correct behavior.
+    # This version checks every element (using endswith, which is exactly
+    # Perl's `re.escape(find) . '$'`). No current header exercises the
+    # discrepancy; keep the correct behavior.
     for i, s in enumerate(arg_arr):  # i: int, s: str
-        if re.search(re.escape(find) + '$', s):
+        if s.endswith(find):
             return i
     return -1
 
