@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
 #ifndef JSTR_BUILDER_H
 #	define JSTR_BUILDER_H 1
@@ -27,20 +25,50 @@ JSTR_INTERNAL_END_DECLS
 #define JSTR_IMPLEMENTATION 1
 #endif
 
+/**
+ * \brief Alias for JSTR_RESTRICT.
+ */
 #	define R JSTR_RESTRICT
 
+/**
+ * \brief Growth factor used by reallocating reserve functions.
+ */
 #	define JSTR_GROWTH 2
 
+/**
+ * \brief Zero initializer for jstr_ty.
+ */
 #	define JSTR_INIT {0}
 
+/**
+ * \brief Iterate over each byte of a jstr_ty's data.
+ */
 #	define jstr_foreach(j, p) \
 		for (char *p = ((j)->data), *_jstr_internal_foreach_end_##p = ((j)->data) + ((j)->size); p < _jstr_internal_foreach_end_##p; ++p)
+/**
+ * \brief Iterate over indices of a jstr_ty's data.
+ */
 #	define jstr_foreachi(j, i) \
 		for (size_t i = 0, const _jstr_internal_foreachi_end_##i = ((j)->size); i < _jstr_internal_foreachi_end_##i; ++i)
+/**
+ * \brief Compute the index of curr within j's data.
+ */
 #	define jstr_index(j, curr) JSTR_DIFF(curr, (j)->data)
+/**
+ * \brief Internal unchecked pointer to j's i-th byte.
+ */
 #	define jstr_internal_at(j, i)      ((j)->data + (i))
+/**
+ * \brief Pointer to the first byte of j's data.
+ */
 #	define jstr_start(j)       ((j)->data)
+/**
+ * \brief Pointer one past the last byte of j's data.
+ */
 #	define jstr_end(j)         ((j)->data + (j)->size)
+/**
+ * \brief Bounds-checked (in debug) pointer to j's i-th byte.
+ */
 #	ifdef JSTR_DEBUG
 #		define jstr_at(j, i) \
 			((i <= (j)->size) ? ((j)->data + (i)) : assert(i <= (j)->size), ((j)->data))
@@ -50,7 +78,19 @@ JSTR_INTERNAL_END_DECLS
 
 JSTR_INTERNAL_BEGIN_DECLS
 
-/* Set first char to NUL and size to zero. */
+/**
+ * \brief Reset a raw character buffer to empty.
+ *
+ * \details Sets the first byte of \p s to '\0' when \p s is non-NULL and sets
+ *          \p *sz to 0. Does not free memory or modify capacity.
+ *
+ * \param[in,out] s Pointer to buffer data; may be NULL, in which case only
+ *                  the size is cleared.
+ * \param[out] sz Non-NULL pointer to the current size; set to 0.
+ * \pre sz != NULL.
+ * \note Capacity is unchanged; caller retains allocated storage.
+ * \warning If sz is NULL the behaviour is undefined.
+ */
 JSTR_FUNC_VOID
 static JSTR_ATTR_INLINE
 void
@@ -61,6 +101,18 @@ jstr_empty(char *R s, size_t *R sz) JSTR_NOEXCEPT
 	*sz = 0;
 }
 
+/**
+ * \brief Print diagnostic information for a jstr_ty to stderr.
+ *
+ * \details Prints size, capacity, size (as length) and data bytes. Uses the
+ *          size field rather than strlen, so embedded NULs are reported.
+ *
+ * \param[in] j Non-NULL pointer to the string object.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if any fprintf/fwrite to stderr fails.
+ * \pre j != NULL.
+ * \note Writes to stderr.
+ * \warning Not thread-safe with respect to stderr usage.
+ */
 JSTR_FUNC_VOID
 jstr_ret_ty
 jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
@@ -110,7 +162,18 @@ jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
 ;
 #endif
 
-/* free(p) and set p to NULL. */
+/**
+ * \brief Free a raw buffer and reset pointers and sizes.
+ *
+ * \details Calls free(*s), then sets *s to NULL, *cap to 0 and *sz to 0.
+ *          free(NULL) is safe, so a NULL buffer is accepted.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer; cleared on return.
+ * \param[in,out] sz Non-NULL pointer to size; set to 0.
+ * \param[in,out] cap Non-NULL pointer to capacity; set to 0.
+ * \pre s, sz and cap are non-NULL.
+ * \note Does not free the jstr_ty struct itself.
+ */
 JSTR_FUNC_VOID
 void
 jstr_free(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
@@ -125,7 +188,14 @@ jstr_free(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 ;
 #endif
 
-/* free(p) and set p to NULL. */
+/**
+ * \brief Free a jstr_ty's buffer and reset the struct.
+ *
+ * \details Delegates to jstr_free() on j->data, j->size and j->capacity.
+ *
+ * \param[in,out] j Non-NULL pointer to the string object.
+ * \pre j != NULL.
+ */
 JSTR_FUNC_VOID
 void
 jstr_free_j(jstr_ty *j) JSTR_NOEXCEPT
@@ -137,8 +207,22 @@ jstr_free_j(jstr_ty *j) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return JSTR_RET_ERR on malloc error.
- * NEW_CAP must include NUL. */
+/**
+ * \brief Grow capacity to at least new_cap, always reallocating or growing.
+ *
+ * \details Starts from max(*cap, JSTR_MIN_CAP), multiplies by JSTR_GROWTH
+ *          until >= new_cap, then reallocates. Updates *cap and *s on success;
+ *          *sz is unchanged.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer; updated on success.
+ * \param[in,out] sz Non-NULL pointer to size; ignored and unchanged.
+ * \param[in,out] cap Non-NULL pointer to capacity; updated on success.
+ * \param[in] new_cap Requested capacity including the NUL terminator.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if realloc fails (buffer and capacity unchanged).
+ * \pre s, sz and cap are non-NULL.
+ * \note new_cap == 0 still reallocates to at least JSTR_MIN_CAP.
+ * \warning If realloc fails, *s and *cap are left unchanged.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
@@ -159,9 +243,19 @@ jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JS
 ;
 #endif
 
-/* Do nothing if new_cap < cap.
- * Return JSTR_RET_ERR on malloc error.
- * NEW_CAP must include NUL. */
+/**
+ * \brief Reserve capacity if new_cap exceeds current capacity.
+ *
+ * \details Returns success without action when new_cap <= *cap; otherwise
+ *          delegates to jstr_reservealways().
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] new_cap Requested capacity including the NUL terminator.
+ * \return JSTR_RET_SUCC on success (no-op if new_cap <= *cap); JSTR_RET_ERR if realloc fails.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
@@ -175,8 +269,22 @@ jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOE
 ;
 #endif
 
-/* Return JSTR_RET_ERR on malloc error.
- * NEW_CAP must include NUL. */
+/**
+ * \brief Reallocate to exactly new_cap when new_cap is non-zero.
+ *
+ * \details If new_cap != 0, sets *cap = new_cap and reallocates *s to that
+ *          size. If new_cap == 0, skips realloc and returns success.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size; ignored.
+ * \param[in,out] cap Non-NULL pointer to capacity; set to new_cap when non-zero.
+ * \param[in] new_cap Exact capacity including the NUL terminator.
+ * \return JSTR_RET_SUCC on success (no-op if new_cap == 0); JSTR_RET_ERR if realloc fails when new_cap != 0.
+ * \pre s, sz and cap are non-NULL.
+ * \note new_cap == 0 leaves capacity unchanged.
+ * \warning On allocation failure *cap may already reflect new_cap while *s
+ *          is unchanged.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
@@ -196,9 +304,21 @@ jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_ca
 ;
 #endif
 
-/* Do nothing if new_cap < cap.
- * Return JSTR_RET_ERR on malloc error.
- * NEW_CAP must include NUL. */
+/**
+ * \brief Reserve exact capacity if new_cap exceeds current capacity.
+ *
+ * \details Returns success without action when new_cap < *cap; otherwise
+ *          delegates to jstr_reserveexactalways().
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] new_cap Requested exact capacity including the NUL terminator.
+ * \return JSTR_RET_SUCC on success (no-op if new_cap < *cap); JSTR_RET_ERR if realloc fails.
+ * \pre s, sz and cap are non-NULL.
+ * \note The no-op condition uses strict less-than, so an equal new_cap
+ *       still reallocates.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_reserveexact(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
@@ -212,6 +332,17 @@ jstr_reserveexact(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JST
 ;
 #endif
 
+/**
+ * \brief Shrink capacity to size + 1 (exact fit for current size).
+ *
+ * \details Calls jstr_reserveexactalways() with *sz + 1.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if realloc fails.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
@@ -223,6 +354,16 @@ jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * \brief Write a jstr_ty's bytes to stdout without trailing newline.
+ *
+ * \details Writes j->size bytes from j->data to stdout and returns success
+ *          only when all bytes are written.
+ *
+ * \param[in] j Non-NULL pointer to the string object.
+ * \return JSTR_RET_SUCC if all j->size bytes are written; JSTR_RET_ERR otherwise.
+ * \pre j != NULL.
+ */
 JSTR_FUNC
 static JSTR_ATTR_INLINE
 jstr_ret_ty
@@ -231,6 +372,16 @@ jstr_io_print(const jstr_ty *j) JSTR_NOEXCEPT
 	return jstr_io_fwrite(j->data, 1, j->size, stdout) == j->size ? JSTR_RET_SUCC : JSTR_RET_ERR;
 }
 
+/**
+ * \brief Write a jstr_ty's bytes to stdout followed by a newline.
+ *
+ * \details Writes j->size bytes then a '\n'; returns error if either write
+ *          fails.
+ *
+ * \param[in] j Non-NULL pointer to the string object.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if writing data or the trailing newline fails.
+ * \pre j != NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
@@ -246,6 +397,21 @@ jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * \brief Internal variadic concatenation helper.
+ *
+ * \details Reserves *sz + arg_len + 1 bytes, then appends each NUL-terminated
+ *          argument from the va_list using stpcpy, updating *sz by arg_len.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size; increased by arg_len.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] ap va_list of const char * arguments terminated by NULL.
+ * \param[in] arg_len Total length of all arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if allocation fails.
+ * \pre s, sz and cap are non-NULL.
+ * \note Internal helper; not intended for direct use.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t arg_len) JSTR_NOEXCEPT
@@ -264,8 +430,22 @@ jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t 
 ;
 #endif
 
-/* ARGS must point to an array of jstr_cat_arg_ty.
- * LAST must have .ptr == NULL. */
+/**
+ * \brief Concatenate an array of (ptr, size) chunks into a buffer.
+ *
+ * \details Computes total size; returns success without changes when total is
+ *          0. Otherwise reserves *sz + total + 1 bytes, copies each chunk
+ *          with memcpy, NUL-terminates and updates *sz.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] args Array of jstr_cat_arg_ty chunks; may be NULL when nargs is 0.
+ * \param[in] nargs Number of chunks.
+ * \return JSTR_RET_SUCC on success (no changes if total == 0); JSTR_RET_ERR on allocation failure.
+ * \pre s, sz and cap are non-NULL.
+ * \note args entries provide ptr and size; ptr may be NULL only with size 0.
+ */
 JSTR_FUNC_MAY_NULL
 JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 JSTR_NONNULL((1))
@@ -292,8 +472,17 @@ jstr_cat(char *R *R s, size_t *R sz, size_t *R cap, const jstr_cat_arg_ty *args,
 	return JSTR_RET_SUCC;
 }
 
-/* ARGS must point to an array of jstr_cat_arg_ty.
- * LAST must have .ptr == NULL. */
+/**
+ * \brief Concatenate chunks into a jstr_ty.
+ *
+ * \details Delegates to jstr_cat() using j->data, j->size and j->capacity.
+ *
+ * \param[in,out] j Non-NULL pointer to the string object.
+ * \param[in] args Array of jstr_cat_arg_ty chunks.
+ * \param[in] nargs Number of chunks.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR on allocation failure.
+ * \pre j != NULL.
+ */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 static JSTR_ATTR_INLINE
@@ -303,7 +492,20 @@ jstr_cat_j(jstr_ty *j, const jstr_cat_arg_ty *args, size_t nargs) JSTR_NOEXCEPT
 	return jstr_cat(&j->data, &j->size, &j->capacity, args, nargs);
 }
 
-/* Return ptr to '\0' in S. */
+/**
+ * \brief Append src (length src_len) to s at offset sz without bounds checks.
+ *
+ * \details Copies src_len bytes to s + sz and NUL-terminates, returning a
+ *          pointer to the resulting '\0'.
+ *
+ * \param[in,out] s Buffer with sufficient spare capacity.
+ * \param[in] sz Current size (offset at which to append).
+ * \param[in] src Source bytes; must point to at least src_len bytes.
+ * \param[in] src_len Number of bytes to copy.
+ * \return Pointer to the terminating NUL in s (borrows s; no ownership transfer; caller ensures capacity).
+ * \pre s has at least sz + src_len + 1 writable bytes.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 char *
@@ -316,6 +518,17 @@ jstr_append_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len
 ;
 #endif
 
+/**
+ * \brief Append a NUL-terminated src to s at offset sz without bounds checks.
+ *
+ * \details Equivalent to strcpy(s + sz, src); assumes sufficient capacity.
+ *
+ * \param[in,out] s Buffer with sufficient spare capacity.
+ * \param[in] sz Current size (offset at which to append).
+ * \param[in] src NUL-terminated source string.
+ * \pre s has enough space for src.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_FUNC_VOID
 static JSTR_ATTR_INLINE
 void
@@ -324,7 +537,19 @@ jstr_append_unsafe(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
 	strcpy(s + sz, src);
 }
 
-/* Return ptr to '\0' in S. */
+/**
+ * \brief Append a NUL-terminated src to s at offset sz without bounds checks.
+ *
+ * \details Equivalent to stpcpy(s + sz, src), returning a pointer to the
+ *          resulting '\0'.
+ *
+ * \param[in,out] s Buffer with sufficient spare capacity.
+ * \param[in] sz Current size (offset at which to append).
+ * \param[in] src NUL-terminated source string.
+ * \return Pointer to the terminating NUL in s (borrows s; no ownership transfer; caller ensures capacity).
+ * \pre s has enough space for src.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_FUNC
 char *
 jstr_append_unsafe_p(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
@@ -336,10 +561,20 @@ jstr_append_unsafe_p(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Append SRC to DST.
- * Return value:
- * JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * \brief Append src (length src_len) to a managed buffer, growing as needed.
+ *
+ * \details Reserves *sz + src_len + 1 bytes, copies src_len bytes,
+ *          NUL-terminates and updates *sz.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] src Source bytes; must point to at least src_len bytes.
+ * \param[in] src_len Number of bytes to copy.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR on allocation failure.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -354,6 +589,16 @@ jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
 ;
 #endif
 
+/**
+ * \brief Fill existing buffer contents up to the first NUL with character c.
+ *
+ * \details Calls memset(s, c, strlen(s)); does not change length.
+ *
+ * \param[in,out] s NUL-terminated buffer.
+ * \param[in] c Fill character (converted to unsigned char).
+ * \pre s is non-NULL and NUL-terminated.
+ * \note Does not resize or reallocate.
+ */
 JSTR_FUNC_VOID
 static JSTR_ATTR_INLINE
 void
@@ -362,6 +607,18 @@ jstr_strset(char *s, int c) JSTR_NOEXCEPT
 	memset(s, c, strlen(s));
 }
 
+/**
+ * \brief Fill s with n copies of c and NUL-terminate without bounds checks.
+ *
+ * \details Writes n bytes of c followed by '\0', returning s + n.
+ *
+ * \param[out] s Buffer with at least n + 1 writable bytes.
+ * \param[in] c Fill character.
+ * \param[in] n Number of copies.
+ * \return Pointer to the terminating NUL in s (borrows s; no ownership transfer; caller ensures capacity).
+ * \pre s has at least n + 1 writable bytes.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_FUNC
 char *
 jstr_assignnchr_unsafe_p(char *s, int c, size_t n) JSTR_NOEXCEPT
@@ -375,6 +632,22 @@ jstr_assignnchr_unsafe_p(char *s, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * \brief Assign n copies of c to a managed buffer, truncating or growing.
+ *
+ * \details If n > *sz, grows capacity to at least n + 1. Fills n bytes with
+ *          c, NUL-terminates and sets *sz = n. If n <= *sz, overwrites the
+ *          first n bytes and shrinks the logical size to n.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] c Fill character.
+ * \param[in] n Number of copies.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if growth allocation fails (n > *sz).
+ * \pre s, sz and cap are non-NULL.
+ * \note n == 0 empties the buffer.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
@@ -393,7 +666,20 @@ jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
 ;
 #endif
 
-/* Append N Cs to end of S. */
+/**
+ * \brief Append n copies of c to s at offset sz without bounds checks.
+ *
+ * \details Fills s + sz with n bytes of c and returns s + sz + n. Does not
+ *          write a trailing NUL terminator.
+ *
+ * \param[in,out] s Buffer with sufficient spare capacity.
+ * \param[in] sz Current size (offset at which to append).
+ * \param[in] c Fill character.
+ * \param[in] n Number of copies.
+ * \return Pointer past the last filled byte (borrows s; no NUL written; caller ensures capacity).
+ * \pre s has at least sz + n writable bytes.
+ * \warning No bounds checking and no NUL termination.
+ */
 JSTR_FUNC
 static JSTR_ATTR_INLINE
 char *
@@ -402,7 +688,20 @@ jstr_pushbackn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 	return (char *)memset(s + sz, c, n) + n;
 }
 
-/* Append N Cs to end of S. */
+/**
+ * \brief Append n copies of c to a managed buffer, growing as needed.
+ *
+ * \details Reserves *sz + n + 1 bytes, fills n copies of c at the end and
+ *          updates *sz.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] c Fill character.
+ * \param[in] n Number of copies.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR on allocation failure.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
@@ -417,7 +716,20 @@ jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_
 ;
 #endif
 
-/* Prepend N Cs to S. */
+/**
+ * \brief Prepend n copies of c to s without bounds checks.
+ *
+ * \details Shifts the existing sz bytes right by n, fills the first n bytes
+ *          with c and returns s + sz + n.
+ *
+ * \param[in,out] s Buffer with sufficient spare capacity.
+ * \param[in] sz Current size.
+ * \param[in] c Fill character.
+ * \param[in] n Number of copies.
+ * \return Pointer past the original content (borrows s; caller ensures capacity).
+ * \pre s has at least sz + n + 1 writable bytes.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_FUNC
 char *
 jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
@@ -430,7 +742,20 @@ jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Prepend N Cs to S. */
+/**
+ * \brief Prepend n copies of c to a managed buffer, growing as needed.
+ *
+ * \details Reserves *sz + n + 1 bytes, shifts content and fills n copies at
+ *          the front, updating *sz.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] c Fill character.
+ * \param[in] n Number of copies.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR on allocation failure.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
@@ -445,10 +770,21 @@ jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
 ;
 #endif
 
-/* Only prepend NUL if S is empty.
- * Return value:
- * JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * \brief Prepend src (length src_len) to s at the front without bounds checks.
+ *
+ * \details Shifts existing content right by src_len when sz != 0; if sz is 0
+ *          writes a NUL at s[src_len]. Copies src to the front and returns
+ *          s + sz + src_len.
+ *
+ * \param[in,out] s Buffer with sufficient spare capacity.
+ * \param[in] sz Current size.
+ * \param[in] src Source bytes; must point to at least src_len bytes.
+ * \param[in] src_len Number of bytes to prepend.
+ * \return Pointer past the resulting content (borrows s; caller ensures capacity).
+ * \pre s has at least sz + src_len + 1 writable bytes.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 char *
@@ -466,10 +802,19 @@ jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_le
 ;
 #endif
 
-/* Only prepend NUL if S is empty.
- * Return value:
- * JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * \brief Prepend src (length src_len) to a managed buffer, growing as needed.
+ *
+ * \details Reserves *sz + src_len + 1 bytes, prepends src and updates *sz.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] src Source bytes; must point to at least src_len bytes.
+ * \param[in] src_len Number of bytes to prepend.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR on allocation failure.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -484,9 +829,19 @@ jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, s
 ;
 #endif
 
-/* Assign SRC to DST.
- * S is NUL terminated.
- * Return ptr to '\0' in S. */
+/**
+ * \brief Assign src (length src_len) to s without bounds checks.
+ *
+ * \details Copies src_len bytes to s and NUL-terminates, returning a pointer
+ *          to the resulting '\0'.
+ *
+ * \param[out] s Buffer with at least src_len + 1 writable bytes.
+ * \param[in] src Source bytes; must point to at least src_len bytes.
+ * \param[in] src_len Number of bytes to copy.
+ * \return Pointer to the terminating NUL in s (borrows s; no ownership transfer; caller ensures capacity).
+ * \pre s has at least src_len + 1 writable bytes.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_FUNC
 char *
 jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -498,11 +853,20 @@ jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len) JSTR_NOEX
 ;
 #endif
 
-/* Assign SRC to DST.
- * S is NUL terminated.
- * Return value:
- * JSTR_RET_ERR on malloc error
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * \brief Assign src (length src_len) to a managed buffer, growing as needed.
+ *
+ * \details Reserves *sz + src_len + 1 bytes, copies src_len bytes,
+ *          NUL-terminates and sets *sz = src_len.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size; set to src_len.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] src Source bytes; must point to at least src_len bytes.
+ * \param[in] src_len Number of bytes to copy.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR on allocation failure.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -518,6 +882,19 @@ jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
 ;
 #endif
 
+/**
+ * \brief Append a single character to s at offset sz without bounds checks.
+ *
+ * \details Writes c at s[sz], NUL-terminates at s[sz + 1] and returns
+ *          s + sz + 1.
+ *
+ * \param[in,out] s Buffer with sufficient spare capacity.
+ * \param[in] sz Current size (offset at which to append).
+ * \param[in] c Character to append.
+ * \return Pointer to the terminating NUL in s (borrows s; no ownership transfer; caller ensures capacity).
+ * \pre s has at least sz + 2 writable bytes.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_FUNC
 char *
 jstr_pushback_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
@@ -532,11 +909,18 @@ jstr_pushback_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Push C to end of S.
- * S is NUL terminated.
- * Return value:
- * JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * \brief Append a single character to a managed buffer, growing as needed.
+ *
+ * \details Reserves *sz + 2 bytes, appends c, NUL-terminates and updates *sz.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] c Character to append.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR on allocation failure.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
@@ -551,6 +935,19 @@ jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * \brief Prepend a single character to s without bounds checks.
+ *
+ * \details Shifts sz bytes right by one, writes c at s[0] and returns
+ *          s + sz + 1.
+ *
+ * \param[in,out] s Buffer with sufficient spare capacity.
+ * \param[in] sz Current size.
+ * \param[in] c Character to prepend.
+ * \return Pointer past the resulting content (borrows s; caller ensures capacity).
+ * \pre s has at least sz + 2 writable bytes.
+ * \warning No bounds checking; caller must ensure capacity.
+ */
 JSTR_FUNC_VOID
 char *
 jstr_pushfront_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
@@ -564,11 +961,18 @@ jstr_pushfront_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Push C to end of S.
- * S is NUL terminated.
- * Return value:
- * JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * \brief Prepend a single character to a managed buffer, growing as needed.
+ *
+ * \details Reserves *sz + 2 bytes, prepends c and updates *sz.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] c Character to prepend.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR on allocation failure.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
@@ -583,10 +987,17 @@ jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Pop S[size - 1].
- * Return value:
- * ptr to '\0' in S.
- * Otherwise, S. */
+/**
+ * \brief Remove the last character of s.
+ *
+ * \details If sz != 0, sets s[sz - 1] to '\0' and returns s + sz - 1.
+ *          If sz == 0, returns s unchanged.
+ *
+ * \param[in,out] s Buffer to modify.
+ * \param[in] sz Current size.
+ * \return Pointer to the new terminator, or s when sz is 0 (borrows s; size not updated).
+ * \note Does not update the caller's size variable.
+ */
 JSTR_FUNC_VOID
 char *
 jstr_popback_p(char *s, size_t sz) JSTR_NOEXCEPT
@@ -602,10 +1013,17 @@ jstr_popback_p(char *s, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Pop s[0].
- * Return value:
- * ptr to '\0' in S.
- * Otherwise, S. */
+/**
+ * \brief Remove the first character of s.
+ *
+ * \details If sz != 0, moves sz bytes left by one via memmove and returns
+ *          s + sz - 1. If sz == 0, returns s unchanged.
+ *
+ * \param[in,out] s Buffer to modify.
+ * \param[in] sz Current size.
+ * \return Pointer to the new terminator, or s when sz is 0 (borrows s; size not updated).
+ * \note Does not update the caller's size variable.
+ */
 JSTR_FUNC_VOID
 char *
 jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
@@ -628,11 +1046,19 @@ jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
 #		define JSTR_HAVE_SNPRINTF_STRLEN 0
 #	endif
 
-/* Return maximum size of allocation needed for sprintf.
- * The NUL terminator is included.
- * Return value:
- * size of allocation.
- * -1 on error and errno is set. */
+/**
+ * \brief Return the maximum buffer size needed for a printf format.
+ *
+ * \details Computes an upper bound for vsprintf output including the NUL
+ *          terminator. Uses vsnprintf(NULL, 0, ...) when available; otherwise
+ *          a conservative estimator. Sets errno and returns -1 on invalid
+ *          format or overflow.
+ *
+ * \param[in] ap va_list of format arguments.
+ * \param[in] fmt Printf-style format string.
+ * \return Required size including NUL terminator, or -1 on error (invalid format sets errno to EINVAL; overflow sets errno to EOVERFLOW).
+ * \note The returned length is a conservative upper bound.
+ */
 JSTR_FUNC
 JSTR_ATTR_FORMAT(printf, 2, 0)
 int
@@ -876,23 +1302,22 @@ get_arg:
 
 #	if JSTR_HAVE_SNPRINTF_STRLEN
 
-/* Return JSTR_RET_ERR on error.
- * Referencing arguments with $ is not supported.
- * Supported conversions:
-   %s - string.
-   %c - char.
-   %% - %.
-   %d, %i, %u, %o, %x, %X - int.
-   %a, %A, %e, %E, %f, %F, %g, %G - float/double.
-   %zu - size_t.
-   %l - long.
-   %ll - long long.
-   %lu - unsigned long.
-   %llu - unsigned long long.
-   %p - ptr.
-   %n - chars written.
-   %m - errno string.
- * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+/**
+ * \brief Format into a managed buffer, replacing its contents.
+ *
+ * \details Computes required length, reserves exactly, formats with vsprintf
+ *          and sets *sz. Supports a subset of conversions; invalid format
+ *          sets errno to EINVAL and returns an error.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[out] sz Non-NULL pointer to size; set on success.
+ * \param[out] cap Non-NULL pointer to capacity; updated on success.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if format length computation, allocation, or vsprintf fails.
+ * \pre s, sz and cap are non-NULL; fmt is non-NULL.
+ * \warning Caller must ensure format validity; unsupported conversions fail.
+ */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 jstr_ret_ty
@@ -919,9 +1344,18 @@ jstr_asprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...)
 ;
 #endif
 
-/* Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf.
- * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+/**
+ * \brief Format into a jstr_ty, replacing its contents.
+ *
+ * \details Delegates to jstr_asprintf() using j->data, j->size and
+ *          j->capacity.
+ *
+ * \param[in,out] j Non-NULL pointer to the string object.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if format length computation, allocation, or vsprintf fails.
+ * \pre j != NULL.
+ */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 jstr_ret_ty
@@ -948,10 +1382,20 @@ jstr_asprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Append ... to end of S.
- * Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf.
- * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+/**
+ * \brief Append formatted output to a managed buffer.
+ *
+ * \details Computes required length, reserves space after *sz, formats with
+ *          vsprintf at the end and increases *sz.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if format length computation, allocation, or vsprintf fails.
+ * \pre s, sz and cap are non-NULL.
+ */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 jstr_ret_ty
@@ -978,10 +1422,18 @@ jstr_asprintf_append(char *R *R s, size_t *R sz, size_t *R cap, const char *R fm
 ;
 #endif
 
-/* Append ... to end of S.
- * Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf.
- * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+/**
+ * \brief Append formatted output to a jstr_ty.
+ *
+ * \details Delegates to jstr_asprintf_append() using j->data, j->size and
+ *          j->capacity.
+ *
+ * \param[in,out] j Non-NULL pointer to the string object.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if format length computation, allocation, or vsprintf fails.
+ * \pre j != NULL.
+ */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 jstr_ret_ty
@@ -1008,9 +1460,22 @@ jstr_asprintf_append_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf.
- * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+/**
+ * \brief Format into a managed buffer starting at start_idx.
+ *
+ * \details Computes required length, reserves start_idx + length bytes,
+ *          formats at *s + start_idx and sets *sz = length + start_idx.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[in,out] sz Non-NULL pointer to size; set on success.
+ * \param[in,out] cap Non-NULL pointer to capacity.
+ * \param[in] start_idx Offset at which to begin writing.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if format length computation, allocation, or vsprintf fails.
+ * \pre s, sz and cap are non-NULL.
+ * \note Bytes before start_idx are not preserved.
+ */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 jstr_ret_ty
@@ -1038,9 +1503,19 @@ jstr_asprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, 
 ;
 #endif
 
-/* Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf.
- * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+/**
+ * \brief Format into a jstr_ty starting at start_idx.
+ *
+ * \details Delegates to jstr_asprintf_from() using j->data, j->size and
+ *          j->capacity.
+ *
+ * \param[in,out] j Non-NULL pointer to the string object.
+ * \param[in] start_idx Offset at which to begin writing.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if format length computation, allocation, or vsprintf fails.
+ * \pre j != NULL.
+ */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 jstr_ret_ty
@@ -1069,8 +1544,21 @@ jstr_asprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JST
 
 #	endif
 
-/* Assume that S has enough space.
- * Use jstr_asprintf.to grow S. */
+/**
+ * \brief Format into an already-allocated buffer, replacing its contents.
+ *
+ * \details Calls vsprintf(*s, fmt, ap) without growing; sets *sz to the
+ *          number of characters written.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[out] sz Non-NULL pointer to size; set on success.
+ * \param[in,out] cap Non-NULL pointer to capacity; ignored.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if vsprintf fails (caller must ensure sufficient buffer capacity).
+ * \pre Buffer capacity is sufficient; overflow is undefined.
+ * \warning Caller must ensure the buffer has enough space.
+ */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 jstr_ret_ty
@@ -1091,8 +1579,18 @@ jstr_sprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) 
 ;
 #endif
 
-/* Assume that S has enough space.
- * Use jstr_asprintf.to grow S. */
+/**
+ * \brief Format into an already-allocated jstr_ty, replacing its contents.
+ *
+ * \details Delegates to jstr_sprintf() using j->data, j->size and
+ *          j->capacity.
+ *
+ * \param[in,out] j Non-NULL pointer to the string object.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if vsprintf fails (caller must ensure sufficient buffer capacity).
+ * \pre Buffer capacity is sufficient; overflow is undefined.
+ */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 jstr_ret_ty
@@ -1112,8 +1610,21 @@ jstr_sprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Assume that S has enough space.
- * Use jstr_asprintf.to grow S. */
+/**
+ * \brief Format into an already-allocated buffer starting at start_idx.
+ *
+ * \details Calls vsprintf(*s + start_idx, fmt, ap) without growing; sets
+ *          *sz = return value + start_idx.
+ *
+ * \param[in,out] s Non-NULL pointer to buffer pointer.
+ * \param[out] sz Non-NULL pointer to size; set on success.
+ * \param[in,out] cap Non-NULL pointer to capacity; ignored.
+ * \param[in] start_idx Offset at which to begin writing.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if vsprintf fails (caller must ensure sufficient buffer capacity).
+ * \pre Buffer capacity is sufficient; overflow is undefined.
+ */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 jstr_ret_ty
@@ -1134,8 +1645,19 @@ jstr_sprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, c
 ;
 #endif
 
-/* Assume that S has enough space.
- * Use jstr_asprintf.to grow S. */
+/**
+ * \brief Format into an already-allocated jstr_ty starting at start_idx.
+ *
+ * \details Delegates to jstr_sprintf_from() using j->data, j->size and
+ *          j->capacity.
+ *
+ * \param[in,out] j Non-NULL pointer to the string object.
+ * \param[in] start_idx Offset at which to begin writing.
+ * \param[in] fmt Printf-style format string.
+ * \param[in] ... Format arguments.
+ * \return JSTR_RET_SUCC on success; JSTR_RET_ERR if vsprintf fails (caller must ensure sufficient buffer capacity).
+ * \pre Buffer capacity is sufficient; overflow is undefined.
+ */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 jstr_ret_ty

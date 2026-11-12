@@ -59,7 +59,7 @@ ALL_GENS   := $(MACRO_GENS) $(INT_GENS) $(MUSL_GENS) $(REG_GENS)
 # Targets
 # ═══════════════════════════════════════════════════════════════
 
-.PHONY: all clean test testbuild install uninstall headers setup
+.PHONY: all clean test testbuild test1 install uninstall headers setup
 
 # Keep generated source wrappers (not intermediate)
 .PRECIOUS: $(SRCGEN)/%.c
@@ -131,7 +131,7 @@ $(BUILD) $(OBJDIR) $(LIBDIR) $(SRCGEN) $(HDRGEN):
 
 TEST_OBJDIR := $(BUILD)/test-obj
 TEST_BINDIR := $(BUILD)/test-bin
-TESTSRC_ALL := $(wildcard $(REPO)/tests/*.c)
+TESTSRC_ALL := $(shell find $(REPO)/tests -type f -name '*.c')
 # fuzz-regex.c provides the shared fuzz_regex_patterns() implementation; it
 # is not a standalone test (no main), only linked into the fuzz-regex tests.
 FUZZ_SRC    := $(REPO)/tests/fuzz-regex.c
@@ -149,11 +149,15 @@ TV_FLAGS_v0 :=
 TV_FLAGS_v1 := -march=native
 TV_FLAGS_v2 := -DJSTR_TEST_SLOW=1
 TV_FLAGS_v3 := -DJSTR_TEST_SLOW=1 -march=native
+TV_LABEL_v0 := fast
+TV_LABEL_v1 := fast -march=native
+TV_LABEL_v2 := slow
+TV_LABEL_v3 := slow -march=native
 
 # Tests that must link the shared fuzz-regex implementation. The glob is
 # absolute so grep -l already returns absolute paths (matching TESTSRC).
 # fuzz-regex.c itself matches but is already filtered out of TESTSRC.
-FUZZ_TESTS := $(shell grep -l 'fuzz-regex\.h' $(REPO)/tests/*.c 2>/dev/null)
+FUZZ_TESTS := $(shell grep -rl 'fuzz-regex\.h' $(REPO)/tests 2>/dev/null)
 
 test-obj = $(TEST_OBJDIR)/$(1)_$(2).o
 test-bin = $(TEST_BINDIR)/$(1)_$(2)
@@ -205,15 +209,75 @@ $(foreach src,$(TESTSRC),$(foreach v,$(TVARS),$(eval $(call TEST_rules,$(basenam
 $(BUILD)/test-obj $(BUILD)/test-bin: | $(BUILD)
 	@mkdir -p $@
 
+# ─── Running tests ───
+# TESTS may narrow the run to specific test names/paths, e.g.
+#   make test TESTS="test-builder test-string"
+# Every test is still built by testbuild, but only the selected variants run.
+RUN_SRCS := $(if $(strip $(TESTS)),$(foreach t,$(TESTS),$(filter %/$(basename $(notdir $(t))).c,$(TESTSRC))),$(TESTSRC))
+
+RUN_TARGETS :=
+# $(1)=test basename, $(2)=src path, $(3)=variant
+define RUN_rules
+.PHONY: run-$(1)-$(3)
+run-$(1)-$(3): $(call test-bin,$(1),$(3))
+	@if LD_LIBRARY_PATH=$(LIBDIR) $$< >/dev/null 2>&1; then \
+		echo 'PASS: $(1) [$(TV_LABEL_$(3))]'; \
+	else \
+		echo 'FAIL: $(1) [$(TV_LABEL_$(3))]'; exit 1; \
+	fi
+RUN_TARGETS += run-$(1)-$(3)
+endef
+$(foreach src,$(RUN_SRCS),$(foreach v,$(TVARS),$(eval $(call RUN_rules,$(basename $(notdir $(src))),$(src),$(v)))))
+
+ifneq ($(strip $(TESTS)),)
+ifeq ($(strip $(RUN_TARGETS)),)
+$(error no matching tests for TESTS='$(TESTS)')
+endif
+endif
+
+NPROC := $(shell nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
+# Only force -j when the parent make isn't already parallel (avoids the
+# "jobserver" warning when MAKEFLAGS already carries -j).
+TEST_JOBFLAG := $(if $(filter -j% --jobs%,$(MAKEFLAGS)),,-j$(NPROC))
+
 # ─── Convenience ───
 clean:
 	rm -rf $(BUILD)
 
 test: testbuild
-	$(SCRIPTS)/test
+	@$(MAKE) --no-print-directory -k $(TEST_JOBFLAG) $(RUN_TARGETS)
 
 # Build all test variant binaries incrementally (does not run them).
 testbuild: headers $(LIB) $(TESTBINS)
+
+# Compile and run a single test (used by scripts/test1).
+#   make test1 SRC=tests/foo.c [TMPDIR=/tmp] [FLAGS="..."]
+test1: headers $(LIB)
+	@set -eu; \
+	src='$(SRC)'; \
+	[ -n "$$src" ] || { echo 'usage: make test1 SRC=<test.c> [TMPDIR=<dir>] [FLAGS="..."]' >&2; exit 2; }; \
+	tmpdir='$(TMPDIR)'; \
+	[ -n "$$tmpdir" ] || tmpdir=$$(mktemp -d "$${TMPDIR:-/tmp}/jstr-test1.XXXXXX"); \
+	mkdir -p "$$tmpdir"; \
+	base=$$(basename "$$src" .c); \
+	obj="$$tmpdir/$$base.o"; \
+	decl='-DJSTR_DECL_ONLY -include $(HDRGEN)/jstr.h -iquote $(HDRGEN)'; \
+	echo "  CC  $$src"; \
+	$(CC) -c "$$src" -o "$$obj" $(FLAGS) $$decl; \
+	extra=''; \
+	if grep -q 'fuzz-regex\.h' "$$src" 2>/dev/null; then \
+		support='$(REPO)/tests/fuzz-regex.c'; \
+		sobj="$$tmpdir/fuzz-regex.o"; \
+		$(CC) -c "$$support" -o "$$sobj" $(FLAGS) $$decl; \
+		extra="$$sobj"; \
+	fi; \
+	echo "  LD  $$base"; \
+	$(CC) "$$obj" $$extra -o "$$tmpdir/$$base" $(FLAGS) -L$(LIBDIR) -Wl,-rpath,$(LIBDIR) -ljstr; \
+	if "$$tmpdir/$$base"; then \
+		echo "PASS: $$base $(FLAGS)"; \
+	else \
+		echo "FAIL: $$base $(FLAGS)"; exit 1; \
+	fi
 
 install: $(LIB)
 	$(SCRIPTS)/install

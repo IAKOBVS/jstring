@@ -1,57 +1,6 @@
 #!/bin/sh
-#shellcheck disable=SC2086
-
-# Run the test suite. Test compilation is handled incrementally by the
-# Makefile (see `make testbuild`); the binaries are prebuilt into
-# build/test-bin/ and each is keyed by <test>_v<n> for the four variants:
-#   v0 fast, v1 fast -march=native, v2 slow, v3 slow -march=native.
-# This script only links/runs the prebuilt binaries (it never recompiles
-# unchanged sources).
-
-echo 'Building tests (incremental)…'
-(cd "$(dirname "$0")/.." && make testbuild) || exit 1
-
-echo 'Running tests — this might take a while'
-
-SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
-REPOROOT=$(cd "$SCRIPTDIR/.." && pwd)
-BINDIR=$REPOROOT/build/test-bin
-
-if [ ! -d "$BINDIR" ]; then
-	echo 'No prebuilt test binaries. Run `make test` first.' >&2
-	exit 1
-fi
-
-# Which binaries to run: all by default, or the given test names/args.
+cd "$(dirname "$0")/.." || exit
 if [ $# -eq 0 ]; then
-	bins=$(find "$BINDIR" -maxdepth 1 -type f -name '*_v[0-3]' | sort)
-else
-	bins=""
-	for f in "$@"; do
-		base=$(basename "$f" .c)
-		bins="$bins $(echo "$BINDIR"/"$base"_v[0-3])"
-	done
+	exec make test
 fi
-
-NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo '1')
-
-export LD_LIBRARY_PATH="$REPOROOT/build/lib"
-
-LOG="/tmp/jstr-test-run.$$.log"
-trap 'rm -f "$LOG"' EXIT INT TERM
-
-# Run in parallel. Each binary is run by a fresh sh that reports PASS/FAIL;
-# the variant label is derived from the _v<n> suffix in the filename.
-run_cmd='name=$(basename "$1"); case "$name" in *_v0) b=${name%_v0}; l="fast";; *_v1) b=${name%_v1}; l="fast -march=native";; *_v2) b=${name%_v2}; l="slow";; *_v3) b=${name%_v3}; l="slow -march=native";; esac; if "$1" >/dev/null 2>&1; then echo "PASS: $b [$l]"; else echo "FAIL: $b [$l]"; fi'
-
-printf '%s\n' $bins | xargs -P "$NPROC" -L 1 sh -c "$run_cmd" _ >"$LOG" 2>&1
-
-nfail=$(grep -cE '^FAIL' "$LOG" || true)
-echo
-cat "$LOG"
-echo
-# Summary lines use a non-`PASS:`/`FAIL:` prefix so external helpers that
-# grep for `^PASS`/`^FAIL` markers don't mistake the totals for results.
-printf 'SUMMARY  TOTAL: %d\n' "$(grep -cE '^(PASS|FAIL):' "$LOG" || true)"
-printf 'SUMMARY  FAIL:  %d\n' "$nfail"
-[ "$nfail" -eq 0 ]
+exec make test TESTS="$*"

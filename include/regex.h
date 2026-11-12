@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
-/* For jstr_re_rm_exec*, jstr_re_rplc_exec*, a negative number will be returned
- * indicating the negated value of the regex error code. To print an
- * error message, pass the negation of the returned error code. */
 
 #ifndef JSTR_REGEX_H
 #	define JSTR_REGEX_H 1
@@ -35,17 +30,14 @@ JSTR_INTERNAL_END_DECLS
 
 #	define R JSTR_RESTRICT
 
-/* POSIX cflags */
 #	define JSTR_RE_CF_EXTENDED REG_EXTENDED
 #	define JSTR_RE_CF_ICASE    REG_ICASE
 #	define JSTR_RE_CF_NEWLINE  REG_NEWLINE
 
-/* POSIX eflags */
 #	define JSTR_RE_EF_NOSUB  REG_NOSUB
 #	define JSTR_RE_EF_NOTBOL REG_NOTBOL
 #	define JSTR_RE_EF_NOTEOL REG_NOTEOL
 
-/* BSD eflags */
 #	ifdef REG_STARTEND
 #		define JSTR_RE_EF_STARTEND REG_STARTEND
 #	endif
@@ -64,7 +56,6 @@ typedef enum {
 #	define JSTR_RE_RET_NOERROR JSTR_RE_RET_NOERROR
 	JSTR_RE_RET_NOMATCH = REG_NOMATCH,
 #	define JSTR_RE_RET_NOMATCH JSTR_RE_RET_NOMATCH
-	/* POSIX regcomp return values */
 	JSTR_RE_RET_BADPAT = REG_BADPAT,
 #	define JSTR_RE_RET_BADPAT JSTR_RE_RET_BADPAT
 	JSTR_RE_RET_ECOLLATE = REG_ECOLLATE,
@@ -89,7 +80,6 @@ typedef enum {
 #	define JSTR_RE_RET_ESPACE JSTR_RE_RET_ESPACE
 	JSTR_RE_RET_BADRPT = REG_BADRPT
 #	define JSTR_RE_RET_BADRPT JSTR_RE_RET_BADRPT
-/* GNU regcomp returns */
 #	ifdef REG_EEND
 	,
 	JSTR_RE_RET_EEND = REG_EEND
@@ -127,6 +117,21 @@ typedef enum {
 #		define JSTR_RE_RETURN_ERR(errcode, preg) return -(errcode)
 #	endif
 
+/**
+ * @brief jstr_internal_re_notbol
+ *
+ * Determine whether the search position `str + curr_idx` should be treated as
+ * "not beginning of line" for anchored (`^`) matching, based on `cflags`
+ * (JSTR_RE_CF_NEWLINE).
+ *
+ * @param str const char *str Base string (non-NULL).
+ * @param curr_idx size_t curr_idx Byte offset of the current search position.
+ * @param cflags int cflags Compilation flags (JSTR_RE_CF_*).
+ *
+ * @return int 0 if beginning of line/string, else JSTR_RE_EF_NOTBOL.
+ *
+ * @note Internal helper; assumes `str` non-NULL and `curr_idx` in bounds.
+ */
 JSTR_FUNC_PURE
 int
 jstr_internal_re_notbol(const char *str, size_t curr_idx, int cflags) JSTR_NOEXCEPT
@@ -144,6 +149,21 @@ jstr_internal_re_notbol(const char *str, size_t curr_idx, int cflags) JSTR_NOEXC
 ;
 #	endif
 
+/**
+ * @brief jstr_internal_re_notbol_inloop
+ *
+ * In-loop variant of jstr_internal_re_notbol: assumes the search cursor has
+ * already advanced; returns NOTBOL unless the preceding byte is a newline and
+ * JSTR_RE_CF_NEWLINE is set.
+ *
+ * @param str const char *str Pointer at the current search position (non-NULL).
+ * @param curr_idx size_t curr_idx Byte offset of the current search position.
+ * @param cflags int cflags Compilation flags (JSTR_RE_CF_*).
+ *
+ * @return int 0 if beginning of line, else JSTR_RE_EF_NOTBOL.
+ *
+ * @note Internal helper; `str` must be non-NULL.
+ */
 JSTR_FUNC_PURE
 int
 jstr_internal_re_notbol_inloop(const char *str, size_t curr_idx, int cflags) JSTR_NOEXCEPT
@@ -158,7 +178,6 @@ jstr_internal_re_notbol_inloop(const char *str, size_t curr_idx, int cflags) JST
 ;
 #	endif
 
-/* Check if *s + start_idx is the beginning of a string or beginning of a line. */
 #	define IS_NOTBOL(str, curr_idx, cflags)        jstr_internal_re_notbol(str, curr_idx, cflags)
 #	define IS_NOTBOL_INLOOP(str, curr_idx, cflags) jstr_internal_re_notbol_inloop(str, curr_idx, cflags)
 
@@ -168,6 +187,17 @@ typedef struct jstr_re_ty {
 	int cflags;
 } jstr_re_ty;
 
+/**
+ * @brief jstr_re_free
+ *
+ * Release resources held by a compiled regex (`regfree`). The object may be
+ * reused after recompilation.
+ *
+ * @param preg jstr_re_ty *preg Compiled regex (non-NULL).
+ *
+ *
+ * @note `preg` must be non-NULL; passing an uninitialized object is undefined.
+ */
 JSTR_FUNC_VOID
 void
 jstr_re_free(jstr_re_ty *preg) JSTR_NOEXCEPT
@@ -180,6 +210,22 @@ jstr_re_free(jstr_re_ty *preg) JSTR_NOEXCEPT
 #	endif
 
 #	ifdef JSTR_IMPLEMENTATION
+
+/**
+ * @brief jstr_re_verr
+ *
+ * Print a POSIX regex error message to stderr using `regerror` and a
+ * caller-supplied format string. Returns 0 on success, -1 on I/O failure.
+ *
+ * @param errcode jstr_re_ret_ty errcode Regex error code.
+ * @param preg const jstr_re_ty *preg Compiled regex (non-NULL).
+ * @param fmt const char *fmt printf-style format string (non-NULL).
+ * @param args va_list args Variadic argument list.
+ *
+ * @return int 0 on success, -1 on I/O failure.
+ *
+ * @note Internal helper; `preg` and `fmt` must be non-NULL.
+ */
 JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
@@ -197,6 +243,21 @@ jstr_re_verr(jstr_re_ret_ty errcode, const jstr_re_ty *preg, const char *fmt, va
 }
 #	endif
 
+/**
+ * @brief jstr_re_err
+ *
+ * Print a POSIX regex error message to stderr. Returns 0 on success, -1 on
+ * failure. Does not terminate the process.
+ *
+ * @param errcode jstr_re_ret_ty errcode Regex error code.
+ * @param preg const jstr_re_ty *preg Compiled regex (non-NULL).
+ * @param fmt const char *R fmt printf-style format string (non-NULL).
+ * @param ... Variadic arguments for `fmt`.
+ *
+ * @return int 0 on success, -1 on I/O failure.
+ *
+ * @note `preg` and `fmt` must be non-NULL.
+ */
 JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
@@ -215,6 +276,20 @@ jstr_re_err(jstr_re_ret_ty errcode, const jstr_re_ty *R preg, const char *R fmt,
 ;
 #	endif
 
+/**
+ * @brief jstr_re_errdie
+ *
+ * Print a POSIX regex error message to stderr and terminate the process with
+ * EXIT_FAILURE. Does not return.
+ *
+ * @param errcode jstr_re_ret_ty errcode Regex error code.
+ * @param preg const jstr_re_ty *preg Compiled regex (non-NULL).
+ * @param fmt const char *R fmt printf-style format string (non-NULL).
+ * @param ... Variadic arguments for `fmt`.
+ *
+ *
+ * @note `preg` and `fmt` must be non-NULL.
+ */
 JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
@@ -233,6 +308,21 @@ jstr_re_errdie(jstr_re_ret_ty errcode, const jstr_re_ty *R preg, const char *R f
 ;
 #	endif
 
+/**
+ * @brief jstr_re_comp
+ *
+ * Compile a POSIX regular expression pattern into `preg`. Stores `cflags`.
+ * Under JSTR_PANIC, compilation errors are printed and abort. Returns the
+ * regcomp result code (0 on success).
+ *
+ * @param preg jstr_re_ty *R preg Destination compiled regex (non-NULL).
+ * @param ptn const char *R ptn NUL-terminated pattern string (non-NULL).
+ * @param cflags int cflags Compilation flags (JSTR_RE_CF_* / REG_*).
+ *
+ * @return jstr_re_ret_ty 0 (JSTR_RE_RET_NOERROR) on success, error code otherwise.
+ *
+ * @note `preg` and `ptn` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_ret_ty
 jstr_re_comp(jstr_re_ty *R preg, const char *R ptn, int cflags) JSTR_NOEXCEPT
@@ -256,6 +346,23 @@ jstr_re_comp(jstr_re_ty *R preg, const char *R ptn, int cflags) JSTR_NOEXCEPT
 #		define JSTR_IMPLEMENTATION 1
 #	endif
 
+/**
+ * @brief jstr_re_exec
+ *
+ * Execute a compiled regex against NUL-terminated string `s`, optionally
+ * filling up to `nmatch` entries in `pmatch`. `pmatch` may be NULL when
+ * `nmatch` is 0. Returns match/no-match/error code.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s const char *R s NUL-terminated haystack (non-NULL).
+ * @param nmatch size_t nmatch Number of regmatch_t slots available.
+ * @param pmatch regmatch_t *R pmatch Match result array (may be NULL if nmatch == 0).
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_ret_ty JSTR_RE_RET_NOERROR on match, JSTR_RE_RET_NOMATCH, or error code.
+ *
+ * @note `preg` and `s` must be non-NULL; `pmatch` must be non-NULL if nmatch > 0.
+ */
 JSTR_NONNULL((1))
 JSTR_NONNULL((2))
 JSTR_ATTR_WARN_UNUSED
@@ -278,6 +385,23 @@ jstr_re_exec(const jstr_re_ty *R preg, const char *R s, size_t nmatch, regmatch_
 ;
 #	endif
 
+/**
+ * @brief jstr_re_exec_len
+ *
+ * Like jstr_re_exec but bounds the match to `sz` bytes using REG_STARTEND
+ * (when available). Handles empty haystacks safely.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s const char *R s Buffer (non-NULL, not necessarily NUL-terminated within sz).
+ * @param sz size_t sz Length in bytes of `s`.
+ * @param nmatch size_t nmatch Number of regmatch_t slots.
+ * @param pmatch regmatch_t *R pmatch Match result array (may be NULL if nmatch == 0).
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_ret_ty JSTR_RE_RET_NOERROR on match, JSTR_RE_RET_NOMATCH, or error code.
+ *
+ * @note `preg` and `s` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_ret_ty
 jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nmatch, regmatch_t *R pmatch, int eflags) JSTR_NOEXCEPT
@@ -304,8 +428,20 @@ jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nm
 ;
 #	endif
 
-/* Check if S matches precompiled regex.
- * Return return value of regexec. */
+/**
+ * @brief jstr_re_match
+ *
+ * Check whether the entire (or anchored) pattern matches string `s`.
+ * Returns regexec result code.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s const char *R s NUL-terminated haystack (non-NULL).
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_ret_ty JSTR_RE_RET_NOERROR on match, JSTR_RE_RET_NOMATCH, or error code.
+ *
+ * @note `preg` and `s` must be non-NULL.
+ */
 JSTR_FUNC_PURE
 jstr_re_ret_ty
 jstr_re_match(const jstr_re_ty *R preg, const char *R s, int eflags) JSTR_NOEXCEPT
@@ -317,9 +453,21 @@ jstr_re_match(const jstr_re_ty *R preg, const char *R s, int eflags) JSTR_NOEXCE
 ;
 #	endif
 
-/* Search pattern in S.
- * Return return value of regexec.
- * Store offset of matched pattern in pmatch. */
+/**
+ * @brief jstr_re_search
+ *
+ * Search for the first match of the pattern in NUL-terminated string `s`,
+ * storing the match offset in `pmatch`. Returns regexec result code.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s const char *R s NUL-terminated haystack (non-NULL).
+ * @param pmatch regmatch_t *R pmatch Match result (non-NULL).
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_ret_ty JSTR_RE_RET_NOERROR on match, JSTR_RE_RET_NOMATCH, or error code.
+ *
+ * @note `preg`, `s`, and `pmatch` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_ret_ty
 jstr_re_search(const jstr_re_ty *R preg, const char *R s, regmatch_t *R pmatch, int eflags) JSTR_NOEXCEPT
@@ -331,9 +479,22 @@ jstr_re_search(const jstr_re_ty *R preg, const char *R s, regmatch_t *R pmatch, 
 ;
 #	endif
 
-/* Search pattern in S.
- * Return return value of regexec.
- * Store offset of matched pattern in pmatch. */
+/**
+ * @brief jstr_re_search_len
+ *
+ * Search for the first match within the first `sz` bytes of `s`, storing the
+ * match offset in `pmatch`.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s const char *R s Buffer (non-NULL).
+ * @param sz size_t sz Length in bytes of `s`.
+ * @param pmatch regmatch_t *R pmatch Match result (non-NULL).
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_ret_ty JSTR_RE_RET_NOERROR on match, JSTR_RE_RET_NOMATCH, or error code.
+ *
+ * @note `preg`, `s`, and `pmatch` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_ret_ty
 jstr_re_search_len(const jstr_re_ty *R preg, const char *R s, size_t sz, regmatch_t *R pmatch, int eflags) JSTR_NOEXCEPT
@@ -345,8 +506,20 @@ jstr_re_search_len(const jstr_re_ty *R preg, const char *R s, size_t sz, regmatc
 ;
 #	endif
 
-/* Check if S matches PTN.
- * Return return value of regexec or regcomp if it fails. */
+/**
+ * @brief jstr_re_match_len
+ *
+ * Check whether the pattern matches the first `sz` bytes of `s`.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s const char *R s Buffer (non-NULL).
+ * @param sz size_t sz Length in bytes of `s`.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_ret_ty JSTR_RE_RET_NOERROR on match, JSTR_RE_RET_NOMATCH, or error code.
+ *
+ * @note `preg` and `s` must be non-NULL.
+ */
 JSTR_FUNC_PURE
 jstr_re_ret_ty
 jstr_re_match_len(const jstr_re_ty *R preg, const char *R s, size_t sz, int eflags) JSTR_NOEXCEPT
@@ -359,11 +532,26 @@ jstr_re_match_len(const jstr_re_ty *R preg, const char *R s, size_t sz, int efla
 ;
 #	endif
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative); */
+/**
+ * @brief jstr_re_rm_from_exec
+ *
+ * Remove the first regex match starting at `start_idx` from the in-place
+ * string `*s` of length `*sz` with capacity `*cap`, updating `*sz`. Returns 1
+ * if removed, 0 if no match, negative error code on failure. Do not use
+ * anchored patterns (`^`/`$`); use jstr_re_rm_exec instead.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_off_ty 1 if removed, 0 if no match, negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL; assumes `*cap > *sz`.
+ *       `start_idx` must be <= `*sz` (with empty-string exception).
+ */
 JSTR_FUNC_VOID
 jstr_re_off_ty
 jstr_re_rm_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags) JSTR_NOEXCEPT
@@ -388,11 +576,22 @@ jstr_re_rm_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_
 ;
 #	endif
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rm_exec
+ *
+ * Remove the first regex match from the entire string. Equivalent to
+ * jstr_re_rm_from_exec with start_idx = 0.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_off_ty 1 if removed, 0 if no match, negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC_VOID
 jstr_re_off_ty
 jstr_re_rm_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, int eflags) JSTR_NOEXCEPT
@@ -404,11 +603,25 @@ jstr_re_rm_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R 
 ;
 #	endif
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rmn_from_exec
+ *
+ * Remove up to `n` regex matches starting at `start_idx` from the in-place
+ * string, updating `*sz`. Returns number removed, negative on error. Do not use
+ * anchored patterns.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param n size_t n Maximum number of matches to remove (0 returns 0).
+ *
+ * @return jstr_re_off_ty Number of matches removed (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL; `n == 0` returns 0.
+ */
 JSTR_FUNC_VOID
 jstr_re_off_ty
 jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags, size_t n) JSTR_NOEXCEPT
@@ -418,7 +631,6 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 	if (jstr_unlikely(start_idx > *sz || (start_idx == *sz && start_idx != 0)))
 		return 0;
 	regmatch_t rm;
-	/* i holds cursors for dst (writing cursor), src (copy cursor), and src_e (search cursor). */
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	const char *end = *s + *sz;
 	if (jstr_unlikely(n == 0))
@@ -487,11 +699,23 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 ;
 #	endif
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rmn_exec
+ *
+ * Remove up to `n` regex matches from the entire string. Equivalent to
+ * jstr_re_rmn_from_exec with start_idx = 0.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param n size_t n Maximum number of matches to remove.
+ *
+ * @return jstr_re_off_ty Number of matches removed (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC_VOID
 jstr_re_off_ty
 jstr_re_rmn_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, int eflags, size_t n) JSTR_NOEXCEPT
@@ -503,11 +727,22 @@ jstr_re_rmn_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R
 ;
 #	endif
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rmall_exec
+ *
+ * Remove all regex matches from the entire string. Equivalent to
+ * jstr_re_rmn_exec with n = SIZE_MAX.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_off_ty Number of matches removed (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC_VOID
 jstr_re_off_ty
 jstr_re_rmall_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, int eflags) JSTR_NOEXCEPT
@@ -519,11 +754,23 @@ jstr_re_rmall_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t 
 ;
 #	endif
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rmall_from_exec
+ *
+ * Remove all regex matches starting at `start_idx`. Equivalent to
+ * jstr_re_rmn_from_exec with n = SIZE_MAX.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_off_ty Number of matches removed (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC_VOID
 jstr_re_off_ty
 jstr_re_rmall_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags) JSTR_NOEXCEPT
@@ -535,9 +782,26 @@ jstr_re_rmall_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, si
 ;
 #	endif
 
-/* Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplc_len_from_exec
+ *
+ * Replace the first regex match starting at `start_idx` with `rplc` of length
+ * `rplc_len`, updating `*s`/`*sz`/`*cap`. Returns 1 if replaced, 0 if no
+ * match, negative on error. Do not use anchored patterns.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param rplc const char *R rplc Replacement bytes (non-NULL unless rplc_len == 0).
+ * @param rplc_len size_t rplc_len Replacement length in bytes.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_off_ty 1 if replaced, 0 if no match, negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplc_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags) JSTR_NOEXCEPT
@@ -561,9 +825,24 @@ jstr_re_rplc_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz,
 ;
 #	endif
 
-/* Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplc_len_exec
+ *
+ * Replace the first regex match in the entire string with `rplc`. Equivalent
+ * to jstr_re_rplc_len_from_exec with start_idx = 0.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param rplc const char *R rplc Replacement bytes.
+ * @param rplc_len size_t rplc_len Replacement length in bytes.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_off_ty 1 if replaced, 0 if no match, negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplc_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags) JSTR_NOEXCEPT
@@ -575,15 +854,27 @@ jstr_re_rplc_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 ;
 #	endif
 
-/* NMATCH is always passed: the backref engine needs it at runtime to
- * reject references beyond nmatch (not just under JSTR_DEBUG). */
 #	define NMATCH_PARAM , size_t nmatch
 #	define NMATCH_ARG   , nmatch
 #	define NMATCH       nmatch
 
-/* Return value:
- * length of backref.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_internal_re_rplcbackrefstrlen
+ *
+ * Compute the resulting length after expanding backreferences (`\0`..`\9`)
+ * in a replacement template of length `rplc_len`. Returns `(size_t)-1` on a
+ * trailing lone backslash.
+ *
+ * @param rm const regmatch_t *R rm Match groups (non-NULL).
+ * @param rplc const unsigned char *rplc Replacement template start (non-NULL).
+ * @param rplc_e const unsigned char *rplc_e Replacement template end (non-NULL).
+ * @param rplc_len size_t rplc_len Base replacement length.
+ * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @return size_t Expanded length, or (size_t)-1 on error.
+ *
+ * @note Internal helper; pointers must be non-NULL.
+ */
 JSTR_FUNC
 size_t
 jstr_internal_re_rplcbackrefstrlen(const regmatch_t *R rm, const unsigned char *rplc, const unsigned char *rplc_e, size_t rplc_len NMATCH_PARAM) JSTR_NOEXCEPT
@@ -611,7 +902,19 @@ jstr_internal_re_rplcbackrefstrlen(const regmatch_t *R rm, const unsigned char *
 ;
 #	endif
 
-/* Return ptr to first backref. */
+/**
+ * @brief jstr_internal_re_rplcbackreffirst
+ *
+ * Return a pointer to the first backreference (`\digit`) in `backref`, or
+ * NULL if none or length < 2.
+ *
+ * @param backref const char *backref Replacement template (non-NULL).
+ * @param backref_len size_t backref_len Template length in bytes.
+ *
+ * @return char * Pointer to first backref, or NULL.
+ *
+ * @note `backref` must be non-NULL.
+ */
 JSTR_FUNC
 char *
 jstr_internal_re_rplcbackreffirst(const char *backref, size_t backref_len) JSTR_NOEXCEPT
@@ -626,7 +929,18 @@ jstr_internal_re_rplcbackreffirst(const char *backref, size_t backref_len) JSTR_
 ;
 #	endif
 
-/* Return ptr to the end of the last backref. */
+/**
+ * @brief jstr_internal_re_rplcbackreflast
+ *
+ * Return a pointer just past the last backreference in `backref`, or NULL.
+ *
+ * @param backref const unsigned char *backref Replacement template (non-NULL).
+ * @param backref_len size_t backref_len Template length in bytes.
+ *
+ * @return char * Pointer past last backref, or NULL.
+ *
+ * @note `backref` must be non-NULL.
+ */
 JSTR_FUNC
 char *
 	jstr_internal_re_rplcbackreflast(const unsigned char *backref, size_t backref_len) JSTR_NOEXCEPT
@@ -655,9 +969,22 @@ char *
 ;
 #	endif
 
-/* Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_internal_re_rplcbackrefcpy
+ *
+ * Copy the replacement template into `mtc_dst`, expanding backreferences from
+ * `rm` against source `mtc_src`. Does not NUL-terminate.
+ *
+ * @param rm const regmatch_t *R rm Match groups (non-NULL).
+ * @param mtc_src unsigned char *mtc_src Source string base (non-NULL).
+ * @param mtc_dst unsigned char *R mtc_dst Destination buffer (non-NULL, sufficient space).
+ * @param rplc const unsigned char *R rplc Replacement template start (non-NULL).
+ * @param rplc_e const unsigned char *rplc_e Replacement template end (non-NULL).
+ * @param nmatch size_t nmatch Number of match groups available.
+ *
+ *
+ * @note Internal helper; all pointers must be non-NULL.
+ */
 JSTR_FUNC_VOID
 void
 jstr_internal_re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc_src, unsigned char *R mtc_dst, const unsigned char *R rplc, const unsigned char *rplc_e NMATCH_PARAM) JSTR_NOEXCEPT
@@ -702,10 +1029,29 @@ jstr_internal_re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc
 ;
 #	endif
 
-/* Avoid doing O(n) replacements as does rplcn, since doing O(2 * n) regex
- * matching, which is used to find the new size of the string, is likely to
- * dominate over O(n^2) replacements. Given the growth factor, the allocation
- * should be amortized. */
+/**
+ * @brief jstr_internal_re_rplcn_backref_len_from_exec
+ *
+ * Core implementation for replacing up to `n` matches with optional
+ * backreference expansion. `backref` enables `\digit` expansion. Returns
+ * number replaced, negative on error. Do not use anchored patterns.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param rplc const char *R rplc Replacement template (non-NULL).
+ * @param rplc_len size_t rplc_len Replacement template length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param nmatch size_t nmatch Number of match groups available.
+ * @param n size_t n Maximum replacements (SIZE_MAX for all).
+ * @param backref int backref Enable backreference expansion.
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note Internal helper; `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref) JSTR_NOEXCEPT
@@ -739,7 +1085,6 @@ check:
 			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	}
 	regmatch_t rm[10];
-	/* i holds dst (built destination cursor), src (source cursor), and src_e (search cursor). */
 	jstr_internal_inplace_ty i;
 	size_t new_cap = *sz * 2 + 2;
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
@@ -840,7 +1185,6 @@ check:
 	}
 	/* Copy any remaining unmatched tail portion. */
 	*sz = JSTR_DIFF(jstr_mempmove(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
-	/* Move built string back to the start of s. */
 	jstr_strmove_len(*s, dst_s, *sz);
 	return changed;
 }
@@ -852,12 +1196,26 @@ check:
 #	undef NMATCH_ARG
 #	undef NMATCH_PARAM
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplcn_len_from_exec
+ *
+ * Replace up to `n` regex matches starting at `start_idx` with `rplc`
+ * (literal, no backreferences). Returns number replaced, negative on error.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param rplc const char *R rplc Replacement bytes.
+ * @param rplc_len size_t rplc_len Replacement length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param n size_t n Maximum replacements.
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcn_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n) JSTR_NOEXCEPT
@@ -869,12 +1227,25 @@ jstr_re_rplcn_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplcn_len_exec
+ *
+ * Replace up to `n` regex matches in the entire string with `rplc`
+ * (literal). Equivalent to jstr_re_rplcn_len_from_exec with start_idx = 0.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param rplc const char *R rplc Replacement bytes.
+ * @param rplc_len size_t rplc_len Replacement length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param n size_t n Maximum replacements.
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcn_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t n) JSTR_NOEXCEPT
@@ -886,12 +1257,25 @@ jstr_re_rplcn_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, siz
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplcall_len_from_exec
+ *
+ * Replace all regex matches starting at `start_idx` with `rplc` (literal).
+ * Equivalent to jstr_re_rplcn_len_from_exec with n = SIZE_MAX.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param rplc const char *R rplc Replacement bytes.
+ * @param rplc_len size_t rplc_len Replacement length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcall_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags) JSTR_NOEXCEPT
@@ -903,12 +1287,24 @@ jstr_re_rplcall_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R 
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplcall_len_exec
+ *
+ * Replace all regex matches in the entire string with `rplc` (literal).
+ * Equivalent to jstr_re_rplcn_len_exec with n = SIZE_MAX.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param rplc const char *R rplc Replacement bytes.
+ * @param rplc_len size_t rplc_len Replacement length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcall_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags) JSTR_NOEXCEPT
@@ -920,12 +1316,28 @@ jstr_re_rplcall_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, s
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplcn_backref_len_from_exec
+ *
+ * Replace up to `n` regex matches starting at `start_idx` with `rplc`,
+ * expanding backreferences (`\digit`) using `nmatch` groups. Returns number
+ * replaced, negative on error.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param rplc const char *R rplc Replacement template.
+ * @param rplc_len size_t rplc_len Replacement template length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param nmatch size_t nmatch Number of match groups available.
+ * @param n size_t n Maximum replacements.
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n) JSTR_NOEXCEPT
@@ -937,12 +1349,25 @@ jstr_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplcall_backref_len_exec
+ *
+ * Replace all regex matches in the entire string with `rplc`, expanding
+ * backreferences. Equivalent to jstr_re_rplcn_backref_len_exec with n = SIZE_MAX.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param rplc const char *R rplc Replacement template.
+ * @param rplc_len size_t rplc_len Replacement template length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcall_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch) JSTR_NOEXCEPT
@@ -954,12 +1379,27 @@ jstr_re_rplcall_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t 
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplcall_backref_len_from_exec
+ *
+ * Replace all regex matches starting at `start_idx` with `rplc`, expanding
+ * backreferences. Equivalent to jstr_re_rplcn_backref_len_from_exec with
+ * n = SIZE_MAX.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param rplc const char *R rplc Replacement template.
+ * @param rplc_len size_t rplc_len Replacement template length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcall_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch) JSTR_NOEXCEPT
@@ -971,12 +1411,26 @@ jstr_re_rplcall_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, si
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplcn_backref_len_exec
+ *
+ * Replace up to `n` regex matches in the entire string with `rplc`, expanding
+ * backreferences.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param rplc const char *R rplc Replacement template.
+ * @param rplc_len size_t rplc_len Replacement template length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param nmatch size_t nmatch Number of match groups available.
+ * @param n size_t n Maximum replacements.
+ *
+ * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcn_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n) JSTR_NOEXCEPT
@@ -988,12 +1442,27 @@ jstr_re_rplcn_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplc_backref_len_from_exec
+ *
+ * Replace the first regex match starting at `start_idx` with `rplc`,
+ * expanding backreferences. Equivalent to jstr_re_rplcn_backref_len_from_exec
+ * with n = 1.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param start_idx size_t start_idx Starting byte offset.
+ * @param rplc const char *R rplc Replacement template.
+ * @param rplc_len size_t rplc_len Replacement template length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @return jstr_re_off_ty Number replaced (0 or 1), negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplc_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch) JSTR_NOEXCEPT
@@ -1005,12 +1474,26 @@ jstr_re_rplc_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_
 ;
 #	endif
 
-/* PREG must be precompiled with jstr_re_comp.
- * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
+/**
+ * @brief jstr_re_rplc_backref_len_exec
+ *
+ * Replace the first regex match in the entire string with `rplc`, expanding
+ * backreferences. Equivalent to jstr_re_rplc_backref_len_from_exec with
+ * start_idx = 0.
+ *
+ * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
+ * @param s char *R *R s Pointer to string buffer pointer (non-NULL; may be reallocated).
+ * @param sz size_t *R sz Pointer to current length (non-NULL).
+ * @param cap size_t *R cap Pointer to capacity (non-NULL).
+ * @param rplc const char *R rplc Replacement template.
+ * @param rplc_len size_t rplc_len Replacement template length.
+ * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
+ * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @return jstr_re_off_ty Number replaced (0 or 1), negative on error.
+ *
+ * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
+ */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplc_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch) JSTR_NOEXCEPT

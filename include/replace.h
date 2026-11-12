@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
 #ifndef JSTR_REPLACE_H
 #	define JSTR_REPLACE_H 1
@@ -59,12 +57,21 @@ typedef struct jstr_internal_inplace_ty {
 			(i).src_e += find_len;                                                    \
 		} while (0)
 
-/* TODO: optimize memory allocation for *all* functions. */
 
-/* Insert SRC into DST[AT].
- * Return value:
- * ptr to '\0' in S.
- * Assume that S have enough space for SRC. */
+/**
+ * @brief Insert SRC into DST[AT].
+ * @details Return value: ptr to '\0' in S. Assume that S have enough space for SRC.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] at byte offset within *s where operation occurs
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ * @warning Caller must ensure the destination buffer has sufficient capacity;
+ *         no allocation or bounds checking is performed.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 JSTR_FUNC_VOID
 void
@@ -78,9 +85,20 @@ jstr_insert_unsafe(char *R s, size_t sz, size_t at, const char *R src, size_t sr
 ;
 #endif
 
-/* Insert SRC into DST[AT].
- * Return JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief Insert SRC into DST[AT].
+ * @details Return JSTR_RET_ERR on malloc error. Otherwise, JSTR_RET_SUCC.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] at byte offset within *s where operation occurs
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_insert_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -96,10 +114,21 @@ jstr_insert_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char
 ;
 #endif
 
-/* Replace RPLC in S with FIND.
- * Return value:
- * ptr to RPLC in S + RPLCLEN.
- * NULL on error. */
+/**
+ * @brief Replace RPLC in S with FIND.
+ * @details Return value: ptr to RPLC in S + RPLCLEN. NULL on error.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] at byte offset within *s where operation occurs
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @param[in] find_len number of bytes in find
+ * @return char * Pointer to the replacement within *s on success, NULL on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 char *
 jstr_rplcat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R rplc, size_t rplc_len, size_t find_len) JSTR_NOEXCEPT
@@ -116,9 +145,20 @@ jstr_rplcat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char
 ;
 #endif
 
-/* Insert SRC after C in DST.
- * Return JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief Insert SRC after C in DST.
+ * @details Return JSTR_RET_ERR on malloc error. Otherwise, JSTR_RET_SUCC.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] c character to match/replace/remove
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_insertafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -133,9 +173,20 @@ jstr_insertafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const 
 ;
 #endif
 
-/* Insert SRC after all C in DST.
- * Return JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief Insert SRC after all C in DST.
+ * @details Return JSTR_RET_ERR on malloc error. Otherwise, JSTR_RET_SUCC.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] c character to match/replace/remove
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_insertafterallchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -179,9 +230,21 @@ jstr_insertafterallchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, con
 ;
 #endif
 
-/* Insert SRC after end of NE in DST.
- * Return JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief Insert SRC after end of NE in DST.
+ * @details Return JSTR_RET_ERR on malloc error. Otherwise, JSTR_RET_SUCC.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_insertafter_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -200,9 +263,21 @@ jstr_insertafter_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fi
 ;
 #endif
 
-/* Insert SRC after all end of NE in DST.
- * Return JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief Insert SRC after all end of NE in DST.
+ * @details Return JSTR_RET_ERR on malloc error. Otherwise, JSTR_RET_SUCC.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_insertafterall_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -212,7 +287,6 @@ jstr_insertafterall_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R
 		return jstr_insertafterallchr_len(s, sz, cap, *find, src, src_len);
 	if (jstr_unlikely(find_len == 0))
 		return JSTR_RET_SUCC;
-	/* Pass 1: count matches so the buffer can be grown exactly once. */
 	jstr_twoway_ty t;
 	jstr_memmem_comp(&t, find, find_len);
 	size_t cnt = 0;
@@ -263,9 +337,17 @@ jstr_insertafterall_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R
 ;
 #endif
 
-/* Replace first group of REJECT in S with RPLC.
- * Return value:
- * Characters replaced. */
+/**
+ * @brief Replace first group of REJECT in S with RPLC.
+ * @details Return value: Characters replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @param[in] rplc replacement bytes
+ * @return size_t Number of characters replaced (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rplcspn(char *R s, const char *R reject, char rplc) JSTR_NOEXCEPT
@@ -282,10 +364,19 @@ jstr_rplcspn(char *R s, const char *R reject, char rplc) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Replace all REJECT in S with RPLC from START_IDX.
- * Return value:
- * Characters replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Replace all REJECT in S with RPLC from START_IDX.
+ * @details Return value: Characters replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @param[in] rplc replacement bytes
+ * @return size_t Number of characters replaced (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rplcallspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject, char rplc) JSTR_NOEXCEPT
@@ -308,10 +399,18 @@ jstr_rplcallspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R re
 ;
 #endif
 
-/* Replace all REJECT in S with RPLC.
- * Return value:
- * Characters replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Replace all REJECT in S with RPLC.
+ * @details Return value: Characters replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @param[in] rplc replacement bytes
+ * @return size_t Number of characters replaced (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rplcallspn(char *R s, size_t *R sz, const char *R reject, char rplc) JSTR_NOEXCEPT
@@ -323,10 +422,18 @@ jstr_rplcallspn(char *R s, size_t *R sz, const char *R reject, char rplc) JSTR_N
 ;
 #endif
 
-/* Remove all REJECT in S with RPLC from START_IDX.
- * Return value:
- * Characters replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Remove all REJECT in S with RPLC from START_IDX.
+ * @details Return value: Characters replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @return size_t Number of characters removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject) JSTR_NOEXCEPT
@@ -347,10 +454,17 @@ jstr_rmspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject)
 ;
 #endif
 
-/* Remove all REJECT in S with RPLC
- * Return value:
- * Characters replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Remove all REJECT in S with RPLC
+ * @details Return value: Characters replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @return size_t Number of characters removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmspn(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
@@ -362,9 +476,18 @@ jstr_rmspn(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove all REJECT in S with RPLC from START_IDX.
- * Return value:
- * Characters replaced. */
+/**
+ * @brief Remove all REJECT in S with RPLC from START_IDX.
+ * @details Return value: Characters replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @return size_t Number of characters removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmspn_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject) JSTR_NOEXCEPT
@@ -385,9 +508,17 @@ jstr_rmspn_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R rej
 ;
 #endif
 
-/* Remove all REJECT in S with RPLC
- * Return value:
- * Characters replaced. */
+/**
+ * @brief Remove all REJECT in S with RPLC
+ * @details Return value: Characters replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @return size_t Number of characters removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmspn_len(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
@@ -399,10 +530,18 @@ jstr_rmspn_len(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove all REJECT in S with RPLC from START_IDX.
- * Return value:
- * Characters replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Remove all REJECT in S with RPLC from START_IDX.
+ * @details Return value: Characters replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @return size_t Number of characters removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmallspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject) JSTR_NOEXCEPT
@@ -436,10 +575,17 @@ start:
 ;
 #endif
 
-/* Remove all REJECT in S with RPLC.
- * Return value:
- * Characters replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Remove all REJECT in S with RPLC.
+ * @details Return value: Characters replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @return size_t Number of characters removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmallspn(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
@@ -451,9 +597,19 @@ jstr_rmallspn(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove N Cs in S from START_IDX.
- * Return value:
- * Number of Cs replaced. */
+/**
+ * @brief Remove N Cs in S from START_IDX.
+ * @details Return value: Number of Cs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] c character to match/replace/remove
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmnchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n) JSTR_NOEXCEPT
@@ -483,9 +639,18 @@ start:
 ;
 #endif
 
-/* Remove N Cs in S.
- * Return value:
- * Number of Cs replaced. */
+/**
+ * @brief Remove N Cs in S.
+ * @details Return value: Number of Cs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] c character to match/replace/remove
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmnchr_len(char *R s, size_t *R sz, int c, size_t n) JSTR_NOEXCEPT
@@ -497,9 +662,17 @@ jstr_rmnchr_len(char *R s, size_t *R sz, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove all C in S from START_IDX.
- * Return value:
- * ptr to '\0' in S. */
+/**
+ * @brief Remove all C in S from START_IDX.
+ * @details Return value: ptr to '\0' in S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] c character to match/replace/remove
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmallchr_len_from(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
@@ -511,9 +684,17 @@ jstr_rmallchr_len_from(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove all C in S.
- * Return value:
- * ptr to '\0' in S. */
+/**
+ * @brief Remove all C in S.
+ * @details Return value: ptr to '\0' in S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] c character to match/replace/remove
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmallchr_len(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
@@ -525,10 +706,19 @@ jstr_rmallchr_len(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove N C in S from START_IDX.
- * Return value:
- * Cs replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Remove N C in S from START_IDX.
+ * @details Return value: Cs replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] c character to match/replace/remove
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmnchr_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n) JSTR_NOEXCEPT
@@ -557,9 +747,18 @@ start:
 ;
 #endif
 
-/* Remove all C in S.
- * Return value:
- * Cs replaced. */
+/**
+ * @brief Remove all C in S.
+ * @details Return value: Cs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] c character to match/replace/remove
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmnchr(char *R s, size_t *R sz, int c, size_t n) JSTR_NOEXCEPT
@@ -571,9 +770,18 @@ jstr_rmnchr(char *R s, size_t *R sz, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove all C in S.
- * Return value:
- * Cs replaced. */
+/**
+ * @brief Remove all C in S.
+ * @details Return value: Cs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] c character to match/replace/remove
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmallchr_from(char *R s, size_t *R sz, size_t start_idx, int c) JSTR_NOEXCEPT
@@ -585,9 +793,17 @@ jstr_rmallchr_from(char *R s, size_t *R sz, size_t start_idx, int c) JSTR_NOEXCE
 ;
 #endif
 
-/* Remove all C in S.
- * Return value:
- * Cs replaced. */
+/**
+ * @brief Remove all C in S.
+ * @details Return value: Cs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] c character to match/replace/remove
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmallchr(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
@@ -599,9 +815,18 @@ jstr_rmallchr(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove first C in S from START_IDX.
- * Return value:
- * Cs replaced. */
+/**
+ * @brief Remove first C in S from START_IDX.
+ * @details Return value: Cs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] c character to match/replace/remove
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c) JSTR_NOEXCEPT
@@ -613,9 +838,17 @@ jstr_rmchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c) JSTR_NOEXC
 ;
 #endif
 
-/* Remove first C in S.
- * Return value:
- * Cs replaced. */
+/**
+ * @brief Remove first C in S.
+ * @details Return value: Cs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] c character to match/replace/remove
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmchr_len(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
@@ -627,10 +860,18 @@ jstr_rmchr_len(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove first C in S from START_IDX.
- * Return value:
- * Cs replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Remove first C in S from START_IDX.
+ * @details Return value: Cs replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] c character to match/replace/remove
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmchr_from(char *R s, size_t *R sz, size_t start_idx, int c) JSTR_NOEXCEPT
@@ -642,10 +883,17 @@ jstr_rmchr_from(char *R s, size_t *R sz, size_t start_idx, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove first C in S.
- * Return value:
- * Cs replaced.
- * SZ is only used to save the length of S. */
+/**
+ * @brief Remove first C in S.
+ * @details Return value: Cs replaced. SZ is only used to save the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] c character to match/replace/remove
+ * @return size_t Number of occurrences removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmchr(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
@@ -657,10 +905,18 @@ jstr_rmchr(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove chars in REJECT in S.
- * Return value:
- * chars replaced.
- * SZ is only used to store the length of S. */
+/**
+ * @brief Remove chars in REJECT in S.
+ * @details Return value: chars replaced. SZ is only used to store the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @return size_t Number of characters removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_stripspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject) JSTR_NOEXCEPT
@@ -688,10 +944,17 @@ start:
 ;
 #endif
 
-/* Remove chars in REJECT in S.
- * Return value:
- * chars replaced.
- * SZ is only used to store the length of S. */
+/**
+ * @brief Remove chars in REJECT in S.
+ * @details Return value: chars replaced. SZ is only used to store the length of S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] reject NUL-terminated set of rejected characters
+ * @return size_t Number of characters removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_stripspn(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
@@ -703,9 +966,18 @@ jstr_stripspn(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove first HS in S.
- * Return value:
- * ptr to '\0' in S. */
+/**
+ * @brief Remove first HS in S.
+ * @details Return value: ptr to '\0' in S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] at byte offset within *s where operation occurs
+ * @param[in] find_len number of bytes in find
+ * @return char * Pointer to the terminating NUL of the result (non-NULL).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_rmat_len_p(char *s, size_t sz, size_t at, size_t find_len) JSTR_NOEXCEPT
@@ -718,10 +990,20 @@ jstr_rmat_len_p(char *s, size_t sz, size_t at, size_t find_len) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Remove first HS in S from START_IDX.
- * Return value:
- * ptr to '\0' in S.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Remove first HS in S from START_IDX.
+ * @details Return value: ptr to '\0' in S. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @return int 1 if a match was removed, 0 if not found.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rm_len_from_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len) JSTR_NOEXCEPT
@@ -739,10 +1021,19 @@ jstr_rm_len_from_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, size_t
 ;
 #endif
 
-/* Remove first HS in S.
- * Return value:
- * ptr to '\0' in S.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Remove first HS in S.
+ * @details Return value: ptr to '\0' in S. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @return int 1 if a match was removed, 0 if not found.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rm_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const char *R find, size_t find_len) JSTR_NOEXCEPT
@@ -754,9 +1045,19 @@ jstr_rm_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const char 
 ;
 #endif
 
-/* Remove first HS in S from START_IDX.
- * Return value:
- * ptr to '\0' in S. */
+/**
+ * @brief Remove first HS in S from START_IDX.
+ * @details Return value: ptr to '\0' in S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @return int 1 if a match was removed, 0 if not found.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rm_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len) JSTR_NOEXCEPT
@@ -770,9 +1071,18 @@ jstr_rm_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find, 
 ;
 #endif
 
-/* Remove first HS in S.
- * Return value:
- * ptr to '\0' in S. */
+/**
+ * @brief Remove first HS in S.
+ * @details Return value: ptr to '\0' in S.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @return int 1 if a match was removed, 0 if not found.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rm_len(char *R s, size_t *R sz, const char *R find, size_t find_len) JSTR_NOEXCEPT
@@ -784,7 +1094,15 @@ jstr_rm_len(char *R s, size_t *R sz, const char *R find, size_t find_len) JSTR_N
 ;
 #endif
 
-/* Replace all SEARCH in REPLACE. */
+/**
+ * @brief Replace all SEARCH in REPLACE.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] find needle bytes to search for
+ * @param[in] rplc replacement bytes
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 void
 jstr_rplcallchr(char *s, char find, char rplc) JSTR_NOEXCEPT
@@ -796,9 +1114,19 @@ jstr_rplcallchr(char *s, char find, char rplc) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Replace N SEARCH in REPLACE.
- * Return value:
- * number of FINDs replaced. */
+/**
+ * @brief Replace N SEARCH in REPLACE.
+ * @details Return value: number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] rplc replacement bytes
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of occurrences replaced (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rplcnchr_len(char *s, size_t sz, char find, char rplc, size_t n) JSTR_NOEXCEPT
@@ -813,9 +1141,18 @@ jstr_rplcnchr_len(char *s, size_t sz, char find, char rplc, size_t n) JSTR_NOEXC
 ;
 #endif
 
-/* Replace N SEARCH in REPLACE.
- * Return value:
- * number of FINDs replaced. */
+/**
+ * @brief Replace N SEARCH in REPLACE.
+ * @details Return value: number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] find needle bytes to search for
+ * @param[in] rplc replacement bytes
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of occurrences replaced (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rplcnchr(char *s, char find, char rplc, size_t n) JSTR_NOEXCEPT
@@ -829,7 +1166,16 @@ jstr_rplcnchr(char *s, char find, char rplc, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Replace all SEARCH in REPLACE. */
+/**
+ * @brief Replace all SEARCH in REPLACE.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] rplc replacement bytes
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 void
 jstr_rplcallchr_len(char *s, size_t sz, char find, char rplc) JSTR_NOEXCEPT
@@ -842,9 +1188,19 @@ jstr_rplcallchr_len(char *s, size_t sz, char find, char rplc) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Replace last SEARCH in S with REPLACE.
- * Return value:
- * number of number of FINDs replaced. */
+/**
+ * @brief Replace last SEARCH in S with REPLACE.
+ * @details Return value: number of number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @return int 1 if a match was removed, 0 if not found.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rmlast_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len) JSTR_NOEXCEPT
@@ -863,9 +1219,18 @@ jstr_rmlast_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R fi
 ;
 #endif
 
-/* Replace last SEARCH in S with REPLACE.
- * Return value:
- * number of number of FINDs replaced. */
+/**
+ * @brief Replace last SEARCH in S with REPLACE.
+ * @details Return value: number of number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @return int 1 if a match was removed, 0 if not found.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rmlast_len(char *R s, size_t *R sz, const char *R find, size_t find_len) JSTR_NOEXCEPT
@@ -877,9 +1242,21 @@ jstr_rmlast_len(char *R s, size_t *R sz, const char *R find, size_t find_len) JS
 ;
 #endif
 
-/* Replace last SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced. */
+/**
+ * @brief Replace last SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return int 1 if replaced, 0 if no match, -1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rplclast_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -897,10 +1274,21 @@ jstr_rplclast_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find,
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE from START_IDX.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE from START_IDX.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of matches removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmn_len_from_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len, size_t n) JSTR_NOEXCEPT
@@ -939,10 +1327,20 @@ start:
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of matches removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmn_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const char *R find, size_t find_len, size_t n) JSTR_NOEXCEPT
@@ -954,10 +1352,19 @@ jstr_rmn_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const char
 ;
 #endif
 
-/* Replace all SEARCH in S.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace all SEARCH in S.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @return size_t Number of matches removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmall_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const char *R find, size_t find_len) JSTR_NOEXCEPT
@@ -969,9 +1376,20 @@ jstr_rmall_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const ch
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE from START_IDX.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE from START_IDX.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of matches removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmn_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len, size_t n) JSTR_NOEXCEPT
@@ -985,9 +1403,19 @@ jstr_rmn_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find,
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of matches removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmn_len(char *R s, size_t *R sz, const char *R find, size_t find_len, size_t n) JSTR_NOEXCEPT
@@ -999,9 +1427,18 @@ jstr_rmn_len(char *R s, size_t *R sz, const char *R find, size_t find_len, size_
 ;
 #endif
 
-/* Replace all SEARCH in S.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced. */
+/**
+ * @brief Replace all SEARCH in S.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @return size_t Number of matches removed (0 if none).
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 size_t
 jstr_rmall_len(char *R s, size_t *R sz, const char *R find, size_t find_len) JSTR_NOEXCEPT
@@ -1013,10 +1450,23 @@ jstr_rmall_len(char *R s, size_t *R sz, const char *R find, size_t find_len) JST
 ;
 #endif
 
-/* Replace first SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace first SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return int 1 if replaced, 0 if no match, -1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 int
 jstr_rplc_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -1037,10 +1487,22 @@ jstr_rplc_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, s
 ;
 #endif
 
-/* Replace first SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace first SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return int 1 if replaced, 0 if no match, -1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 int
 jstr_rplc_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -1052,11 +1514,24 @@ jstr_rplc_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE from S + START_IDX.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp.
- * The current implementation is O(n). */
+/**
+ * @brief Replace N SEARCH in S with REPLACE from S + START_IDX.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp. The current implementation is O(n).
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of matches replaced (0 if none), or (size_t)-1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 size_t
 jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len, size_t n) JSTR_NOEXCEPT
@@ -1173,10 +1648,23 @@ start:
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of matches replaced (0 if none), or (size_t)-1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 size_t
 jstr_rplcn_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len, size_t n) JSTR_NOEXCEPT
@@ -1188,10 +1676,23 @@ jstr_rplcn_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_
 ;
 #endif
 
-/* Replace all SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace all SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return size_t Number of matches replaced (0 if none), or (size_t)-1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 size_t
 jstr_rplcall_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -1203,10 +1704,22 @@ jstr_rplcall_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[in] t precompiled two-way matcher (from jstr_memmem_comp)
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return size_t Number of matches replaced (0 if none), or (size_t)-1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 size_t
 jstr_rplcall_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -1218,10 +1731,22 @@ jstr_rplcall_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, siz
 ;
 #endif
 
-/* Replace first SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+/**
+ * @brief Replace first SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced. T must be precompiled with jstr_memmem_comp.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return int 1 if replaced, 0 if no match, -1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 int
 jstr_rplc_len_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -1235,9 +1760,21 @@ jstr_rplc_len_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, 
 ;
 #endif
 
-/* Replace first SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced. */
+/**
+ * @brief Replace first SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return int 1 if replaced, 0 if no match, -1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 int
 jstr_rplc_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -1249,8 +1786,23 @@ jstr_rplc_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, siz
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE from S + START_IDX.
- * Return -1 on malloc error. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE from S + START_IDX.
+ * @details Return -1 on malloc error.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of matches replaced (0 if none), or (size_t)-1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 size_t
 jstr_rplcn_len_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len, size_t n) JSTR_NOEXCEPT
@@ -1264,9 +1816,22 @@ jstr_rplcn_len_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx,
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return size_t Number of matches replaced (0 if none), or (size_t)-1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 size_t
 jstr_rplcn_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len, size_t n) JSTR_NOEXCEPT
@@ -1278,9 +1843,22 @@ jstr_rplcn_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, si
 ;
 #endif
 
-/* Replace all SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced. */
+/**
+ * @brief Replace all SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] start_idx starting byte offset in *s
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return size_t Number of matches replaced (0 if none), or (size_t)-1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 size_t
 jstr_rplcall_len_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -1292,9 +1870,21 @@ jstr_rplcall_len_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_id
 ;
 #endif
 
-/* Replace N SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced. */
+/**
+ * @brief Replace N SEARCH in S with REPLACE.
+ * @details Return -1 on malloc error. Otherwise, number of FINDs replaced.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] rplc replacement bytes
+ * @param[in] rplc_len number of bytes in rplc
+ * @return size_t Number of matches replaced (0 if none), or (size_t)-1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 size_t
 jstr_rplcall_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len) JSTR_NOEXCEPT
@@ -1306,9 +1896,18 @@ jstr_rplcall_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, 
 ;
 #endif
 
-/* Replace first SEARCH in REPLACE.
- * Return value:
- * number of FINDs replaced. */
+/**
+ * @brief Replace first SEARCH in REPLACE.
+ * @details Return value: number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in] find needle bytes to search for
+ * @param[in] rplc replacement bytes
+ * @return int 1 if replaced, 0 if no match, -1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rplcchr_len(char *s, size_t sz, char find, char rplc) JSTR_NOEXCEPT
@@ -1325,9 +1924,17 @@ jstr_rplcchr_len(char *s, size_t sz, char find, char rplc) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Replace first SEARCH in REPLACE.
- * Return value:
- * number of FINDs replaced. */
+/**
+ * @brief Replace first SEARCH in REPLACE.
+ * @details Return value: number of FINDs replaced.
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] find needle bytes to search for
+ * @param[in] rplc replacement bytes
+ * @return int 1 if replaced, 0 if no match, -1 on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC_VOID
 int
 jstr_rplcchr(char *s, char find, char rplc) JSTR_NOEXCEPT
@@ -1344,9 +1951,19 @@ jstr_rplcchr(char *s, char find, char rplc) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Place SRC into DST[AT].
- * Assume that S have enough space for SRC.
- * Return value: */
+/**
+ * @brief Place SRC into DST[AT].
+ * @details Assume that S have enough space for SRC. Return value:
+ * @param[in,out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in] at byte offset within *s where operation occurs
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ * @warning Caller must ensure the destination buffer has sufficient capacity;
+ *         no allocation or bounds checking is performed.
+ */
 JSTR_FUNC_VOID
 void
 jstr_place_len_unsafe(char *R s, size_t at, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -1358,9 +1975,20 @@ jstr_place_len_unsafe(char *R s, size_t at, const char *R src, size_t src_len) J
 ;
 #endif
 
-/* Place SRC into DST[AT].
- * Return JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief Place SRC into DST[AT].
+ * @details Return JSTR_RET_ERR on malloc error. Otherwise, JSTR_RET_SUCC.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] at byte offset within *s where operation occurs
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_place_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -1382,9 +2010,20 @@ jstr_place_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char 
 ;
 #endif
 
-/* Place SRC after C in DST.
- * Return JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief Place SRC after C in DST.
+ * @details Return JSTR_RET_ERR on malloc error. Otherwise, JSTR_RET_SUCC.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] c character to match/replace/remove
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_placeafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -1399,9 +2038,21 @@ jstr_placeafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const c
 ;
 #endif
 
-/* Place SRC after end of NE in DST.
- * Return JSTR_RET_ERR on malloc error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief Place SRC after end of NE in DST.
+ * @details Return JSTR_RET_ERR on malloc error. Otherwise, JSTR_RET_SUCC.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] find needle bytes to search for
+ * @param[in] find_len number of bytes in find
+ * @param[in] src source bytes to insert/place
+ * @param[in] src_len number of bytes in src
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_placeafter_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -1420,9 +2071,18 @@ jstr_placeafter_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fin
 ;
 #endif
 
-/* Return value:
- * JSTR_RET_ERR on error.
- * JSTR_RET_SUCC otherwise. */
+/**
+ * @brief Return value:
+ * @details JSTR_RET_ERR on error. JSTR_RET_SUCC otherwise.
+ * @param[out] s target string buffer (mutable; NUL-terminated unless _mem variant)
+ * @param[in,out] sz in/out: current length of *s in bytes (updated on success)
+ * @param[in,out] cap in/out: allocated capacity of *s (updated on realloc)
+ * @param[in] n maximum number of occurrences (SIZE_MAX/-1 means all)
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation failure.
+ * @note Pointer arguments must be non-NULL where dereferenced; operates on NUL-terminated
+ *       buffers unless a _mem variant is used. Edge cases (empty input, zero length,
+ *       no match, n == 0) are no-ops unless documented otherwise.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_repeat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t n) JSTR_NOEXCEPT

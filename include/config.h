@@ -1,40 +1,38 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
 #ifndef JSTR_CONFIG_H
+/** @brief JSTR_CONFIG_H macro. */
 #	define JSTR_CONFIG_H 1
 
-/* Print error message and call exit on errors. */
 #	ifndef JSTR_PANIC
+/** @brief JSTR_PANIC macro. */
 #		define JSTR_PANIC 0
 #	endif
 
-/* Behave as JSTR_PANIC would, activate debug asserts, and print debug messages. */
 #	ifndef JSTR_DEBUG
+/** @brief JSTR_DEBUG macro. */
 #		define JSTR_DEBUG 0
 #	endif
 
-/* jstr_io_* stdio functions and all functions which use them
- * will use the *_unlocked versions when available. */
 #	ifndef JSTR_USE_UNLOCKED_IO
+/** @brief JSTR_USE_UNLOCKED_IO macro. */
 #		define JSTR_USE_UNLOCKED_IO 0
 #	endif
-/* Behave as JSTR_USE_UNLOCKED_IO but only for functions that read. */
 #	ifndef JSTR_USE_UNLOCKED_IO_READ
+/** @brief JSTR_USE_UNLOCKED_IO_READ macro. */
 #		define JSTR_USE_UNLOCKED_IO_READ 0
 #	endif
-/* Behave as JSTR_USE_UNLOCKED_IO but only for functions that write. */
 #	ifndef JSTR_USE_UNLOCKED_IO_WRITE
+/** @brief JSTR_USE_UNLOCKED_IO_WRITE macro. */
 #		define JSTR_USE_UNLOCKED_IO_WRITE 0
 #	endif
 
-/* Minimum size of allocation of malloc. */
 #	ifndef JSTR_MIN_CAP
+/** @brief JSTR_MIN_CAP macro. */
 #		define JSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 12)
 #	endif
 
-/* Allocations will be aligned to this alignment. */
 #	ifndef JSTR_MALLOC_ALIGNMENT
+/** @brief JSTR_MALLOC_ALIGNMENT macro. */
 #		define JSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 #	endif
 

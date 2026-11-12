@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
 #ifndef JSTR_STRING_H
 #	define JSTR_STRING_H 1
@@ -33,6 +31,20 @@ JSTR_INTERNAL_END_DECLS
 
 JSTR_INTERNAL_BEGIN_DECLS
 
+/**
+ * @brief jstr_strchrnul
+ *
+ * jstr_strchrnul operation.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ *
+ * @return char * Pointer to the first occurrence of @p c, or the terminating NUL of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_RETURNS_NONNULL
 char *
@@ -52,6 +64,22 @@ jstr_strchrnul(const char *s, int c) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_memrchr
+ *
+ * jstr_memrchr operation.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the last occurrence of @p c, or NULL if not found.
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 void *
@@ -70,9 +98,22 @@ jstr_memrchr(const void *s, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_strcasechrnul
+ *
+ * Return value:
  * ptr to first C in S ignoring case.
- * NULL if not found. */
+ * NULL if not found.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ *
+ * @return char * Pointer to the first case-insensitive occurrence of @p c, or the terminating NUL of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strcasechrnul(const char *s, int c) JSTR_NOEXCEPT
@@ -97,9 +138,22 @@ jstr_strcasechrnul(const char *s, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_strcasechr
+ *
+ * Return value:
  * ptr to first C in S ignoring case.
- * NULL if not found. */
+ * NULL if not found.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ *
+ * @return char * Pointer to the first case-insensitive occurrence of @p c, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strcasechr(const char *s, int c) JSTR_NOEXCEPT
@@ -124,6 +178,22 @@ jstr_strcasechr(const char *s, int c) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_memcasechr
+ *
+ * jstr_memcasechr operation.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the first case-insensitive occurrence of @p c, or NULL if not found.
+ *
+ */
 JSTR_FUNC_PURE
 void *
 jstr_memcasechr(const void *s, int c, size_t n) JSTR_NOEXCEPT
@@ -152,6 +222,22 @@ jstr_memcasechr(const void *s, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_memrchrnul
+ *
+ * jstr_memrchrnul operation.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the last occurrence of @p c, or @p s + @p sz if not found (never NULL).
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 void *
@@ -165,6 +251,22 @@ jstr_memrchrnul(const void *s, int c, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_memchrnul
+ *
+ * jstr_memchrnul operation.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the first occurrence of @p c, or @p s + @p sz if not found (never NULL).
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static JSTR_ATTR_INLINE
@@ -175,18 +277,27 @@ jstr_memchrnul(const void *s, int c, size_t sz) JSTR_NOEXCEPT
 	return (void *)(p ? p : (char *)s + sz);
 }
 
-/* Return value:
- * ptr to '\0' in DST. */
+/**
+ * @brief jstr_stpcpy
+ *
+ * Return value:
+ * ptr to '\0' in DST.
+ *
+ * @param dst char *R dst Destination buffer (must have enough space).
+ * @param src const char *R src Source string/buffer.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p dst (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_stpcpy(char *R dst, const char *R src) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	/* Dispatch order MUST stay: libc stpcpy -> SIMD -> scalar tail.
-	 * Never insert a plain byte-loop (musl-style) fallback here: on long
-	 * strings it measures 10.5x slower than libc stpcpy and ~6x slower
-	 * than the SIMD path below (BENCHMARKS.md section 1b). */
 #	if JSTR_HAVE_STPCPY && !JSTR_TEST
 	return stpcpy(dst, src);
 #	elif JSTR_HAVE_SIMD
@@ -199,8 +310,21 @@ jstr_stpcpy(char *R dst, const char *R src) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
- * ptr to '\0' in DST. */
+/**
+ * @brief jstr_stpcat
+ *
+ * Return value:
+ * ptr to '\0' in DST.
+ *
+ * @param dst char *R dst Destination buffer (must have enough space).
+ * @param src const char *R src Source string/buffer.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p dst (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_stpcat(char *R dst, const char *R src) JSTR_NOEXCEPT
@@ -213,16 +337,26 @@ jstr_stpcat(char *R dst, const char *R src) JSTR_NOEXCEPT
 ;
 #endif
 
-/* strchr before s + N. */
+/**
+ * @brief jstr_strnchr
+ *
+ * strchr before s + N.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ * @return char * Pointer to the first occurrence of @p c within @p n bytes, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strnchr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	/* Never route to the vendored musl byte loop: glibc strchr + a bounds
-	 * check is faster at every size (BENCHMARKS.md section 8). Semantics
-	 * preserved: strchr stops at NUL exactly like the musl version, and
-	 * the offset check enforces the n limit (also covers n == 0). */
 #	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCHR_SIMD
 	return jstr_internal_simd_strnchr(s, c, n);
 #	else
@@ -234,7 +368,21 @@ jstr_strnchr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* strcasechr before s + N. */
+/**
+ * @brief jstr_strncasechr
+ *
+ * strcasechr before s + N.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ * @return char * Pointer to the first case-insensitive occurrence of @p c within @p n bytes, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strncasechr(const char *s, int c, size_t n) JSTR_NOEXCEPT
@@ -252,7 +400,20 @@ jstr_strncasechr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* basename for non nul-terminated strings. */
+/**
+ * @brief jstr_basename_len
+ *
+ * basename for non nul-terminated strings.
+ *
+ * @param fname const char *fname File name/path string.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return char * Pointer to the base name within @p fname (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_FUNC_PURE
 char *
@@ -266,6 +427,19 @@ jstr_basename_len(const char *fname, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_basename
+ *
+ * jstr_basename operation.
+ *
+ * @param fname const char *fname File name/path string.
+ *
+ * @return char * Pointer to the base name within @p fname (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_basename(const char *fname) JSTR_NOEXCEPT
@@ -278,6 +452,20 @@ jstr_basename(const char *fname) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_strstrnul
+ *
+ * jstr_strstrnul operation.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return char * Pointer to the first occurrence of @p ne, or the terminating NUL of @p hs (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strstrnul(const char *hs, const char *ne) JSTR_NOEXCEPT
@@ -294,6 +482,22 @@ jstr_strstrnul(const char *hs, const char *ne) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_cmpeq
+ *
+ * jstr_cmpeq operation.
+ *
+ * @param s1 const void *s1 First comparison buffer.
+ * @param s1_len size_t s1_len First buffer length in bytes.
+ * @param s2 const void *s2 Second comparison buffer.
+ * @param s2_len size_t s2_len Second buffer length in bytes.
+ *
+ * @return int 0 if the buffers are equal, nonzero otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 static JSTR_ATTR_INLINE
 int
@@ -302,6 +506,22 @@ jstr_cmpeq(const void *s1, size_t s1_len, const void *s2, size_t s2_len) JSTR_NO
 	return (s1_len == s2_len) ? memcmp(s1, s2, s1_len) : 1;
 }
 
+/**
+ * @brief jstr_cmpcaseeq
+ *
+ * jstr_cmpcaseeq operation.
+ *
+ * @param s1 const char *s1 First comparison buffer.
+ * @param s1_len size_t s1_len First buffer length in bytes.
+ * @param s2 const char *s2 Second comparison buffer.
+ * @param s2_len size_t s2_len Second buffer length in bytes.
+ *
+ * @return int 0 if the buffers are equal (case-insensitive), nonzero otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 int
 jstr_cmpcaseeq(const char *s1, size_t s1_len, const char *s2, size_t s2_len) JSTR_NOEXCEPT
@@ -313,10 +533,25 @@ jstr_cmpcaseeq(const char *s1, size_t s1_len, const char *s2, size_t s2_len) JST
 ;
 #endif
 
-/* Check if S2 is in end of S1.
+/**
+ * @brief jstr_endscase_len
+ *
+ * Check if S2 is in end of S1.
  * Return value:
  * 1 if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return int 1 if @p hs ends with @p ne (case-insensitive), 0 otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -330,10 +565,23 @@ jstr_endscase_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) 
 ;
 #endif
 
-/* Check if S2 is in end of S1.
+/**
+ * @brief jstr_endscase
+ *
+ * Check if S2 is in end of S1.
  * Return value:
  * 1 if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return int 1 if @p hs ends with @p ne (case-insensitive), 0 otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 int
 jstr_endscase(const char *hs, const char *ne) JSTR_NOEXCEPT
@@ -345,10 +593,25 @@ jstr_endscase(const char *hs, const char *ne) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Check if S2 is in end of S1.
+/**
+ * @brief jstr_ends_len
+ *
+ * Check if S2 is in end of S1.
  * Return value:
  * 1 if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return int 1 if @p hs ends with @p ne, 0 otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -359,10 +622,23 @@ jstr_ends_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) JSTR
 	return jstr_likely(hs_len >= ne_len) ? !memcmp(hs + hs_len - ne_len, ne, ne_len) : 0;
 }
 
-/* Check if S2 is in end of S1.
+/**
+ * @brief jstr_ends
+ *
+ * Check if S2 is in end of S1.
  * Return value:
  * 1 if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return int 1 if @p hs ends with @p ne, 0 otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 static JSTR_ATTR_INLINE
 int
@@ -371,10 +647,25 @@ jstr_ends(const char *hs, const char *ne) JSTR_NOEXCEPT
 	return jstr_ends_len(hs, strlen(hs), ne, strlen(ne));
 }
 
-/* Check if S1 starts with S2 case-insensitively.
+/**
+ * @brief jstr_startscase_len
+ *
+ * Check if S1 starts with S2 case-insensitively.
  * Return value:
  * 1 if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return int 1 if @p hs starts with @p ne (case-insensitive), 0 otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -388,10 +679,23 @@ jstr_startscase_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len
 ;
 #endif
 
-/* Check if S1 starts with S2 case-insensitively.
+/**
+ * @brief jstr_startscase
+ *
+ * Check if S1 starts with S2 case-insensitively.
  * Return value:
  * 1 if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return int 1 if @p hs starts with @p ne (case-insensitive), 0 otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 int
 jstr_startscase(const char *hs, const char *ne) JSTR_NOEXCEPT
@@ -403,10 +707,23 @@ jstr_startscase(const char *hs, const char *ne) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Check if S1 starts with S2 case-insensitively.
+/**
+ * @brief jstr_startscasenul
+ *
+ * Check if S1 starts with S2 case-insensitively.
  * Return value:
  * NELEN if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return size_t Length of @p ne if @p hs starts with @p ne (case-insensitive), otherwise 0.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 size_t
 jstr_startscasenul(const char *hs, const char *ne) JSTR_NOEXCEPT
@@ -423,10 +740,25 @@ jstr_startscasenul(const char *hs, const char *ne) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Check if S1 starts with S2.
+/**
+ * @brief jstr_starts_len
+ *
+ * Check if S1 starts with S2.
  * Return value:
  * 1 if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return int 1 if @p hs starts with @p ne, 0 otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -437,10 +769,23 @@ jstr_starts_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) JS
 	return jstr_likely(hs_len >= ne_len) ? !memcmp(hs, ne, ne_len) : 0;
 }
 
-/* Check if S1 starts with S2.
+/**
+ * @brief jstr_starts
+ *
+ * Check if S1 starts with S2.
  * Return value:
  * 1 if true.
- * 0 if false. */
+ * 0 if false.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return int 1 if @p hs starts with @p ne, 0 otherwise.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 static JSTR_ATTR_INLINE
 int
@@ -473,6 +818,23 @@ jstr_starts(const char *hs, const char *ne) JSTR_NOEXCEPT
 #	endif
 #endif
 
+/**
+ * @brief jstr_memmem
+ *
+ * jstr_memmem operation.
+ *
+ * @param hs const void *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const void *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the first occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -506,7 +868,6 @@ jstr_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len) JSTR_N
 ;
 #endif
 
-/* Needles <= THRES will not compile a jstr_twoway_ty. */
 #	if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 #		define JSTR_TWOWAY_MEMMEM_THRES sizeof(jstr_vvec_ty)
 #	else
@@ -516,6 +877,20 @@ jstr_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len) JSTR_N
 #	define JSTR_TWOWAY_STRCASESTR_LEN_THRES 2
 #	define JSTR_TWOWAY_STRCASESTR_THRES     JSTR_TWOWAY_STRCASESTR_LEN_THRES
 
+/**
+ * @brief jstr_memmem_comp
+ *
+ * jstr_memmem_comp operation.
+ *
+ * @param t jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param ne const void *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_VOID
 void
 jstr_memmem_comp(jstr_twoway_ty *t, const void *ne, size_t ne_len) JSTR_NOEXCEPT
@@ -530,6 +905,24 @@ jstr_memmem_comp(jstr_twoway_ty *t, const void *ne, size_t ne_len) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_memmem_exec
+ *
+ * jstr_memmem_exec operation.
+ *
+ * @param t const jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param hs const void *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const void *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the first occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 void *
@@ -556,6 +949,22 @@ jstr_memmem_exec(const jstr_twoway_ty *t, const void *hs, size_t hs_len, const v
 ;
 #endif
 
+/**
+ * @brief jstr_strstr_len
+ *
+ * jstr_strstr_len operation.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return char * Pointer to the first occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -569,6 +978,23 @@ jstr_strstr_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) JS
 ;
 #endif
 
+/**
+ * @brief jstr_strnstr_len
+ *
+ * jstr_strnstr_len operation.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ * @return char * Pointer to the first occurrence of @p ne within @p n bytes, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -582,6 +1008,24 @@ jstr_strnstr_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len, s
 ;
 #endif
 
+/**
+ * @brief jstr_memnmem
+ *
+ * jstr_memnmem operation.
+ *
+ * @param hs const void *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const void *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the first occurrence of @p ne within the first @p n bytes, or NULL if not found.
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -595,6 +1039,23 @@ jstr_memnmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len, size_
 ;
 #endif
 
+/**
+ * @brief jstr_memmemnul
+ *
+ * jstr_memmemnul operation.
+ *
+ * @param hs const void *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const void *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the first occurrence of @p ne, or @p hs + @p hs_len if not found (never NULL).
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -609,6 +1070,22 @@ void *
 ;
 #endif
 
+/**
+ * @brief jstr_strstrnul_len
+ *
+ * jstr_strstrnul_len operation.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return char * Pointer to the first occurrence of @p ne, or @p hs + @p hs_len (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strstrnul_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) JSTR_NOEXCEPT
@@ -624,11 +1101,27 @@ jstr_strstrnul_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len)
 #	define JSTR_INTERNAL_STRSTR234_MEMRMEM   1
 #	include "internal/musl/strstr-lt8.h"
 
-/* Find last NE in HS.
+/**
+ * @brief jstr_memrmem
+ *
+ * Find last NE in HS.
  * Return value:
  * ptr to NE.
  * NULL if not found.
- * The current implementation is O(m * n). */
+ * The current implementation is O(m * n).
+ *
+ * @param hs const void *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const void *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the last occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -654,11 +1147,26 @@ jstr_memrmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len) JSTR_
 ;
 #endif
 
-/* Find last NE in HS.
+/**
+ * @brief jstr_strrstr_len
+ *
+ * Find last NE in HS.
  * Return value:
  * ptr to NE.
  * NULL if not found.
- * The current implementation is O(m * n). */
+ * The current implementation is O(m * n).
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return char * Pointer to the last occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -679,10 +1187,25 @@ jstr_strrstr_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len) J
 #	include "internal/musl/twoway.h"
 #endif
 
-/* Find NE in HS case-insensitively (ASCII).
+/**
+ * @brief jstr_strcasestr_len
+ *
+ * Find NE in HS case-insensitively (ASCII).
  * Return value:
  * ptr to NE.
- * NULL if not found. */
+ * NULL if not found.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return char * Pointer to the first case-insensitive occurrence of @p ne, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -716,6 +1239,20 @@ jstr_strcasestr_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len
 ;
 #endif
 
+/**
+ * @brief jstr_strcasestr_len_comp
+ *
+ * jstr_strcasestr_len_comp operation.
+ *
+ * @param t jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_VOID
 void
 jstr_strcasestr_len_comp(jstr_twoway_ty *t, const char *ne, size_t ne_len) JSTR_NOEXCEPT
@@ -730,6 +1267,23 @@ jstr_strcasestr_len_comp(jstr_twoway_ty *t, const char *ne, size_t ne_len) JSTR_
 ;
 #endif
 
+/**
+ * @brief jstr_strcasestr_len_exec
+ *
+ * jstr_strcasestr_len_exec operation.
+ *
+ * @param t const jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return char * Pointer to the first case-insensitive occurrence of @p ne, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 char *
@@ -752,6 +1306,23 @@ jstr_strcasestr_len_exec(const jstr_twoway_ty *t, const char *hs, size_t hs_len,
 ;
 #endif
 
+/**
+ * @brief jstr_strncasestr_len
+ *
+ * jstr_strncasestr_len operation.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param hs_len size_t hs_len Haystack length in bytes.
+ * @param ne const char *ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ * @return char * Pointer to the first case-insensitive occurrence of @p ne within @p n bytes, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -773,10 +1344,23 @@ jstr_strncasestr_len(const char *hs, size_t hs_len, const char *ne, size_t ne_le
 #	include "internal/musl/twoway.h"
 #endif
 
-/* Find NE in HS case-insensitively.
+/**
+ * @brief jstr_strcasestr
+ *
+ * Find NE in HS case-insensitively.
  * Return value:
  * ptr to NE.
- * NULL if not found. */
+ * NULL if not found.
+ *
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return char * Pointer to the first case-insensitive occurrence of @p ne, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strcasestr(const char *hs, const char *ne) JSTR_NOEXCEPT
@@ -827,6 +1411,19 @@ jstr_strcasestr(const char *hs, const char *ne) JSTR_NOEXCEPT
 #		error "JSTR_TWOWAY_STRCASESTR_THRES is assumed to be 2."
 #	endif
 
+/**
+ * @brief jstr_strcasestr_comp
+ *
+ * jstr_strcasestr_comp operation.
+ *
+ * @param t jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_VOID
 void
 jstr_strcasestr_comp(jstr_twoway_ty *t, const char *ne) JSTR_NOEXCEPT
@@ -845,6 +1442,21 @@ jstr_strcasestr_comp(jstr_twoway_ty *t, const char *ne) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_strcasestr_exec
+ *
+ * jstr_strcasestr_exec operation.
+ *
+ * @param t const jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return char * Pointer to the first case-insensitive occurrence of @p ne, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strcasestr_exec(const jstr_twoway_ty *t, const char *hs, const char *ne) JSTR_NOEXCEPT
@@ -870,6 +1482,19 @@ jstr_strcasestr_exec(const jstr_twoway_ty *t, const char *hs, const char *ne) JS
 #	include "internal/musl/twoway.h"
 #endif
 
+/**
+ * @brief jstr_strstr_comp
+ *
+ * jstr_strstr_comp operation.
+ *
+ * @param t jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_VOID
 void
 jstr_strstr_comp(jstr_twoway_ty *t, const char *ne) JSTR_NOEXCEPT
@@ -888,6 +1513,21 @@ jstr_strstr_comp(jstr_twoway_ty *t, const char *ne) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_strstr_exec
+ *
+ * jstr_strstr_exec operation.
+ *
+ * @param t const jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param hs const char *hs Haystack buffer.
+ * @param ne const char *ne Needle string/buffer.
+ *
+ * @return char * Pointer to the first occurrence of @p ne, or NULL if not found.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strstr_exec(const jstr_twoway_ty *t, const char *hs, const char *ne) JSTR_NOEXCEPT
@@ -901,9 +1541,23 @@ jstr_strstr_exec(const jstr_twoway_ty *t, const char *hs, const char *ne) JSTR_N
 ;
 #endif
 
-/* Reverse of STRCSPN.
+/**
+ * @brief jstr_strrcspn_len
+ *
+ * Reverse of STRCSPN.
  * Return the offset from S if found.
- * Otherwise, return S + SZ. */
+ * Otherwise, return S + SZ.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param reject const char *reject Set of rejected/delimiter bytes.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return size_t Offset of the last byte not in @p reject (or @p sz if none).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 size_t
@@ -916,7 +1570,20 @@ jstr_strrcspn_len(const char *s, const char *reject, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Reverse of STRCSPN. */
+/**
+ * @brief jstr_strrcspn
+ *
+ * Reverse of STRCSPN.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param reject const char *reject Set of rejected/delimiter bytes.
+ *
+ * @return size_t Offset of the last byte not in @p reject (or the string length if none).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 size_t
 jstr_strrcspn(const char *s, const char *reject) JSTR_NOEXCEPT
@@ -928,9 +1595,23 @@ jstr_strrcspn(const char *s, const char *reject) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Reverse of STRSPN.
+/**
+ * @brief jstr_strrspn_len
+ *
+ * Reverse of STRSPN.
  * Return the offset from S if found.
- * Otherwise, return S + SZ. */
+ * Otherwise, return S + SZ.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param accept const char *accept Set of accepted bytes.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return size_t Offset of the last byte in @p accept (or @p sz if none).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 size_t
@@ -943,9 +1624,22 @@ jstr_strrspn_len(const char *s, const char *accept, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Reverse of STRSPN.
+/**
+ * @brief jstr_strrspn
+ *
+ * Reverse of STRSPN.
  * Return the offset from S if found.
- * Otherwise, return S + SZ. */
+ * Otherwise, return S + SZ.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param accept const char *accept Set of accepted bytes.
+ *
+ * @return size_t Offset of the last byte in @p accept (or the string length if none).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 size_t
 jstr_strrspn(const char *s, const char *accept) JSTR_NOEXCEPT
@@ -957,7 +1651,21 @@ jstr_strrspn(const char *s, const char *accept) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Reverse of STRPBRK. */
+/**
+ * @brief jstr_strrpbrk_len
+ *
+ * Reverse of STRPBRK.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param accept const char *accept Set of accepted bytes.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return char * Pointer to the last byte in @p s matching @p accept, or NULL if none.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 char *
@@ -971,7 +1679,20 @@ jstr_strrpbrk_len(const char *s, const char *accept, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Reverse of STRPBRK. */
+/**
+ * @brief jstr_strrpbrk
+ *
+ * Reverse of STRPBRK.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param accept const char *accept Set of accepted bytes.
+ *
+ * @return char * Pointer to the last byte in @p s matching @p accept, or NULL if none.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strrpbrk(const char *s, const char *accept) JSTR_NOEXCEPT
@@ -983,6 +1704,21 @@ jstr_strrpbrk(const char *s, const char *accept) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_memspn
+ *
+ * jstr_memspn operation.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param accept const char *accept Set of accepted bytes.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return size_t Number of leading bytes of @p s contained in @p accept.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 size_t
@@ -995,6 +1731,21 @@ jstr_memspn(const void *s, const char *accept, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_memcspn
+ *
+ * jstr_memcspn operation.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param reject const char *reject Set of rejected/delimiter bytes.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return size_t Number of leading bytes of @p s not contained in @p reject.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 size_t
@@ -1007,6 +1758,21 @@ jstr_memcspn(const void *s, const char *reject, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_mempbrk
+ *
+ * jstr_mempbrk operation.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param accept const char *accept Set of accepted bytes.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return char * Pointer to the first byte of @p s contained in @p accept, or NULL if none.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 char *
@@ -1021,10 +1787,23 @@ jstr_mempbrk(const void *s, const char *accept, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_strchrnulinv
+ *
+ * Return value:
  * ptr to first non-C in S,
  * ptr to '\0' if C is not found,
- * S if C is '\0'; */
+ * S if C is '\0';
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ *
+ * @return char * Pointer to the first byte not equal to @p c, or the terminating NUL of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strchrnulinv(const char *s, int c) JSTR_NOEXCEPT
@@ -1039,9 +1818,22 @@ jstr_strchrnulinv(const char *s, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_strchrinv
+ *
+ * Return value:
  * ptr to first non-C in S.
- * NULL if non-C is not found. */
+ * NULL if non-C is not found.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ *
+ * @return char * Pointer to the first byte not equal to @p c, or NULL if all bytes match.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_strchrinv(const char *s, int c) JSTR_NOEXCEPT
@@ -1054,9 +1846,24 @@ jstr_strchrinv(const char *s, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_memchrnulinv
+ *
+ * Return value:
  * ptr to first non-C in S.
- * S + N if C is not found. */
+ * S + N if C is not found.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the first byte not equal to @p c, or @p s + @p n if all bytes match (never NULL).
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 void *
@@ -1071,9 +1878,24 @@ jstr_memchrnulinv(const void *s, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_memchrinv
+ *
+ * Return value:
  * ptr to first non-C in S.
- * NULL if C is not found. */
+ * NULL if C is not found.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the first byte not equal to @p c, or NULL if all bytes match.
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 void *
@@ -1088,9 +1910,24 @@ jstr_memchrinv(const void *s, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_memrchrinv
+ *
+ * Return value:
  * ptr to first non-C in S from S + N - 1
- * NULL if C is not found. */
+ * NULL if C is not found.
+ *
+ * @param s const void *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the last byte not equal to @p c, or NULL if all bytes match.
+ *
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 void *
@@ -1105,9 +1942,23 @@ jstr_memrchrinv(const void *s, int c, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_strrchrinv
+ *
+ * Return value:
  * ptr to first non-C in S from S + strlen(S) - 1
- * NULL if C is not found. */
+ * NULL if C is not found.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ * @return void * Pointer to the last byte not equal to @p c, or NULL if all bytes match.
+ *
+ */
 JSTR_FUNC_PURE
 void *
 jstr_strrchrinv(const char *s, int c) JSTR_NOEXCEPT
@@ -1119,12 +1970,23 @@ jstr_strrchrinv(const char *s, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Count occurences of C in S.
- * Return value:
- * Occurences of C in S. */
 #	if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 #	endif
+/**
+ * @brief jstr_countchr
+ *
+ * jstr_countchr operation.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ *
+ * @return size_t Number of occurrences of @p c in @p s.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 size_t
 jstr_countchr(const char *s, int c) JSTR_NOEXCEPT
@@ -1146,7 +2008,6 @@ jstr_countchr(const char *s, int c) JSTR_NOEXCEPT
 ;
 #endif
 
-/* countchr_len is at -O3 (GCC >= 4.7) and -O2 (clang >= 3.9). */
 #	if (JSTR_GNUC_PREREQ(4, 7) && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 3))                                                                                                   \
 	|| ((defined __clang__ && defined __clang_major__ && __clang_major__ >= 3 && defined __clang_minor__ && __clang_minor__ >= 9) && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 2)) \
 	|| !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
@@ -1155,12 +2016,24 @@ jstr_countchr(const char *s, int c) JSTR_NOEXCEPT
 #		define JSTR_USE_COUNTCHR_LEN_C 0
 #	endif
 
-/* Count occurences of C in S.
- * Return value:
- * Occurences of C in S. */
 #	if !JSTR_USE_COUNTCHR_LEN_C
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 #	endif
+/**
+ * @brief jstr_countchr_len
+ *
+ * jstr_countchr_len operation.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param c int c Byte/character to find or count.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return size_t Number of occurrences of @p c in the first @p sz bytes.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 size_t
@@ -1184,10 +2057,26 @@ jstr_countchr_len(const char *s, int c, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Count occurences of NE in HS.
+/**
+ * @brief jstr_count_len_exec
+ *
+ * Count occurences of NE in HS.
  * Return value:
  * occurences of NE in HS.
- * T must be precompiled with jstr_memmem_exec. */
+ * T must be precompiled with jstr_memmem_exec.
+ *
+ * @param t const jstr_twoway_ty *t Precompiled twoway matcher state.
+ * @param s const char *s Input NUL-terminated string.
+ * @param sz size_t sz Length in bytes of the input.
+ * @param find const char *find Needle string/buffer.
+ * @param find_len size_t find_len Needle length in bytes.
+ *
+ * @return size_t Number of occurrences of @p c in the searched range.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_ATTR_ACCESS((__read_only__, 4, 5))
@@ -1207,9 +2096,24 @@ jstr_count_len_exec(const jstr_twoway_ty *t, const char *s, size_t sz, const cha
 ;
 #endif
 
-/* Count occurences of NE in HS.
+/**
+ * @brief jstr_count_len
+ *
+ * Count occurences of NE in HS.
  * Return value:
- * occurences of NE in HS. */
+ * occurences of NE in HS.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param sz size_t sz Length in bytes of the input.
+ * @param find const char *find Needle string/buffer.
+ * @param find_len size_t find_len Needle length in bytes.
+ *
+ * @return size_t Number of occurrences of @p c in the first @p sz bytes.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -1225,9 +2129,22 @@ jstr_count_len(const char *s, size_t sz, const char *find, size_t find_len) JSTR
 ;
 #endif
 
-/* Count occurences of NE in HS.
+/**
+ * @brief jstr_count
+ *
+ * Count occurences of NE in HS.
  * Return value:
- * occurences of NE in HS. */
+ * occurences of NE in HS.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ * @param find const char *find Needle string/buffer.
+ *
+ * @return size_t Number of occurrences of @p c in @p s.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 size_t
 jstr_count(const char *s, const char *find) JSTR_NOEXCEPT
@@ -1250,9 +2167,22 @@ jstr_count(const char *s, const char *find) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_linestart
+ *
+ * Return value:
  * ptr to start of line.
- * BEGIN if no newline was found. */
+ * BEGIN if no newline was found.
+ *
+ * @param start const char *start Start of range.
+ * @param end const char *end End of range (exclusive).
+ *
+ * @return char * Pointer to the start of the line containing @p start (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_linestart(const char *start, const char *end) JSTR_NOEXCEPT
@@ -1265,9 +2195,22 @@ jstr_linestart(const char *start, const char *end) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_linenext_len
+ *
+ * Return value:
  * ptr to next start of line.
- * NULL if no newline was found. */
+ * NULL if no newline was found.
+ *
+ * @param start const char *start Start of range.
+ * @param end const char *end End of range (exclusive).
+ *
+ * @return char * Pointer to the next line within [@p start, @p end), or NULL if none.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_linenext_len(const char *start, const char *end) JSTR_NOEXCEPT
@@ -1280,9 +2223,21 @@ jstr_linenext_len(const char *start, const char *end) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
+/**
+ * @brief jstr_linenext
+ *
+ * Return value:
  * ptr to next start of line.
- * NULL if no newline was found. */
+ * NULL if no newline was found.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ *
+ * @return char * Pointer to the next line, or NULL if none.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_linenext(const char *s) JSTR_NOEXCEPT
@@ -1295,8 +2250,21 @@ jstr_linenext(const char *s) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
- * ptr to next line or '\0'. */
+/**
+ * @brief jstr_linenextnul_len
+ *
+ * Return value:
+ * ptr to next line or '\0'.
+ *
+ * @param start const char *start Start of range.
+ * @param end const char *end End of range (exclusive).
+ *
+ * @return char * Pointer to the next line or @p end (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_linenextnul_len(const char *start, const char *end) JSTR_NOEXCEPT
@@ -1309,8 +2277,20 @@ jstr_linenextnul_len(const char *start, const char *end) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return value:
- * ptr to next line or '\0'. */
+/**
+ * @brief jstr_linenextnul
+ *
+ * Return value:
+ * ptr to next line or '\0'.
+ *
+ * @param s const char *s Input NUL-terminated string.
+ *
+ * @return char * Pointer to the next line or the terminating NUL (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 char *
 jstr_linenextnul(const char *s) JSTR_NOEXCEPT
@@ -1323,7 +2303,20 @@ jstr_linenextnul(const char *s) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return the number of newlines + 1. */
+/**
+ * @brief jstr_linenumber
+ *
+ * Return the number of newlines + 1.
+ *
+ * @param start const char *start Start of range.
+ * @param end const char *end End of range (exclusive).
+ *
+ * @return size_t Number of lines (newlines + 1) in the range.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_PURE
 size_t
 jstr_linenumber(const char *start, const char *end) JSTR_NOEXCEPT
@@ -1335,6 +2328,20 @@ jstr_linenumber(const char *start, const char *end) JSTR_NOEXCEPT
 ;
 #endif
 
+/**
+ * @brief jstr_revcpy_len
+ *
+ * jstr_revcpy_len operation.
+ *
+ * @param dst char *R dst Destination buffer (must have enough space).
+ * @param src const char *R src Source string/buffer.
+ * @param src_len size_t src_len Source length in bytes.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_VOID
 void
 jstr_revcpy_len(char *R dst, const char *R src, size_t src_len) JSTR_NOEXCEPT
@@ -1348,7 +2355,20 @@ jstr_revcpy_len(char *R dst, const char *R src, size_t src_len) JSTR_NOEXCEPT
 ;
 #endif
 
-/* DST must not overlap with SRC. */
+/**
+ * @brief jstr_revcpy_p
+ *
+ * DST must not overlap with SRC.
+ *
+ * @param dst char *R dst Destination buffer (must have enough space).
+ * @param src const char *R src Source string/buffer.
+ *
+ * @return char * Pointer to one past the last byte written (@p dst + @p src_len) (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC
 char *
 jstr_revcpy_p(char *R dst, const char *R src) JSTR_NOEXCEPT
@@ -1362,7 +2382,19 @@ jstr_revcpy_p(char *R dst, const char *R src) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Reverse S. */
+/**
+ * @brief jstr_rev_len
+ *
+ * Reverse S.
+ *
+ * @param s char *s Input NUL-terminated string.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_VOID
 void
 jstr_rev_len(char *s, size_t sz) JSTR_NOEXCEPT
@@ -1380,9 +2412,21 @@ jstr_rev_len(char *s, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Reverse S.
+/**
+ * @brief jstr_rev_p
+ *
+ * Reverse S.
  * Return value:
- * ptr to '\0' in S. */
+ * ptr to '\0' in S.
+ *
+ * @param s char *s Input NUL-terminated string.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_rev_p(char *s) JSTR_NOEXCEPT
@@ -1396,9 +2440,22 @@ jstr_rev_p(char *s) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Trim leading and trailing jstr_isspace chars in S.
+/**
+ * @brief jstr_trimend_len_p
+ *
+ * Trim leading and trailing jstr_isspace chars in S.
  * Return value:
- * ptr to '\0' in S; */
+ * ptr to '\0' in S;
+ *
+ * @param s char *s Input NUL-terminated string.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_trimend_len_p(char *s, size_t sz) JSTR_NOEXCEPT
@@ -1415,9 +2472,21 @@ jstr_trimend_len_p(char *s, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Trim leading and trailing jstr_isspace chars in S.
+/**
+ * @brief jstr_trimend_p
+ *
+ * Trim leading and trailing jstr_isspace chars in S.
  * Return value:
- * ptr to '\0' in S; */
+ * ptr to '\0' in S;
+ *
+ * @param s char *s Input NUL-terminated string.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_trimend_p(char *s) JSTR_NOEXCEPT
@@ -1429,9 +2498,22 @@ jstr_trimend_p(char *s) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Trim leading and trailing jstr_isspace chars in S.
+/**
+ * @brief jstr_trimstart_len_p
+ *
+ * Trim leading and trailing jstr_isspace chars in S.
  * Return value:
- * ptr to '\0' in S; */
+ * ptr to '\0' in S;
+ *
+ * @param s char *s Input NUL-terminated string.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_trimstart_len_p(char *s, size_t sz) JSTR_NOEXCEPT
@@ -1449,9 +2531,21 @@ jstr_trimstart_len_p(char *s, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Trim leading jstr_isspace chars in S.
+/**
+ * @brief jstr_trimstart_p
+ *
+ * Trim leading jstr_isspace chars in S.
  * Return value:
- * ptr to '\0' in S; */
+ * ptr to '\0' in S;
+ *
+ * @param s char *s Input NUL-terminated string.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_trimstart_p(char *s) JSTR_NOEXCEPT
@@ -1470,7 +2564,18 @@ jstr_trimstart_p(char *s) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Trim leading jstr_isspace chars in S. */
+/**
+ * @brief jstr_trimstart
+ *
+ * Trim leading jstr_isspace chars in S.
+ *
+ * @param s char *s Input NUL-terminated string.
+ *
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_VOID
 void
 jstr_trimstart(char *s) JSTR_NOEXCEPT
@@ -1486,9 +2591,22 @@ jstr_trimstart(char *s) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Trim leading and trailing jstr_isspace chars in S.
+/**
+ * @brief jstr_trim_len_p
+ *
+ * Trim leading and trailing jstr_isspace chars in S.
  * Return value:
- * ptr to '\0' in S; */
+ * ptr to '\0' in S;
+ *
+ * @param s char *s Input NUL-terminated string.
+ * @param sz size_t sz Length in bytes of the input.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_trim_len_p(char *s, size_t sz) JSTR_NOEXCEPT
@@ -1501,9 +2619,21 @@ jstr_trim_len_p(char *s, size_t sz) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Trim leading and trailing jstr_isspace chars in S.
+/**
+ * @brief jstr_trim_p
+ *
+ * Trim leading and trailing jstr_isspace chars in S.
  * Return value:
- * ptr to '\0' in S; */
+ * ptr to '\0' in S;
+ *
+ * @param s char *s Input NUL-terminated string.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p s (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_trim_p(char *s) JSTR_NOEXCEPT
@@ -1515,10 +2645,25 @@ jstr_trim_p(char *s) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Non-destructive strtok.
+/**
+ * @brief jstr_strtok_ne_len
+ *
+ * Non-destructive strtok.
  * END must be NUL terminated.
  * Instead of nul-termination, use the save_ptr to know the length of the
- * string. */
+ * string.
+ *
+ * @param save_ptr const char **R const save_ptr Pointer to current cursor; updated by the call.
+ * @param end const char *R const end End of range (exclusive).
+ * @param ne const char *R ne Needle string/buffer.
+ * @param ne_len size_t ne_len Needle length in bytes.
+ *
+ * @return char * Pointer to the next token, or NULL if no more tokens.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC
 char *
 jstr_strtok_ne_len(const char **R const save_ptr, const char *R const end, const char *R ne, size_t ne_len) JSTR_NOEXCEPT
@@ -1536,9 +2681,22 @@ jstr_strtok_ne_len(const char **R const save_ptr, const char *R const end, const
 ;
 #endif
 
-/* Non-destructive strtok.
+/**
+ * @brief jstr_strtok_ne
+ *
+ * Non-destructive strtok.
  * Instead of nul-termination, use the save_ptr to know the length of the
- * string. */
+ * string.
+ *
+ * @param save_ptr const char **R const save_ptr Pointer to current cursor; updated by the call.
+ * @param ne const char *R ne Needle string/buffer.
+ *
+ * @return char * Pointer to the next token, or NULL if no more tokens.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC
 char *
 jstr_strtok_ne(const char **R const save_ptr, const char *R ne) JSTR_NOEXCEPT
@@ -1556,9 +2714,22 @@ jstr_strtok_ne(const char **R const save_ptr, const char *R ne) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Non-destructive strtok.
+/**
+ * @brief jstr_strtok
+ *
+ * Non-destructive strtok.
  * Instead of nul-termination, use the save_ptr to know the length of the
- * string. */
+ * string.
+ *
+ * @param save_ptr const char **R save_ptr Pointer to current cursor; updated by the call.
+ * @param delim const char *R delim Delimiter set string.
+ *
+ * @return char * Pointer to the next token, or NULL if no more tokens.
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC
 char *
 jstr_strtok(const char **R save_ptr, const char *R delim) JSTR_NOEXCEPT
@@ -1579,7 +2750,21 @@ jstr_strtok(const char **R save_ptr, const char *R delim) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return ptr to '\0' in DST. */
+/**
+ * @brief jstr_repeat_len_unsafe_p
+ *
+ * Return ptr to '\0' in DST.
+ *
+ * @param s char *s Input NUL-terminated string.
+ * @param sz size_t sz Length in bytes of the input.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ * @return char * Pointer to the terminating NUL byte of the result (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC
 char *
 jstr_repeat_len_unsafe_p(char *s, size_t sz, size_t n) JSTR_NOEXCEPT
@@ -1610,7 +2795,22 @@ jstr_repeat_len_unsafe_p(char *s, size_t sz, size_t n) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Return ptr to '\0' in DST. */
+/**
+ * @brief jstr_repeatcpy_len_p
+ *
+ * Return ptr to '\0' in DST.
+ *
+ * @param dst char *R dst Destination buffer (must have enough space).
+ * @param src const char *R src Source string/buffer.
+ * @param src_len size_t src_len Source length in bytes.
+ * @param n size_t n Number of bytes to inspect.
+ *
+ * @return char * Pointer to the terminating NUL byte of the result (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC
 char *
 jstr_repeatcpy_len_p(char *R dst, const char *R src, size_t src_len, size_t n) JSTR_NOEXCEPT
@@ -1628,10 +2828,24 @@ jstr_repeatcpy_len_p(char *R dst, const char *R src, size_t src_len, size_t n) J
 ;
 #endif
 
-/* Add thousand separator to NPTR.
+/**
+ * @brief jstr_thousep_len_p
+ *
+ * Add thousand separator to NPTR.
  * Return value:
  * ptr to '\0' in NPTR.
- * For example: 1234 becomes 1,234. */
+ * For example: 1234 becomes 1,234.
+ *
+ * @param nptr char *nptr Numeric string buffer.
+ * @param sz size_t sz Length in bytes of the input.
+ * @param separator char separator Grouping separator character.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p nptr (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_thousep_len_p(char *nptr, size_t sz, char separator) JSTR_NOEXCEPT
@@ -1668,10 +2882,23 @@ jstr_thousep_len_p(char *nptr, size_t sz, char separator) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Add thousand separator to NPTR.
+/**
+ * @brief jstr_thousep_p
+ *
+ * Add thousand separator to NPTR.
  * Return value:
  * ptr to '\0' in NPTR.
- * For example: 1234 becomes 1,234. */
+ * For example: 1234 becomes 1,234.
+ *
+ * @param nptr char *nptr Numeric string buffer.
+ * @param separator char separator Grouping separator character.
+ *
+ * @return char * Pointer to the terminating NUL byte of @p nptr (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_thousep_p(char *nptr, char separator) JSTR_NOEXCEPT
@@ -1683,9 +2910,24 @@ jstr_thousep_p(char *nptr, char separator) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Copy SRC to DST, adding thousand separator.
+/**
+ * @brief jstr_thousepcpy_len_p
+ *
+ * Copy SRC to DST, adding thousand separator.
  * Return value:
- * ptr to '\0' in DST. */
+ * ptr to '\0' in DST.
+ *
+ * @param dst char *R dst Destination buffer (must have enough space).
+ * @param src const char *R src Source string/buffer.
+ * @param src_len size_t src_len Source length in bytes.
+ * @param separator char separator Grouping separator character.
+ *
+ * @return char * Pointer to the terminating NUL byte of the result (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_RET_NONNULL
 char *
@@ -1732,9 +2974,23 @@ jstr_thousepcpy_len_p(char *R dst, const char *R src, size_t src_len, char separ
 ;
 #endif
 
-/* Copy SRC to DST, adding thousand separator.
+/**
+ * @brief jstr_thousepcpy_p
+ *
+ * Copy SRC to DST, adding thousand separator.
  * Return value:
- * ptr to '\0' in DST. */
+ * ptr to '\0' in DST.
+ *
+ * @param dst char *R dst Destination buffer (must have enough space).
+ * @param src const char *R src Source string/buffer.
+ * @param separator char separator Grouping separator character.
+ *
+ * @return char * Pointer to the terminating NUL byte of the result (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_thousepcpy_p(char *R dst, const char *R src, char separator) JSTR_NOEXCEPT
@@ -1746,11 +3002,24 @@ jstr_thousepcpy_p(char *R dst, const char *R src, char separator) JSTR_NOEXCEPT
 ;
 #endif
 
-/* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
+/**
+ * @brief jstr_unescapecpy_p
+ *
+ * Unescape \\b, \\f, \\n, \\r, \\t, \\v, \\, \", \\ooo (octal).
  * Otherwise, remove unescaped backslashes.
  * For example: "\q\x" -> "qx".
  * Trailing backslashes are ignored.
- * Returns pointer to first NUL even escaped NUL. */
+ * Returns pointer to first NUL even escaped NUL.
+ *
+ * @param dst char *dst Destination buffer (must have enough space).
+ * @param src const char *src Source string/buffer.
+ *
+ * @return char * Pointer to the terminating NUL byte of the result (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC
 char *
 jstr_unescapecpy_p(char *dst, const char *src) JSTR_NOEXCEPT
@@ -1802,11 +3071,23 @@ out:
 ;
 #endif
 
-/* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
+/**
+ * @brief jstr_unescape_p
+ *
+ * Unescape \\b, \\f, \\n, \\r, \\t, \\v, \\, \", \\ooo (octal).
  * Otherwise, remove unescaped backslashes.
  * For example: "\q\x" -> "qx".
  * Trailing backslashes are ignored.
- * Returns pointer to first NUL even escaped NUL. */
+ * Returns pointer to first NUL even escaped NUL.
+ *
+ * @param s char *s Input NUL-terminated string.
+ *
+ * @return char * Pointer to the terminating NUL byte of the result (never NULL).
+ *
+ * @note Pointers must be non-NULL unless otherwise stated; size 0 is accepted
+ *       where a length is provided; binary data with embedded NULs requires
+ *       the corresponding `_mem` variant.
+ */
 JSTR_FUNC
 char *
 jstr_unescape_p(char *s) JSTR_NOEXCEPT

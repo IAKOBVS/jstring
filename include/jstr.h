@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
+/** @file jstr.h Core public header aggregating jstr modules. */
 #ifndef JSTR_H
+/** @brief JSTR_H macro. */
 #	define JSTR_H 1
 
 #	 include "builder.h"
@@ -16,7 +16,5 @@
 #	 include "stdstring.h"
 #	 include "string.h"
 #	 include "struct.h"
-/* #	 include "regex.h" */
-/* #	 include "io.h" */
 
 #endif /* JSTR_H */

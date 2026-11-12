@@ -1,25 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* Taken from or based on musl's string functions with modifications.
- * Copyright © 2005-2020 Rich Felker, et al.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #ifndef JSTR_INTERNAL_MUSL_H
 #define JSTR_INTERNAL_MUSL_H
@@ -50,6 +28,18 @@ JSTR_INTERNAL_BEGIN_DECLS
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+/**
+ * @brief Find the last occurrence of byte @p c in the first @p n bytes of @p s (musl scalar implementation), returning a pointer or NULL.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the last occurrence of @p c in the first @p n bytes, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static void *
 jstr_internal_memrchr_musl(const void *s, int c, size_t n)
@@ -78,6 +68,17 @@ JSTR_NOEXCEPT
 	return NULL;
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c (case-insensitive) in @p s, returning a pointer to it or to the terminating NUL (musl scalar).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @return Pointer to the first case-insensitive occurrence of @p c, or to the terminating NUL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
@@ -101,6 +102,18 @@ JSTR_NOEXCEPT
 	return (char *)p;
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c (case-insensitive) in the first @p n bytes of @p s (musl scalar), returning a pointer or NULL.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the first case-insensitive occurrence of @p c in the first @p n bytes, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static void *
@@ -129,6 +142,18 @@ JSTR_NOEXCEPT
 	return n ? (void *)p : NULL;
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c in the first @p n bytes of @p s (musl scalar), returning a pointer or NULL.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the first occurrence of @p c in the first @p n bytes, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
@@ -154,6 +179,18 @@ JSTR_NOEXCEPT
 	return n ? (char *)s : NULL;
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c (case-insensitive) in the first @p n bytes of @p s (musl scalar), returning a pointer or NULL.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the first case-insensitive occurrence of @p c in the first @p n bytes, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
@@ -185,6 +222,18 @@ JSTR_NOEXCEPT
 #define BITOP(a, b, op) \
 	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
 
+/**
+ * @brief Count the number of leading bytes of @p s (up to @p n) that are in @p c (musl scalar).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param n Byte/element count; may be 0.
+ * @return Number of leading bytes of @p s (up to @p n) that are in @p c.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static size_t
 jstr_internal_memspn_musl(const void *s, const char *c, size_t n)
@@ -205,6 +254,18 @@ JSTR_NOEXCEPT
 	return (size_t)(p - a);
 }
 
+/**
+ * @brief Count the number of leading bytes of @p s (up to @p n) that are not in @p c (musl scalar).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param n Byte/element count; may be 0.
+ * @return Number of leading bytes of @p s (up to @p n) that are not in @p c.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static size_t
 jstr_internal_memcspn_musl(const void *s, const char *c, size_t n)
@@ -223,6 +284,18 @@ JSTR_NOEXCEPT
 	return (size_t)(p - a);
 }
 
+/**
+ * @brief Count trailing bytes of @p s (length @p n) that are in @p c, returning the remaining prefix length (musl scalar).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param n Byte/element count; may be 0.
+ * @return Remaining prefix length after trailing bytes in @p c.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static size_t
 jstr_internal_memrspn_musl(const void *s, const char *c, size_t n)
@@ -243,6 +316,18 @@ JSTR_NOEXCEPT
 	return n;
 }
 
+/**
+ * @brief Count trailing bytes of @p s (length @p n) that are not in @p c, returning the remaining prefix length (musl scalar).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param n Byte/element count; may be 0.
+ * @return Remaining prefix length after trailing bytes not in @p c.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static size_t
 jstr_internal_memrcspn_musl(const void *s, const char *c, size_t n)

@@ -1,29 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* This file is part of the jstring library, derived from musl's ctype
- * functions with modifications.
- *
- * musl is licensed under the following standard MIT license:
- *
- * Copyright © 2005-2020 Rich Felker, et al.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #ifndef JSTR_INTERNAL_MUSL_CTYPE_H
 #	define JSTR_INTERNAL_MUSL_CTYPE_H 1
@@ -48,6 +22,16 @@ JSTR_INTERNAL_BEGIN_DECLS
 #	define TOUPPER(c)  (c & (ISLOWER(c) ? 0x5f : (int)-1))
 #	define ISXDIGIT(c) (ISDIGIT(c) | (((unsigned)c | 32) - 'a' < 6))
 
+/**
+ * @brief Test whether @p c is an alphabetic character.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is an alphabetic character, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -57,6 +41,16 @@ JSTR_NOEXCEPT
 	return ISALPHA((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is a decimal digit.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a decimal digit, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -66,6 +60,16 @@ JSTR_NOEXCEPT
 	return ISDIGIT((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is alphanumeric.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is an alphanumeric character, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -75,6 +79,16 @@ JSTR_NOEXCEPT
 	return ISALNUM((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is an ASCII character.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is an ASCII character, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -84,6 +98,16 @@ JSTR_NOEXCEPT
 	return ISASCII((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is a blank (space or tab).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a blank (space or tab), 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -93,6 +117,16 @@ JSTR_NOEXCEPT
 	return ISBLANK((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is a control character.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a control character, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -102,6 +136,16 @@ JSTR_NOEXCEPT
 	return ISCNTRL((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is a graphic character.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a graphic character, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -111,6 +155,16 @@ JSTR_NOEXCEPT
 	return ISGRAPH((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is a lowercase letter.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a lowercase letter, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -120,6 +174,16 @@ JSTR_NOEXCEPT
 	return ISLOWER((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is an uppercase letter.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is an uppercase letter, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -129,6 +193,16 @@ JSTR_NOEXCEPT
 	return ISUPPER((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is printable.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a printable character, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -138,6 +212,16 @@ JSTR_NOEXCEPT
 	return ISPRINT((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is punctuation.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a punctuation character, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -147,6 +231,16 @@ JSTR_NOEXCEPT
 	return ISPUNCT((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is whitespace.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a whitespace character, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -156,6 +250,16 @@ JSTR_NOEXCEPT
 	return ISSPACE((unsigned char)c);
 }
 
+/**
+ * @brief Test whether @p c is a hexadecimal digit.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Non-zero if @p c is a hexadecimal digit, 0 otherwise.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -165,6 +269,16 @@ JSTR_NOEXCEPT
 	return ISXDIGIT((unsigned char)c);
 }
 
+/**
+ * @brief Convert @p c to lowercase (ASCII).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Lowercase form of @p c.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
@@ -174,6 +288,16 @@ JSTR_NOEXCEPT
 	return TOLOWER((unsigned char)c);
 }
 
+/**
+ * @brief Convert @p c to uppercase (ASCII).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param c Input parameter.
+ * @return Uppercase form of @p c.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int

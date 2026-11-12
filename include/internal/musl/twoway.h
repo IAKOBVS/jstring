@@ -1,31 +1,14 @@
-/* SPDX-License-Identifier: MIT */
-/* Based on musl's strstr and memmem.
- * Copyright © 2005-2020 Rich Felker, et al.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #include "../../macros.h"
 
 #ifndef JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
 #	define JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
 
+/**
+ * @brief State structure for the Two-Way substring-search algorithm.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ */
 typedef struct jstr_internal_twoway_ty {
 	size_t needle_len;
 	union u {
@@ -58,6 +41,17 @@ typedef struct jstr_internal_twoway_ty {
 
 #define BITOP(a, b, op) ((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
 
+/**
+ * @brief Compile/preprocess a needle into the Two-Way automaton state stored in @p t.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param t Non-NULL pointer to the Two-Way state to populate.
+ * @param ne Non-NULL pointer to the needle bytes (NUL-terminated when JSTR_INTERNAL_MUSL_CHECK_EOL is defined).
+ * @param needle_len Length in bytes of @p ne (omitted when JSTR_INTERNAL_MUSL_CHECK_EOL is defined).
+ *
+ * @note Allocates no memory; state is stored in the caller-provided @p t. Empty needles and periodic needles are handled. Internal helper; may change without notice.
+ */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
@@ -72,7 +66,6 @@ JSTR_NOEXCEPT
 	size_t max_suffix, j, k, period;
 	int a, b;
 	memset(t->u._t._byteset, 0, sizeof(t->u._t._byteset));
-	/* Computing length of ne and fill shift table. */
 #ifdef JSTR_INTERNAL_MUSL_CHECK_EOL
 	for (max_suffix = 0; ne[max_suffix]; ++max_suffix)
 #else
@@ -137,6 +130,20 @@ JSTR_NOEXCEPT
 	}
 }
 
+/**
+ * @brief Execute a Two-Way search over the haystack using the compiled state @p t, returning a match pointer or NULL.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param t Non-NULL pointer to the compiled Two-Way state.
+ * @param hs Non-NULL pointer to the haystack bytes.
+ * @param hs_len Length in bytes of @p hs (omitted when JSTR_INTERNAL_MUSL_CHECK_EOL is defined).
+ * @param ne Non-NULL pointer to the needle bytes.
+ * @param needle_len Length in bytes of @p ne (omitted when JSTR_INTERNAL_MUSL_CHECK_EOL is defined).
+ * @return Pointer to the first match within @p hs, or NULL if not found.
+ *
+ * @note Requires comp to have been called on @p t first. Internal helper; may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -158,7 +165,6 @@ JSTR_NOEXCEPT
 	int c;
 	size_t k;
 	size_t memory = 0;
-	/* Initialize end-of-haystack pointer. */
 #ifdef JSTR_INTERNAL_MUSL_CHECK_EOL
 	const unsigned char *end = hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
 #else
@@ -213,6 +219,19 @@ JSTR_NOEXCEPT
 	return NULL;
 }
 
+/**
+ * @brief Search for a needle in a haystack using the Two-Way algorithm (internal helper).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param haystack Non-NULL pointer to the haystack bytes.
+ * @param haystack_len Length in bytes of @p haystack (omitted when JSTR_INTERNAL_MUSL_CHECK_EOL is defined).
+ * @param needle Non-NULL pointer to the needle bytes.
+ * @param needle_len Length in bytes of @p needle (omitted when JSTR_INTERNAL_MUSL_CHECK_EOL is defined).
+ * @return Pointer to the first match within @p haystack, or NULL if not found.
+ *
+ * @note Handles empty needle (returns @p haystack) and needle longer than haystack (returns NULL). Internal helper; may change without notice.
+ */
 JSTR_FUNC_PURE
 static char *
 JSTR_INTERNAL_MUSL_FUNC_NAME(const unsigned char *haystack

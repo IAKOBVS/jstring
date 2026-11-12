@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
 #ifndef JSTR_INTERNAL_SIMD_H
 #define JSTR_INTERNAL_SIMD_H
@@ -13,7 +11,6 @@ JSTR_INTERNAL_BEGIN_DECLS
 
 #define R JSTR_RESTRICT
 
-/* Select AVX512, AVX2, or SSE2. */
 
 #if JSTR_ARCH_X86_64
 #	include <x86intrin.h>
@@ -113,6 +110,17 @@ typedef uint16_t jstr_vmask_ty;
 #	define BLSR(x) ((x) & ((x) - 1))
 #endif
 
+/**
+ * @brief Copy the NUL-terminated source string @p src into @p dst, returning a pointer to the terminating NUL written in @p dst.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param dst Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param src Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @return Pointer to the terminating NUL written in @p dst.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 static char *
@@ -155,6 +163,18 @@ JSTR_NOEXCEPT
 
 #else
 
+/**
+ * @brief Find the first occurrence of @p c (case-insensitive) in the first @p n bytes of @p s, returning a pointer to it or NULL if not found or NUL terminator reached.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the first case-insensitive occurrence of @p c, or NULL if not found or the NUL terminator is reached.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
@@ -195,6 +215,18 @@ ret_early:
 	return s + i < end ? (char *)s + i : NULL;
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c in the first @p n bytes of @p s, returning a pointer to it or NULL if not found or NUL terminator reached.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the first occurrence of @p c, or NULL if not found or the NUL terminator is reached.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
@@ -232,6 +264,17 @@ ret_early:
 	return s + i < end ? (char *)s + i : NULL;
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c in @p s, returning a pointer to it or to the terminating NUL if not found.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @return Pointer to the first occurrence of @p c, or to the terminating NUL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
@@ -260,6 +303,17 @@ JSTR_NOEXCEPT
 	return (char *)s + TZCNT(m);
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c in @p s, returning a pointer to it or NULL if not found.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @return Pointer to the first occurrence of @p c, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
@@ -271,6 +325,17 @@ JSTR_NOEXCEPT
 	return *s == (char)c ? (char *)s : NULL;
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c (case-insensitive) in @p s, returning a pointer to it or to the terminating NUL if not found.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @return Pointer to the first case-insensitive occurrence of @p c, or to the terminating NUL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
@@ -302,6 +367,17 @@ JSTR_NOEXCEPT
 	return (char *)s + TZCNT(m);
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c (case-insensitive) in @p s, returning a pointer to it or NULL if not found.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @return Pointer to the first case-insensitive occurrence of @p c, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
@@ -313,6 +389,18 @@ JSTR_NOEXCEPT
 	return *s == (char)c ? (char *)s : NULL;
 }
 
+/**
+ * @brief Find the first occurrence of byte @p c (case-insensitive) in the first @p n bytes of @p s, returning a pointer to it or NULL if not found.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the first case-insensitive occurrence of @p c in the first @p n bytes, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
@@ -361,6 +449,18 @@ ret_early:
 #else
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+/**
+ * @brief Find the last occurrence of byte @p c in the first @p n bytes of @p s, returning a pointer to it or NULL if not found.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the last occurrence of @p c in the first @p n bytes, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
@@ -404,6 +504,17 @@ ret:;
 
 #else
 
+/**
+ * @brief Count occurrences of byte @p c in the NUL-terminated string @p s.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @return Number of occurrences of @p c in @p s.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
@@ -434,6 +545,18 @@ JSTR_NOEXCEPT
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+/**
+ * @brief Count occurrences of byte @p c in the first @p n bytes of @p s.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param c Input parameter.
+ * @param n Byte/element count; may be 0.
+ * @return Number of occurrences of @p c in the first @p n bytes of @p s.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
@@ -462,6 +585,16 @@ JSTR_NOEXCEPT
 
 #if defined CMPGT8 && defined CMPLT8 && defined AND && defined ADD8
 
+/**
+ * @brief Convert an ASCII vector of bytes to lowercase in-place logically, returning the converted vector.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param v Input parameter.
+ * @return Vector @p v with ASCII letters converted to lowercase.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
@@ -475,6 +608,16 @@ JSTR_NOEXCEPT
 	return ADD8(v, cvt);
 }
 
+/**
+ * @brief Convert the first @p n bytes of @p s to lowercase in place.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param n Byte/element count; may be 0.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_VOID
 static void
 jstr_internal_simd_tolowerstr_len(char *s, size_t n)
@@ -494,6 +637,16 @@ JSTR_NOEXCEPT
 		*s = (char)jstr_tolower(*s);
 }
 
+/**
+ * @brief Convert the NUL-terminated string @p s to lowercase in place, returning a pointer to its terminating NUL.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @return Pointer to the terminating NUL of @p s.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_VOID
 static char *
 jstr_internal_simd_tolowerstr_p(char *s)
@@ -514,6 +667,16 @@ JSTR_NOEXCEPT
 
 #if defined CMPGT8 && defined CMPLT8 && defined AND && defined SUB8
 
+/**
+ * @brief Convert an ASCII vector of bytes to uppercase in-place logically, returning the converted vector.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param v Input parameter.
+ * @return Vector @p v with ASCII letters converted to uppercase.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
@@ -531,6 +694,16 @@ JSTR_NOEXCEPT
 
 #if defined CMPGT8 && defined CMPLT8 && defined AND && defined ADD8 && defined SUB8
 
+/**
+ * @brief Convert the first @p n bytes of @p s to uppercase in place.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param n Byte/element count; may be 0.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_VOID
 static void
 jstr_internal_simd_toupperstr_len(char *s, size_t n)
@@ -550,6 +723,16 @@ JSTR_NOEXCEPT
 		*s = (char)jstr_toupper(*s);
 }
 
+/**
+ * @brief Convert the NUL-terminated string @p s to uppercase in place, returning a pointer to its terminating NUL.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param s Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @return Pointer to the terminating NUL of @p s.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_VOID
 static char *
 jstr_internal_simd_toupperstr_p(char *s)
@@ -586,12 +769,22 @@ JSTR_NOEXCEPT
 			}                                                               \
 		} while (0)
 
-/* ne_len must be <= VEC_SIZE.
- * Worst case: O(n).
- * Best case: O(n / VEC_SIZE). */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+/**
+ * @brief Find the first occurrence of needle @p ne (length @p ne_len) in haystack @p hs (length @p hs_len), returning a pointer to it or NULL.
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param hs Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param hs_len Byte/element count; may be 0.
+ * @param ne Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param ne_len Byte/element count; may be 0.
+ * @return Pointer to the first occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static void *
 jstr_internal_simd_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len)

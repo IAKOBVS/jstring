@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
 #ifndef JSTR_IO_H
 #	define JSTR_IO_H 1
@@ -48,6 +46,24 @@ enum {
 	JSTR_IO_BINARY_CHECK_MAX = 64
 };
 
+/**
+ * @brief jstr_internal_io_isbinarysignature
+ *
+ * Inspect the leading bytes of BUF for a known binary/text signature. Returns 1
+ * for an ELF magic number, 0 for a UTF-8 BOM, and -1 when neither signature is
+ * present (so callers fall back to heuristic detection).
+ *
+ * @param buf const char *buf Input buffer to inspect. May be NULL only when
+ *            sz == 0; otherwise must point to at least sz readable bytes.
+ * @param sz  size_t sz Number of bytes available in BUF.
+ *
+ * @return int 1 if ELF, 0 if UTF-8 BOM, -1 otherwise.
+ *
+ * @note Only the first 3-4 bytes are examined; no NUL termination is assumed
+ *       or required.
+ * @note When sz < 3 no bytes are dereferenced and -1 is returned.
+ * @note Passing NULL with sz > 0 is undefined behavior.
+ */
 JSTR_FUNC
 int
 jstr_internal_io_isbinarysignature(const char *buf, size_t sz) JSTR_NOEXCEPT
@@ -77,8 +93,25 @@ check_utf:;
 #		define FORM_FEED_IS_BINARY 1
 #	endif
 
-/* Check if the first JSTR_IO_BINARY_CHECK_MAX bytes or fewer contain any
- * unprintable char. */
+/**
+ * @brief jstr_io_isbinary_maybe
+ *
+ * Heuristic binary detection over at most the first JSTR_IO_BINARY_CHECK_MAX
+ * (64) bytes of BUF. First checks the ELF/UTF-8 BOM signature via
+ * jstr_internal_io_isbinarysignature; if that is inconclusive, scans the
+ * (capped) prefix for control characters outside tab/newline (and DEL). An
+ * empty input is treated as text (returns 0).
+ *
+ * @param buf const char *buf Input buffer. May be NULL only when sz == 0.
+ * @param sz  size_t sz Number of bytes available in BUF.
+ *
+ * @return int 1 if the prefix looks binary, 0 if it looks like text.
+ *
+ * @note Only the first min(sz, 64) bytes are examined; the rest of the buffer
+ *       is ignored.
+ * @note sz == 0 returns 0 without dereferencing BUF.
+ * @note Passing NULL with sz > 0 is undefined behavior.
+ */
 JSTR_FUNC
 int
 jstr_io_isbinary_maybe(const char *buf, size_t sz) JSTR_NOEXCEPT
@@ -100,8 +133,24 @@ jstr_io_isbinary_maybe(const char *buf, size_t sz) JSTR_NOEXCEPT
 ;
 #	endif
 
-/* Check the whole file for a NUL byte.
- * File must be nul terminated. */
+/**
+ * @brief jstr_io_isbinary
+ *
+ * Determine whether BUF (which must be NUL-terminated and whose logical size
+ * is sz) is binary. First checks the ELF/UTF-8 BOM signature; if inconclusive,
+ * compares strlen(buf) to sz, treating an embedded NUL (strlen != sz) as
+ * binary. Pure function.
+ *
+ * @param buf const char *buf NUL-terminated input buffer. Must not be NULL.
+ * @param sz  size_t sz Declared length of BUF in bytes.
+ *
+ * @return int 1 if binary, 0 if text.
+ *
+ * @note BUF must be NUL-terminated; sz is only used for the signature check
+ *       and the NUL-detection comparison.
+ * @note If sz == 0, returns 0 (empty treated as text) provided BUF is "".
+ * @note Passing NULL is undefined behavior.
+ */
 JSTR_FUNC_PURE
 int
 jstr_io_isbinary(const char *buf, size_t sz) JSTR_NOEXCEPT
@@ -116,8 +165,23 @@ jstr_io_isbinary(const char *buf, size_t sz) JSTR_NOEXCEPT
 ;
 #	endif
 
-/* Check the first MIN(N, SZ) bytes for a NUL byte.
- * File must be nul terminated. */
+/**
+ * @brief jstr_io_isbinary_atleast
+ *
+ * Like jstr_io_isbinary but only inspects the first min(n, sz) bytes for an
+ * embedded NUL (via memchr) after the signature check. Pure function.
+ *
+ * @param buf const char *buf NUL-terminated input buffer. Must not be NULL.
+ * @param sz  size_t sz Declared length of BUF in bytes.
+ * @param n   size_t n Maximum number of bytes to scan for a NUL.
+ *
+ * @return int 1 if a NUL is found within the first min(n, sz) bytes (or the
+ *             signature says binary), 0 otherwise.
+ *
+ * @note n == 0 skips the NUL scan (returns the signature result, or 0).
+ * @note Does not require the scanned prefix to be NUL-terminated.
+ * @note Passing NULL is undefined behavior.
+ */
 JSTR_FUNC_PURE
 int
 jstr_io_isbinary_atleast(const char *buf, size_t sz, size_t n) JSTR_NOEXCEPT
@@ -132,7 +196,25 @@ jstr_io_isbinary_atleast(const char *buf, size_t sz, size_t n) JSTR_NOEXCEPT
 ;
 #	endif
 
-/* Check MIN(N, SZ) bytes for any unprintable char. */
+/**
+ * @brief jstr_isbinary
+ *
+ * Scan the first min(n, sz) bytes of BUF for unprintable control characters
+ * (bytes < ' ' except tab/newline, or DEL). No signature or NUL handling is
+ * performed. Returns 0 when sz == 0.
+ *
+ * @param buf const char *buf Input buffer. May be NULL only when sz == 0 or
+ *            n == 0.
+ * @param sz  size_t sz Number of bytes available in BUF.
+ * @param n   size_t n Number of bytes to inspect.
+ *
+ * @return int 1 if an unprintable byte is found, 0 otherwise.
+ *
+ * @note Only min(n, sz) bytes are examined.
+ * @note sz == 0 returns 0 without dereferencing BUF.
+ * @note Passing NULL with a non-zero effective scan length is undefined
+ *       behavior.
+ */
 JSTR_FUNC
 int
 jstr_isbinary(const char *buf, size_t sz, size_t n) JSTR_NOEXCEPT
@@ -150,6 +232,25 @@ jstr_isbinary(const char *buf, size_t sz, size_t n) JSTR_NOEXCEPT
 ;
 #	endif
 
+/**
+ * @brief jstr_io_writefilefd_len
+ *
+ * Write exactly sz bytes from S to the file descriptor FD, appending a trailing
+ * newline if S does not already end in '\n'. Handles partial writes (writev
+ * when available, otherwise write). Returns success without writing when
+ * sz == 0.
+ *
+ * @param s  const char *s Source buffer. Must not be NULL when sz > 0.
+ * @param sz size_t sz Number of bytes to write.
+ * @param fd int fd Writable file descriptor.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on write error.
+ *
+ * @note Does not close FD; the caller owns FD.
+ * @note If sz == 0, nothing is written and JSTR_RET_SUCC is returned.
+ * @note Embedded NUL bytes are written verbatim (binary-safe for the given
+ *       length).
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_writefilefd_len(const char *s, size_t sz, int fd) JSTR_NOEXCEPT
@@ -209,8 +310,27 @@ jstr_io_writefilefd_len(const char *s, size_t sz, int fd) JSTR_NOEXCEPT
 ;
 #	endif
 
-/* MODE is used to specify the file permission when using O_CREAT.
- * Otherwise, MODE is ignored. */
+/**
+ * @brief jstr_io_writefile_len
+ *
+ * Open FNAME with O_WRONLY | oflag (and MODE when O_CREAT is implied by oflag)
+ * and write S via jstr_io_writefilefd_len, then close the descriptor.
+ *
+ * @param s     const char *s Source buffer. Must not be NULL when sz > 0.
+ * @param sz    size_t sz Number of bytes to write.
+ * @param fname const char *fname Path of the file to open/write. Must not be
+ *              NULL.
+ * @param oflag int oflag Open flags (O_CREAT, O_APPEND, O_TRUNC, ...). O_WRONLY
+ *              is always ORed in.
+ * @param mode  int mode Permission bits used when creating the file; ignored
+ *              otherwise.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on open/write/
+ *         close failure.
+ *
+ * @note On failure the descriptor is closed before returning.
+ * @note MODE is ignored unless O_CREAT is set in oflag.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_writefile_len(const char *R s, size_t sz, const char *R fname, int oflag, int mode) JSTR_NOEXCEPT
@@ -231,6 +351,22 @@ jstr_io_writefile_len(const char *R s, size_t sz, const char *R fname, int oflag
 ;
 #	endif
 
+/**
+ * @brief jstr_io_fwritefilefp_len
+ *
+ * Write sz bytes from S to the stream FP, appending a trailing newline if S
+ * does not already end in '\n'. Returns success without writing when sz == 0.
+ *
+ * @param s  const char *s Source buffer. Must not be NULL when sz > 0.
+ * @param sz size_t sz Number of bytes to write.
+ * @param fp FILE *fp Destination stream. Must not be NULL.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR if fwrite/putc
+ *         fails.
+ *
+ * @note Does not close or flush FP.
+ * @note Embedded NUL bytes are written verbatim.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_fwritefilefp_len(const char *R s, size_t sz, FILE *fp) JSTR_NOEXCEPT
@@ -248,6 +384,24 @@ jstr_io_fwritefilefp_len(const char *R s, size_t sz, FILE *fp) JSTR_NOEXCEPT
 ;
 #	endif
 
+/**
+ * @brief jstr_io_fwritefile_len
+ *
+ * Open FNAME with fopen(MODES) and write S via jstr_io_fwritefilefp_len,
+ * then fclose. Returns success/error accordingly.
+ *
+ * @param s     const char *s Source buffer. Must not be NULL when sz > 0.
+ * @param sz    size_t sz Number of bytes to write.
+ * @param fname const char *fname Path of the file to open/write. Must not be
+ *              NULL.
+ * @param modes const char *modes fopen mode string (e.g. "w", "a"). Must not
+ *              be NULL.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on open/write/
+ *         close failure.
+ *
+ * @note On failure the stream is closed before returning.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_fwritefile_len(const char *R s, size_t sz, const char *R fname, const char *R modes) JSTR_NOEXCEPT
@@ -268,6 +422,29 @@ jstr_io_fwritefile_len(const char *R s, size_t sz, const char *R fname, const ch
 ;
 #	endif
 
+/**
+ * @brief jstr_io_readfilefd_len
+ *
+ * Read exactly file_size bytes from FD into *S, growing the buffer as needed
+ * (reserving file_size + 1 bytes), NUL-terminate it, and set *sz =
+ * file_size. Errors on read failure or premature EOF.
+ *
+ * @param s         char **s Pointer to destination buffer pointer. Must not be
+ *                  NULL.
+ * @param sz        size_t *sz Receives the number of bytes read. Must not be
+ *                  NULL.
+ * @param cap       size_t *cap Capacity of *S; updated on growth. Must not be
+ *                  NULL.
+ * @param fd        int fd Readable file descriptor.
+ * @param file_size size_t file_size Exact number of bytes to read.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation/
+ *         read/EOF error.
+ *
+ * @note When file_size == 0, allocates one byte, writes '\0', sets *sz = 0.
+ * @note Does not close FD.
+ * @note *S is reallocated as needed; existing contents are not preserved.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_readfilefd_len(char *R *R s, size_t *R sz, size_t *R cap, int fd, size_t file_size) JSTR_NOEXCEPT
@@ -295,6 +472,23 @@ jstr_io_readfilefd_len(char *R *R s, size_t *R sz, size_t *R cap, int fd, size_t
 ;
 #	endif
 
+/**
+ * @brief jstr_io_readfilefd
+ *
+ * fstat FD to obtain st_size, then delegate to jstr_io_readfilefd_len. Fills
+ * *st with the stat result.
+ *
+ * @param s   char **s Destination buffer pointer. Must not be NULL.
+ * @param sz  size_t *sz Receives byte count. Must not be NULL.
+ * @param cap size_t *cap Capacity; updated. Must not be NULL.
+ * @param fd  int fd Readable file descriptor.
+ * @param st  struct stat *st Receives fstat result. Must not be NULL.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on fstat/read
+ *         failure.
+ *
+ * @note Does not close FD.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_readfilefd(char *R *R s, size_t *R sz, size_t *R cap, int fd, struct stat *st) JSTR_NOEXCEPT
@@ -308,6 +502,23 @@ jstr_io_readfilefd(char *R *R s, size_t *R sz, size_t *R cap, int fd, struct sta
 ;
 #	endif
 
+/**
+ * @brief jstr_io_freadfilefp_len
+ *
+ * Read exactly file_size bytes from stream FP into *S (reserving
+ * file_size + 1), NUL-terminate, and set *sz = file_size.
+ *
+ * @param s         char **s Destination buffer pointer. Must not be NULL.
+ * @param sz        size_t *sz Receives byte count. Must not be NULL.
+ * @param cap       size_t *cap Capacity; updated. Must not be NULL.
+ * @param fp        FILE *fp Source stream. Must not be NULL.
+ * @param file_size size_t file_size Exact number of bytes to read.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation/
+ *         short read.
+ *
+ * @note Does not close FP.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_freadfilefp_len(char *R *R s, size_t *R sz, size_t *R cap, FILE *fp, size_t file_size) JSTR_NOEXCEPT
@@ -325,6 +536,25 @@ jstr_io_freadfilefp_len(char *R *R s, size_t *R sz, size_t *R cap, FILE *fp, siz
 ;
 #	endif
 
+/**
+ * @brief jstr_io_freadfilefp
+ *
+ * Obtain the file size via fstat(fileno(fp)) (or stat(FNAME) when fileno is
+ * unavailable), then delegate to jstr_io_freadfilefp_len.
+ *
+ * @param s    char **s Destination buffer pointer. Must not be NULL.
+ * @param sz   size_t *sz Receives byte count. Must not be NULL.
+ * @param cap  size_t *cap Capacity; updated. Must not be NULL.
+ * @param fname const char *fname File path (used only when fileno unavailable).
+ *              May be NULL only if fileno is available.
+ * @param fp   FILE *fp Source stream. Must not be NULL.
+ * @param st   struct stat *st Receives stat result. Must not be NULL.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on stat/read
+ *         failure.
+ *
+ * @note Does not close FP.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_freadfilefp(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, FILE *fp, struct stat *st) JSTR_NOEXCEPT
@@ -347,6 +577,24 @@ jstr_io_freadfilefp(char *R *R s, size_t *R sz, size_t *R cap, const char *R fna
 ;
 #	endif
 
+/**
+ * @brief jstr_io_freadfile_len
+ *
+ * fopen FNAME with MODES, read file_size bytes via jstr_io_freadfilefp_len,
+ * then fclose.
+ *
+ * @param s         char **s Destination buffer pointer. Must not be NULL.
+ * @param sz        size_t *sz Receives byte count. Must not be NULL.
+ * @param cap       size_t *cap Capacity; updated. Must not be NULL.
+ * @param fname     const char *fname File path. Must not be NULL.
+ * @param modes     const char *modes fopen mode string. Must not be NULL.
+ * @param file_size size_t file_size Exact number of bytes to read.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on open/read/
+ *         close failure.
+ *
+ * @note On failure the stream is closed before returning.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_freadfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, const char *R modes, const size_t file_size) JSTR_NOEXCEPT
@@ -367,6 +615,23 @@ jstr_io_freadfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R f
 ;
 #	endif
 
+/**
+ * @brief jstr_io_freadfile
+ *
+ * fopen FNAME, stat it (via fileno or path), read st_size bytes, then fclose.
+ *
+ * @param s     char **s Destination buffer pointer. Must not be NULL.
+ * @param sz    size_t *sz Receives byte count. Must not be NULL.
+ * @param cap   size_t *cap Capacity; updated. Must not be NULL.
+ * @param fname const char *fname File path. Must not be NULL.
+ * @param modes const char *modes fopen mode string. Must not be NULL.
+ * @param st    struct stat *st Receives stat result. Must not be NULL.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on open/stat/
+ *         read/close failure.
+ *
+ * @note On failure the stream is closed before returning.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_freadfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, const char *R modes, struct stat *st) JSTR_NOEXCEPT
@@ -404,6 +669,24 @@ jstr_io_freadfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname
 ;
 #	endif
 
+/**
+ * @brief jstr_io_readfile_len
+ *
+ * Open FNAME with O_RDONLY | oflag and read exactly file_size bytes via
+ * jstr_io_readfilefd_len, then close.
+ *
+ * @param s         char **s Destination buffer pointer. Must not be NULL.
+ * @param sz        size_t *sz Receives byte count. Must not be NULL.
+ * @param cap       size_t *cap Capacity; updated. Must not be NULL.
+ * @param fname     const char *fname File path. Must not be NULL.
+ * @param oflag     int oflag Additional open flags (O_CLOEXEC, ...).
+ * @param file_size size_t file_size Exact number of bytes to read.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on open/read/
+ *         close failure.
+ *
+ * @note On failure the descriptor is closed before returning.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_readfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, int oflag, size_t file_size) JSTR_NOEXCEPT
@@ -424,9 +707,25 @@ jstr_io_readfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fn
 ;
 #	endif
 
-/* Return value:
- * JSTR_RET_ERR on error.
- * Otherwise, JSTR_RET_SUCC. */
+/**
+ * @brief jstr_io_readfile
+ *
+ * Open FNAME read-only, determine its size (via lseek SEEK_END, or fstat when
+ * pread is unavailable), read all bytes with pread (or read), NUL-terminate,
+ * and close. Returns the byte count in *sz.
+ *
+ * @param s     char **s Destination buffer pointer. Must not be NULL.
+ * @param sz    size_t *sz Receives byte count. Must not be NULL.
+ * @param cap   size_t *cap Capacity; updated. Must not be NULL.
+ * @param fname const char *fname File path. Must not be NULL.
+ * @param oflag int oflag Additional open flags.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on open/size/
+ *         read/close failure.
+ *
+ * @note An empty file succeeds with *sz == 0.
+ * @note On failure the descriptor is closed before returning.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_readfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, int oflag) JSTR_NOEXCEPT
@@ -486,12 +785,25 @@ jstr_io_readfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname,
 ;
 #	endif
 
-/* Expand ~/some_dir to /home/username/some_dir,
- * ~ being the first character.
- * Assume that S has enough space.
- * Return value:
- * ptr to '\0' in S.
- * NULL on error. */
+/**
+ * @brief jstr_io_expandtildefirst_len_unsafe_p
+ *
+ * If S begins with '~', expand it to the value of $HOME in place, assuming
+ * the buffer already has enough space for the expansion. Returns a pointer to
+ * the terminating NUL. If S does not start with '~', returns S + sz without
+ * modifying the buffer. Returns NULL if $HOME is unset.
+ *
+ * @param s  char *s Writable buffer containing a '~'-prefixed path. Must not
+ *           be NULL.
+ * @param sz size_t sz Length of the string in S (excluding NUL).
+ *
+ * @return char * Pointer to the terminating NUL on success, NULL on error
+ *                (missing HOME).
+ *
+ * @note The caller must ensure S has room for strlen(HOME) + rest + 1 bytes.
+ * @note No allocation is performed; overflow is undefined behavior.
+ * @note Passing NULL is undefined behavior.
+ */
 JSTR_FUNC
 char *
 jstr_io_expandtildefirst_len_unsafe_p(char *s, size_t sz) JSTR_NOEXCEPT
@@ -512,11 +824,23 @@ jstr_io_expandtildefirst_len_unsafe_p(char *s, size_t sz) JSTR_NOEXCEPT
 ;
 #	endif
 
-/* Expand ~/some_dir to /home/username/some_dir,
- * ~ being the first character.
- * Return value:
- * ptr to '\0' in S.
- * NULL on error. */
+/**
+ * @brief jstr_io_expandtildefirst
+ *
+ * Safe variant of jstr_io_expandtildefirst_len_unsafe_p: if *S starts with
+ * '~', reserve capacity, move the remainder, and prepend $HOME, updating *sz.
+ * No-op (success) when the first character is not '~'.
+ *
+ * @param s   char **s Destination buffer pointer. Must not be NULL.
+ * @param sz  size_t *sz Current length; updated on expansion. Must not be
+ *            NULL.
+ * @param cap size_t *cap Capacity; updated on growth. Must not be NULL.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success or no-op, JSTR_RET_ERR if
+ *         $HOME is unset or allocation fails.
+ *
+ * @note Does nothing when **s does not start with '~'.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_expandtildefirst(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
@@ -541,6 +865,23 @@ jstr_io_expandtildefirst(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEP
 
 #	if JSTR_HAVE_POPEN
 
+/**
+ * @brief jstr_io_readsystem
+ *
+ * Run CMD via popen, read its entire stdout into *S, NUL-terminate, and set
+ * *sz. Grows the buffer as needed.
+ *
+ * @param s   char **s Destination buffer pointer. Must not be NULL.
+ * @param sz  size_t *sz Receives byte count. Must not be NULL.
+ * @param cap size_t *cap Capacity; updated. Must not be NULL.
+ * @param cmd const char *cmd Shell command to execute. Must not be NULL.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on popen/read/
+ *         pclose failure or if the command produces no output.
+ *
+ * @note Available only when JSTR_HAVE_POPEN is defined.
+ * @note On failure resources are released before returning.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_readsystem(char *R *R s, size_t *R sz, size_t *R cap, const char *R cmd) JSTR_NOEXCEPT
@@ -601,6 +942,21 @@ jstr_io_readsystem(char *R *R s, size_t *R sz, size_t *R cap, const char *R cmd)
 
 #	endif
 
+/**
+ * @brief jstr_io_readstdin
+ *
+ * Read all of standard input into *S, NUL-terminate, and set *sz. Grows the
+ * buffer as needed.
+ *
+ * @param s   char **s Destination buffer pointer. Must not be NULL.
+ * @param sz  size_t *sz Receives byte count. Must not be NULL.
+ * @param cap size_t *cap Capacity; updated. Must not be NULL.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on read/
+ *         allocation failure.
+ *
+ * @note Reads until EOF on stdin.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_readstdin(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
@@ -637,6 +993,23 @@ jstr_io_readstdin(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 ;
 #	endif
 
+/**
+ * @brief jstr_io_appendpath_len_p
+ *
+ * Append '/' followed by fname (fname_len bytes) to PATH at offset sz,
+ * NUL-terminate, and return a pointer to the terminating NUL. Assumes PATH has
+ * enough space. PATH is not reallocated.
+ *
+ * @param path      char *path Writable destination buffer. Must not be NULL.
+ * @param sz        size_t sz Offset in PATH where the separator is written.
+ * @param fname     const char *fname Component to append. Must not be NULL.
+ * @param fname_len size_t fname_len Length of FNAME in bytes.
+ *
+ * @return char * (non-NULL) Pointer to the terminating NUL of the result.
+ *
+ * @note The caller must ensure PATH has at least sz + 1 + fname_len + 1 bytes.
+ * @note fname need not be NUL-terminated.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_io_appendpath_len_p(char *R path, size_t sz, const char *R fname, size_t fname_len) JSTR_NOEXCEPT
@@ -650,6 +1023,20 @@ jstr_io_appendpath_len_p(char *R path, size_t sz, const char *R fname, size_t fn
 ;
 #	endif
 
+/**
+ * @brief jstr_io_appendpath_p
+ *
+ * Like jstr_io_appendpath_len_p but derives fname length with strlen.
+ *
+ * @param path  char *path Writable destination buffer. Must not be NULL.
+ * @param sz    size_t sz Offset in PATH where the separator is written.
+ * @param fname const char *fname NUL-terminated component to append. Must not
+ *              be NULL.
+ *
+ * @return char * (non-NULL) Pointer to the terminating NUL of the result.
+ *
+ * @note The caller must ensure PATH has enough space.
+ */
 JSTR_FUNC_RET_NONNULL
 char *
 jstr_io_appendpath_p(char *R path, size_t sz, const char *R fname) JSTR_NOEXCEPT
@@ -662,6 +1049,23 @@ jstr_io_appendpath_p(char *R path, size_t sz, const char *R fname) JSTR_NOEXCEPT
 ;
 #	endif
 
+/**
+ * @brief jstr_io_appendpath_len
+ *
+ * Reserve capacity and append '/' + FNAME (fname_len bytes) to *S, updating
+ * *sz. NUL-terminates the result.
+ *
+ * @param s         char **s Destination buffer pointer. Must not be NULL.
+ * @param sz        size_t *sz Current length; updated. Must not be NULL.
+ * @param cap       size_t *cap Capacity; updated on growth. Must not be NULL.
+ * @param fname     const char *fname Component to append. Must not be NULL.
+ * @param fname_len size_t fname_len Length of FNAME in bytes.
+ *
+ * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation
+ *         failure.
+ *
+ * @note fname need not be NUL-terminated.
+ */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, size_t fname_len) JSTR_NOEXCEPT
@@ -713,37 +1117,27 @@ typedef enum jstr_io_ftw_actionretval_ty {
 #	define JSTR_IO_FTW_RET_STOP JSTR_IO_FTW_RET_STOP
 	JSTR_IO_FTW_RET_CONTINUE,
 #	define JSTR_IO_FTW_RET_CONTINUE JSTR_IO_FTW_RET_CONTINUE
-	/* Skip sibling entries. */
 	JSTR_IO_FTW_RET_SKIP_SIBLINGS,
 #	define JSTR_IO_FTW_RET_SKIP_SIBLINGS JSTR_IO_FTW_RET_SKIP_SIBLINGS
-	/* Skip subdirectories. */
 	JSTR_IO_FTW_RET_SKIP_SUBTREE
 #	define JSTR_IO_FTW_RET_SKIP_SUBTREE JSTR_IO_FTW_RET_SKIP_SUBTREE
 } jstr_io_ftw_actionretval_ty;
 
 typedef enum jstr_io_ftw_flag_ty {
-	/* Match glob with FULPATH instead of d_name. */
 	JSTR_IO_FTW_MATCHPATH = (1),
 #	define JSTR_IO_FTW_MATCHPATH JSTR_IO_FTW_MATCHPATH
-	/* Call FUNC on regular files. */
 	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCHPATH << 1),
 #	define JSTR_IO_FTW_REG JSTR_IO_FTW_REG
-	/* Call FUNC on directories. */
 	JSTR_IO_FTW_DIR = (JSTR_IO_FTW_REG << 1),
 #	define JSTR_IO_FTW_DIR JSTR_IO_FTW_DIR
-	/* Do not traverse subdirectories. */
 	JSTR_IO_FTW_NOSUBDIR = (JSTR_IO_FTW_DIR << 1),
 #	define JSTR_IO_FTW_NOSUBDIR JSTR_IO_FTW_NOSUBDIR
-	/* Do not call stat. Only st.st_mode is defined. */
 	JSTR_IO_FTW_NOSTAT = (JSTR_IO_FTW_NOSUBDIR << 1),
 #	define JSTR_IO_FTW_NOSTAT JSTR_IO_FTW_NOSTAT
-	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STATREG = (JSTR_IO_FTW_NOSTAT << 1),
 #	define JSTR_IO_FTW_STATREG JSTR_IO_FTW_STATREG
-	/* Ignore hidden entries. */
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STATREG << 1),
 #	define JSTR_IO_FTW_NOHIDDEN JSTR_IO_FTW_NOHIDDEN
-	/* Handle FUNC return value according to jstr_io_ftw_actionretval_ty. */
 	JSTR_IO_FTW_ACTIONRETVAL = (JSTR_IO_FTW_NOHIDDEN << 1)
 #	define JSTR_IO_FTW_ACTIONRETVAL JSTR_IO_FTW_ACTIONRETVAL
 } jstr_io_ftw_flag_ty;
@@ -757,7 +1151,6 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define NONFATAL_ERR() \
 		(jstr_likely(errno == EACCES) || jstr_likely(errno == ENOENT))
 
-/* If have d_namlen, save a strlen. */
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
 #		define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                           \
 			do {                                                                              \
@@ -765,7 +1158,6 @@ typedef enum jstr_io_ftw_flag_ty {
 				jstr_strcpy_len(dirpath + dirpath_len + 1, (ep)->d_name, (ep)->d_namlen); \
 				newpath_len = dirpath_len + 1 + (ep)->d_namlen;                           \
 			} while (0)
-/* Otherwise, need to strlen. */
 #	else
 #		define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                                         \
 			do {                                                                                            \
@@ -774,7 +1166,6 @@ typedef enum jstr_io_ftw_flag_ty {
 			} while (0)
 #	endif
 
-/* If have *_at functions, avoid constructing the path. */
 #	if USE_ATFILE
 #		define OPENDIR(fd, fname) fdopendir(fd)
 #		define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err)               \
@@ -810,7 +1201,6 @@ typedef enum jstr_io_ftw_flag_ty {
 					fd = -1;                        \
 				}                                       \
 			} while (0)
-/* Otherwise, construct path. */
 #	else
 #		define OPENDIR(fd, fname) opendir(fname)
 #		define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err) \
@@ -836,7 +1226,6 @@ typedef enum jstr_io_ftw_flag_ty {
 			} while (0)
 #	endif
 
-/* If have d_type, avoid calling stat to check directory type. */
 #	if JSTR_HAVE_DIRENT_D_TYPE
 #		define IS_DIR(ep, st)    ((ep)->d_type == DT_DIR)
 #		define IS_REG(ep, st)    ((ep)->d_type == DT_REG)
@@ -851,7 +1240,6 @@ typedef enum jstr_io_ftw_flag_ty {
 				else                               \
 					STAT(st, fd, ep, dirpath); \
 			} while (0)
-/* Otherwise, call stat. */
 #	else
 #		define IS_DIR(ep, st) S_ISDIR((st)->st_mode)
 #		define IS_REG(ep, st) S_ISREG((st)->st_mode)
@@ -916,8 +1304,24 @@ struct jstr_internal_io_ftw_data {
 
 #	define FLAG(x) ((a)->ftw_flags & (x))
 
-/* We try to avoid stat when d_type is available, and avoid constructing the
- * full path when we can use *_at functions. */
+/**
+ * @brief jstr_internal_io_ftw_len
+ *
+ * Internal recursive implementation of the file tree walk. Iterates directory
+ * entries, applies flags/filter, invokes the callback, and recurses into
+ * subdirectories. Not part of the public API.
+ *
+ * @param a            struct jstr_internal_io_ftw_data *a Walk state. Must not
+ *                     be NULL.
+ * @param dirpath_len  jstr_io_path_size_ty dirpath_len Length of the current
+ *                     directory path.
+ * @param dirfd        int dirfd Directory file descriptor (or -1).
+ *
+ * @return int JSTR_RET_SUCC on success, JSTR_RET_ERR on error, or a callback
+ *             result depending on flags.
+ *
+ * @note Internal helper; callers should use jstr_io_ftw_len.
+ */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 int
@@ -953,8 +1357,6 @@ jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_
 			if (a->ftw.ep->d_name[0] == '.' && (a->ftw.ep->d_name[1] == '\0' || (a->ftw.ep->d_name[1] == '.' && a->ftw.ep->d_name[2] == '\0')))
 				goto next_entry;
 		}
-		/* Stop processing if DIRPATH is longer than PATH_MAX.
-		   If we don't have d_namlen, try to estimate the length. */
 #		if JSTR_HAVE_DIRENT_D_NAMLEN
 		if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
 			errno = ENAMETOOLONG;
@@ -968,7 +1370,6 @@ jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		}
 #		endif
-		/* We must stat to get the type if we don't have d_type. */
 #		if !JSTR_HAVE_DIRENT_D_TYPE
 		/* We must construct the full path for stat if we
 		 * don't have *_at functions. */
@@ -1135,16 +1536,34 @@ next_entry:;
 
 #	define FLAG(x) (jstr_io_ftw_flags & (x))
 
-/* Call FUNC on files found recursively where FUNC_MATCH returns 0.
- * If FUNC_MATCH is NULL, it behaves as if it matches.
- * If FUNC returns JSTR_RET_ERR, stop processing.
- * Return value:
- * JSTR_RET_ERR on error.
- * JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered
- * on some entries. JSTR_RET_STOP if FUNC returns RET_STOP and
- * JSTR_IO_FTW_ACTIONRETVAL is used. or the return value of FUNC if DIRPATH is
- * not a directory and FUNC is executed. If a non-fatal error is encountered,
- * continue processing other entries. */
+/**
+ * @brief jstr_io_ftw_len
+ *
+ * Recursively walk the directory tree rooted at DIRPATH (length
+ * dirpath_len), invoking FUNC for entries selected by the flags and optional
+ * FUNC_MATCH filter. Supports regular-file/directory selection, stat control,
+ * hidden-entry skipping, depth control, and action return values.
+ *
+ * @param dirpath        const char *dirpath Root path (need not be NUL-
+ *                       terminated; length given). Must not be NULL and length
+ *                       must be > 0 and < JSTR_IO_PATH_MAX.
+ * @param dirpath_len    jstr_io_path_size_ty dirpath_len Length of DIRPATH.
+ * @param func           jstr_io_ftw_func_ty func Callback invoked for matching
+ *                       entries. Must not be NULL.
+ * @param func_args      const void *func_args User data passed to FUNC.
+ * @param jstr_io_ftw_flags int Flags controlling traversal (JSTR_IO_FTW_*).
+ * @param func_match     jstr_io_ftw_func_match_ty func_match Optional name/path
+ *                       filter returning non-zero to skip. May be NULL.
+ * @param func_match_args const void *func_match_args User data for FUNC_MATCH.
+ *
+ * @return int JSTR_RET_SUCC on success, JSTR_RET_ERR on error, or the callback
+ *             result / JSTR_RET_STOP as documented.
+ *
+ * @note Non-fatal errors (EACCES/ENOENT) on individual entries do not abort
+ *       the whole walk.
+ * @note DIRPATH trailing slashes are trimmed (except root "/").
+ * @note Path length must be < JSTR_IO_PATH_MAX.
+ */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((4))

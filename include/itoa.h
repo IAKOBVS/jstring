@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
 #ifndef JSTR_ITOA_H
 #	define JSTR_ITOA_H 1
@@ -24,7 +22,13 @@ JSTR_INTERNAL_END_DECLS
 
 JSTR_INTERNAL_BEGIN_DECLS
 
-/* Render digit D (0..base-1, base <= 36) as a lowercase alnum char. */
+/**
+ * @brief Render a single digit @p d as a lowercase alphanumeric character.
+ *
+ * @param d Digit value in the range [0, base-1] with base <= 36.
+ * @return The character '0'-'9' for values 0-9, or 'a'-'z' for values 10-35.
+ * @note This is an internal helper; @p d is assumed to be < 36.
+ */
 JSTR_FUNC
 static char
 jstr_internal_itoa_digit(unsigned long long d) JSTR_NOEXCEPT
@@ -32,10 +36,20 @@ jstr_internal_itoa_digit(unsigned long long d) JSTR_NOEXCEPT
 	return (char)((d < 10) ? '0' + (int)d : 'a' + (int)d - 10);
 }
 
-/* Maximum digit count for T in BASE (worst case value), plus thousand
- * separator slots when IS_THOUSEP. NUMBER is unused; kept so call sites
- * can pass the value through unchanged.
- * digits_max = ceil(bits / log2(base)) is upper-bounded by bits/floor_log2(base) + 1. */
+/**
+ * @brief Upper bound on the number of digits needed to render a value of type
+ *        @c T in @p base, including thousand-separator slots when @p is_thousep
+ *        is non-zero.
+ *
+ * @param T         Integer type.
+ * @param name      Suffix used to name the generated helper.
+ * @param is_thousep Non-zero to add one separator slot per three digits.
+ *
+ * @note @p number is unused; it is accepted so call sites can pass the value
+ *       through unchanged. @p base must be in [2, 36]. The result is a
+ *       conservative upper bound computed from the bit width of @c T:
+ *       @c digits_max = bits / floor_log2(base) + 1.
+ */
 #	define JSTR_INTERNAL_DEFINE_ITOA_COUNTUDIGITS(T, name, is_thousep)                                       \
 		JSTR_FUNC                                                                                         \
 		static size_t jstr_internal_itoa_countudigits_##name(T number, unsigned int base)                 \
@@ -70,8 +84,20 @@ JSTR_INTERNAL_DEFINE_ITOA_COUNTUDIGITS(unsigned long long, ulltoa_thousep, 1)
 
 #	undef JSTR_INTERNAL_DEFINE_ITOA_COUNTUDIGITS
 
-/* Return value:
- * ptr to '\0' after the last digit in the DEST string. */
+/**
+ * @brief Render an unsigned long long as a NUL-terminated string.
+ *
+ * Writes the representation of @p number in @p base into @p buf and NUL-
+ * terminates it. No bounds checking is performed; @p buf must have room for
+ * at least the number of digits plus one (see jstr_internal_itoa_countudigits_ulltoa).
+ *
+ * @param number Value to render.
+ * @param buf    Destination buffer; must be non-NULL and writable.
+ * @param base   Numeric base in [2, 36].
+ * @return Pointer to the terminating NUL byte at the end of the written string.
+ *
+ * @note Digits above 9 are lowercase ('a'-'z'). @p buf must not be NULL.
+ */
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 char *
@@ -112,8 +138,19 @@ jstr_ulltoa_p(unsigned long long number, char *R buf, unsigned int base) JSTR_NO
 ;
 #	endif
 
-/* Return value:
- * ptr to '\0' after the last digit in the DEST string. */
+/**
+ * @brief Render a signed long long as a NUL-terminated string.
+ *
+ * Negative values are prefixed with '-'. Otherwise behaves like
+ * jstr_ulltoa_p().
+ *
+ * @param number Value to render.
+ * @param buf    Destination buffer; must be non-NULL and writable.
+ * @param base   Numeric base in [2, 36].
+ * @return Pointer to the terminating NUL byte at the end of the written string.
+ *
+ * @note @p buf must not be NULL.
+ */
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 char *
@@ -131,8 +168,12 @@ jstr_lltoa_p(long long number, char *R buf, unsigned int base) JSTR_NOEXCEPT
 #	endif
 
 #	define JSTR_INTERNAL_ULLTOA(type, name, u)                                         \
-		/* Return value:                                                          \
-		   ptr to '\0' after the last digit in the DEST string. */ \
+		/** @brief Render a value of type @c type as a NUL-terminated string.      \
+		 *  @param number Value to render.                                         \
+		 *  @param buf    Destination buffer; must be non-NULL.                   \
+		 *  @param base   Numeric base in [2, 36].                                \
+		 *  @return Pointer to the terminating NUL byte.                          \
+		 *  @note Delegates to jstr_ulltoa_p/jstr_lltoa_p. @p buf must not be NULL. */ \
 		JSTR_FUNC                                                                   \
 		JSTR_ATTR_RETURNS_NONNULL                                                   \
 		static char *jstr_##name##_p(type number, char *R buf, unsigned int base)   \
@@ -148,9 +189,20 @@ JSTR_INTERNAL_ULLTOA(int, itoa, )
 
 #	undef JSTR_INTERNAL_ULLTOA
 
-/* Convert number to string with thousand separator.
- * Return value:
- * ptr to '\0' after the last digit in the DEST string. */
+/**
+ * @brief Render an unsigned long long with thousand separators.
+ *
+ * Like jstr_ulltoa_p() but inserts @p separator between groups of three
+ * digits (base 10). Values <= 999 take the fast path with no separators.
+ *
+ * @param number    Value to render.
+ * @param buf       Destination buffer; must be non-NULL and writable.
+ * @param base      Numeric base in [2, 36].
+ * @param separator Character inserted as the group separator.
+ * @return Pointer to the terminating NUL byte at the end of the written string.
+ *
+ * @note @p buf must not be NULL.
+ */
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 char *
@@ -200,9 +252,20 @@ jstr_ulltoa_thousep_p(unsigned long long number, char *R buf, unsigned int base,
 ;
 #	endif
 
-/* Convert number to string with thousand separator.
- * Return value:
- * ptr to '\0' after the last digit in the DEST string. */
+/**
+ * @brief Render a signed long long with thousand separators.
+ *
+ * Negative values are prefixed with '-'. Otherwise behaves like
+ * jstr_ulltoa_thousep_p().
+ *
+ * @param number    Value to render.
+ * @param buf       Destination buffer; must be non-NULL and writable.
+ * @param base      Numeric base in [2, 36].
+ * @param separator Character inserted as the group separator.
+ * @return Pointer to the terminating NUL byte at the end of the written string.
+ *
+ * @note @p buf must not be NULL.
+ */
 JSTR_FUNC
 char *
 jstr_lltoa_thousep_p(long long number, char *R buf, unsigned int base, char separator) JSTR_NOEXCEPT
@@ -219,9 +282,13 @@ jstr_lltoa_thousep_p(long long number, char *R buf, unsigned int base, char sepa
 #	endif
 
 #	define JSTR_INTERNAL_ULLTOA_SEP(type, name, u)                                                             \
-		/* Convert number to string with thousand separator.                                              \
-		   Return value:                                                                                  \
-		   ptr to '\0' after the last digit in the DEST string. */ \
+		/** @brief Render a value of type @c type with thousand separators.                           \
+		 *  @param number    Value to render.                                                         \
+		 *  @param buf       Destination buffer; must be non-NULL.                                    \
+		 *  @param base      Numeric base in [2, 36].                                                \
+		 *  @param separator Character inserted as the group separator.                              \
+		 *  @return Pointer to the terminating NUL byte.                                             \
+		 *  @note Delegates to jstr_ulltoa_thousep_p/jstr_lltoa_thousep_p. @p buf must not be NULL. */ \
 		JSTR_FUNC                                                                                           \
 		JSTR_ATTR_RETURNS_NONNULL                                                                           \
 		static char *jstr_##name##_thousep_p(type number, char *R buf, unsigned int base, char separator)   \
@@ -244,6 +311,7 @@ JSTR_INTERNAL_ULLTOA_SEP(int, itoa, )
 					JSTR_RETURN_ERR(JSTR_RET_ERR);              \
 			} while (0)
 #		define JSTR_INTERNAL_DEFINE_UTOA_SAFE(T, name)                                                                         \
+			/** @brief Append the base-@p base representation of @p number to *@p s, updating *@p sz. @param s Non-NULL pointer to a (possibly NULL) buffer pointer. @param sz Non-NULL pointer to the current size. @param cap Non-NULL pointer to the capacity. @param number Value to render. @param base Numeric base in [2,36]; invalid bases yield JSTR_RET_ERR. @return JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation or base error. @note All pointer parameters must be non-NULL. */ \
 			JSTR_FUNC                                                                                                       \
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base) JSTR_NOEXCEPT   \
 			{                                                                                                               \
@@ -255,6 +323,7 @@ JSTR_INTERNAL_ULLTOA_SEP(int, itoa, )
 			}
 #	else
 #		define JSTR_INTERNAL_DEFINE_UTOA_SAFE(T, name) \
+			/** @brief Append the base-@p base representation of @p number to *@p s, updating *@p sz. @param s Non-NULL pointer to a (possibly NULL) buffer pointer. @param sz Non-NULL pointer to the current size. @param cap Non-NULL pointer to the capacity. @param number Value to render. @param base Numeric base in [2,36]; invalid bases yield JSTR_RET_ERR. @return JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation or base error. @note All pointer parameters must be non-NULL. */ \
 			JSTR_FUNC                               \
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base) JSTR_NOEXCEPT;
 #	endif
@@ -267,6 +336,7 @@ JSTR_INTERNAL_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 
 #	ifdef JSTR_IMPLEMENTATION
 #		define JSTR_INTERNAL_DEFINE_ITOA_SAFE(T, name, func_name)                                                                                                                      \
+			/** @brief Append the base-@p base representation of signed @p number to *@p s, updating *@p sz (negative values prefixed with '-'). @param s Non-NULL pointer to a (possibly NULL) buffer pointer. @param sz Non-NULL pointer to the current size. @param cap Non-NULL pointer to the capacity. @param number Value to render. @param base Numeric base in [2,36]; invalid bases yield JSTR_RET_ERR. @return JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation or base error. @note All pointer parameters must be non-NULL. */ \
 			JSTR_FUNC                                                                                                                                                               \
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base) JSTR_NOEXCEPT                                                    \
 			{                                                                                                                                                                       \
@@ -278,6 +348,7 @@ JSTR_INTERNAL_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 			}
 #	else
 #		define JSTR_INTERNAL_DEFINE_ITOA_SAFE(T, name, func_name) \
+			/** @brief Append the base-@p base representation of signed @p number to *@p s, updating *@p sz (negative values prefixed with '-'). @param s Non-NULL pointer to a (possibly NULL) buffer pointer. @param sz Non-NULL pointer to the current size. @param cap Non-NULL pointer to the capacity. @param number Value to render. @param base Numeric base in [2,36]; invalid bases yield JSTR_RET_ERR. @return JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation or base error. @note All pointer parameters must be non-NULL. */ \
 			JSTR_FUNC                                          \
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base) JSTR_NOEXCEPT;
 #	endif
@@ -290,6 +361,7 @@ JSTR_INTERNAL_DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 
 #	ifdef JSTR_IMPLEMENTATION
 #		define JSTR_INTERNAL_DEFINE_UTOA_THOUSEP_SAFE(T, name)                                                                                      \
+			/** @brief Append the base-@p base representation of @p number with thousand separators to *@p s. @param s Non-NULL pointer to a (possibly NULL) buffer pointer. @param sz Non-NULL pointer to current size. @param cap Non-NULL pointer to capacity. @param number Value to render. @param base Numeric base in [2,36]. @param separator Group separator char. @return JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation or base error. @note All pointer parameters must be non-NULL. */ \
 			JSTR_FUNC                                                                                                                            \
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base, char separator) JSTR_NOEXCEPT \
 			{                                                                                                                                    \
@@ -301,6 +373,7 @@ JSTR_INTERNAL_DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 			}
 #	else
 #		define JSTR_INTERNAL_DEFINE_UTOA_THOUSEP_SAFE(T, name) \
+			/** @brief Append the base-@p base representation of @p number with thousand separators to *@p s. @param s Non-NULL pointer to a (possibly NULL) buffer pointer. @param sz Non-NULL pointer to current size. @param cap Non-NULL pointer to capacity. @param number Value to render. @param base Numeric base in [2,36]. @param separator Group separator char. @return JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation or base error. @note All pointer parameters must be non-NULL. */ \
 			JSTR_FUNC                                       \
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base, char separator) JSTR_NOEXCEPT;
 #	endif
@@ -313,6 +386,7 @@ JSTR_INTERNAL_DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 
 #	ifdef JSTR_IMPLEMENTATION
 #		define JSTR_INTERNAL_DEFINE_ITOA_THOUSEP_SAFE(T, name, func_name)                                                                                                              \
+			/** @brief Append the base-@p base representation of signed @p number with thousand separators to *@p s. @param s Non-NULL pointer to a (possibly NULL) buffer pointer. @param sz Non-NULL pointer to the current size. @param cap Non-NULL pointer to the capacity. @param number Value to render. @param base Numeric base in [2,36]. @param separator Group separator char. @return JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation or base error. @note All pointer parameters must be non-NULL. */ \
 			JSTR_FUNC                                                                                                                                                               \
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base, char separator) JSTR_NOEXCEPT                                    \
 			{                                                                                                                                                                       \
@@ -324,6 +398,7 @@ JSTR_INTERNAL_DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 			}
 #	else
 #		define JSTR_INTERNAL_DEFINE_ITOA_THOUSEP_SAFE(T, name, func_name) \
+			/** @brief Append the base-@p base representation of signed @p number with thousand separators to *@p s. @param s Non-NULL pointer to a (possibly NULL) buffer pointer. @param sz Non-NULL pointer to the current size. @param cap Non-NULL pointer to the capacity. @param number Value to render. @param base Numeric base in [2,36]. @param separator Group separator char. @return JSTR_RET_SUCC on success, JSTR_RET_ERR on allocation or base error. @note All pointer parameters must be non-NULL. */ \
 			JSTR_FUNC                                                  \
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base, char separator) JSTR_NOEXCEPT;
 #	endif
@@ -337,6 +412,7 @@ JSTR_INTERNAL_DEFINE_ITOA_THOUSEP_SAFE(long long, lltoa_thousep, ulltoa_thousep)
 
 #	ifdef JSTR_IMPLEMENTATION
 #		define JSTR_INTERNAL_DEFINE_ATOU(T, func_name)                                   \
+			/** @brief Parse an unsigned integer of @p sz bytes from @p s (base 10). @param s Non-NULL pointer to the input bytes. @param sz Number of bytes to parse. @return The parsed unsigned value (0 if @p sz is 0). @note @p s must not be NULL; embedded NULs are not handled specially. */ \
 			JSTR_FUNC                                                                 \
 			T jstr_##func_name##_len(const char *R s, size_t sz) JSTR_NOEXCEPT \
 			{                                                                         \
@@ -349,6 +425,7 @@ JSTR_INTERNAL_DEFINE_ITOA_THOUSEP_SAFE(long long, lltoa_thousep, ulltoa_thousep)
 			}
 #	else
 #		define JSTR_INTERNAL_DEFINE_ATOU(T, func_name) \
+			/** @brief Parse an unsigned integer of @p sz bytes from @p s (base 10). @param s Non-NULL pointer to the input bytes. @param sz Number of bytes to parse. @return The parsed unsigned value (0 if @p sz is 0). @note @p s must not be NULL; embedded NULs are not handled specially. */ \
 			JSTR_FUNC                               \
 			T jstr_##func_name##_len(const char *R s, size_t sz) JSTR_NOEXCEPT;
 #	endif
@@ -361,26 +438,29 @@ JSTR_INTERNAL_DEFINE_ATOU(unsigned long long, atoull)
 
 #	ifdef JSTR_IMPLEMENTATION
 #		define JSTR_INTERNAL_DEFINE_ATOI(T, func_name)                                   \
+			/** @brief Parse a signed integer of @p sz bytes from @p s (base 10, optional leading '-'). @param s Non-NULL pointer to the input bytes. @param sz Number of bytes to parse. @return The parsed signed value (0 if @p sz is 0, or if @p sz is 1 and the sole byte is '-'). @note @p s must not be NULL. */ \
 			JSTR_FUNC                                                                 \
 			T jstr_##func_name##_len(const char *R s, size_t sz) JSTR_NOEXCEPT \
 			{                                                                         \
 				if (jstr_unlikely(sz == 0))                                       \
 					return 0;                                                 \
 				T n;                                                              \
+				int neg = 0;                                                      \
 				if (*s == '-') {                                                  \
 					if (jstr_unlikely(sz == 1))                               \
 						return 0;                                         \
+					neg = 1;                                                  \
 					--sz;                                                     \
-					n = -(*s++ - '0');                                        \
-				} else {                                                          \
-					n = (T)(*s++ - '0');                                      \
+					++s;                                                      \
 				}                                                                 \
+				n = (T)(*s++ - '0');                                            \
 				while (--sz)                                                      \
 					n = (n * 10) + (T)(*s++ - '0');                           \
-				return n;                                                         \
+				return neg ? (T)(-n) : n;                                         \
 			}
 #	else
 #		define JSTR_INTERNAL_DEFINE_ATOI(T, func_name) \
+			/** @brief Parse a signed integer of @p sz bytes from @p s (base 10, optional leading '-'). @param s Non-NULL pointer to the input bytes. @param sz Number of bytes to parse. @return The parsed signed value (0 if @p sz is 0, or if @p sz is 1 and the sole byte is '-'). @note @p s must not be NULL. */ \
 			JSTR_FUNC                               \
 			T jstr_##func_name##_len(const char *R s, size_t sz) JSTR_NOEXCEPT;
 #	endif

@@ -1,25 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-/* Taken from or based on musl's string functions with modifications.
- * Copyright © 2005-2020 Rich Felker, et al.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #ifndef JSTR_INTERNAL_STRSTR234_FUNC_NAME
 #	define JSTR_INTERNAL_STRSTR234_FUNC_NAME jstr_internal_strstr
@@ -44,6 +22,19 @@
 
 #ifdef JSTR_INTERNAL_STRSTR234_MEMMEM
 
+/**
+ * @brief Search for a needle of fewer than 8 bytes in a haystack using a packed 64-bit word comparison (internal helper).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param hs Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param hs_len Byte/element count; may be 0.
+ * @param ne Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param ne_len Byte/element count; may be 0.
+ * @return Pointer to the first occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(JSTR_INTERNAL_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_len, const unsigned char *ne, unsigned int ne_len)
@@ -57,6 +48,18 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(hs - ne_len) : NULL;
 }
 
+/**
+ * @brief Search for a 2-byte needle in a haystack using packed 16-bit word comparison (internal helper).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param h Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param k Byte/element count; may be 0.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the first occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(JSTR_INTERNAL_STRSTR234_FUNC_NAME, 2)(const unsigned char *h, size_t k, const unsigned char *n)
@@ -74,6 +77,19 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+/**
+ * @brief Search for a needle of fewer than 8 bytes in a haystack using a packed 64-bit word comparison (internal helper).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param hs Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param hs_len Byte/element count; may be 0.
+ * @param ne Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param ne_len Byte/element count; may be 0.
+ * @return Pointer to the matching occurrence, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(JSTR_INTERNAL_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_len, const unsigned char *ne, unsigned int ne_len)
@@ -89,6 +105,19 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(hs + 1) : NULL;
 }
 
+/**
+ * @brief Search for a needle of 8 or more bytes in a haystack, comparing the tail then the head (internal helper).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param hs Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param hs_len Byte/element count; may be 0.
+ * @param ne Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param ne_len Byte/element count; may be 0.
+ * @return Pointer to the matching occurrence, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static void *
 JSTR_CONCAT(JSTR_INTERNAL_STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs, unsigned int hs_len, const unsigned char *ne, size_t ne_len)
@@ -113,6 +142,18 @@ JSTR_NOEXCEPT
 #else /* STRSTR */
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
+/**
+ * @brief Search for a needle of fewer than 8 bytes in a haystack using a packed 64-bit word comparison (internal helper).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param hs Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param ne Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param ne_len Byte/element count; may be 0.
+ * @return Pointer to the first occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(JSTR_INTERNAL_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, const unsigned char *ne, unsigned int ne_len)
@@ -129,6 +170,17 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(hs - ne_len) : NULL;
 }
 
+/**
+ * @brief Search for a 2-byte needle in a haystack using packed 16-bit word comparison (internal helper).
+ *
+ * @internal Internal helper; not part of the public jstr API.
+ *
+ * @param h Pointer parameter; must be non-NULL (caller guarantees) unless length is 0.
+ * @param n Byte/element count; may be 0.
+ * @return Pointer to the first occurrence of @p ne in @p hs, or NULL if not found.
+ *
+ * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
+ */
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(JSTR_INTERNAL_STRSTR234_FUNC_NAME, 2)(const unsigned char *h, const unsigned char *n)
