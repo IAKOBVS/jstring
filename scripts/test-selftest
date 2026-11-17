@@ -1,0 +1,201 @@
+#!/bin/sh
+# test-selftest — regression tests for scripts/test itself.
+#
+# Uses fake test binaries in temporary directories (with the incremental
+# build and parser golden tests disabled) to exercise pass/fail reporting,
+# filtering, timeouts, fail-fast, and error exits. Run via `make test-runner`
+# or directly.
+
+set -u
+
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+TEST="$ROOT/scripts/test"
+TMP=$(mktemp -d "${TMPDIR:-/tmp}/jstr-selftest.XXXXXX") || exit 1
+trap 'rm -rf "$TMP"; rm -f "$ROOT/selftest-relative-file"' EXIT INT TERM
+rm -f "$ROOT/selftest-relative-file"
+
+fails=0
+ok() { echo "PASS: selftest: $1"; }
+bad() {
+	echo "FAIL: selftest: $1"
+	fails=$((fails + 1))
+}
+
+mkbin() { # $1 dir, $2 name, $3 shell body
+	mkdir -p "$1"
+	printf '#!/bin/sh\n%s\n' "$3" >"$1/$2"
+	chmod +x "$1/$2"
+}
+passbin() { mkbin "$1" "$2" 'exit 0'; }
+failbin() { mkbin "$1" "$2" "echo 'boom from $2' >&2; exit 3"; }
+
+run() { # $1 bindir, $2 logdir, rest: args
+	b=$1
+	l=$2
+	shift 2
+	JSTR_TEST_BINDIR="$b" JSTR_TEST_LOGDIR="$l" \
+		JSTR_TEST_SKIP_BUILD=1 JSTR_TEST_SKIP_PARSER=1 \
+		JSTR_TEST_TIMES="${JSTR_TEST_TIMES_OVERRIDE:-$TMP/times}" \
+		"$TEST" "$@" 2>&1
+}
+
+count() { printf '%s\n' "$1" | grep -c "$2"; }
+
+# ─── 1. all pass + filter restricts the run ───
+B=$TMP/pass
+for v in v0 v1 v2 v3; do
+	passbin "$B" "test-strchr_$v"
+	passbin "$B" "test-strcmp_$v"
+done
+out=$(run "$B" "$TMP/pass-logs" test-strchr)
+rc=$?
+if [ "$rc" -eq 0 ] && [ "$(count "$out" '^PASS')" -eq 4 ] &&
+	[ "$(count "$out" 'test-strcmp')" -eq 0 ] &&
+	printf '%s\n' "$out" | grep -q '^=== 4 passed, 0 failed'; then
+	ok 'passing filter runs only matching variants'
+else
+	bad "passing filter (rc=$rc, output follows)"
+	printf '%s\n' "$out"
+fi
+
+# ─── 2. failure is reported with output and a saved log ───
+B=$TMP/fail
+L=$TMP/fail-logs
+failbin "$B" test-strchr_v0
+for v in v1 v2 v3; do passbin "$B" "test-strchr_$v"; done
+out=$(run "$B" "$L" test-strchr)
+rc=$?
+if [ "$rc" -eq 1 ] && [ "$(count "$out" '^FAIL')" -eq 1 ] &&
+	printf '%s\n' "$out" | grep -q 'boom from test-strchr_v0' &&
+	[ -f "$L/test-strchr_v0.log" ]; then
+	ok 'failing test exits nonzero, prints output, saves log'
+else
+	bad "failing test (rc=$rc, output follows)"
+	printf '%s\n' "$out"
+fi
+
+# ─── 3. timeout kills a hung test ───
+if command -v timeout >/dev/null 2>&1; then
+	B=$TMP/hang
+	mkbin "$B" test-strchr_v0 'sleep 5'
+	for v in v1 v2 v3; do passbin "$B" "test-strchr_$v"; done
+	out=$(run "$B" "$TMP/hang-logs" --timeout 1 -j1 test-strchr)
+	rc=$?
+	if [ "$rc" -eq 1 ] && printf '%s\n' "$out" | grep -q 'timeout 1s'; then
+		ok 'timeout terminates a hung test'
+	else
+		bad "timeout (rc=$rc, output follows)"
+		printf '%s\n' "$out"
+	fi
+fi
+
+# ─── 4. --fail-fast stops after the first failure (single worker) ───
+B=$TMP/ff
+failbin "$B" test-strchr_v0
+failbin "$B" test-strchr_v1
+passbin "$B" test-strchr_v2
+passbin "$B" test-strchr_v3
+out=$(run "$B" "$TMP/ff-logs" -k -j1 test-strchr)
+rc=$?
+if [ "$rc" -eq 1 ] && [ "$(count "$out" '^FAIL')" -eq 1 ]; then
+	ok '--fail-fast stops after first failure'
+else
+	bad "fail-fast (rc=$rc, FAIL count=$(count "$out" '^FAIL'))"
+	printf '%s\n' "$out"
+fi
+
+# ─── 5. verbose mode prints per-test durations ───
+B=$TMP/verbose
+passbin "$B" test-strchr_v0
+out=$(run "$B" "$TMP/verbose-logs" -v test-strchr)
+rc=$?
+if [ "$rc" -eq 0 ] && printf '%s\n' "$out" | grep -q '^PASS: test-strchr \[fast\] ([0-9]*ms)'; then
+	ok 'verbose mode prints durations'
+else
+	bad "verbose mode (rc=$rc, output follows)"
+	printf '%s\n' "$out"
+fi
+
+# ─── 6. unmatched filter is an error, not a silent pass ───
+out=$(run "$TMP/pass" "$TMP/pass-logs" zz-no-such-test)
+rc=$?
+if [ "$rc" -eq 2 ] && printf '%s\n' "$out" | grep -q 'no matching tests'; then
+	ok 'unmatched filter exits with an error'
+else
+	bad "unmatched filter (rc=$rc, output follows)"
+	printf '%s\n' "$out"
+fi
+
+# ─── 7. invalid job count is rejected ───
+out=$(run "$TMP/pass" "$TMP/pass-logs" -j 0)
+rc=$?
+if [ "$rc" -eq 2 ]; then
+	ok 'invalid -j is rejected'
+else
+	bad "invalid -j (rc=$rc, output follows)"
+	printf '%s\n' "$out"
+fi
+
+# ─── 8. tests run in a private working directory ───
+# Fake binaries are keyed by real tests/ sources, so use an existing name.
+B=$TMP/cwd
+mkbin "$B" test-strchr_v0 'pwd > "$(dirname "$0")/../cwd-probe"; touch selftest-relative-file; exit 0'
+out=$(run "$B" "$TMP/cwd-logs" -j1 test-strchr)
+rc=$?
+probe=$(cat "$TMP/cwd-probe" 2>/dev/null || true)
+case $probe in
+"$ROOT" | "$ROOT"/* | '')
+	bad "test working directory (rc=$rc, pwd='$probe')"
+	printf '%s\n' "$out"
+	;;
+*)
+	if [ -e "$ROOT/selftest-relative-file" ]; then
+		bad 'test wrote a relative file into the repository root'
+		rm -f "$ROOT/selftest-relative-file"
+	else
+		ok 'tests run in an isolated working directory'
+	fi
+	;;
+esac
+
+# ─── 9. previous timings order slow tests first (LPT) ───
+B=$TMP/order
+passbin "$B" test-strchr_v0
+mkbin "$B" test-strcmp_v0 'sleep 0.3; exit 0'
+out1=$(JSTR_TEST_TIMES_OVERRIDE=$TMP/order-times run "$B" "$TMP/order-logs" -j1)
+out2=$(JSTR_TEST_TIMES_OVERRIDE=$TMP/order-times run "$B" "$TMP/order-logs" -j1)
+first1=$(printf '%s\n' "$out1" | grep '^PASS' | head -n 1)
+first2=$(printf '%s\n' "$out2" | grep '^PASS' | head -n 1)
+case $first1 in
+*test-strchr*) ;; # fast test first on a cold cache (alphabetical)
+*) first1='' ;;
+esac
+case $first2 in
+*test-strcmp*) ok 'cached timings schedule the slowest test first' ;;
+*)
+	bad "timing cache ordering (first='$first1' cached-first='$first2')"
+	printf '%s\n' "$out2"
+	;;
+esac
+
+# ─── 10. a passing test removes its stale failure log ───
+B=$TMP/stale
+L=$TMP/stale-logs
+mkdir -p "$L"
+: >"$L/test-strchr_v0.log"
+passbin "$B" test-strchr_v0
+out=$(run "$B" "$L" test-strchr)
+rc=$?
+if [ "$rc" -eq 0 ] && [ ! -e "$L/test-strchr_v0.log" ]; then
+	ok 'passing test removes its stale failure log'
+else
+	bad "stale log cleanup (rc=$rc, log exists=$([ -e "$L/test-strchr_v0.log" ] && echo yes || echo no))"
+	printf '%s\n' "$out"
+fi
+
+if [ "$fails" -eq 0 ]; then
+	echo 'runner selftest: OK'
+	exit 0
+fi
+echo "runner selftest: $fails failure(s)"
+exit 1

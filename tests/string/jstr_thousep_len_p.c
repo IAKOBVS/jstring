@@ -1,0 +1,109 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
+
+#include <stddef.h>
+#include <string.h>
+
+#include "../rigor.h"
+
+#ifndef JSTR_TEST_SLOW
+#	define JSTR_TEST_SLOW 0
+#endif
+
+static size_t
+ref_thousep(char *out, const char *src, size_t len, char sep)
+{
+	size_t o = 0, i = 0;
+	if (len == 0) {
+		out[0] = '\0';
+		return 0;
+	}
+	if (src[0] == '-')
+		out[o++] = src[i++];
+	const size_t digits = len - i;
+	if (digits < 4) {
+		while (i < len)
+			out[o++] = src[i++];
+		out[o] = '\0';
+		return o;
+	}
+	size_t first = digits % 3;
+	if (first == 0)
+		first = 3;
+	size_t k = 0;
+	for (; k < first; ++k)
+		out[o++] = src[i++];
+	while (k < digits) {
+		out[o++] = sep;
+		for (int j = 0; j < 3; ++j, ++k)
+			out[o++] = src[i++];
+	}
+	out[o] = '\0';
+	return o;
+}
+
+int
+main(void)
+{
+	static const char *const cases[] = { "", "0", "12", "123", "1234", "12345",
+	                                     "123456", "1234567", "-1", "-123", "-1234",
+	                                     "-12345", "-1234567", "-", "--1234" };
+	char buf[2000], want[2000], src[1300];
+
+	for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); ++i) {
+		const char *c = cases[i];
+		const size_t cl = strlen(c);
+		size_t wl = ref_thousep(want, c, cl, ',');
+		memcpy(buf, c, cl + 1);
+		char *p = jstr_thousep_len_p(buf, cl, ',');
+		RCHECK(p == buf + wl);
+		RCHECK(!strcmp(buf, want));
+	}
+
+	RCHECK(jstr_thousep_len_p(buf, 0, ',') == buf);
+	buf[0] = 'x';
+	buf[1] = '\0';
+	RCHECK(jstr_thousep_len_p(buf, 0, ',') == buf);
+	RCHECK(buf[0] == 'x');
+	{
+		memcpy(buf, "12345", 6);
+		char *p = jstr_thousep_len_p(buf, 5, '.');
+		RCHECK(p == buf + 6);
+		RCHECK(!strcmp(buf, "12.345"));
+	}
+	{
+		memcpy(buf, "12345", 6);
+		char *p = jstr_thousep_len_p(buf, 5, '\'');
+		RCHECK(p == buf + 6);
+		RCHECK(!strcmp(buf, "12'345"));
+	}
+	{
+		memcpy(buf, "1234567", 8);
+		char *p = jstr_thousep_len_p(buf, 5, ',');
+		RCHECK(p == buf + 6);
+		RCHECK(!strcmp(buf, "12,345"));
+	}
+
+	rigor_srand(0x74005eu);
+	for (size_t li = 0; li < RIGOR_NLENS; ++li) {
+		const size_t len = rigor_lens[li];
+		if (!JSTR_TEST_SLOW && len > 256)
+			continue;
+		for (size_t i = 0; i < len; ++i)
+			src[i] = (char)('0' + rigor_randn(10));
+		if (len && (rigor_rand() & 1u))
+			src[0] = '-';
+		src[len] = 0;
+		for (int s = 0; s < 3; ++s) {
+			const char sep = ",.'"[s];
+			const size_t wl = ref_thousep(want, src, len, sep);
+			memcpy(buf, src, len + 1);
+			memset(buf + len + 1, 0x7f, 4);
+			char *p = jstr_thousep_len_p(buf, len, sep);
+			RCHECK(p == buf + wl);
+			RCHECK(!memcmp(buf, want, wl + 1));
+		}
+	}
+
+	return 0;
+}

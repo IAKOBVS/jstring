@@ -419,10 +419,20 @@ jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nm
 		 * NUL-terminated string with STARTEND cleared. */
 		return (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags & ~JSTR_RE_EF_STARTEND);
 	}
-	pmatch->rm_so = 0;
-	pmatch->rm_eo = sz;
+	/* REG_STARTEND takes its window from pmatch[0], so a local window is
+	 * required whenever the caller asked for no match slots (the API
+	 * documents pmatch as NULL when nmatch == 0). */
+	regmatch_t local;
+	regmatch_t *m = (nmatch == 0 || pmatch == NULL) ? &local : pmatch;
+	const size_t nout = (nmatch == 0 || pmatch == NULL) ? 1 : nmatch;
+	m->rm_so = 0;
+	m->rm_eo = sz;
 #		endif
-	return (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags | JSTR_RE_EF_STARTEND);
+#		ifdef JSTR_RE_EF_STARTEND
+	return (jstr_re_ret_ty)regexec(&preg->reg, s, nout, m, eflags | JSTR_RE_EF_STARTEND);
+#		else
+	return (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags);
+#		endif
 }
 #	else
 ;
@@ -922,8 +932,16 @@ jstr_internal_re_rplcbackreffirst(const char *backref, size_t backref_len) JSTR_
 {
 	if (jstr_unlikely(backref_len < 2))
 		return NULL;
-	for (const char *backref_e = backref + backref_len - 1; (backref = (const char *)memchr(backref, '\\', JSTR_DIFF(backref_e, backref))) && !jstr_isdigit(*(backref + 1)); backref += 2) {}
-	return (char *)backref;
+	const char *const end = backref + backref_len;
+	while (backref + 1 < end) {
+		const char *p = (const char *)memchr(backref, '\\', (size_t)(end - 1 - backref));
+		if (p == NULL)
+			return NULL;
+		if (jstr_isdigit(*(p + 1)))
+			return (char *)p;
+		backref = p + 2;
+	}
+	return NULL;
 }
 #	else
 ;

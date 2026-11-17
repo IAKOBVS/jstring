@@ -151,7 +151,7 @@ JSTR_INTERNAL_END_DECLS
 #	define JSTR_BETWEEN(x, a, b) (((a) <= (x)) && ((x) <= (b)))
 #	define JSTR_MIN3(x, y, z)    (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
 #	define JSTR_MAX3(x, y, z)    (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
-#	define JSTR_MID3(x, y, z)    (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
+#	define JSTR_MID3(x, y, z)    (((x) > (y)) ? (((y) > (z)) ? (y) : (((x) > (z)) ? (z) : (x))) : (((x) > (z)) ? (x) : (((y) > (z)) ? (z) : (y))))
 
 #	define JSTR_IO_KB ((size_t)1000)
 #	define JSTR_IO_MB (JSTR_IO_KB * JSTR_IO_KB)
@@ -181,7 +181,7 @@ JSTR_INTERNAL_END_DECLS
 #	define JSTR_ALPHA_CONSONANT_UPPER_STR "BCDFGHJKLMNPQRSTVWXYZ"
 #	define JSTR_DIGIT_STR                 "0123456789"
 #	define JSTR_SPACE_STR                 " \t\n\r\f\v"
-#	define JSTR_PUNCT_STR                 "!\"#$%&\()*+,-./:;<=>?@[\\]^_`{|}~";
+#	define JSTR_PUNCT_STR                 "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 #	define JSTR_XDIGIT_LOWER_STR          JSTR_DIGIT_STR "abcdef"
 #	define JSTR_XDIGIT_UPPER_STR          JSTR_DIGIT_STR "ABCDEF"
 #	define JSTR_XDIGIT_STR                JSTR_DIGIT_STR "abcdefABCDEF"
@@ -444,10 +444,10 @@ JSTR_INTERNAL_END_DECLS
 	case '|':               \
 	case '}':               \
 	case '~':
-#	define JSTR_ALPHA_LOWER_CASE JSTR_VOWEL_LOWER_CASE JSTR_CONSONANT_LOWER_CASE
-#	define JSTR_ALPHA_UPPER_CASE JSTR_VOWEL_UPPER_CASE JSTR_CONSONANT_UPPER_CASE
-#	define JSTR_VOWEL_CASE       JSTR_VOWEL_ALPHA_UPPER_CASE JSTR_VOWEL_ALPHA_LOWER_CASE
-#	define JSTR_CONSONANT_CASE   JSTR_CONSONANT_ALPHA_UPPER_CASE JSTR_CONSONANT_ALPHA_LOWER_CASE
+#	define JSTR_ALPHA_LOWER_CASE JSTR_ALPHA_VOWEL_LOWER_CASE JSTR_ALPHA_CONSONANT_LOWER_CASE
+#	define JSTR_ALPHA_UPPER_CASE JSTR_ALPHA_VOWEL_UPPER_CASE JSTR_ALPHA_CONSONANT_UPPER_CASE
+#	define JSTR_VOWEL_CASE       JSTR_ALPHA_VOWEL_UPPER_CASE JSTR_ALPHA_VOWEL_LOWER_CASE
+#	define JSTR_CONSONANT_CASE   JSTR_ALPHA_CONSONANT_UPPER_CASE JSTR_ALPHA_CONSONANT_LOWER_CASE
 #	define JSTR_ALPHA_CASE       JSTR_ALPHA_LOWER_CASE JSTR_ALPHA_UPPER_CASE
 #	define JSTR_ALNUM_CASE       JSTR_DIGIT_CASE JSTR_ALPHA_CASE
 
@@ -722,9 +722,14 @@ JSTR_INTERNAL_CAST(T, Other other)
 #			define JSTR_ATTR_NONNULL(params) __attribute__((__nonnull__ params))
 #		endif
 #		if JSTR_HAS_ATTRIBUTE(__malloc__)
-#			define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))
-#			define JSTR_ATTR_MALLOC_DEALLOC(deallocator)              __attribute__((__malloc__, deallocator))
-#			define JSTR_ATTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__, deallocator, ptr_idx))
+#			define JSTR_ATTR_MALLOC __attribute__((__malloc__))
+#			if JSTR_GNUC_PREREQ(11, 0) || defined __clang__
+#				define JSTR_ATTR_MALLOC_DEALLOC(deallocator)              __attribute__((__malloc__(deallocator)))
+#				define JSTR_ATTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__(deallocator, ptr_idx)))
+#			else
+#				define JSTR_ATTR_MALLOC_DEALLOC(deallocator)              __attribute__((__malloc__))
+#				define JSTR_ATTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__))
+#			endif
 #		endif
 #		if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
 #			define JSTR_ATTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))

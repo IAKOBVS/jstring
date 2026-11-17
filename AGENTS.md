@@ -15,31 +15,48 @@ The top-level `./compile` delegates to `make`; `scripts/compile` is the legacy s
 ./scripts/check-incremental  # verify compile only rebuilds stale artifacts
 ```
 
-The build runs `scripts/setup` first (checks page size, undefined macros, scoped macros), then generates headers via Python (`scripts/gen_func.py` + `scripts/namespace_macros.py`), then compiles a shared library into `build/lib/`. Requires `python3`; `perl` is no longer needed. `scripts/setup` only rewrites `include/macros*.h` when their content actually changes, so repeated builds do not churn mtimes; `scripts/gen_func.py`, `scripts/namespace_macros.py`, and `scripts/jlib.py` changes trigger header regeneration but not library object rebuilds.
+The build runs `scripts/setup` first (checks page size, undefined macros, scoped macros), then builds the C header generator (`scripts/parser/` → `build/bin/jstrgen`) and generates headers with it, then compiles a shared library into `build/lib/`. The setup checks still use `python3`; `perl` is not needed. `scripts/setup` only rewrites `include/macros*.h` when their content actually changes, so repeated builds do not churn mtimes; changes under `scripts/parser/` trigger header regeneration but not library object rebuilds.
 
 ## Code generation
 
 - `include/*.h` are the source-of-truth headers; `build/include/jstr/*.h` are generated.
-- `scripts/gen_func.py` converts `JSTR_FUNC`/`JSTR_FUNC_VOID` annotations into `static inline` functions and generates `jstr_*` wrappers from annotated function blocks.
-- **Do not put blank lines inside function bodies.** The Python codegen splits blocks by blank lines.
-- `scripts/namespace_macros.py` renames `NAMESPACE_INTERNAL_*` → `jstr_internal_*` etc.
-- `scripts-perl/check-py-parity` regenerates every header through the Python engine and the original Perl engine (re-extracted from git history) and asserts byte-identical output. Run it after any change to `scripts/*.py`.
+- `scripts/parser/` is a hand-written C99 lexer + preprocessor-aware recursive-descent parser (`jstrgen`). It uses **no regular expressions** and **never calls `strlen`**: every internal string carries an explicit length (`jp_str_ty`, `sizeof` for literals). It tokenizes comments/strings/directives, matches braces/parens lexically, and parses declaration specifiers, declarators, parameter lists, and conditional bodies. (Generated wrappers may still contain `strlen(...)` calls; that is emitted output, not parser code.)
+- `jstrgen gen-func` converts `JSTR_FUNC`/`JSTR_FUNC_VOID` annotations into `static inline` functions and generates `jstr_*` wrappers from parsed function declarations. Blank lines inside bodies are fine.
+- `jstrgen namespace` renames internal macros token-by-token (`NAMESPACE_INTERNAL_*` → `jstr_internal_*`, etc.); it skips comments and string/char literals.
+- Golden parser tests live in `scripts/parser/tests/` and run via `make test-parser` (included in `make test`). Add a fixture for every parser/codegen behavior change.
+- `scripts/gen_func.py`, `scripts/namespace_macros.py`, `scripts/jlib.py`, and `scripts-perl/check-py-parity` are historical reference implementations; they no longer drive the build.
 
 ## Testing
 
 ```sh
 ./test                  # all tests, 4 combos: {normal, -march=native} × {fast, -DJSTR_TEST_SLOW=1}
+./test test-string      # run only tests whose key matches the filter
+./test -j 4             # bound parallelism (default: nproc)
+./test --fail-fast      # stop starting new tests after the first failure
+./test --timeout 60     # kill individual tests after 60s
+./test -v               # per-test durations + passing test output
 ./test-check-fail       # runs all tests, shows only failures (filters PASS)
+make test-runner        # regression-test the runner itself (scripts/test-selftest)
 scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
 ./scripts/compile-nosimd  # build no-SIMD coverage library in build-nosimd/
 ./scripts/check-incremental  # assert ./scripts/compile rebuilds only stale artifacts
 ```
 
+- `scripts/test` builds incrementally with `make testbuild`, then runs every
+  `tests/**/*.c` × 4 variants directly with a bounded worker pool (no per-test
+  make recursion). Each test runs in a private temporary working directory,
+  and cached per-test durations (`build/test-times`, disable with
+  `JSTR_TEST_NO_TIMES=1`) order repeat runs slowest-first. Failing tests keep
+  their captured output in `build/test-logs/`; the excerpt is printed before
+  the `FAIL:` line, and a previously failing test's log is removed once it
+  passes. `scripts/test-selftest` covers filtering, failure, timeout,
+  fail-fast, cwd isolation, log cleanup, and timing-order behavior.
+
 - `./scripts/check-incremental` builds once, re-runs (asserting nothing changes), then touches a header and asserts only its dependents rebuild. Some builds must be cached — do not run it right after `./clean` only for timing.
 
 - Every test in `tests/*.c` is compiled and run from `/tmp`.
 - Tests using `mkdtemp` must `#define _POSIX_C_SOURCE 200809L` before any includes.
-- New tests ARE automatically picked up — `./test` globs `tests/*.c`.
+- New tests ARE automatically picked up — `./test` derives its run list from `tests/**/*.c` (and ignores stale binaries for removed tests).
 - For manual compilation of test-only files: use `-DJSTR_DECL_ONLY -include build/include/jstr/jstr.h -iquote build/include/jstr`.
 - **No-SIMD test compilation** (not compatible with `scripts/test1`): use `-DJSTR_DECL_ONLY -include build-nosimd/include/jstr/jstr.h -iquote build-nosimd/include/jstr` and link with `-Lbuild-nosimd/lib -ljstr`, setting `LD_LIBRARY_PATH=build-nosimd/lib`.
 - Default CFLAGS: `-std=c99 -Wall -Wextra -Wpedantic -O2 -g -fsanitize=address`.
@@ -149,7 +166,7 @@ Use `scripts/coverage` to measure results: build with `--coverage -fno-inline -D
 - Format: `.clang-format` (WebKit brace style, 8-wide tab indentation, Never sort includes).
 - If `tcc` is available, `./scripts/compile` uses it for a syntax check instead of `cc`.
 - libc requirement: musl's twoway `memmem` is vendored. POSIX headers (`io.h`, `regex.h`) must be included explicitly by the user.
-- **Library compilation caveat**: `./scripts/compile` does not define `_ATFILE_SOURCE` or `_XOPEN_SOURCE >= 700`, so the shared library is built without `USE_ATFILE=1` even on systems that support `*at` functions. Test-only code (DECL_ONLY) uses the generated headers which may define `USE_ATFILE=1`. This mismatch can cause different behavior in edge cases (e.g., `open` failure vs `stat` failure on nonexistent paths).
+- **Library compilation caveat**: `./scripts/compile` defines `_XOPEN_SOURCE=700` (matching the Makefile, so POSIX-gated symbols such as `jstr_io_readsystem()` are exported), but it does not define `_ATFILE_SOURCE`, so the shared library can still be built without `USE_ATFILE=1` even on systems that support `*at` functions. Test-only code (DECL_ONLY) uses the generated headers which may define `USE_ATFILE=1`. This mismatch can cause different behavior in edge cases (e.g., `open` failure vs `stat` failure on nonexistent paths).
 
 ## Key conventions
 

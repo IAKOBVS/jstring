@@ -1,6 +1,478 @@
 #!/bin/sh
-cd "$(dirname "$0")/.." || exit
-if [ $# -eq 0 ]; then
-	exec make test
+# scripts/test — incremental build + bounded-parallel test runner.
+#
+# Usage: scripts/test [options] [TEST...]
+#
+# Options:
+#   -j N              run up to N tests concurrently (default: nproc)
+#   -k, --fail-fast   stop starting new tests after the first failure
+#   --timeout SECS    kill a test after SECS seconds (default: 0 = disabled)
+#   -v, --verbose     print per-test durations and show passing test output
+#   --no-build        skip the incremental `make testbuild` step
+#   --no-parser       skip the parser golden tests
+#   -h, --help        show this help
+#
+# TEST arguments are substring matches against the generated test key, which
+# is the path under tests/ with '/' replaced by '_' (and '.c' removed), e.g.
+# `test-string`, `jstr_memmem_comp`, or `string/jstr_memmem_comp`. With no
+# TEST arguments every test in all four variants is run.
+#
+# Each test runs in its own private working directory (under $TMPDIR, never
+# the repository root) and writes its stdout/stderr to a private log. Logs for
+# failing tests are kept in build/test-logs/ and an excerpt is printed before
+# the FAIL line. A log left by an earlier failure is removed once that test
+# passes again.
+#
+# The runner round-robins work across JOBS workers. Durations from the previous
+# runs are cached in build/test-times and used to start the slowest tests
+# first (longest-processing-time first), which reduces the tail latency when
+# one or two tests dominate the run.
+#
+# Environment overrides (mainly for scripts/test-selftest):
+#   JSTR_TEST_JOBS=N        default -j
+#   JSTR_TEST_SKIP_BUILD=1  same as --no-build
+#   JSTR_TEST_SKIP_PARSER=1 same as --no-parser
+#   JSTR_TEST_BINDIR=DIR    default build/test-bin
+#   JSTR_TEST_LIBDIR=DIR    default build/lib
+#   JSTR_TEST_LOGDIR=DIR    default build/test-logs
+#   JSTR_TEST_TIMES=FILE    timing cache (default build/test-times)
+#   JSTR_TEST_NO_TIMES=1    disable reading/writing the timing cache
+#   MAKE=make               make command used for the incremental build
+
+set -u
+
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+cd "$ROOT" || exit 1
+
+BINDIR=${JSTR_TEST_BINDIR:-$ROOT/build/test-bin}
+LIBDIR=${JSTR_TEST_LIBDIR:-$ROOT/build/lib}
+LOGDIR=${JSTR_TEST_LOGDIR:-$ROOT/build/test-logs}
+TIMEFILE=${JSTR_TEST_TIMES:-$ROOT/build/test-times}
+USE_TIMES=1
+[ "${JSTR_TEST_NO_TIMES:-0}" = 1 ] && USE_TIMES=0
+: "${MAKE:=make}"
+
+JOBS=${JSTR_TEST_JOBS:-}
+FAIL_FAST=0
+TIMEOUT_SECS=0
+VERBOSE=0
+DO_BUILD=1
+DO_PARSER=1
+FILTERS=
+[ "${JSTR_TEST_SKIP_BUILD:-0}" = 1 ] && DO_BUILD=0
+[ "${JSTR_TEST_SKIP_PARSER:-0}" = 1 ] && DO_PARSER=0
+
+usage() {
+	cat <<'EOF'
+Usage: scripts/test [options] [TEST...]
+
+Options:
+  -j N              run up to N tests concurrently (default: nproc)
+  -k, --fail-fast   stop starting new tests after the first failure
+  --timeout SECS    kill a test after SECS seconds (default: 0 = disabled)
+  -v, --verbose     print per-test durations and show passing test output
+  --no-build        skip the incremental `make testbuild` step
+  --no-parser       skip the parser golden tests
+  -h, --help        show this help
+
+TEST arguments are substring matches against the generated test key (the
+path under tests/ with '/' replaced by '_' and '.c' removed), e.g.
+`test-string`, `jstr_memmem_comp`, or `string/jstr_memmem_comp`.
+
+Tests run in private temporary directories. Cached per-test durations
+(build/test-times) order the run slowest-first to shorten wall time.
+EOF
+}
+
+while [ $# -gt 0 ]; do
+	case $1 in
+	-j)
+		[ $# -ge 2 ] || { echo "test: -j needs an argument" >&2; exit 2; }
+		JOBS=$2
+		shift 2
+		;;
+	-j*)
+		JOBS=${1#-j}
+		shift
+		;;
+	-k | --fail-fast)
+		FAIL_FAST=1
+		shift
+		;;
+	--timeout)
+		[ $# -ge 2 ] || { echo "test: --timeout needs an argument" >&2; exit 2; }
+		TIMEOUT_SECS=$2
+		shift 2
+		;;
+	--timeout=*)
+		TIMEOUT_SECS=${1#*=}
+		shift
+		;;
+	-v | --verbose)
+		VERBOSE=1
+		shift
+		;;
+	--no-build)
+		DO_BUILD=0
+		shift
+		;;
+	--no-parser)
+		DO_PARSER=0
+		shift
+		;;
+	-h | --help)
+		usage
+		exit 0
+		;;
+	--)
+		shift
+		while [ $# -gt 0 ]; do
+			FILTERS="$FILTERS $1"
+			shift
+		done
+		;;
+	-*)
+		echo "test: unknown option: $1 (try --help)" >&2
+		exit 2
+		;;
+	*)
+		FILTERS="$FILTERS $1"
+		shift
+		;;
+	esac
+done
+
+detect_jobs() {
+	nproc 2>/dev/null ||
+		sysctl -n hw.logicalcpu 2>/dev/null ||
+		getconf _NPROCESSORS_ONLN 2>/dev/null ||
+		echo 1
+}
+
+if [ -z "$JOBS" ]; then
+	JOBS=$(detect_jobs)
 fi
-exec make test TESTS="$*"
+case $JOBS in
+'' | *[!0-9]* | 0)
+	echo "test: invalid job count: $JOBS" >&2
+	exit 2
+	;;
+esac
+
+case $TIMEOUT_SECS in
+'' | *[!0-9]*)
+	echo "test: invalid timeout: $TIMEOUT_SECS" >&2
+	exit 2
+	;;
+esac
+
+TIMEOUT_BIN=
+if [ "$TIMEOUT_SECS" -gt 0 ]; then
+	TIMEOUT_BIN=$(command -v timeout 2>/dev/null || true)
+	if [ -z "$TIMEOUT_BIN" ]; then
+		echo "test: warning: --timeout ignored (timeout(1) not found)" >&2
+		TIMEOUT_SECS=0
+	fi
+fi
+
+# Millisecond clock. `date +%N` is unavailable on some platforms, where we
+# fall back to whole seconds (all durations still compare correctly).
+HAVE_NS=0
+_t=$(date +%s%N 2>/dev/null) || _t=
+case $_t in
+'' | *[!0-9]*) HAVE_NS=0 ;;
+*) HAVE_NS=1 ;;
+esac
+now_ms() {
+	if [ "$HAVE_NS" = 1 ]; then
+		echo $(($(date +%s%N) / 1000000))
+	else
+		echo $(($(date +%s) * 1000))
+	fi
+}
+
+variant_label() {
+	case $1 in
+	v0) echo 'fast' ;;
+	v1) echo 'fast -march=native' ;;
+	v2) echo 'slow' ;;
+	v3) echo 'slow -march=native' ;;
+	*) echo "$1" ;;
+	esac
+}
+
+# ─── Build (incremental) ───
+BUILD_MS=0
+if [ "$DO_BUILD" = 1 ]; then
+	build_start=$(now_ms)
+	$MAKE -j"$JOBS" testbuild || {
+		echo 'BUILD FAILED: test binaries did not compile' >&2
+		exit 1
+	}
+	BUILD_MS=$(($(now_ms) - build_start))
+fi
+
+STATE=$(mktemp -d "${TMPDIR:-/tmp}/jstr-test.XXXXXX") || exit 1
+WORKER_PIDS=
+PARSER_PID=
+STATE_LIVE=1
+cleanup() {
+	[ "$STATE_LIVE" = 1 ] || return 0
+	STATE_LIVE=0
+	[ -n "$WORKER_PIDS" ] && kill $WORKER_PIDS 2>/dev/null
+	[ -n "$PARSER_PID" ] && kill "$PARSER_PID" 2>/dev/null
+	rm -rf "$STATE"
+}
+on_signal() {
+	cleanup
+	trap - EXIT INT TERM
+	exit "$1"
+}
+trap cleanup EXIT
+trap 'on_signal 130' INT
+trap 'on_signal 143' TERM
+
+# ─── Discover the binaries for tests that still exist as sources ───
+# Deriving from tests/**/*.c (rather than globbing build/test-bin) keeps stale
+# binaries for renamed/removed tests from running, matching the Makefile's
+# source-driven target list.
+discover() {
+	find "$ROOT/tests" -type f -name '*.c' \
+		! -path "$ROOT/tests/fuzz-regex.c" \
+		! -path "$ROOT/tests/repro_crash.c" \
+		! -path "$ROOT/tests/repro-replace-color.c" |
+		LC_ALL=C sort |
+		while IFS= read -r src; do
+			rel=${src#"$ROOT/tests/"}
+			key=${rel%.c}
+			key=$(printf '%s' "$key" | tr '/' '_')
+			if [ -n "$FILTERS" ]; then
+				matched=0
+				for f in $FILTERS; do
+					[ -n "$f" ] || continue
+					nf=${f#./}
+					nf=${nf#tests/}
+					nf=${nf%.c}
+					nf=$(printf '%s' "$nf" | tr '/' '_')
+					case $key in
+					*"$nf"*) matched=1 ;;
+					esac
+					[ "$matched" = 1 ] && break
+				done
+				[ "$matched" = 1 ] || continue
+			fi
+			for v in v0 v1 v2 v3; do
+				bin=$BINDIR/${key}_${v}
+				if [ -x "$bin" ]; then
+					printf '%s\n' "$bin"
+				fi
+			done
+		done >"$STATE/bins"
+}
+discover
+
+TOTAL=$(wc -l <"$STATE/bins")
+if [ "$TOTAL" -eq 0 ]; then
+	if [ -n "$FILTERS" ]; then
+		echo "test: no matching tests for:$FILTERS" >&2
+	else
+		echo "test: no test binaries found in $BINDIR" >&2
+	fi
+	exit 2
+fi
+
+# Order the queue slowest-first using the previous run's timings. This is a
+# longest-processing-time-first (LPT) approximation: round-robin over this
+# order spreads the expensive tests over different workers. Unknown tests get
+# a small default so they are not stranded at the end on a first run.
+order_bins() {
+	[ "$USE_TIMES" = 1 ] || return 0
+	[ -f "$TIMEFILE" ] || return 0
+	awk '
+		NR == FNR { if (NF >= 2) t[$2] = $1 + 0; next }
+		{ printf "%.0f\t%s\n", (($1 in t) ? t[$1] : 50), $1 }
+	' "$TIMEFILE" "$STATE/bins" |
+		LC_ALL=C sort -rn |
+		cut -f2- >"$STATE/bins.ordered" || return 0
+	if [ -s "$STATE/bins.ordered" ]; then
+		mv "$STATE/bins.ordered" "$STATE/bins"
+	fi
+}
+order_bins
+
+# Round-robin shard the work across JOBS workers. This keeps the number of
+# concurrent processes bounded without relying on the non-POSIX `wait -n`.
+i=0
+while [ "$i" -lt "$JOBS" ]; do
+	: >"$STATE/list.$i"
+	i=$((i + 1))
+done
+i=0
+while IFS= read -r bin; do
+	printf '%s\n' "$bin" >>"$STATE/list.$i"
+	i=$((i + 1))
+	[ "$i" -ge "$JOBS" ] && i=0
+done <"$STATE/bins"
+
+worker() {
+	w=$1
+	list=$2
+	p=0
+	f=0
+	ms=0
+	# Run from a private directory so tests cannot create files in the repo
+	# root and concurrent variants of the same test cannot collide.
+	WORK=$STATE/cwd.$w
+	if ! mkdir -p "$WORK" 2>/dev/null; then
+		WORK=$STATE
+	fi
+	cd "$WORK" 2>/dev/null || cd "$STATE" || exit 1
+	while IFS= read -r bin; do
+		[ -n "$bin" ] || continue
+		[ -f "$STATE/stop" ] && break
+		base=${bin##*/}
+		variant=${base##*_}
+		key=${base%_$variant}
+		label=$(variant_label "$variant")
+		start=$(now_ms)
+		if [ "$TIMEOUT_SECS" -gt 0 ]; then
+			LD_LIBRARY_PATH="$LIBDIR" "$TIMEOUT_BIN" "$TIMEOUT_SECS" "$bin" >"$STATE/log.$w" 2>&1
+		else
+			LD_LIBRARY_PATH="$LIBDIR" "$bin" >"$STATE/log.$w" 2>&1
+		fi
+		rc=$?
+		d=$(($(now_ms) - start))
+		ms=$((ms + d))
+		printf '%s %s\n' "$d" "$base" >>"$STATE/times.$w"
+		if [ "$rc" -eq 0 ]; then
+			p=$((p + 1))
+			if [ -e "$LOGDIR/$base.log" ]; then
+				rm -f "$LOGDIR/$base.log"
+			fi
+			if [ "$VERBOSE" = 1 ]; then
+				printf 'PASS: %s [%s] (%sms)\n' "$key" "$label" "$d"
+				cat "$STATE/log.$w"
+			else
+				printf 'PASS: %s [%s]\n' "$key" "$label"
+			fi
+		else
+			f=$((f + 1))
+			mkdir -p "$LOGDIR" 2>/dev/null
+			cp "$STATE/log.$w" "$LOGDIR/${base}.log" 2>/dev/null || true
+			extra=
+			if [ "$rc" -eq 124 ]; then
+				extra=" (timeout ${TIMEOUT_SECS}s)"
+			elif [ "$rc" -gt 128 ]; then
+				extra=" (signal $((rc - 128)))"
+			fi
+			# Print the whole report with one printf so reports from
+			# concurrent workers do not interleave line-by-line.
+			report="--- output: $base [$label] (${d}ms) ---
+$(tail -n 40 "$STATE/log.$w")"
+			printf '%s\n' "$report"
+			printf 'FAIL: %s [%s]%s\n' "$key" "$label" "$extra"
+			[ "$FAIL_FAST" = 1 ] && : >"$STATE/stop"
+		fi
+	done <"$list"
+	printf '%s %s %s\n' "$p" "$f" "$ms" >"$STATE/count.$w"
+}
+
+# ─── Run parser golden tests concurrently with the C suite ───
+if [ "$DO_PARSER" = 1 ]; then
+	"$ROOT/scripts/parser/tests/run" "$ROOT/build/bin/jstrgen" >"$STATE/parser.log" 2>&1 &
+	PARSER_PID=$!
+fi
+
+RUN_START=$(now_ms)
+i=0
+while [ "$i" -lt "$JOBS" ]; do
+	if [ -s "$STATE/list.$i" ]; then
+		worker "$i" "$STATE/list.$i" &
+		WORKER_PIDS="$WORKER_PIDS $!"
+	fi
+	i=$((i + 1))
+done
+for pid in $WORKER_PIDS; do
+	wait "$pid"
+done
+
+parser_fail=0
+if [ -n "$PARSER_PID" ]; then
+	if wait "$PARSER_PID"; then
+		cat "$STATE/parser.log"
+	else
+		parser_fail=1
+		cat "$STATE/parser.log"
+		echo 'FAIL: parser tests'
+	fi
+	PARSER_PID=
+fi
+RUN_MS=$(($(now_ms) - RUN_START))
+
+# ─── Aggregate and report ───
+total_pass=0
+total_fail=0
+missing=0
+i=0
+while [ "$i" -lt "$JOBS" ]; do
+	if [ -s "$STATE/list.$i" ] && [ ! -f "$STATE/count.$i" ]; then
+		echo "test: internal error: worker $i exited without reporting results" >&2
+		missing=1
+	fi
+	if [ -f "$STATE/count.$i" ]; then
+		read -r p f _ <"$STATE/count.$i"
+		total_pass=$((total_pass + p))
+		total_fail=$((total_fail + f))
+	fi
+	i=$((i + 1))
+done
+if [ "$FAIL_FAST" = 0 ] && [ "$missing" = 0 ] &&
+	[ "$((total_pass + total_fail))" -ne "$TOTAL" ]; then
+	echo "test: internal error: $((TOTAL - total_pass - total_fail)) test result(s) lost" >&2
+	missing=1
+fi
+[ "$missing" = 1 ] && total_fail=$((total_fail + 1))
+[ "$parser_fail" = 1 ] && total_fail=$((total_fail + 1))
+
+: >"$STATE/times.all"
+for tf in "$STATE"/times.[0-9]*; do
+	[ -f "$tf" ] && cat "$tf" >>"$STATE/times.all"
+done
+
+# Persist the latest per-test durations for the next run. Merge with the
+# existing cache so tests skipped by a filter keep their measurements.
+if [ "$USE_TIMES" = 1 ] && [ -s "$STATE/times.all" ]; then
+	if mkdir -p "$(dirname "$TIMEFILE")" 2>/dev/null; then
+		[ -f "$TIMEFILE" ] || : >"$TIMEFILE" 2>/dev/null
+		if [ -f "$TIMEFILE" ]; then
+			awk 'NF >= 2 { t[$2] = $1 } END { for (k in t) print t[k], k }' \
+				"$TIMEFILE" "$STATE/times.all" 2>/dev/null |
+				LC_ALL=C sort -k2 >"$STATE/times.merged" 2>/dev/null &&
+				mv "$STATE/times.merged" "$TIMEFILE" 2>/dev/null
+		fi
+	fi
+fi
+
+fmt_ms() {
+	printf '%d.%03ds' $(($1 / 1000)) $(($1 % 1000))
+}
+
+printf '\n=== %d passed, %d failed (run %s, build %s) ===\n' \
+	"$total_pass" "$total_fail" "$(fmt_ms "$RUN_MS")" "$(fmt_ms "$BUILD_MS")"
+
+if [ -s "$STATE/times.all" ]; then
+	echo 'Slowest tests:'
+	LC_ALL=C sort -rn "$STATE/times.all" | head -n 3 |
+		while read -r tms tbase; do
+			printf '  %sms %s\n' "$tms" "$tbase"
+		done
+fi
+
+if [ "$total_fail" -eq 0 ]; then
+	rmdir "$LOGDIR" 2>/dev/null || true
+	echo 'All test variants passed.'
+	exit 0
+fi
+
+echo "Test run failed: $total_fail test(s) failed."
+exit 1

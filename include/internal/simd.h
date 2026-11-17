@@ -212,7 +212,13 @@ JSTR_NOEXCEPT
 		return NULL;
 	i = TZCNT(m);
 ret_early:
-	return s + i < end ? (char *)s + i : NULL;
+	/* zm is OR-ed into m to stop at the terminator; only report an
+	 * actual (non-NUL) match. */
+	return (s + i < end && (unsigned char)s[i] != 0 &&
+	        jstr_tolower((unsigned char)s[i]) ==
+	                jstr_tolower((unsigned char)c))
+	       ? (char *)s + i
+	       : NULL;
 }
 
 /**
@@ -261,7 +267,12 @@ JSTR_NOEXCEPT
 		return NULL;
 	i = TZCNT(m);
 ret_early:
-	return s + i < end ? (char *)s + i : NULL;
+	/* zm is OR-ed into m to stop at the terminator; only report an
+	 * actual (non-NUL) match. */
+	return (s + i < end && (unsigned char)s[i] != 0 &&
+	        (unsigned char)s[i] == (unsigned char)c)
+	       ? (char *)s + i
+	       : NULL;
 }
 
 /**

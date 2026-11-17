@@ -5,6 +5,16 @@ cd "$(dirname "$0")/.."
 REPOROOT=$PWD
 export REPOROOT
 
+# Use ccache when available (CCACHE= disables it).
+: "${CC:=cc}"
+if [ -z "${CCACHE+set}" ]; then
+	CCACHE=$(command -v ccache 2>/dev/null || true)
+fi
+if [ -n "$CCACHE" ] && command -v "$CCACHE" >/dev/null 2>&1; then
+	CC="$CCACHE $CC"
+fi
+export CC
+
 SKIP_BUILD=${SKIP_BUILD:-0}
 SKIP_TEST=${SKIP_TEST:-0}
 MAX_JOBS=$(nproc 2>/dev/null || echo 4)
@@ -19,11 +29,15 @@ if [ "$SKIP_BUILD" != "1" ]; then
 	scripts/setup
 	PATH_BUILD=build/include/jstr
 	PATH_SRC=include
-	mkdir -p "$PATH_BUILD" "$PATH_BUILD/internal" "$PATH_BUILD/internal/musl"
+	mkdir -p "$PATH_BUILD" "$PATH_BUILD/internal" "$PATH_BUILD/internal/musl" build/bin
 
-	# Generate headers in parallel (Python scripts import jlib from same dir)
-	SCRIPTDIR=scripts
-	export SCRIPTDIR
+	PARSER_DIR=$REPOROOT/scripts/parser
+	PARSER_BIN=$REPOROOT/build/bin/jstrgen
+	export PARSER_BIN
+	$CC -std=c99 -O2 -Wall -Wextra -Wpedantic -Wsign-conversion -o "$PARSER_BIN" \
+		"$PARSER_DIR/util.c" "$PARSER_DIR/parser.c" "$PARSER_DIR/emit.c" "$PARSER_DIR/main.c"
+
+	# Generate headers in parallel.
 	gen_ret=0
 	find "$PATH_SRC" -type f -name '*.h' -print0 | xargs -0 -P "$MAX_JOBS" -I{} sh -c '
 		bf=$(basename "$1")
@@ -34,9 +48,9 @@ if [ "$SKIP_BUILD" != "1" ]; then
 			*)                   d=".";              t="g";;
 		esac
 		if [ "$t" = "g" ]; then
-			(cd "$SCRIPTDIR" && python3 ./gen_func.py "../$1" | python3 ./namespace_macros.py) > "build/include/jstr/$bf"
+			"$PARSER_BIN" gen-func "$1" | "$PARSER_BIN" namespace > "build/include/jstr/$bf"
 		else
-			(cd "$SCRIPTDIR" && python3 ./namespace_macros.py "../$1") > "build/include/jstr/$d/$bf"
+			"$PARSER_BIN" namespace "$1" > "build/include/jstr/$d/$bf"
 		fi
 	' _ {} || gen_ret=$?
 	[ "$gen_ret" -eq 0 ] || { echo "Header generation failed (exit $gen_ret)"; exit 1; }
@@ -56,10 +70,10 @@ if [ "$SKIP_BUILD" != "1" ]; then
 	export COV_CFLAGS
 	find build/src/ -maxdepth 1 -name '*.c' -print0 | xargs -0 -P "$MAX_JOBS" -I{} sh -c '
 		base=$(basename "$1" .c)
-		cc -DJSTR_IMPLEMENTATION=1 -c "$1" -o "build/obj/$base.o" $COV_CFLAGS
+		$CC -DJSTR_IMPLEMENTATION=1 -c "$1" -o "build/obj/$base.o" $COV_CFLAGS
 	' _ {}
 
-	cc --coverage -shared -Wl,-soname,libjstr.so -o "build/lib/libjstr.so" build/obj/*.o
+	$CC --coverage -shared -Wl,-soname,libjstr.so -o "build/lib/libjstr.so" build/obj/*.o
 	echo "Library built: $(wc -c < build/lib/libjstr.so) bytes"
 fi
 
@@ -74,14 +88,14 @@ if [ "$SKIP_TEST" != "1" ]; then
 	export REPOROOT TEST_CFLAGS testdir
 	find tests/ -maxdepth 1 \( -name 'test-*.c' -o -name 'repro-*.c' \) -print0 | xargs -0 -P "$MAX_JOBS" -I{} sh -c '
 		tbase=$(basename "$1" .c)
-		cc -DJSTR_DECL_ONLY -include "$REPOROOT/build/include/jstr/jstr.h" \
+		$CC -DJSTR_DECL_ONLY -include "$REPOROOT/build/include/jstr/jstr.h" \
 			-iquote "$REPOROOT/build/include/jstr" \
 			-c "$1" -o "build/tests/$tbase.o" \
 			$TEST_CFLAGS 2>"$testdir/$tbase.err" || {
 				echo "compile $tbase" > "$testdir/$tbase.status"
 				exit 1
 			}
-		cc "build/tests/$tbase.o" -o "build/tests/$tbase" \
+		$CC "build/tests/$tbase.o" -o "build/tests/$tbase" \
 			$TEST_CFLAGS -L"$REPOROOT/build/lib" -ljstr 2>>"$testdir/$tbase.err" || {
 				echo "link $tbase" > "$testdir/$tbase.status"
 				exit 1

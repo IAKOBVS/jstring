@@ -5,6 +5,15 @@ PS4='' set -e
 
 cd "$(dirname "$0")" || exit
 
+# Use ccache when available (CCACHE= disables it).
+: "${CC:=cc}"
+if [ -z "${CCACHE+set}" ]; then
+	CCACHE=$(command -v ccache 2>/dev/null || true)
+fi
+if [ -n "$CCACHE" ] && command -v "$CCACHE" >/dev/null 2>&1; then
+	CC="$CCACHE $CC"
+fi
+
 # POSIX staleness helpers (find -newer based, no test -nt dependence).
 newer_than() { # $1 candidate, $2 reference: true if $1 exists and is newer
 	[ -e "$1" ] && [ -n "$(find "$1" -prune -newer "$2" -print -quit 2>/dev/null)" ]
@@ -24,9 +33,35 @@ SRCDIR="$OUTDIR/src"
 INCDIR="$OUTDIR/include"
 OBJDIR="$OUTDIR/obj"
 FLAGSFILE="$OBJDIR/.compile-flags"
-CFLAGS="-O2 -fanalyzer -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 -MMD -MP $CFLAGS"
+# -D_XOPEN_SOURCE=700 matches the Makefile so POSIX-gated symbols such as
+# jstr_io_readsystem() are exported regardless of which driver built the lib.
+CFLAGS="-O2 -fanalyzer -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 -D_XOPEN_SOURCE=700 -MMD -MP $CFLAGS"
+
+PARSER_DIR=$PWD/parser
+PARSER_BIN=$OUTDIR/bin/jstrgen
+PARSER_SRC="$PARSER_DIR/util.c $PARSER_DIR/parser.c $PARSER_DIR/emit.c $PARSER_DIR/main.c"
 
 has_prog() { type "$1" >/dev/null 2>/dev/null; }
+
+build_parser() {
+	need=0
+	if [ ! -x "$PARSER_BIN" ]; then
+		need=1
+	else
+		for src in $PARSER_SRC "$PARSER_DIR/jstrgen.h"; do
+			if newer_than "$src" "$PARSER_BIN"; then
+				need=1
+				break
+			fi
+		done
+	fi
+	if [ "$need" -eq 1 ]; then
+		echo "CC   jstrgen"
+		mkdir -p "$OUTDIR/bin"
+		$CC -std=c99 -O2 -Wall -Wextra -Wpedantic -Wsign-conversion \
+			-o "$PARSER_BIN" $PARSER_SRC
+	fi
+}
 
 update() {
 	in_fname=$1
@@ -48,12 +83,10 @@ update() {
 		return
 		;;
 	esac
-	# Skip when the generated output is not older than the source or any
-	# generator script (gen_func.py, namespace_macros.py, jlib.py).
+	# Skip when the generated output is not older than the source or the
+	# jstrgen parser binary.
 	if [ -f "$out_fname" ] && ! newer_than "$in_fname" "$out_fname" \
-		&& ! newer_than ./gen_func.py "$out_fname" \
-		&& ! newer_than ./namespace_macros.py "$out_fname" \
-		&& ! newer_than ./jlib.py "$out_fname"; then
+		&& ! newer_than "$PARSER_BIN" "$out_fname"; then
 		if [ -n "${VERBOSE:-}" ]; then
 			echo "SKIP $base_fname"
 		fi
@@ -62,22 +95,23 @@ update() {
 	echo "GEN  $base_fname"
 	case $in_fname in
 	*/internal/musl/*.h)
-		python3 ./namespace_macros.py "$in_fname" >"$out_fname"
+		"$PARSER_BIN" namespace "$in_fname" >"$out_fname"
 		;;
 	*/internal/*.h)
-		python3 ./namespace_macros.py "$in_fname" >"$out_fname"
+		"$PARSER_BIN" namespace "$in_fname" >"$out_fname"
 		;;
 	*/*macro*.h)
-		python3 ./namespace_macros.py "$in_fname" >"$out_fname"
+		"$PARSER_BIN" namespace "$in_fname" >"$out_fname"
 		;;
 	*/*.h)
-		python3 ./gen_func.py "$in_fname" | python3 ./namespace_macros.py >"$out_fname"
+		"$PARSER_BIN" gen-func "$in_fname" | "$PARSER_BIN" namespace >"$out_fname"
 		;;
 	esac
 }
 
 mkdir -p "$LIBDIR" "$SRCDIR" "$INCDIR" "$OBJDIR"
 mkdir -p $PATH_BUILD $PATH_BUILD/internal $PATH_BUILD/internal/musl
+build_parser
 
 # Generate headers in parallel, failing loudly if any generator fails.
 gen_pids=
@@ -145,7 +179,7 @@ for cfile in "$SRCDIR"/*.c; do
 	if [ "$needs_build" -eq 1 ]; then
 		echo "CC   $base"
 		{
-			cc -DJSTR_IMPLEMENTATION=1 -c "$cfile" -o "$o" -fPIC $CFLAGS
+			$CC -DJSTR_IMPLEMENTATION=1 -c "$cfile" -o "$o" -fPIC $CFLAGS
 		} &
 		cc_pids="$cc_pids $!"
 	else
@@ -189,7 +223,7 @@ for o in $OFILES; do
 done
 if [ "$needs_link" -eq 1 ]; then
 	echo "LD   libjstr.so"
-	cc -fanalyzer -flto -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
+	$CC -fanalyzer -flto -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
 else
 	echo "SKIP link"
 fi

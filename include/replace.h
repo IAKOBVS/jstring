@@ -1996,7 +1996,7 @@ jstr_place_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char 
 {
 	size_t old_sz = *sz;
 	if (at + src_len > *sz) {
-		if (jstr_chk(jstr_reservealways(s, sz, cap, at + src_len)))
+		if (jstr_chk(jstr_reservealways(s, sz, cap, at + src_len + 1)))
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		*sz = at + src_len;
 		*(*s + *sz) = '\0';
@@ -2031,7 +2031,7 @@ jstr_placeafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const c
 {
 	const char *p = (char *)memchr(*s, c, *sz);
 	if (p != NULL)
-		return jstr_place_len(s, sz, cap, JSTR_DIFF(p, *s + 1), src, src_len);
+		return jstr_place_len(s, sz, cap, JSTR_DIFF(p, *s) + 1, src, src_len);
 	return JSTR_RET_SUCC;
 }
 #else
@@ -2064,7 +2064,7 @@ jstr_placeafter_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fin
 		return JSTR_RET_SUCC;
 	const char *p = (char *)jstr_memmem(*s, *sz, find, find_len);
 	if (p != NULL)
-		return jstr_place_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len);
+		return jstr_place_len(s, sz, cap, JSTR_DIFF(p, *s) + find_len, src, src_len);
 	return JSTR_RET_SUCC;
 }
 #else
@@ -2090,6 +2090,8 @@ jstr_repeat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t n) JSTR_NOEXCE
 {
 	if (jstr_unlikely(n <= 1))
 		return JSTR_RET_SUCC;
+	if (*sz != 0 && *sz > (SIZE_MAX - 1) / n)
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * n + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_repeat_len_unsafe_p(*s, *sz, n), *s);

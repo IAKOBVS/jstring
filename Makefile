@@ -16,14 +16,22 @@ OBJDIR   := $(BUILD)/obj
 LIBDIR   := $(BUILD)/lib
 SRCGEN   := $(BUILD)/src
 HDRGEN   := $(BUILD)/include/jstr
+BINDIR   := $(BUILD)/bin
+
+# C lexer/parser header generator (no Python, no regex).
+PARSER_DIR := $(SCRIPTS)/parser
+PARSER_BIN := $(BINDIR)/jstrgen
+PARSER_SRC := $(PARSER_DIR)/util.c $(PARSER_DIR)/parser.c $(PARSER_DIR)/emit.c \
+              $(PARSER_DIR)/main.c $(PARSER_DIR)/jstrgen.h
 
 CC       ?= cc
 CFLAGS   ?= -O2
 
 # Use ccache when available (override with CCACHE= to disable).
-CCACHE   ?= $(shell command -v ccache 2>/dev/null)
-ifneq ($(CCACHE),)
-CC       := $(CCACHE) $(CC)
+CCACHE     ?= $(shell command -v ccache 2>/dev/null)
+CCACHE_BIN := $(shell command -v $(CCACHE) 2>/dev/null)
+ifneq ($(CCACHE_BIN),)
+CC         := $(CCACHE_BIN) $(CC)
 endif
 # -D_XOPEN_SOURCE=700 exposes POSIX-gated jstr_io_* functions (readsystem,
 # readdir, etc.) so they are exported from libjstr.so. The old ./scripts/test
@@ -59,7 +67,7 @@ ALL_GENS   := $(MACRO_GENS) $(INT_GENS) $(MUSL_GENS) $(REG_GENS)
 # Targets
 # ═══════════════════════════════════════════════════════════════
 
-.PHONY: all clean test testbuild test1 install uninstall headers setup
+.PHONY: all clean test testbuild test1 test-parser test-runner bench-parser install uninstall headers setup
 
 # Keep generated source wrappers (not intermediate)
 .PRECIOUS: $(SRCGEN)/%.c
@@ -83,25 +91,32 @@ $(OBJDIR)/%.o: $(SRCGEN)/%.c $(BUILD)/.setup-stamp | $(OBJDIR)
 	@echo "  CC    $<"
 	@$(CC) $(CFLAGS) -DJSTR_IMPLEMENTATION=1 -c $< -o $@
 
-# ─── Generated headers: macro files -> namespace_macros only ───
-$(MACRO_GENS): $(HDRGEN)/%.h: $(INCLUDE)/%.h | $(HDRGEN)
-	@mkdir -p $(dir $@)
-	@cd $(SCRIPTS) && python3 namespace_macros.py "$<" > "$@"
+# ─── Header generator binary ───
+$(PARSER_BIN): $(PARSER_SRC) | $(BINDIR)
+	@echo "  CC    jstrgen"
+	@$(CC) -std=c99 -O2 -Wall -Wextra -Wpedantic -Wsign-conversion -o $@ \
+		$(PARSER_DIR)/util.c $(PARSER_DIR)/parser.c $(PARSER_DIR)/emit.c \
+		$(PARSER_DIR)/main.c
 
-# ─── Generated headers: internal -> namespace_macros only ───
-$(INT_GENS): $(HDRGEN)/%.h: $(INCLUDE)/%.h | $(HDRGEN)
+# ─── Generated headers: macro files -> namespace only ───
+$(MACRO_GENS): $(HDRGEN)/%.h: $(INCLUDE)/%.h $(PARSER_BIN) | $(HDRGEN)
 	@mkdir -p $(dir $@)
-	@cd $(SCRIPTS) && python3 namespace_macros.py "$<" > "$@"
+	@$(PARSER_BIN) namespace "$<" > "$@"
 
-# ─── Generated headers: musl -> namespace_macros only ───
-$(MUSL_GENS): $(HDRGEN)/%.h: $(INCLUDE)/%.h | $(HDRGEN)
+# ─── Generated headers: internal -> namespace only ───
+$(INT_GENS): $(HDRGEN)/%.h: $(INCLUDE)/%.h $(PARSER_BIN) | $(HDRGEN)
 	@mkdir -p $(dir $@)
-	@cd $(SCRIPTS) && python3 namespace_macros.py "$<" > "$@"
+	@$(PARSER_BIN) namespace "$<" > "$@"
 
-# ─── Generated headers: regular -> gen_func | namespace_macros ───
-$(REG_GENS): $(HDRGEN)/%.h: $(INCLUDE)/%.h | $(HDRGEN)
+# ─── Generated headers: musl -> namespace only ───
+$(MUSL_GENS): $(HDRGEN)/%.h: $(INCLUDE)/%.h $(PARSER_BIN) | $(HDRGEN)
 	@mkdir -p $(dir $@)
-	@cd $(SCRIPTS) && python3 gen_func.py "$<" | python3 namespace_macros.py > "$@"
+	@$(PARSER_BIN) namespace "$<" > "$@"
+
+# ─── Generated headers: regular -> gen-func | namespace ───
+$(REG_GENS): $(HDRGEN)/%.h: $(INCLUDE)/%.h $(PARSER_BIN) | $(HDRGEN)
+	@mkdir -p $(dir $@)
+	@$(PARSER_BIN) gen-func "$<" | $(PARSER_BIN) namespace > "$@"
 
 headers: $(ALL_GENS)
 
@@ -117,7 +132,7 @@ setup: $(BUILD)/.setup-stamp
 -include $(DEPS)
 
 # ─── Directory creation ───
-$(BUILD) $(OBJDIR) $(LIBDIR) $(SRCGEN) $(HDRGEN):
+$(BUILD) $(OBJDIR) $(LIBDIR) $(SRCGEN) $(HDRGEN) $(BINDIR):
 	@mkdir -p $@
 
 # ═══════════════════════════════════════════════════════════════
@@ -159,6 +174,11 @@ TV_LABEL_v3 := slow -march=native
 # fuzz-regex.c itself matches but is already filtered out of TESTSRC.
 FUZZ_TESTS := $(shell grep -rl 'fuzz-regex\.h' $(REPO)/tests 2>/dev/null)
 
+# Absolute tests/... source path -> target-name-safe unique key. The path
+# relative to tests/ is preserved (slashes become underscores) so files with
+# the same basename in different subdirectories do not shadow each other.
+testkey = $(subst /,_,$(patsubst $(REPO)/tests/%.c,%,$(1)))
+
 test-obj = $(TEST_OBJDIR)/$(1)_$(2).o
 test-bin = $(TEST_BINDIR)/$(1)_$(2)
 
@@ -168,13 +188,13 @@ FUZZ_OBJ_v1 := $(TEST_OBJDIR)/fuzz-regex_v1.o
 FUZZ_OBJ_v2 := $(TEST_OBJDIR)/fuzz-regex_v2.o
 FUZZ_OBJ_v3 := $(TEST_OBJDIR)/fuzz-regex_v3.o
 
-# $(1)=src basename, $(2)=src path, $(3)=variant.
+# $(1)=test key, $(2)=src path, $(3)=variant.
 # Returns the shared fuzz-regex object for fuzz tests, else empty.
 test-sup = $(if $(filter $(2),$(FUZZ_TESTS)),$(FUZZ_OBJ_$(3)))
 
 TESTBINS :=
 
-# $(1)=src basename, $(2)=src path, $(3)=variant
+# $(1)=test key, $(2)=src path, $(3)=variant
 # NOTE: every per-iteration value must be referenced via $(call ...) with
 # call params — these resolve during eval's single expansion to the correct
 # literal for THIS rule. Never reference a $$(global) deferred in recipes
@@ -200,14 +220,28 @@ $(FUZZ_OBJ_$(1)): $(FUZZ_SRC) $(HDRGEN)/jstr.h | $(TEST_OBJDIR) $(ALL_GENS)
 endef
 $(foreach v,$(TVARS),$(eval $(call FUZZ_rules,$(v))))
 
+# Test rules and the thousands of test dependency files are only needed when
+# building tests. The recursive run-only make (goals run-*) skips both, so it
+# doesn't reparse 3,500+ .d files just to launch already-built binaries.
+TEST_BUILD_GOALS := $(filter test testbuild,$(MAKECMDGOALS))
+TEST_RUN_GOALS   := $(filter test run-%,$(MAKECMDGOALS))
+
+ifneq ($(TEST_BUILD_GOALS),)
 # Per test × variant compile+l link rules.
-$(foreach src,$(TESTSRC),$(foreach v,$(TVARS),$(eval $(call TEST_rules,$(basename $(notdir $(src))),$(src),$(v)))))
+$(foreach src,$(TESTSRC),$(foreach v,$(TVARS),$(eval $(call TEST_rules,$(call testkey,$(src)),$(src),$(v)))))
 
 # Auto-dependency tracking for test objects.
 -include $(wildcard $(TEST_OBJDIR)/*.d)
 
 $(BUILD)/test-obj $(BUILD)/test-bin: | $(BUILD)
 	@mkdir -p $@
+endif
+
+# Guard against future basename/path collisions silently shadowing a test.
+TESTKEYS := $(foreach src,$(TESTSRC),$(call testkey,$(src)))
+ifneq ($(words $(TESTKEYS)),$(words $(sort $(TESTKEYS))))
+$(error duplicate generated test target key; rename the test or extend testkey)
+endif
 
 # ─── Running tests ───
 # TESTS may narrow the run to specific test names/paths, e.g.
@@ -216,22 +250,30 @@ $(BUILD)/test-obj $(BUILD)/test-bin: | $(BUILD)
 RUN_SRCS := $(if $(strip $(TESTS)),$(foreach t,$(TESTS),$(filter %/$(basename $(notdir $(t))).c,$(TESTSRC))),$(TESTSRC))
 
 RUN_TARGETS :=
-# $(1)=test basename, $(2)=src path, $(3)=variant
+# $(1)=test key, $(2)=src path, $(3)=variant
 define RUN_rules
 .PHONY: run-$(1)-$(3)
 run-$(1)-$(3): $(call test-bin,$(1),$(3))
-	@if LD_LIBRARY_PATH=$(LIBDIR) $$< >/dev/null 2>&1; then \
+	@mkdir -p $(BUILD)/test-logs; \
+	log=$(BUILD)/test-logs/$(1)_$(3).log; \
+	if LD_LIBRARY_PATH=$(LIBDIR) $$< >$$log 2>&1; then \
+		rm -f $$log; \
 		echo 'PASS: $(1) [$(TV_LABEL_$(3))]'; \
 	else \
-		echo 'FAIL: $(1) [$(TV_LABEL_$(3))]'; exit 1; \
+		echo '--- output: $(1)_$(3) [$(TV_LABEL_$(3))] ---'; \
+		tail -n 40 $$log; \
+		echo 'FAIL: $(1) [$(TV_LABEL_$(3))]'; \
+		exit 1; \
 	fi
 RUN_TARGETS += run-$(1)-$(3)
 endef
-$(foreach src,$(RUN_SRCS),$(foreach v,$(TVARS),$(eval $(call RUN_rules,$(basename $(notdir $(src))),$(src),$(v)))))
+ifneq ($(TEST_RUN_GOALS),)
+$(foreach src,$(RUN_SRCS),$(foreach v,$(TVARS),$(eval $(call RUN_rules,$(call testkey,$(src)),$(src),$(v)))))
 
 ifneq ($(strip $(TESTS)),)
 ifeq ($(strip $(RUN_TARGETS)),)
 $(error no matching tests for TESTS='$(TESTS)')
+endif
 endif
 endif
 
@@ -244,8 +286,20 @@ TEST_JOBFLAG := $(if $(filter -j% --jobs%,$(MAKEFLAGS)),,-j$(NPROC))
 clean:
 	rm -rf $(BUILD)
 
-test: testbuild
+test: testbuild test-parser test-runner
 	@$(MAKE) --no-print-directory -k $(TEST_JOBFLAG) $(RUN_TARGETS)
+
+# Golden tests for the C lexer/parser header generator.
+test-parser: $(PARSER_BIN)
+	@$(PARSER_DIR)/tests/run $(PARSER_BIN)
+
+# Regression tests for the runner itself (scripts/test).
+test-runner:
+	@$(SCRIPTS)/test-selftest
+
+# Compare the C generator against the Python reference pipeline.
+bench-parser: $(PARSER_BIN)
+	@$(PARSER_DIR)/bench
 
 # Build all test variant binaries incrementally (does not run them).
 testbuild: headers $(LIB) $(TESTBINS)

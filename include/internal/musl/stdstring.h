@@ -176,7 +176,7 @@ JSTR_NOEXCEPT
 	}
 #endif
 	for (; n && *s && *s != (char)c; s++, n--) {}
-	return n ? (char *)s : NULL;
+	return (n && *s) ? (char *)s : NULL;
 }
 
 /**
@@ -216,7 +216,7 @@ JSTR_NOEXCEPT
 	}
 #endif
 	for (; n && *p && jstr_tolower(*p) != c; p++, n--) {}
-	return n ? (char *)p : NULL;
+	return (n && *p) ? (char *)p : NULL;
 }
 
 #define BITOP(a, b, op) \
@@ -244,7 +244,7 @@ JSTR_NOEXCEPT
 	if (!c[0])
 		return 0;
 	if (!c[1]) {
-		for (; *p == *c; p++) {}
+		for (; n && *p == *c; p++, n--) {}
 		return (size_t)(p - a);
 	}
 	size_t byteset[32 / sizeof(size_t)];
@@ -273,7 +273,9 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	const unsigned char *a = p;
-	if (!c[0] || !c[1]) {
+	if (!c[0])
+		return n;
+	if (!c[1]) {
 		p = (const unsigned char *)memchr(p, *c, n);
 		return (p ? (size_t)(p - a) : n);
 	}
@@ -302,7 +304,7 @@ jstr_internal_memrspn_musl(const void *s, const char *c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
-	if (!c[0])
+	if (!c[0] || !n)
 		return 0;
 	p += (n - 1);
 	if (!c[1]) {
@@ -336,6 +338,8 @@ JSTR_NOEXCEPT
 	const unsigned char *p = (const unsigned char *)s;
 	if (!c[0])
 		return n;
+	if (!n)
+		return 0;
 	if (!c[1]) {
 #if JSTR_HAVE_MEMRCHR
 		p = (const unsigned char *)memrchr(p, *c, n);

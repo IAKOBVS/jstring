@@ -213,10 +213,10 @@ simple_strnchr(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	for (; n--; ++s) {
-		if (*s == (char)c)
-			return (char *)s;
 		if (jstr_unlikely(*s == '\0'))
 			break;
+		if (*s == (char)c)
+			return (char *)s;
 	}
 	return NULL;
 }
@@ -253,7 +253,8 @@ static JSTR_ATTR_MAYBE_UNUSED char *
 simple_strncasechr(const char *s, int c, size_t n)
 {
 	const char *p = simple_strcasechrnul(s, c);
-	return (p < s + n && TOLOWER(*p) == TOLOWER(c)) ? (char *)p : NULL;
+	return (p < s + n && *p != '\0' && TOLOWER(*p) == TOLOWER(c)) ? (char *)p
+	                                                              : NULL;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED char *

@@ -1,6 +1,3 @@
 #!/bin/sh
 cd "$(dirname "$0")" || exit
-if [ $# -eq 0 ]; then
-	exec make test
-fi
-exec make test TESTS="$*"
+exec ./scripts/test "$@"

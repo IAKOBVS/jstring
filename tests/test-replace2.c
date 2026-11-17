@@ -327,7 +327,8 @@ main(int argc, char **argv)
 		size_t sz = 0, cap = 0;
 		assert(!jstr_chk(jstr_assign_len(&s, &sz, &cap, "a,b", 3)));
 		assert(!jstr_chk(jstr_placeafterchr_len(&s, &sz, &cap, ',', "XYZ", 3)));
-		assert(sz == 3);
+		assert(sz == 5);
+		assert(!memcmp(s, "a,XYZ", 5));
 
 		jstr_empty(s, &sz);
 		cap = 0;

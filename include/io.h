@@ -856,7 +856,7 @@ jstr_io_expandtildefirst(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEP
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	jstr_strmove_len(*s + len, *s + 1, JSTR_DIFF(*s + *sz, *s + 1));
 	memcpy(*s, home, len);
-	*sz += len;
+	*sz += len - 1;
 	return JSTR_RET_SUCC;
 }
 #	else

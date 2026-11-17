@@ -1,5 +1,5 @@
 #!/bin/sh
-# test-check-fail [test.c files...]
+# test-check-fail [scripts/test options and test-name filters...]
 # Run the test suite via scripts/test, printing ONLY failures.
 # Exit status: 0 when every variant passes, 1 otherwise.
 
@@ -10,14 +10,32 @@ LOG=$(mktemp "${TMPDIR:-/tmp}/jstr-checkfail.XXXXXXXXXX")
 trap 'rm -f "$LOG"' EXIT INT TERM
 
 "$SCRIPTDIR/scripts/test" "$@" >"$LOG" 2>&1
+status=$?
 
-fails=$(grep -E -c '^FAIL' "$LOG")
-compiles=$(grep -Fc 'COMPILE FAILED' "$LOG")
+# grep -c prints 0 and exits 1 when there is no match; keep the number.
+fails=$(grep -E -c '^FAIL' "$LOG" 2>/dev/null || true)
+build_fail=$(grep -E -c '^BUILD FAILED' "$LOG" 2>/dev/null || true)
+[ -n "$fails" ] || fails=0
+[ -n "$build_fail" ] || build_fail=0
+problem=$((fails + build_fail))
 
-if [ "$((fails + compiles))" -gt 0 ]; then
-	echo "== $((fails + compiles)) failing variant(s) =="
+if [ "$status" -eq 2 ]; then
+	echo '== test runner rejected the request (exit 2) =='
+	tail -n 40 "$LOG"
+	exit 1
+fi
+
+if [ "$status" -ne 0 ] && [ "$problem" -eq 0 ]; then
+	echo "== test build/run failed (exit $status) =="
+	grep -B 5 -A 20 -E 'error:|Error [0-9]|undefined reference' "$LOG" | head -200
+	tail -n 20 "$LOG"
+	exit 1
+fi
+
+if [ "$problem" -gt 0 ]; then
+	echo "== $problem failing test(s) =="
 	# Print each failure with context (compiler errors / assert output precede the marker).
-	grep -B 40 -E '^(FAIL|COMPILE FAILED)' "$LOG"
+	grep -B 40 -E '^(FAIL|BUILD FAILED)' "$LOG"
 	exit 1
 fi
 

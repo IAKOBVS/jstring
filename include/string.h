@@ -361,7 +361,9 @@ jstr_strnchr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 	return jstr_internal_simd_strnchr(s, c, n);
 #	else
 	const char *p = strchr(s, c);
-	return p != NULL && (size_t)JSTR_DIFF(p, s) < n ? (char *)p : NULL;
+	return p != NULL && *p != '\0' && (size_t)JSTR_DIFF(p, s) < n
+	               ? (char *)p
+	               : NULL;
 #	endif
 }
 #else
@@ -1672,8 +1674,10 @@ char *
 jstr_strrpbrk_len(const char *s, const char *accept, size_t sz) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	if (sz == 0 || accept[0] == '\0')
+		return NULL;
 	const size_t len = jstr_strrcspn_len(s, accept, sz);
-	return (len != sz) ? (char *)(s + sz - len) : NULL;
+	return len ? (char *)(s + len - 1) : NULL;
 }
 #else
 ;
@@ -1780,8 +1784,8 @@ jstr_mempbrk(const void *s, const char *accept, size_t sz) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	const unsigned char *p = (const unsigned char *)s;
-	p += jstr_memcspn(p, accept, sz);
-	return *p ? (char *)p : NULL;
+	const size_t off = jstr_memcspn(p, accept, sz);
+	return off < sz ? (char *)p + off : NULL;
 }
 #else
 ;
@@ -1913,10 +1917,6 @@ jstr_memchrinv(const void *s, int c, size_t n) JSTR_NOEXCEPT
 /**
  * @brief jstr_memrchrinv
  *
- * Return value:
- * ptr to first non-C in S from S + N - 1
- * NULL if C is not found.
- *
  * @param s const void *s Input NUL-terminated string.
  * @param c int c Byte/character to find or count.
  * @param n size_t n Number of bytes to inspect.
@@ -1934,6 +1934,8 @@ void *
 jstr_memrchrinv(const void *s, int c, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	if (jstr_unlikely(n == 0))
+		return NULL;
 	const unsigned char *p = (const unsigned char *)s + n - 1;
 	for (; n && *p != (unsigned char)c; --n, --p) {}
 	return n ? (char *)p : NULL;
@@ -1944,10 +1946,6 @@ jstr_memrchrinv(const void *s, int c, size_t n) JSTR_NOEXCEPT
 
 /**
  * @brief jstr_strrchrinv
- *
- * Return value:
- * ptr to first non-C in S from S + strlen(S) - 1
- * NULL if C is not found.
  *
  * @param s const char *s Input NUL-terminated string.
  * @param c int c Byte/character to find or count.
@@ -2770,6 +2768,10 @@ char *
 jstr_repeat_len_unsafe_p(char *s, size_t sz, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	if (jstr_unlikely(sz == 0)) {
+		*s = '\0';
+		return s;
+	}
 	if (jstr_unlikely(n < 2))
 		return s + sz;
 	size_t total = sz * n;
