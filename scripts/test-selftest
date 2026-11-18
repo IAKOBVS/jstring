@@ -193,6 +193,38 @@ else
 	printf '%s\n' "$out"
 fi
 
+# ─── 11. default build uses Ninja; --make opts out ───
+B=$TMP/buildtool
+for v in v0 v1 v2 v3; do passbin "$B" "test-strchr_$v"; done
+mkdir -p "$TMP/ninja-bin" "$TMP/make-bin"
+printf '#!/bin/sh\ntouch "%s/ninja-called"\nexit 0\n' "$TMP" >"$TMP/ninja-bin/ninja"
+printf '#!/bin/sh\ntouch "%s/make-called"\nexit 0\n' "$TMP" >"$TMP/make-bin/make"
+chmod +x "$TMP/ninja-bin/ninja" "$TMP/make-bin/make"
+rm -f "$TMP/ninja-called" "$TMP/make-called"
+out=$(JSTR_TEST_BINDIR="$B" JSTR_TEST_LOGDIR="$TMP/buildtool-ninja-logs" \
+	JSTR_TEST_SKIP_PARSER=1 JSTR_TEST_TIMES="$TMP/times" \
+	JSTR_TEST_BUILD='' NINJA="$TMP/ninja-bin/ninja" \
+	"$TEST" test-strchr 2>&1)
+rc=$?
+if [ "$rc" -eq 0 ] && [ -f "$TMP/ninja-called" ] &&
+	[ "$(count "$out" '^PASS')" -eq 4 ]; then
+	ok 'default build uses ninja'
+else
+	bad "default ninja build (rc=$rc, called=$([ -f "$TMP/ninja-called" ] && echo yes || echo no))"
+	printf '%s\n' "$out"
+fi
+out=$(JSTR_TEST_BINDIR="$B" JSTR_TEST_LOGDIR="$TMP/buildtool-make-logs" \
+	JSTR_TEST_SKIP_PARSER=1 JSTR_TEST_TIMES="$TMP/times" \
+	MAKE="$TMP/make-bin/make" "$TEST" --make test-strchr 2>&1)
+rc=$?
+if [ "$rc" -eq 0 ] && [ -f "$TMP/make-called" ] &&
+	[ "$(count "$out" '^PASS')" -eq 4 ]; then
+	ok '--make builds with make'
+else
+	bad "--make build (rc=$rc, called=$([ -f "$TMP/make-called" ] && echo yes || echo no))"
+	printf '%s\n' "$out"
+fi
+
 if [ "$fails" -eq 0 ]; then
 	echo 'runner selftest: OK'
 	exit 0

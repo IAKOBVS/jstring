@@ -694,7 +694,11 @@ jstr_memdup(const void *R s, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	void *p = malloc(n);
-	return (jstr_likely(p != NULL)) ? memcpy(p, s, n) : NULL;
+	if (jstr_unlikely(p == NULL))
+		return NULL;
+	if (jstr_likely(n != 0))
+		memcpy(p, s, n);
+	return p;
 }
 #else
 ;

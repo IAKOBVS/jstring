@@ -8,7 +8,9 @@
 #   -k, --fail-fast   stop starting new tests after the first failure
 #   --timeout SECS    kill a test after SECS seconds (default: 0 = disabled)
 #   -v, --verbose     print per-test durations and show passing test output
-#   --no-build        skip the incremental `make testbuild` step
+#   --no-build        skip the incremental build step
+#   --ninja           build with Ninja (default)
+#   --make            build with Make instead of Ninja
 #   --no-parser       skip the parser golden tests
 #   -h, --help        show this help
 #
@@ -38,6 +40,8 @@
 #   JSTR_TEST_TIMES=FILE    timing cache (default build/test-times)
 #   JSTR_TEST_NO_TIMES=1    disable reading/writing the timing cache
 #   MAKE=make               make command used for the incremental build
+#   NINJA=ninja             ninja command used for the build
+#   JSTR_TEST_BUILD=ninja   build tool: ninja (default) or make
 
 set -u
 
@@ -51,6 +55,8 @@ TIMEFILE=${JSTR_TEST_TIMES:-$ROOT/build/test-times}
 USE_TIMES=1
 [ "${JSTR_TEST_NO_TIMES:-0}" = 1 ] && USE_TIMES=0
 : "${MAKE:=make}"
+: "${NINJA:=ninja}"
+BUILD_TOOL=${JSTR_TEST_BUILD:-ninja}
 
 JOBS=${JSTR_TEST_JOBS:-}
 FAIL_FAST=0
@@ -71,7 +77,9 @@ Options:
   -k, --fail-fast   stop starting new tests after the first failure
   --timeout SECS    kill a test after SECS seconds (default: 0 = disabled)
   -v, --verbose     print per-test durations and show passing test output
-  --no-build        skip the incremental `make testbuild` step
+  --no-build        skip the incremental build step
+  --ninja           build with Ninja (default)
+  --make            build with Make instead of Ninja
   --no-parser       skip the parser golden tests
   -h, --help        show this help
 
@@ -114,6 +122,14 @@ while [ $# -gt 0 ]; do
 		;;
 	--no-build)
 		DO_BUILD=0
+		shift
+		;;
+	--ninja)
+		BUILD_TOOL="ninja"
+		shift
+		;;
+	--make)
+		BUILD_TOOL="make"
 		shift
 		;;
 	--no-parser)
@@ -202,13 +218,36 @@ variant_label() {
 }
 
 # ─── Build (incremental) ───
+case $BUILD_TOOL in
+make | ninja) ;;
+*)
+	echo "test: invalid build tool: $BUILD_TOOL (expected make or ninja)" >&2
+	exit 2
+	;;
+esac
+
 BUILD_MS=0
 if [ "$DO_BUILD" = 1 ]; then
 	build_start=$(now_ms)
-	$MAKE -j"$JOBS" testbuild || {
-		echo 'BUILD FAILED: test binaries did not compile' >&2
-		exit 1
-	}
+	if [ "$BUILD_TOOL" = ninja ]; then
+		command -v "$NINJA" >/dev/null 2>&1 || {
+			echo "test: ninja not found: $NINJA (use --make to build with Make)" >&2
+			exit 1
+		}
+		./scripts/gen-ninja >/dev/null || {
+			echo 'BUILD FAILED: gen-ninja failed' >&2
+			exit 1
+		}
+		"$NINJA" -j"$JOBS" testbuild || {
+			echo 'BUILD FAILED: test binaries did not compile' >&2
+			exit 1
+		}
+	else
+		$MAKE -j"$JOBS" testbuild || {
+			echo 'BUILD FAILED: test binaries did not compile' >&2
+			exit 1
+		}
+	fi
 	BUILD_MS=$(($(now_ms) - build_start))
 fi
 

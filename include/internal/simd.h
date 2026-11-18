@@ -122,6 +122,7 @@ typedef uint16_t jstr_vmask_ty;
  * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
  */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_FUNC
 static char *
 jstr_internal_simd_stpcpy(char *R dst, const char *R src)
@@ -177,6 +178,7 @@ JSTR_NOEXCEPT
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 static char *
 jstr_internal_simd_strncasechr(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
@@ -235,6 +237,7 @@ ret_early:
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 static char *
 jstr_internal_simd_strnchr(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
@@ -288,6 +291,7 @@ ret_early:
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 static char *
 jstr_internal_simd_strchrnul(const char *s, int c)
 JSTR_NOEXCEPT
@@ -327,6 +331,7 @@ JSTR_NOEXCEPT
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_ATTR_INLINE
 static char *
 jstr_internal_simd_strchr(const char *s, int c)
@@ -349,6 +354,7 @@ JSTR_NOEXCEPT
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 static char *
 jstr_internal_simd_strcasechrnul(const char *s, int c)
 JSTR_NOEXCEPT
@@ -391,6 +397,7 @@ JSTR_NOEXCEPT
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_ATTR_INLINE
 static char *
 jstr_internal_simd_strcasechr(const char *s, int c)
@@ -414,6 +421,7 @@ JSTR_NOEXCEPT
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 static void *
 jstr_internal_simd_memcasechr(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
@@ -474,36 +482,33 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 static void *
 jstr_internal_simd_memrchr(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const unsigned char *p = (unsigned char *)s + n - VEC_SIZE;
-	MASK m, i;
-	VEC sv;
+	const unsigned char *const start = (const unsigned char *)s;
+	const unsigned char *p = start + n;
 	const VEC cv = SETONE8((char)c);
-	const unsigned int off = JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
-	p += off;
-	sv = LOAD((const VEC *)p);
-	m = (MASK)CMPEQ8_MASK(sv, cv) << off;
-	if (m) {
-		i = (VEC_SIZE - 1) - LZCNT(m);
-		return p - off + i >= (unsigned char *)s ? (char *)p - off + i
-		                                         : NULL;
-	}
-	p -= VEC_SIZE;
-	for (; p + VEC_SIZE >= (unsigned char *)s; p -= VEC_SIZE) {
-		sv = LOAD((const VEC *)p);
-		m = (MASK)CMPEQ8_MASK(sv, cv);
+	/* Only load full vectors that lie entirely inside [start, start + n).
+	 * Aligning down below `start` would read before the object (and can
+	 * fault when the allocation starts on a page boundary). */
+	while ((size_t)(p - start) >= VEC_SIZE) {
+		p -= VEC_SIZE;
+		const VEC sv = LOADU((const VEC *)p);
+		const MASK m = (MASK)CMPEQ8_MASK(sv, cv);
 		if (m)
-			goto ret;
+			return (char *)p + (VEC_SIZE - 1) - LZCNT(m);
+	}
+	/* Scalar tail: avoids over-reading past `p` when n is not a multiple
+	 * of VEC_SIZE. */
+	while (p > start) {
+		if (*--p == (unsigned char)c)
+			return (char *)p;
 	}
 	return NULL;
-ret:;
-	i = (VEC_SIZE - 1) - LZCNT(m);
-	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
 }
 
 #endif
@@ -528,6 +533,7 @@ ret:;
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 static size_t
 jstr_internal_simd_countchr(const char *s, int c)
 JSTR_NOEXCEPT
@@ -570,6 +576,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
  */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 static size_t
 jstr_internal_simd_countchr_len(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
@@ -781,6 +788,7 @@ JSTR_NOEXCEPT
 		} while (0)
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 /**

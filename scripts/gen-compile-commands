@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+"""Generate compile_commands.json from the Makefile's compile commands.
+
+The script asks Make for the real commands (`make -n -B testbuild`), so the
+JSON stays in sync with the variants, flags and generated include paths.  It
+first generates the setup stamp, headers and `build/src/*.c` wrappers unless
+--no-build is given, so clangd/ccls can resolve the library translation units.
+
+Usage:
+    ./scripts/gen-compile-commands [--output PATH] [--no-build]
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shlex
+import subprocess
+import sys
+from pathlib import Path
+from typing import Final, TypedDict
+
+ROOT: Final = Path(__file__).resolve().parent.parent
+
+
+class Entry(TypedDict, total=False):
+    directory: str
+    arguments: list[str]
+    file: str
+    output: str
+
+
+def run_make(args: list[str]) -> subprocess.CompletedProcess[str]:
+    env = dict(os.environ)
+    # Keep the recorded compiler command simple: clangd should see `cc`, not
+    # `ccache cc`.
+    env["CCACHE"] = ""
+    return subprocess.run(
+        ["make", "--no-print-directory", *args],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+
+def make_lines(args: list[str]) -> list[str]:
+    proc = run_make(args)
+    if proc.returncode != 0:
+        sys.stderr.write(proc.stderr)
+        sys.exit("gen-compile-commands: make %s failed" % " ".join(args))
+    return proc.stdout.splitlines()
+
+
+def prepare() -> None:
+    proc = run_make(["-s", "setup", "headers"])
+    if proc.returncode != 0:
+        sys.stderr.write(proc.stderr)
+        sys.exit("gen-compile-commands: setup/headers failed")
+
+    # Create the build/src/*.c wrapper translation units if missing.
+    wrappers: list[str] = []
+    for line in make_lines(["-s", "ninja-vars"]):
+        if line.startswith("@@GEN_CSRC@@"):
+            wrappers = line.split("@@", 2)[2].split()
+            break
+    if wrappers:
+        proc = run_make(["-s", *wrappers])
+        if proc.returncode != 0:
+            sys.stderr.write(proc.stderr)
+            sys.exit("gen-compile-commands: wrapper generation failed")
+
+
+def variant_rank(argv: list[str]) -> int:
+    slow = any(arg.startswith("-DJSTR_TEST_SLOW") for arg in argv)
+    native = "-march=native" in argv
+    return (2 if slow else 0) + (1 if native else 0)
+
+
+def parse_commands(text: str) -> list[Entry]:
+    entries: list[Entry] = []
+    seen: set[tuple[str, tuple[str, ...]]] = set()
+
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or "-c" not in line:
+            continue
+        try:
+            argv = shlex.split(line)
+        except ValueError:
+            continue
+        try:
+            ci = argv.index("-c")
+        except ValueError:
+            continue
+        if ci + 1 >= len(argv):
+            continue
+        src = argv[ci + 1]
+        if src.startswith("-"):
+            continue
+
+        src_abs = src if os.path.isabs(src) else str((ROOT / src).resolve())
+        if not os.path.exists(src_abs):
+            continue
+
+        key = (src_abs, tuple(argv))
+        if key in seen:
+            continue
+        seen.add(key)
+
+        entry: Entry = {
+            "directory": str(ROOT),
+            "arguments": argv,
+            "file": src_abs,
+        }
+        try:
+            oi = argv.index("-o")
+        except ValueError:
+            oi = -1
+        if 0 <= oi < len(argv) - 1:
+            out = argv[oi + 1]
+            entry["output"] = out if os.path.isabs(out) else str((ROOT / out).resolve())
+        entries.append(entry)
+
+    # Keep every variant but make the default (v0) entry the first one for a
+    # given file, so tools that pick the first match get the fast flags.
+    entries.sort(key=lambda e: (e["file"], variant_rank(e["arguments"])))
+    return entries
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--output", default=str(ROOT / "compile_commands.json"))
+    ap.add_argument("--no-build", action="store_true")
+    args: argparse.Namespace = ap.parse_args()
+
+    if not args.no_build:
+        prepare()
+
+    lines = make_lines(["-n", "-B", "testbuild"])
+    entries = parse_commands("\n".join(lines))
+
+    path = Path(args.output)
+    path.write_text(json.dumps(entries, indent=2) + "\n")
+    files = len({entry["file"] for entry in entries})
+    print(
+        "gen-compile-commands: wrote %s (%d entries, %d files)"
+        % (path, len(entries), files),
+        file=sys.stderr,
+    )
+
+
+if __name__ == "__main__":
+    main()

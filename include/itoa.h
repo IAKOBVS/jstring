@@ -437,14 +437,14 @@ JSTR_INTERNAL_DEFINE_ATOU(unsigned long long, atoull)
 #	undef JSTR_INTERNAL_DEFINE_ATOU
 
 #	ifdef JSTR_IMPLEMENTATION
-#		define JSTR_INTERNAL_DEFINE_ATOI(T, func_name)                                   \
+#		define JSTR_INTERNAL_DEFINE_ATOI(T, U, func_name)                                \
 			/** @brief Parse a signed integer of @p sz bytes from @p s (base 10, optional leading '-'). @param s Non-NULL pointer to the input bytes. @param sz Number of bytes to parse. @return The parsed signed value (0 if @p sz is 0, or if @p sz is 1 and the sole byte is '-'). @note @p s must not be NULL. */ \
 			JSTR_FUNC                                                                 \
 			T jstr_##func_name##_len(const char *R s, size_t sz) JSTR_NOEXCEPT \
 			{                                                                         \
 				if (jstr_unlikely(sz == 0))                                       \
 					return 0;                                                 \
-				T n;                                                              \
+				U n;                                                              \
 				int neg = 0;                                                      \
 				if (*s == '-') {                                                  \
 					if (jstr_unlikely(sz == 1))                               \
@@ -453,21 +453,21 @@ JSTR_INTERNAL_DEFINE_ATOU(unsigned long long, atoull)
 					--sz;                                                     \
 					++s;                                                      \
 				}                                                                 \
-				n = (T)(*s++ - '0');                                            \
+				n = (U)(*s++ - '0');                                            \
 				while (--sz)                                                      \
-					n = (n * 10) + (T)(*s++ - '0');                           \
-				return neg ? (T)(-n) : n;                                         \
+					n = (n * 10u) + (U)(*s++ - '0');                          \
+				return neg ? (T)(0u - n) : (T)n;                                  \
 			}
 #	else
-#		define JSTR_INTERNAL_DEFINE_ATOI(T, func_name) \
+#		define JSTR_INTERNAL_DEFINE_ATOI(T, U, func_name) \
 			/** @brief Parse a signed integer of @p sz bytes from @p s (base 10, optional leading '-'). @param s Non-NULL pointer to the input bytes. @param sz Number of bytes to parse. @return The parsed signed value (0 if @p sz is 0, or if @p sz is 1 and the sole byte is '-'). @note @p s must not be NULL. */ \
 			JSTR_FUNC                               \
 			T jstr_##func_name##_len(const char *R s, size_t sz) JSTR_NOEXCEPT;
 #	endif
 
-JSTR_INTERNAL_DEFINE_ATOI(int, atoi)
-JSTR_INTERNAL_DEFINE_ATOI(long, atol)
-JSTR_INTERNAL_DEFINE_ATOI(long long, atoll)
+JSTR_INTERNAL_DEFINE_ATOI(int, unsigned int, atoi)
+JSTR_INTERNAL_DEFINE_ATOI(long, unsigned long, atol)
+JSTR_INTERNAL_DEFINE_ATOI(long long, unsigned long long, atoll)
 
 #	undef JSTR_INTERNAL_DEFINE_ATOI
 

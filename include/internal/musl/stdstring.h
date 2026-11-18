@@ -27,6 +27,7 @@ JSTR_INTERNAL_END_DECLS
 JSTR_INTERNAL_BEGIN_DECLS
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 /**
  * @brief Find the last occurrence of byte @p c in the first @p n bytes of @p s (musl scalar implementation), returning a pointer or NULL.
@@ -80,6 +81,7 @@ JSTR_NOEXCEPT
  * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
  */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_FUNC_PURE
 static char *
 jstr_internal_strcasechrnul_musl(const char *s, int c)
@@ -115,6 +117,7 @@ JSTR_NOEXCEPT
  * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
  */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_FUNC_PURE
 static void *
 jstr_internal_memcasechr_musl(const void *s, int c, size_t n)
@@ -155,6 +158,7 @@ JSTR_NOEXCEPT
  * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
  */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_FUNC_PURE
 static char *
 jstr_internal_strnchr_musl(const char *s, int c, size_t n)
@@ -192,6 +196,7 @@ JSTR_NOEXCEPT
  * @note Pointer parameters must be non-NULL unless the length is 0; empty inputs and boundary lengths are handled by the implementation. This helper is internal and may change without notice.
  */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_NO_SANITIZE_THREAD
 JSTR_FUNC_PURE
 static char *
 jstr_internal_strncasechr_musl(const char *s, int c, size_t n)

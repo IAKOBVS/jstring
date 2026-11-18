@@ -6,6 +6,7 @@
  * checked against a naive per-insertion reference. */
 
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "jstr.h"
@@ -26,6 +27,8 @@ naive_insertafterallchr(char *s, size_t *sz, int c, const char *src, size_t src_
 		nsz += src_len;
 		off += src_len;
 	}
+	assert(nsz < sizeof(tmp));
+	tmp[nsz] = '\0';
 	memcpy(s, tmp, nsz + 1);
 	*sz = nsz;
 }
@@ -44,6 +47,14 @@ check_case(const char *input, int c, const char *src)
 	assert(jstr_insertafterallchr_len(&a, &sza, &capa, c, src, src_len) == JSTR_RET_SUCC);
 	naive_insertafterallchr(b, &szb, c, src, src_len);
 
+	if (sza != szb || memcmp(a, b, sza + 1) != 0) {
+		fprintf(stderr,
+		        "check_case failed: input=\"%s\" c='%c' src=\"%s\" "
+		        "sza=%zu szb=%zu\n  got: \"%s\"\n  exp: \"%s\"\n",
+		        input, c, src, sza, szb,
+		        sza <= 4096 ? a : "<too long>",
+		        szb <= 4096 ? b : "<too long>");
+	}
 	assert(sza == szb);
 	assert(memcmp(a, b, sza + 1) == 0);
 

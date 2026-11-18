@@ -1,0 +1,383 @@
+#!/usr/bin/env python3
+"""Generate build.ninja from the Makefile's discovery (Ninja prototype).
+
+The Makefile remains the single source of truth.  `make ninja-vars` prints the
+source lists, variants and flags; this script turns them into an equivalent
+Ninja graph for the `testbuild` target (library + generated headers + all test
+variants).  Ninja does not create directories, so the generator creates the
+build directories up front; re-run it after `./clean`.
+
+Usage:
+    ./scripts/gen-ninja [--output PATH]
+    ninja -j"$(nproc)" testbuild
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import shlex
+import subprocess
+import sys
+from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Final
+
+ROOT: Final = Path(__file__).resolve().parent.parent
+
+
+@dataclass(frozen=True)
+class Variant:
+    name: str
+    flags: str
+
+
+@dataclass(frozen=True)
+class MakeVars:
+    repo: str
+    build: str
+    objdir: str
+    libdir: str
+    srcgen: str
+    hdrgen: str
+    bindir: str
+    test_objdir: str
+    test_bindir: str
+    cc: str
+    cflags: str
+    test_base: str
+    test_decl: str
+    parser_bin: str
+    parser_src: list[str]
+    lib: str
+    compiles: list[str]
+    gen_csrc: list[str]
+    objs: list[str]
+    macro_hdrs: list[str]
+    int_hdrs: list[str]
+    musl_hdrs: list[str]
+    reg_hdrs: list[str]
+    all_gens: list[str]
+    testsrc: list[str]
+    fuzz_tests: list[str]
+    fuzz_src: str
+    variants: list[Variant]
+
+
+def load_vars() -> MakeVars:
+    try:
+        raw = subprocess.check_output(
+            ["make", "-s", "--no-print-directory", "ninja-vars"],
+            cwd=ROOT,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        sys.exit(f"gen-ninja: 'make ninja-vars' failed ({exc.returncode})")
+
+    data: dict[str, str] = {}
+    variants: list[Variant] = []
+    for line in raw.splitlines():
+        if not line.startswith("@@"):
+            continue
+        key, _, value = line[2:].partition("@@")
+        if key == "TV":
+            name, _, flags = value.partition("|")
+            variants.append(Variant(name, flags))
+        else:
+            data[key] = value
+
+    def scalar(key: str) -> str:
+        try:
+            return data[key]
+        except KeyError:
+            sys.exit(f"gen-ninja: missing {key} from 'make ninja-vars'")
+
+    def words(key: str) -> list[str]:
+        return scalar(key).split()
+
+    return MakeVars(
+        repo=scalar("REPO"),
+        build=scalar("BUILD"),
+        objdir=scalar("OBJDIR"),
+        libdir=scalar("LIBDIR"),
+        srcgen=scalar("SRCGEN"),
+        hdrgen=scalar("HDRGEN"),
+        bindir=scalar("BINDIR"),
+        test_objdir=scalar("TEST_OBJDIR"),
+        test_bindir=scalar("TEST_BINDIR"),
+        cc=scalar("CC"),
+        cflags=scalar("CFLAGS"),
+        test_base=scalar("TEST_BASE"),
+        test_decl=scalar("TEST_DECL"),
+        parser_bin=scalar("PARSER_BIN"),
+        parser_src=words("PARSER_SRC"),
+        lib=scalar("LIB"),
+        compiles=words("COMPILES"),
+        gen_csrc=words("GEN_CSRC"),
+        objs=words("OBJS"),
+        macro_hdrs=words("MACRO_HDRS"),
+        int_hdrs=words("INT_HDRS"),
+        musl_hdrs=words("MUSL_HDRS"),
+        reg_hdrs=words("REG_HDRS"),
+        all_gens=words("ALL_GENS"),
+        testsrc=words("TESTSRC"),
+        fuzz_tests=words("FUZZ_TESTS"),
+        fuzz_src=scalar("FUZZ_SRC"),
+        variants=variants,
+    )
+
+
+def words(value: str) -> list[str]:
+    return value.split() if value.strip() else []
+
+
+def check(fragment: str, what: str) -> str:
+    if not fragment:
+        sys.exit(f"gen-ninja: empty {what}")
+    for ch in ("$", "\n", "\r"):
+        if ch in fragment:
+            sys.exit(f"gen-ninja: {what} contains unsupported character {ch!r}")
+    return fragment
+
+
+def np(path: str) -> str:
+    """Escape a path for a Ninja build line."""
+    check(path, "path")
+    return path.replace(":", "$:")
+
+
+def cp(text: str) -> str:
+    """Escape a literal command fragment for Ninja."""
+    return text.replace("$", "$$")
+
+
+def shq(text: str) -> str:
+    return shlex.quote(cp(text))
+
+
+def join_tokens(text: str) -> str:
+    """Quote a space-separated command fragment token by token."""
+    return shlex.join(shlex.split(cp(text))) if text.strip() else ""
+
+
+def testkey(src: str) -> str:
+    rel = os.path.relpath(src, ROOT / "tests")
+    if not rel.endswith(".c"):
+        sys.exit(f"gen-ninja: unexpected test source {src}")
+    return rel[:-2].replace(os.sep, "_")
+
+
+def header_to_gen(hdr: str, hdrgen: str) -> str:
+    rel = os.path.relpath(hdr, ROOT / "include")
+    return os.path.join(hdrgen, rel)
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--output", default=str(ROOT / "build.ninja"))
+    args: argparse.Namespace = ap.parse_args()
+
+    v = load_vars()
+    repo = Path(v.repo)
+    build = v.build
+    lib = v.lib
+    libdir = v.libdir
+    objdir = v.objdir
+    srcgen = v.srcgen
+    hdrgen = v.hdrgen
+    bindir = v.bindir
+    test_objdir = v.test_objdir
+    test_bindir = v.test_bindir
+    cc = v.cc
+    cflags = v.cflags
+    test_base = v.test_base
+    test_decl = v.test_decl
+    parser_bin = v.parser_bin
+    parser_src = v.parser_src
+    compiles = v.compiles
+    gen_csrc = v.gen_csrc
+    objs = v.objs
+    macro_hdrs = v.macro_hdrs
+    int_hdrs = v.int_hdrs
+    musl_hdrs = v.musl_hdrs
+    reg_hdrs = v.reg_hdrs
+    all_gens = v.all_gens
+    testsrc = v.testsrc
+    fuzz_tests: set[str] = {os.path.abspath(p) for p in v.fuzz_tests}
+    fuzz_src = v.fuzz_src
+    variants = v.variants
+
+    if len(compiles) != len(gen_csrc):
+        sys.exit("gen-ninja: COMPILES/GEN_CSRC length mismatch")
+    if len(gen_csrc) != len(objs):
+        sys.exit("gen-ninja: GEN_CSRC/OBJS length mismatch")
+
+    # Ninja cannot create directories; do it at generation time.
+    dirs: set[str] = {
+        objdir,
+        libdir,
+        srcgen,
+        hdrgen,
+        bindir,
+        test_objdir,
+        test_bindir,
+    }
+    for p in list(gen_csrc) + list(objs) + list(all_gens):
+        dirs.add(os.path.dirname(p))
+    for d in dirs:
+        os.makedirs(d, exist_ok=True)
+
+    out: list[str] = []
+    w: Callable[[str], None] = out.append
+
+    w("ninja_required_version = 1.7")
+    w("")
+    w("rule cc_lib")
+    w(
+        "  command = %s %s -DJSTR_IMPLEMENTATION=1 -MF $out.d -c $in -o $out"
+        % (join_tokens(cc), join_tokens(cflags))
+    )
+    w("  depfile = $out.d")
+    w("  deps = gcc")
+    w("")
+    w("rule ld_lib")
+    w(
+        "  command = %s -shared -Wl,-soname,libjstr.so -flto -o $out $in"
+        % join_tokens(cc)
+    )
+    w("")
+    w("rule parser")
+    w(
+        "  command = %s -std=c99 -O2 -Wall -Wextra -Wpedantic "
+        "-Wsign-conversion -o $out $in" % join_tokens(cc)
+    )
+    w("")
+    w("rule gen_ns")
+    w("  command = %s namespace $in > $out" % shq(parser_bin))
+    w("")
+    w("rule gen_reg")
+    w(
+        "  command = %s gen-func $in | %s namespace > $out"
+        % (shq(parser_bin), shq(parser_bin))
+    )
+    w("")
+    w("rule gen_src")
+    w(
+        '  command = printf \'#define JSTR_IMPLEMENTATION 1\\n'
+        '#include "../../include/%s"\\n\' "$$(basename $in)" > $out'
+    )
+    w("")
+    w("rule setup")
+    w("  command = scripts/setup && touch $out")
+    w("")
+
+    for variant in variants:
+        name = variant.name
+        tv = cp(variant.flags)
+        w("rule cc_test_%s" % name)
+        w(
+            "  command = %s %s %s %s -MMD -MP -MF $out.d -c $in -o $out"
+            % (join_tokens(cc), join_tokens(test_base), tv, join_tokens(test_decl))
+        )
+        w("  depfile = $out.d")
+        w("  deps = gcc")
+        w("")
+        w("rule ld_test_%s" % name)
+        w(
+            "  command = %s %s %s $in -L%s -Wl,-rpath,%s -ljstr -o $out"
+            % (join_tokens(cc), join_tokens(test_base), tv, shq(libdir), shq(libdir))
+        )
+        w("")
+
+    w("build %s: parser %s" % (np(parser_bin), " ".join(np(p) for p in parser_src)))
+    w(
+        "build %s: setup %s %s %s"
+        % (
+            np(os.path.join(build, ".setup-stamp")),
+            np(os.path.join(repo, "include/macros.h")),
+            np(os.path.join(repo, "include/macros-arch.h")),
+            np(os.path.join(repo, "include/macros-os.h")),
+        )
+    )
+
+    for hdr, src in zip(compiles, gen_csrc):
+        w("build %s: gen_src %s" % (np(src), np(hdr)))
+
+    for hdr in macro_hdrs + int_hdrs + musl_hdrs:
+        w(
+            "build %s: gen_ns %s | %s"
+            % (np(header_to_gen(hdr, hdrgen)), np(hdr), np(parser_bin))
+        )
+    for hdr in reg_hdrs:
+        w(
+            "build %s: gen_reg %s | %s"
+            % (np(header_to_gen(hdr, hdrgen)), np(hdr), np(parser_bin))
+        )
+
+    stamp = os.path.join(build, ".setup-stamp")
+    for src, obj in zip(gen_csrc, objs):
+        w("build %s: cc_lib %s | %s" % (np(obj), np(src), np(stamp)))
+
+    w("build %s: ld_lib %s" % (np(lib), " ".join(np(o) for o in objs)))
+
+    testbins: list[str] = []
+    for src in testsrc:
+        key = testkey(src)
+        for variant in variants:
+            name = variant.name
+            obj = os.path.join(test_objdir, "%s_%s.o" % (key, name))
+            binp = os.path.join(test_bindir, "%s_%s" % (key, name))
+            w(
+                "build %s: cc_test_%s %s | %s || %s"
+                % (
+                    np(obj),
+                    name,
+                    np(src),
+                    np(os.path.join(hdrgen, "jstr.h")),
+                    " ".join(np(g) for g in all_gens),
+                )
+            )
+            inputs: list[str] = [np(obj)]
+            if os.path.abspath(src) in fuzz_tests:
+                fobj = os.path.join(test_objdir, "fuzz-regex_%s.o" % name)
+                inputs.append(np(fobj))
+            w(
+                "build %s: ld_test_%s %s || %s"
+                % (np(binp), name, " ".join(inputs), np(lib))
+            )
+            testbins.append(binp)
+
+    for variant in variants:
+        name = variant.name
+        w(
+            "build %s: cc_test_%s %s | %s || %s"
+            % (
+                np(os.path.join(test_objdir, "fuzz-regex_%s.o" % name)),
+                name,
+                np(fuzz_src),
+                np(os.path.join(hdrgen, "jstr.h")),
+                " ".join(np(g) for g in all_gens),
+            )
+        )
+
+    w("")
+    w("build headers: phony %s" % " ".join(np(g) for g in all_gens))
+    w("build all: phony %s" % np(lib))
+    w("build testbuild: phony %s" % " ".join(np(b) for b in testbins))
+    w("build test: phony testbuild")
+    w("")
+    w("default all")
+    w("")
+
+    path = Path(args.output)
+    path.write_text("\n".join(out))
+    print(
+        "gen-ninja: wrote %s (%d test binaries, %d variants)"
+        % (path, len(testsrc), len(variants)),
+        file=sys.stderr,
+    )
+
+
+if __name__ == "__main__":
+    main()

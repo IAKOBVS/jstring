@@ -8,7 +8,7 @@
 #        make setup      # run one-time setup checks
 
 REPO     := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
-BUILD    := $(REPO)/build
+BUILD    ?= $(REPO)/build
 INCLUDE  := $(REPO)/include
 SCRIPTS  := $(REPO)/scripts
 
@@ -26,6 +26,7 @@ PARSER_SRC := $(PARSER_DIR)/util.c $(PARSER_DIR)/parser.c $(PARSER_DIR)/emit.c \
 
 CC       ?= cc
 CFLAGS   ?= -O2
+LDFLAGS  ?=
 
 # Use ccache when available (override with CCACHE= to disable).
 CCACHE     ?= $(shell command -v ccache 2>/dev/null)
@@ -67,7 +68,7 @@ ALL_GENS   := $(MACRO_GENS) $(INT_GENS) $(MUSL_GENS) $(REG_GENS)
 # Targets
 # ═══════════════════════════════════════════════════════════════
 
-.PHONY: all clean test testbuild test1 test-parser test-runner bench-parser install uninstall headers setup
+.PHONY: all clean test testbuild test1 test-parser test-runner bench-parser install uninstall headers setup ninja-vars compile-commands
 
 # Keep generated source wrappers (not intermediate)
 .PRECIOUS: $(SRCGEN)/%.c
@@ -78,7 +79,7 @@ all: headers $(LIB)
 # ─── Shared library ───
 $(LIB): $(OBJS) | $(LIBDIR)
 	@echo "  LD    $@"
-	@$(CC) -shared -Wl,-soname,libjstr.so -flto -o $@ $^
+	@$(CC) $(LDFLAGS) -shared -Wl,-soname,libjstr.so -flto -o $@ $^
 
 # ─── Source wrappers ───
 $(SRCGEN)/%.c: $(INCLUDE)/%.h | $(SRCGEN)
@@ -156,7 +157,8 @@ FUZZ_SRC    := $(REPO)/tests/fuzz-regex.c
 TEST_SKIP   := $(REPO)/tests/repro_crash.c $(REPO)/tests/repro-replace-color.c
 TESTSRC     := $(filter-out $(FUZZ_SRC) $(TEST_SKIP),$(TESTSRC_ALL))
 
-TEST_BASE  := -std=c99 -Wall -Wextra -Wno-unused-result -O2 -g -fsanitize=address -D_XOPEN_SOURCE=700
+TEST_SANITIZE ?= -fsanitize=address
+TEST_BASE  := -std=c99 -Wall -Wextra -Wno-unused-result -O2 -g $(TEST_SANITIZE) -D_XOPEN_SOURCE=700
 TEST_DECL  := -DJSTR_DECL_ONLY -include $(HDRGEN)/jstr.h -iquote $(HDRGEN)
 
 TVARS       := v0 v1 v2 v3
@@ -333,8 +335,46 @@ test1: headers $(LIB)
 		echo "FAIL: $$base $(FLAGS)"; exit 1; \
 	fi
 
+# Generate compile_commands.json for clangd/ccls (see scripts/gen-compile-commands).
+compile-commands:
+	@./scripts/gen-compile-commands
+
 install: $(LIB)
 	$(SCRIPTS)/install
 
 uninstall:
 	$(SCRIPTS)/uninstall
+
+# ─── Ninja generator metadata (consumed by scripts/gen-ninja) ───
+# Kept separate so the Makefile remains the single source of truth for source
+# discovery and per-variant flags.
+ninja-vars:
+	@printf '@@REPO@@%s\n' '$(REPO)'
+	@printf '@@BUILD@@%s\n' '$(BUILD)'
+	@printf '@@OBJDIR@@%s\n' '$(OBJDIR)'
+	@printf '@@LIBDIR@@%s\n' '$(LIBDIR)'
+	@printf '@@SRCGEN@@%s\n' '$(SRCGEN)'
+	@printf '@@HDRGEN@@%s\n' '$(HDRGEN)'
+	@printf '@@BINDIR@@%s\n' '$(BINDIR)'
+	@printf '@@TEST_OBJDIR@@%s\n' '$(TEST_OBJDIR)'
+	@printf '@@TEST_BINDIR@@%s\n' '$(TEST_BINDIR)'
+	@printf '@@CC@@%s\n' '$(CC)'
+	@printf '@@CFLAGS@@%s\n' '$(CFLAGS)'
+	@printf '@@TEST_BASE@@%s\n' '$(TEST_BASE)'
+	@printf '@@TEST_DECL@@%s\n' '$(TEST_DECL)'
+	@printf '@@PARSER_BIN@@%s\n' '$(PARSER_BIN)'
+	@printf '@@PARSER_SRC@@%s\n' '$(PARSER_SRC)'
+	@printf '@@LIB@@%s\n' '$(LIB)'
+	@printf '@@COMPILES@@%s\n' '$(COMPILES)'
+	@printf '@@GEN_CSRC@@%s\n' '$(GEN_CSRC)'
+	@printf '@@OBJS@@%s\n' '$(OBJS)'
+	@printf '@@MACRO_HDRS@@%s\n' '$(MACRO_HDRS)'
+	@printf '@@INT_HDRS@@%s\n' '$(INT_HDRS)'
+	@printf '@@MUSL_HDRS@@%s\n' '$(MUSL_HDRS)'
+	@printf '@@REG_HDRS@@%s\n' '$(REG_HDRS)'
+	@printf '@@ALL_GENS@@%s\n' '$(ALL_GENS)'
+	@printf '@@TESTSRC@@%s\n' '$(TESTSRC)'
+	@printf '@@FUZZ_TESTS@@%s\n' '$(FUZZ_TESTS)'
+	@printf '@@FUZZ_SRC@@%s\n' '$(FUZZ_SRC)'
+	@printf '@@TVARS@@%s\n' '$(TVARS)'
+	@$(foreach v,$(TVARS),printf '@@TV@@%s|%s\n' '$(v)' '$(TV_FLAGS_$(v))';)

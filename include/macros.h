@@ -769,6 +769,11 @@ JSTR_INTERNAL_CAST(T, Other other)
 #		elif JSTR_HAS_ATTRIBUTE(__no_sanitize__)
 #			define JSTR_ATTR_NO_SANITIZE_ADDRESS __attribute__((__no_sanitize__(("address"))))
 #		endif
+#		if JSTR_HAS_ATTRIBUTE(__no_sanitize_thread__)
+#			define JSTR_ATTR_NO_SANITIZE_THREAD __attribute__((__no_sanitize_thread__))
+#		elif JSTR_HAS_ATTRIBUTE(__no_sanitize__)
+#			define JSTR_ATTR_NO_SANITIZE_THREAD __attribute__((__no_sanitize__(("thread"))))
+#		endif
 #	endif
 
 #	ifndef JSTR_ATTR_INLINE
@@ -859,6 +864,9 @@ JSTR_INTERNAL_CAST(T, Other other)
 #	endif
 #	ifndef JSTR_ATTR_NO_SANITIZE_ADDRESS
 #		define JSTR_ATTR_NO_SANITIZE_ADDRESS
+#	endif
+#	ifndef JSTR_ATTR_NO_SANITIZE_THREAD
+#		define JSTR_ATTR_NO_SANITIZE_THREAD
 #	endif
 
 #	define JSTR_ATTR_WUR           JSTR_ATTR_WARN_UNUSED

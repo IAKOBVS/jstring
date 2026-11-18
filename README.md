@@ -115,7 +115,8 @@ as referring to the whole matched string.
 
 - compile: run setup checks, generate headers, and build the shared library into `build/`.
 - compile-native: build with `-march=native`.
-- test: run all tests (each test is compiled in multiple variants). Supports `-j N`, `-k`/`--fail-fast`, `--timeout SECS`, `-v`, and test-name filters (e.g. `./test test-string`); failing output is saved under `build/test-logs/`. Tests run in private temporary directories, and per-test timings cached in `build/test-times` make repeat runs start the slowest tests first.
+- sanitizers: `scripts/test-asan-ubsan`, `scripts/test-tsan-ubsan`, and `scripts/test-all` build into separate `build-asan-ubsan/` and `build-tsan-ubsan/` directories.
+- test: run all tests (each test is compiled in multiple variants; Ninja is used by default, `--make` opts out). Supports `-j N`, `-k`/`--fail-fast`, `--timeout SECS`, `-v`, and test-name filters (e.g. `./test test-string`); failing output is saved under `build/test-logs/`. Tests run in private temporary directories, and per-test timings cached in `build/test-times` make repeat runs start the slowest tests first.
 - test-check-fail: run all tests, printing only failures.
 - bench/bench: compile and run benchmarks in `bench/`; results land in `bench/result-*` (sort with `bench/see`).
 - install: copy headers to /usr/local/include/jstr and the library to /usr/local/lib \(requires sudo\).

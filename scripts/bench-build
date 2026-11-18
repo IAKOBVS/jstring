@@ -1,0 +1,176 @@
+#!/usr/bin/env python3
+"""Compare Make and Ninja build times for `testbuild`.
+
+WARNING: `full` and `all` run `./clean`, deleting build/.  `noop` and `incr`
+assume the selected system's build is already up to date.  By default ccache
+is disabled for both systems so the comparison measures the build tools and
+the compiler, not cache state; pass --with-ccache to keep it.
+
+Examples:
+    scripts/bench-build --case all
+    scripts/bench-build --case noop --runs 5
+    scripts/bench-build --case incr --system ninja --runs 3
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import statistics
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import Final
+
+ROOT: Final = Path(__file__).resolve().parent.parent
+TOUCH: Final[str] = "tests/string/jstr_strnchr.c"
+
+
+def jobs_default() -> str:
+    try:
+        return str(len(os.sched_getaffinity(0)))
+    except AttributeError:
+        return str(os.cpu_count() or 1)
+
+
+def build_env(with_ccache: bool) -> dict[str, str]:
+    env = dict(os.environ)
+    if not with_ccache:
+        env["CCACHE"] = ""
+    return env
+
+
+def run(cmd: list[str], env: dict[str, str]) -> tuple[int, float]:
+    t = time.perf_counter()
+    proc = subprocess.run(
+        cmd,
+        cwd=ROOT,
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return proc.returncode, time.perf_counter() - t
+
+
+def clean() -> int:
+    return run(["./clean"], dict(os.environ))[0]
+
+
+def gen_ninja(env: dict[str, str]) -> tuple[int, float]:
+    return run(["./scripts/gen-ninja"], env)
+
+
+def build_cmd(system: str, jobs: str) -> list[str]:
+    if system == "make":
+        return ["make", "-j%s" % jobs, "testbuild"]
+    return ["ninja", "-j%s" % jobs, "testbuild"]
+
+
+def full(system: str, env: dict[str, str], jobs: str) -> tuple[float, float]:
+    clean()
+    gen = 0.0
+    if system == "ninja":
+        rc, gen = gen_ninja(env)
+        if rc != 0:
+            sys.exit("bench-build: gen-ninja failed")
+    rc, dt = run(build_cmd(system, jobs), env)
+    if rc != 0:
+        sys.exit("bench-build: %s build failed" % system)
+    return gen, dt
+
+
+def noop(
+    system: str,
+    env: dict[str, str],
+    jobs: str,
+    runs: int,
+) -> list[float]:
+    times: list[float] = []
+    for _ in range(runs):
+        rc, dt = run(build_cmd(system, jobs), env)
+        if rc != 0:
+            sys.exit("bench-build: %s no-op build failed" % system)
+        times.append(dt)
+    return times
+
+
+def incr(
+    system: str,
+    env: dict[str, str],
+    jobs: str,
+    runs: int,
+) -> list[float]:
+    times: list[float] = []
+    for _ in range(runs):
+        os.utime(ROOT / TOUCH, None)
+        rc, dt = run(build_cmd(system, jobs), env)
+        if rc != 0:
+            sys.exit("bench-build: %s incremental build failed" % system)
+        times.append(dt)
+    return times
+
+
+def fmt(values: list[float]) -> str:
+    return ", ".join("%.3f" % v for v in values)
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--case", choices=["full", "noop", "incr", "all"], default="all")
+    ap.add_argument("--system", choices=["make", "ninja", "both"], default="both")
+    ap.add_argument("--runs", type=int, default=3)
+    ap.add_argument("--jobs", default=jobs_default())
+    ap.add_argument("--with-ccache", action="store_true")
+    args: argparse.Namespace = ap.parse_args()
+
+    env = build_env(args.with_ccache)
+    systems: list[str] = (
+        ["make", "ninja"] if args.system == "both" else [args.system]
+    )
+
+    print(
+        "bench-build: jobs=%s ccache=%s case=%s systems=%s"
+        % (args.jobs, "on" if args.with_ccache else "off", args.case, ",".join(systems))
+    )
+    if args.case in ("full", "all"):
+        print("bench-build: WARNING: this deletes build/")
+
+    results: dict[str, dict[str, float]] = {}
+    for system in systems:
+        print("== %s ==" % system, flush=True)
+        row: dict[str, float] = {}
+        if args.case in ("full", "all"):
+            gen, full_time = full(system, env, args.jobs)
+            row["gen"] = gen
+            row["full"] = full_time
+            print(
+                "  full: %.2fs%s"
+                % (full_time, " (gen %.3fs)" % gen if gen else ""),
+                flush=True,
+            )
+        if args.case in ("noop", "all"):
+            t = noop(system, env, args.jobs, args.runs)
+            row["noop"] = statistics.median(t)
+            print("  no-op [%s]: median %.3fs" % (fmt(t), row["noop"]), flush=True)
+        if args.case in ("incr", "all"):
+            t = incr(system, env, args.jobs, args.runs)
+            row["incr"] = statistics.median(t)
+            print("  one-test [%s]: median %.3fs" % (fmt(t), row["incr"]), flush=True)
+        results[system] = row
+
+    if len(results) == 2:
+        print("\n| case | make | ninja | speedup |")
+        print("|---|---:|---:|---:|")
+        for key, label in (("full", "full"), ("noop", "no-op"), ("incr", "one test")):
+            if key in results["make"] and key in results["ninja"]:
+                m = results["make"][key]
+                n = results["ninja"][key]
+                print(
+                    "| %s | %.3fs | %.3fs | %.2fx |"
+                    % (label, m, n, m / n if n else 0)
+                )
+
+
+if __name__ == "__main__":
+    main()

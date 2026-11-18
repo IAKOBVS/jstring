@@ -1,0 +1,4 @@
+#!/bin/sh
+# Run the unit tests with ASan + UBSan in build-asan-ubsan/.
+cd "$(dirname "$0")/.." || exit 1
+exec ./scripts/test-sanitize asan "$@"

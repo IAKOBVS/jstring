@@ -1,0 +1,59 @@
+#!/bin/sh
+# Run the default suite, ASan+UBSan and TSan+UBSan, plus the runner selftest.
+#
+# Usage: scripts/test-all [--no-clean] [TEST...]
+# TEST filters are passed to each test configuration. --no-clean only affects
+# the sanitizer builds; it reuses build-asan-ubsan/ and build-tsan-ubsan/.
+set -u
+
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+cd "$ROOT" || exit 1
+
+CLEAN=1
+while [ $# -gt 0 ]; do
+	case $1 in
+	--no-clean)
+		CLEAN=0
+		shift
+		;;
+	-h | --help)
+		sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//'
+		exit 0
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		break
+		;;
+	esac
+done
+
+failed=0
+
+echo '== default (Ninja) =='
+./test-check-fail "$@" || failed=1
+
+echo '== ASan + UBSan =='
+if [ "$CLEAN" = 1 ]; then
+	./scripts/test-asan-ubsan "$@" || failed=1
+else
+	./scripts/test-asan-ubsan --no-clean "$@" || failed=1
+fi
+
+echo '== TSan + UBSan =='
+if [ "$CLEAN" = 1 ]; then
+	./scripts/test-tsan-ubsan "$@" || failed=1
+else
+	./scripts/test-tsan-ubsan --no-clean "$@" || failed=1
+fi
+
+echo '== runner selftest =='
+./scripts/test-selftest || failed=1
+
+if [ "$failed" -ne 0 ]; then
+	echo 'test-all: FAILED' >&2
+	exit 1
+fi
+echo 'test-all: OK'
