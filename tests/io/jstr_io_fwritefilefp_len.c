@@ -6,9 +6,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	FILE *fp = tmpfile();
 	assert(fp);
 	assert(jstr_io_fwritefilefp_len(jstr_literal("hello"), fp) == JSTR_RET_SUCC);
@@ -32,6 +31,5 @@ main(int argc, char **argv)
 	assert(r == 3);
 	assert(strcmp(buf, "hi\n") == 0);
 	fclose(fp);
-	SUCCESS();
 	return 0;
 }

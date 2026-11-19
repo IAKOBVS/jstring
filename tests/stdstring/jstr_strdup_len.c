@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char src[] = "abc";
 	char *p = jstr_strdup_len(src, 3);
 	assert(p != NULL);

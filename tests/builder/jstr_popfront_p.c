@@ -5,11 +5,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[32];
 	strcpy(buf, "abc");
@@ -24,6 +21,5 @@ main(int argc, char **argv)
 	p = jstr_popfront_p(buf2, 0);
 	assert(p == buf2);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

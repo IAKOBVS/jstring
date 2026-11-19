@@ -6,12 +6,12 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
-	char a[]="abc", b[]="abc";
+
+	char a[] = "abc", b[] = "abc";
 	assert(jstr_memcmpeq_loop(a, b, 3) == 0);
-	char c[]="abd";
+	char c[] = "abd";
 	assert(jstr_memcmpeq_loop(a, c, 3) == 1);
 	assert(jstr_memcmpeq_loop(a, b, 0) == 0);
 	return 0;

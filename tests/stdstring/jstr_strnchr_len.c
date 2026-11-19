@@ -35,10 +35,8 @@ check(size_t sz, size_t n, int c)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 
 	static const int needles[] = { 0, 'a', 'A', 0x7f, 0x80, 0xff, 0x100, 0x141, -1, -128 };
 
@@ -52,12 +50,12 @@ main(int argc, char **argv)
 	for (size_t i = 0; i < RIGOR_NLENS; ++i) {
 		const size_t sz = rigor_lens[i];
 		const size_t ns[] = { 0,
-			              1,
-			              sz ? sz - 1 : 0,
-			              sz,
-			              sz + 1,
-			              sz + 16,
-			              sz + 129 };
+		                      1,
+		                      sz ? sz - 1 : 0,
+		                      sz,
+		                      sz + 1,
+		                      sz + 16,
+		                      sz + 129 };
 		for (size_t j = 0; j < sizeof ns / sizeof ns[0]; ++j) {
 			for (size_t k = 0; k < sizeof needles / sizeof needles[0]; ++k)
 				check(sz, ns[j], needles[k]);

@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_strcasecmp("abc", "ABC") == 0);
 	assert(jstr_strcasecmp("abc", "abd") < 0);
 	assert(jstr_strcasecmp("abd", "abc") > 0);

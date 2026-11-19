@@ -7,10 +7,8 @@
 #include "test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	T_STRSTR(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	SUCCESS();
+	t_strstr("jstr_strcasestr", jstr_strcasestr, simple_strcasestr, test_array_memmem, JSTR_ARRAY_COUNT(test_array_memmem));
 	return EXIT_SUCCESS;
 }

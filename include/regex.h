@@ -97,6 +97,10 @@ typedef enum {
 #	endif
 } jstr_re_ret_ty;
 
+/** Maximum number of match slots used by the backref replace helpers
+ *  (backreferences are limited to \0..\9). */
+#	define JSTR_RE_NMATCH_MAX 10
+
 #	define JSTR_INTERNAL_RE_ERR_EXEC_HANDLE_LOOP(errcode, do_on_error) \
 		if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) {          \
 			;                                                   \
@@ -107,11 +111,11 @@ typedef enum {
 		}
 
 #	if JSTR_PANIC
-#		define JSTR_RE_RETURN_ERR(errcode, preg)             \
-			do {                                          \
-				jstr_err("%s", "");                   \
+#		define JSTR_RE_RETURN_ERR(errcode, preg)               \
+			do {                                            \
+				jstr_err("%s", "");                     \
 				jstr_re_err(errcode, preg, "%s", "\n"); \
-				return -(errcode);                    \
+				return -(errcode);                      \
 			} while (0)
 #	else
 #		define JSTR_RE_RETURN_ERR(errcode, preg) return -(errcode)
@@ -393,6 +397,8 @@ jstr_re_exec(const jstr_re_ty *R preg, const char *R s, size_t nmatch, regmatch_
  *
  * @param preg const jstr_re_ty *R preg Compiled regex (non-NULL).
  * @param s const char *R s Buffer (non-NULL, not necessarily NUL-terminated within sz).
+ *                   When sz == 0, s must be NUL-terminated (strlen(s) == 0)
+ *                   per the `char *` convention.
  * @param sz size_t sz Length in bytes of `s`.
  * @param nmatch size_t nmatch Number of regmatch_t slots.
  * @param pmatch regmatch_t *R pmatch Match result array (may be NULL if nmatch == 0).
@@ -961,7 +967,7 @@ jstr_internal_re_rplcbackreffirst(const char *backref, size_t backref_len) JSTR_
  */
 JSTR_FUNC
 char *
-	jstr_internal_re_rplcbackreflast(const unsigned char *backref, size_t backref_len) JSTR_NOEXCEPT
+jstr_internal_re_rplcbackreflast(const unsigned char *backref, size_t backref_len) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
 	const unsigned char *e = backref + backref_len;
@@ -1077,6 +1083,8 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 {
 	if (jstr_unlikely(n == 0))
 		return 0;
+	if (jstr_unlikely(nmatch > JSTR_RE_NMATCH_MAX))
+		nmatch = JSTR_RE_NMATCH_MAX;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
 	/* Allow start_idx == 0 when *sz == 0 to handle empty string haystacks. */
@@ -1102,7 +1110,7 @@ check:
 		if (n == 1 || *sz == 0)
 			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	}
-	regmatch_t rm[10];
+	regmatch_t rm[JSTR_RE_NMATCH_MAX];
 	jstr_internal_inplace_ty i;
 	size_t new_cap = *sz * 2 + 2;
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
@@ -1350,6 +1358,8 @@ jstr_re_rplcall_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, s
  * @param rplc_len size_t rplc_len Replacement template length.
  * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
  * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @note nmatch is clamped to JSTR_RE_NMATCH_MAX (10).
  * @param n size_t n Maximum replacements.
  *
  * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
@@ -1381,6 +1391,8 @@ jstr_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size
  * @param rplc_len size_t rplc_len Replacement template length.
  * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
  * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @note nmatch is clamped to JSTR_RE_NMATCH_MAX (10).
  *
  * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
  *
@@ -1414,6 +1426,8 @@ jstr_re_rplcall_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t 
  * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
  * @param nmatch size_t nmatch Number of match groups available.
  *
+ * @note nmatch is clamped to JSTR_RE_NMATCH_MAX (10).
+ *
  * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
  *
  * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
@@ -1443,6 +1457,8 @@ jstr_re_rplcall_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, si
  * @param rplc_len size_t rplc_len Replacement template length.
  * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
  * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @note nmatch is clamped to JSTR_RE_NMATCH_MAX (10).
  * @param n size_t n Maximum replacements.
  *
  * @return jstr_re_off_ty Number of matches replaced (0 if none), or negative on error.
@@ -1477,6 +1493,8 @@ jstr_re_rplcn_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R
  * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
  * @param nmatch size_t nmatch Number of match groups available.
  *
+ * @note nmatch is clamped to JSTR_RE_NMATCH_MAX (10).
+ *
  * @return jstr_re_off_ty Number replaced (0 or 1), negative on error.
  *
  * @note `preg`, `s`, `sz`, `cap` must be non-NULL.
@@ -1507,6 +1525,8 @@ jstr_re_rplc_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_
  * @param rplc_len size_t rplc_len Replacement template length.
  * @param eflags int eflags Execution flags (JSTR_RE_EF_*).
  * @param nmatch size_t nmatch Number of match groups available.
+ *
+ * @note nmatch is clamped to JSTR_RE_NMATCH_MAX (10).
  *
  * @return jstr_re_off_ty Number replaced (0 or 1), negative on error.
  *

@@ -8,11 +8,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[16] = "hello";
 	size_t sz = 5;
@@ -41,6 +38,5 @@ main(int argc, char **argv)
 	assert(sz == 0);
 	assert(buf[0] == '\0');
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

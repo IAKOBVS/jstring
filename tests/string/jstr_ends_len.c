@@ -5,10 +5,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 	assert(jstr_ends_len("hello", 5, "lo", 2));
 	assert(!jstr_ends_len("hello", 5, "lO", 2));
 	assert(jstr_ends_len("", 0, "", 0));

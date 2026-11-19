@@ -6,11 +6,8 @@
 #include "internal/simd.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 #ifndef JSTR_HAVENT_STRNCHR_SIMD
 	char buf[128];
@@ -34,6 +31,5 @@ main(int argc, char **argv)
 	assert(jstr_internal_simd_strnchr(buf, 'c', 99) == buf + 3);
 #endif
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

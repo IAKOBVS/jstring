@@ -10,11 +10,8 @@
 #include "internal/musl/ctype.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	for (int c = 0; c < 256; c++) {
 		const int got = jstr_ispunct(c);
@@ -25,7 +22,16 @@ main(int argc, char **argv)
 
 	{
 		static const unsigned char yes[] = {
-			'!', '"', '/', ':', '@', '[', '`', '{', '~', 0x7E
+			'!',
+			'"',
+			'/',
+			':',
+			'@',
+			'[',
+			'`',
+			'{',
+			'~',
+			0x7E
 		};
 		static const unsigned char no[] = { 0, ' ', '\t', '0', '9', 'A', 'Z', 'a', 'z', 0x7F, 0x80, 0xFF };
 		for (size_t i = 0; i < sizeof yes; ++i)
@@ -43,6 +49,5 @@ main(int argc, char **argv)
 	assert(jstr_ispunct(EOF) == 0);
 	assert((jstr_ispunct(EOF) != 0) == (ispunct((unsigned char)EOF) != 0));
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

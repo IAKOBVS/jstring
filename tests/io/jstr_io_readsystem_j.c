@@ -12,11 +12,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	/* Exact small output. */
 	{
@@ -95,6 +92,5 @@ main(int argc, char **argv)
 		free(j.data);
 	}
 
-	SUCCESS();
 	return 0;
 }

@@ -5,10 +5,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 	const char *p = (const char *)jstr_memmem("abXcd", 5, "X", 1);
 	assert(p && *p == 'X');
 	assert(jstr_memmem("abcd", 4, "xyz", 3) == NULL);

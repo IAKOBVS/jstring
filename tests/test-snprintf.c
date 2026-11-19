@@ -163,58 +163,44 @@ static const struct {
 
 /* clang-format on */
 
-#define T(func, simple_func, fmt, ...)                                                     \
-	do {                                                                               \
-		int result, expected;                                                      \
-		result = func(0, 0, fmt, __VA_ARGS__);                                     \
-		if (jstr_unlikely(result == -1)) {                                         \
-			PRINTERR("fmt:%s\n", fmt);                                         \
-			jstr_err("%s", "");                                                \
-			assert(result != -1);                                              \
-		}                                                                          \
-		expected = simple_func(0, 0, fmt, __VA_ARGS__);                            \
-		if (jstr_unlikely(expected == -1)) {                                       \
-			PRINTERR("%s\n", strerror(expected));                              \
-			assert(expected != -1);                                            \
-		}                                                                          \
-		assert(-1 != sprintf(result_num, "%d", result));                           \
-		assert(-1 != sprintf(expected_num, "%d", expected));                       \
-		if (jstr_unlikely(result < expected)) {                                    \
-			PRINTERR("fmt:%s\n", fmt);                                         \
-			ASSERT_RESULT(func, result >= expected, result_num, expected_num); \
-		}                                                                          \
-	} while (0)
-
-static int
-jstr_sprintfstrlen(char *s, size_t n, const char *fmt, ...)
+static void
+check_snprintf(const char *fmt, ...)
 {
-	va_list ap;
+	va_list ap, ap2;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintf_maxlen(ap, fmt);
+	va_copy(ap2, ap);
+	int result = jstr_vsprintf_maxlen(ap, fmt);
+	int expected = vsnprintf(NULL, 0, fmt, ap2);
+	va_end(ap2);
 	va_end(ap);
-	return ret;
-	(void)s;
-	(void)n;
+	if (jstr_unlikely(result == -1)) {
+		fprintf(stderr, "fmt:%s\n", fmt);
+		jstr_err("%s", "");
+		assert(result != -1);
+	}
+	if (jstr_unlikely(expected == -1)) {
+		fprintf(stderr, "%s\n", strerror(expected));
+		assert(expected != -1);
+	}
+	if (jstr_unlikely(result < expected)) {
+		fprintf(stderr, "fmt:%s\nResult:%d\nExpected:%d\n", fmt, result, expected);
+		abort();
+	}
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	TESTING(jstr_vsprintf_maxlen);
-	char result_num[sizeof(size_t) * 8 + 1];
-	char expected_num[sizeof(size_t) * 8 + 1];
-	T(jstr_sprintfstrlen, snprintf, "%d", 123456);
-	T(jstr_sprintfstrlen, snprintf, "%.4s", "hello");
-	T(jstr_sprintfstrlen, snprintf, "%.0s", "goodbye");
+	test_testing("jstr_vsprintf_maxlen");
+	check_snprintf("%d", 123456);
+	check_snprintf("%.4s", "hello");
+	check_snprintf("%.0s", "goodbye");
 	/* Perform ascii arithmetic to test printing tiny doubles */
-	T(jstr_sprintfstrlen, snprintf, "%.1022f", 0x1p-1021);
+	check_snprintf("%.1022f", 0x1p-1021);
 	for (int i = 0; int_tests[i].fmt; i++)
-		T(jstr_sprintfstrlen, snprintf, int_tests[i].fmt, int_tests[i].i);
+		check_snprintf(int_tests[i].fmt, int_tests[i].i);
 	for (int i = 0; fp_tests[i].fmt; i++)
-		T(jstr_sprintfstrlen, snprintf, fp_tests[i].fmt, fp_tests[i].f);
-	T(jstr_sprintfstrlen, snprintf, "%.4a", 1.0);
-	SUCCESS();
+		check_snprintf(fp_tests[i].fmt, fp_tests[i].f);
+	check_snprintf("%.4a", 1.0);
 	return EXIT_SUCCESS;
-	(void)argc;
 }

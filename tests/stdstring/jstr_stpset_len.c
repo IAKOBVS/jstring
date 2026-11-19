@@ -30,10 +30,8 @@ check_len(size_t n, int c)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 
 	static const int fillers[] = { 0, 'A', 'z', 0xff, 0x100, 0x141, -1, -128, 256 + 0x55 };
 	for (size_t k = 0; k < sizeof fillers / sizeof fillers[0]; ++k) {

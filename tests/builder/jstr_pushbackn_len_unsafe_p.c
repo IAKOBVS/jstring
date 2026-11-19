@@ -8,11 +8,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[64];
 	strcpy(buf, "hi");
@@ -27,6 +24,5 @@ main(int argc, char **argv)
 	char *p2 = jstr_pushbackn_len_unsafe_p(buf, sz, 'z', 0);
 	assert(p2 == buf + sz);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

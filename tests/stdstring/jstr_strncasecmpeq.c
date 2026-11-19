@@ -6,9 +6,9 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_strncasecmpeq("abc", "ABC", 3) == 0);
 	assert(jstr_strncasecmpeq("abc", "abd", 3) != 0);
 	assert(jstr_strncasecmpeq("a", "abc", 5) != 0); /* stops at NUL */

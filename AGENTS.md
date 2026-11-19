@@ -61,6 +61,7 @@ scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
 - `./scripts/check-incremental` builds once, re-runs (asserting nothing changes), then touches a header and asserts only its dependents rebuild. Some builds must be cached — do not run it right after `./clean` only for timing.
 
 - Every test in `tests/*.c` is compiled and run from `/tmp`.
+- **Test helper styles:** `tests/rigor.h` is the property/differential-test helper (plain functions + `RCHECK*` macros). `tests/testutil.h` is the shared helper for the legacy `tests/test.h`-based tests: fixture setup (`test_fill`, `test_fill_shrunk`, `test_shrink_fill`, `test_reset`), assertions (`test_expect_buf`, `test_expect_call`, `test_builder_expect`, `test_expect_true`), and `struct test_pair` for two-buffer differential tests. Prefer these functions and struct tables over local assertion macros; new tests should not introduce `FILL`/`T_ASSERT`-style macros.
 - Tests using `mkdtemp` must `#define _POSIX_C_SOURCE 200809L` before any includes.
 - New tests ARE automatically picked up — `./test` derives its run list from `tests/**/*.c` (and ignores stale binaries for removed tests).
 - For manual compilation of test-only files: use `-DJSTR_DECL_ONLY -include build/include/jstr/jstr.h -iquote build/include/jstr`.

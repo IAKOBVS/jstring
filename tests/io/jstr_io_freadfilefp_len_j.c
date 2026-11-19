@@ -6,9 +6,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	const char *data = "abc";
 	FILE *fp = tmpfile();
 	assert(fp);
@@ -20,6 +19,5 @@ main(int argc, char **argv)
 	assert(memcmp(j.data, data, 3) == 0);
 	fclose(fp);
 	free(j.data);
-	SUCCESS();
 	return 0;
 }

@@ -6,10 +6,8 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 
 	/* Differential test over the full byte domain (unsigned-char cast, see
 	 * jstr_tolower.c). */

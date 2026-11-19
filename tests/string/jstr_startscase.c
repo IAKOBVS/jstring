@@ -5,11 +5,9 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-{
+	{
 		assert(jstr_startscase("Hello World", "hello"));
 		assert(!jstr_startscase("Hello World", "world"));
 		assert(jstr_startscase("Hello", ""));

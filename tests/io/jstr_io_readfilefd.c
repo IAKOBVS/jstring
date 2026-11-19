@@ -9,9 +9,8 @@
 #include <unistd.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	char tmpdir[] = "/tmp/jstr_rfd_XXXXXX";
 	assert(mkdtemp(tmpdir));
 	char path[256];
@@ -33,12 +32,13 @@ main(int argc, char **argv)
 	free(s);
 	/* invalid fd */
 	{
-		char *s2 = NULL; size_t sz2 = 0, cap2 = 0; struct stat st2;
+		char *s2 = NULL;
+		size_t sz2 = 0, cap2 = 0;
+		struct stat st2;
 		assert(jstr_io_readfilefd(&s2, &sz2, &cap2, -1, &st2) != JSTR_RET_SUCC);
 	}
 	char cmd[256];
 	snprintf(cmd, sizeof cmd, "rm -rf %s", tmpdir);
 	system(cmd);
-	SUCCESS();
 	return 0;
 }

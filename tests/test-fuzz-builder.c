@@ -121,7 +121,7 @@ fuzz_builder(size_t iter)
 		ret = jstr_assign_len(&s, &sz, &cap, "AB", 2);
 		assert(ret == JSTR_RET_SUCC);
 		{
-			jstr_cat_arg_ty cat_args[] = {jstr_literal_init("CD"), jstr_literal_init("EF")};
+			jstr_cat_arg_ty cat_args[] = { jstr_literal_init("CD"), jstr_literal_init("EF") };
 			ret = jstr_cat(&s, &sz, &cap, cat_args, 2);
 		}
 		assert(ret == JSTR_RET_SUCC);
@@ -160,28 +160,26 @@ fuzz_builder(size_t iter)
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
 	size_t iter = FITER;
-#ifdef JSTR_TEST_SLOW
+#	ifdef JSTR_TEST_SLOW
 	iter *= 10;
-#else
+#	else
 	if (iter > 500)
 		iter = 500;
-#endif
+#	endif
 	if (iter < 1)
 		iter = 1;
-#ifdef FUZZ_AFL
+#	ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
-#endif
+#	endif
 	{
 		srand(seed);
-		TESTING(fuzz_builder);
+		test_testing("fuzz_builder");
 		fuzz_builder(iter);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 
@@ -192,8 +190,7 @@ LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
 	if (size < 4)
 		return 0;
-	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
-	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
 	srand(seed);
 	data += 4;
 	size -= 4;

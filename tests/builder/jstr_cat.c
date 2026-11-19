@@ -8,17 +8,16 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char *s = NULL;
 	size_t sz = 0, cap = 0;
 
 	/* total == 0: no changes */
-	jstr_cat_arg_ty empty[1] = { { NULL, 0 } };
+	jstr_cat_arg_ty empty[1] = {
+		{ NULL, 0 }
+	};
 	assert(jstr_cat(&s, &sz, &cap, empty, 1) == JSTR_RET_SUCC);
 	assert(sz == 0);
 
@@ -32,7 +31,9 @@ main(int argc, char **argv)
 	assert(memcmp(s, "foobar", 7) == 0);
 
 	/* append to existing */
-	jstr_cat_arg_ty more[] = { { "!", 1 } };
+	jstr_cat_arg_ty more[] = {
+		{ "!", 1 }
+	};
 	assert(jstr_cat(&s, &sz, &cap, more, 1) == JSTR_RET_SUCC);
 	assert(sz == 7);
 	assert(memcmp(s, "foobar!", 8) == 0);
@@ -41,6 +42,5 @@ main(int argc, char **argv)
 	assert(jstr_cat(&s, &sz, &cap, NULL, 0) == JSTR_RET_SUCC);
 
 	jstr_free(&s, &sz, &cap);
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

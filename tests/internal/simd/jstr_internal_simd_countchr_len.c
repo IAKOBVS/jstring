@@ -6,11 +6,8 @@
 #include "internal/simd.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 #ifndef JSTR_HAVENT_COUNTCHR_LEN_SIMD
 	char buf[] = "abac\0x";
@@ -19,6 +16,5 @@ main(int argc, char **argv)
 	assert(jstr_internal_simd_countchr_len(buf, 'x', 7) == 1);
 #endif
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

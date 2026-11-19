@@ -5,11 +5,9 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-{
+	{
 		const char *save = "a,b,c,d";
 		const char *tok = jstr_strtok_ne(&save, ",");
 		assert(tok != NULL && !strncmp(tok, "a", 1));

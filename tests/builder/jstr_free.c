@@ -8,11 +8,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char *s = malloc(16);
 	size_t sz = 5, cap = 16;
@@ -29,6 +26,5 @@ main(int argc, char **argv)
 	jstr_free(&n, &ns, &nc);
 	assert(n == NULL);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

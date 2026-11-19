@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_strcmpeq_loop("abc", "abc") == 0);
 	int r = jstr_strcmpeq_loop("abx", "aby");
 	assert(r == 'y');

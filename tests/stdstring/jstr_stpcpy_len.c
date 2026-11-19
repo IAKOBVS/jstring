@@ -34,10 +34,8 @@ check_len(size_t n)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 
 	for (size_t n = 0; n <= 128; ++n)
 		check_len(n);

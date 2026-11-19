@@ -5,11 +5,9 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-{
+	{
 		size_t n = jstr_startscasenul("Hello World", "hello");
 		assert(n == 5);
 		n = jstr_startscasenul("Hello World", "world");

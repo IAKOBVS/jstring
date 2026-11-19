@@ -4,33 +4,31 @@
 #include "test.h"
 #include "../include/itoa.h"
 
-char buf[1024];
+static char buf[1024];
 
-void
-T(const char *string, const char *expected_result)
+static void
+check_thousep(const char *string, const char *expected_result)
 {
 	memcpy(buf, string, strlen(string) + 1);
-	ASSERT_RESULT(jstr_thousep_p, jstr_thousep_p(buf, ',') == buf + strlen(buf), buf, expected_result);
-	ASSERT_RESULT(jstr_thousep_p, !strcmp(buf, expected_result), buf, expected_result);
-	ASSERT_RESULT(jstr_thousepcpy_p, jstr_thousepcpy_p(buf, string, ',') == buf + strlen(buf), buf, expected_result);
-	ASSERT_RESULT(jstr_thousepcpy_p, !strcmp(buf, expected_result), buf, expected_result);
+	test_expect_true("jstr_thousep_p", "advance to end", jstr_thousep_p(buf, ',') == buf + strlen(buf));
+	test_expect_true("jstr_thousep_p", "string content", !strcmp(buf, expected_result));
+	test_expect_true("jstr_thousepcpy_p", "advance to end", jstr_thousepcpy_p(buf, string, ',') == buf + strlen(buf));
+	test_expect_true("jstr_thousepcpy_p", "string content", !strcmp(buf, expected_result));
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	TESTING(jstr_thousep_p);
-	TESTING(jstr_thousepcpy_p);
-	T("1", "1");
-	T("12", "12");
-	T("123", "123");
-	T("1234", "1,234");
-	T("12345", "12,345");
-	T("123456", "123,456");
-	T("1234567", "1,234,567");
-	T("12345678", "12,345,678");
-	T("123456789", "123,456,789");
-	SUCCESS();
+	test_testing("jstr_thousep_p");
+	test_testing("jstr_thousepcpy_p");
+	check_thousep("1", "1");
+	check_thousep("12", "12");
+	check_thousep("123", "123");
+	check_thousep("1234", "1,234");
+	check_thousep("12345", "12,345");
+	check_thousep("123456", "123,456");
+	check_thousep("1234567", "1,234,567");
+	check_thousep("12345678", "12,345,678");
+	check_thousep("123456789", "123,456,789");
 	return EXIT_SUCCESS;
 }

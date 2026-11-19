@@ -6,11 +6,8 @@
 #include "internal/musl/ctype.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	for (int c = 0; c < 256; c++) {
 		assert(jstr_toupper(c) == toupper((unsigned char)c));
@@ -20,6 +17,5 @@ main(int argc, char **argv)
 	assert(jstr_toupper('A') == 'A');
 	assert(jstr_toupper('0') == '0');
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

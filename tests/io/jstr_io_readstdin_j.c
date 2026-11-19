@@ -8,9 +8,8 @@
 #include <unistd.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	const char *data = "stdin j\n";
 	int p[2];
 	assert(pipe(p) == 0);
@@ -26,6 +25,5 @@ main(int argc, char **argv)
 	free(j.data);
 	dup2(saved, STDIN_FILENO);
 	close(saved);
-	SUCCESS();
 	return 0;
 }

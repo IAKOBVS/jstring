@@ -5,10 +5,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 	assert(jstr_countchr("abacaba", 'a') == 4);
 	assert(jstr_countchr("", 'a') == 0);
 	assert(jstr_countchr("zzz", 'z') == 3);

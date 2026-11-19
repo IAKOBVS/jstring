@@ -6,9 +6,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	jstr_ty j = JSTR_INIT;
 	j.data = malloc(8);
 	strcpy(j.data, "hello");
@@ -30,6 +29,5 @@ main(int argc, char **argv)
 	char cmd[256];
 	snprintf(cmd, sizeof cmd, "rm -rf %s", tmpdir);
 	system(cmd);
-	SUCCESS();
 	return 0;
 }

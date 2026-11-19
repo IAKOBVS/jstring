@@ -8,11 +8,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	jstr_ty j = JSTR_INIT;
 	assert(jstr_assign_len(&j.data, &j.size, &j.capacity, "hi", 2) == JSTR_RET_SUCC);
@@ -21,6 +18,5 @@ main(int argc, char **argv)
 	assert(j.size == 0);
 	assert(j.capacity == 0);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

@@ -8,11 +8,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[64];
 	strcpy(buf, "hi");
@@ -28,6 +25,5 @@ main(int argc, char **argv)
 	assert(memcmp(buf, "hiXYZ", 6) == 0);
 	assert(p2 == buf + 5);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

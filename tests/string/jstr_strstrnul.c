@@ -5,11 +5,9 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-{
+	{
 		const char hs[] = "hello world";
 		const char *p = jstr_strstrnul(hs, "wo");
 		assert(!strcmp(p, "world"));

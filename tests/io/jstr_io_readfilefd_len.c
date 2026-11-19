@@ -9,9 +9,8 @@
 #include <unistd.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	char tmpdir[] = "/tmp/jstr_rfdl_XXXXXX";
 	assert(mkdtemp(tmpdir));
 	char path[256];
@@ -34,7 +33,9 @@ main(int argc, char **argv)
 	free(s);
 	/* file_size 0 */
 	fd = open(path, O_RDONLY);
-	s = NULL; sz = 0; cap = 0;
+	s = NULL;
+	sz = 0;
+	cap = 0;
 	/* use empty file */
 	char epath[256];
 	snprintf(epath, sizeof epath, "%s/empty.txt", tmpdir);
@@ -48,13 +49,14 @@ main(int argc, char **argv)
 	free(s);
 	/* premature EOF: request more than available */
 	fd = open(path, O_RDONLY);
-	s = NULL; sz = 0; cap = 0;
+	s = NULL;
+	sz = 0;
+	cap = 0;
 	assert(jstr_io_readfilefd_len(&s, &sz, &cap, fd, dlen + 5) != JSTR_RET_SUCC);
 	close(fd);
 	free(s);
 	char cmd[256];
 	snprintf(cmd, sizeof cmd, "rm -rf %s", tmpdir);
 	system(cmd);
-	SUCCESS();
 	return 0;
 }

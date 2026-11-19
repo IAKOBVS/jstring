@@ -7,11 +7,8 @@
 #include "../include/regex.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-	START();
 	{
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "a", 0)));
@@ -74,6 +71,5 @@ main(int argc, char **argv)
 
 		jstr_re_free(&preg);
 	}
-	SUCCESS();
 	return 0;
 }

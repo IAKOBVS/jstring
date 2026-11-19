@@ -15,11 +15,8 @@
 #include "test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char *s = NULL;
 	size_t sz = 0, cap = 0;
@@ -72,7 +69,7 @@ main(int argc, char **argv)
 		jstr_ty j2 = JSTR_INIT;
 		assert(jstr_assign_len(&j2.data, &j2.size, &j2.capacity, "a", 1) == JSTR_RET_SUCC);
 		{
-			jstr_cat_arg_ty cat_args[] = {jstr_literal_init("b"), jstr_literal_init("c")};
+			jstr_cat_arg_ty cat_args[] = { jstr_literal_init("b"), jstr_literal_init("c") };
 			assert(jstr_cat_j(&j2, cat_args, 2) == JSTR_RET_SUCC);
 		}
 		assert(j2.size == 3);
@@ -269,6 +266,5 @@ main(int argc, char **argv)
 
 	jstr_free(&s, &sz, &cap);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

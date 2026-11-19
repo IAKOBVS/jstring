@@ -19,11 +19,8 @@ cat_wrap(char **s, size_t *sz, size_t *cap, size_t arg_len, ...)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char *s = NULL;
 	size_t sz = 0, cap = 0;
@@ -43,6 +40,5 @@ main(int argc, char **argv)
 
 	jstr_free(&s, &sz, &cap);
 	jstr_free(&s2, &sz2, &cap2);
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

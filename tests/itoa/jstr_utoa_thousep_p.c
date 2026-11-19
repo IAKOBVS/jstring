@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char tmp[256];
 	/* fast path <= 999 */
 	memset(tmp, 0xAA, sizeof(tmp));

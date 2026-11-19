@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char buf[64];
 	strcpy(buf, "");
 	assert(jstr_tolowerstr_p(buf) == buf);

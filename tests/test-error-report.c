@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
 	/* jstr_internal_err: returns negative on write fail (impossible to trigger
 	 * in practice without stderr redirection trickery). We just verify the
@@ -21,6 +21,5 @@ main(int argc, char **argv)
 	/* jstr_err writes to stderr; we can't verify output but it returns 0. */
 	(void)ret;
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

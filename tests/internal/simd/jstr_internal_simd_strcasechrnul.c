@@ -42,7 +42,9 @@ fill_pattern(unsigned char *p, size_t len, int pat)
 	}
 	case 3:
 		for (size_t i = 0; i < len; ++i)
-			p[i] = (unsigned char)(i % 4 == 0 ? 'A' : i % 4 == 1 ? 'z' : i % 4 == 2 ? '0' : '~');
+			p[i] = (unsigned char)(i % 4 == 0 ? 'A' : i % 4 == 1   ? 'z'
+			                                          : i % 4 == 2 ? '0'
+			                                                       : '~');
 		break;
 	case 4:
 		for (size_t i = 0; i < len; ++i)
@@ -59,7 +61,8 @@ fill_pattern(unsigned char *p, size_t len, int pat)
 static void
 check_one(size_t len, int pat, size_t off, int c)
 {
-	enum { PAD = 128, TOTAL = 4096 };
+	enum { PAD = 128,
+	       TOTAL = 4096 };
 	unsigned char storage[TOTAL];
 	unsigned char *s = storage + PAD + off;
 
@@ -71,18 +74,14 @@ check_one(size_t len, int pat, size_t off, int c)
 	char *const want = ref_strcasechrnul((const char *)s, c);
 	char *const got = jstr_internal_simd_strcasechrnul((const char *)s, c);
 	assert(got == want);
-	assert(*got == '\0' || (unsigned char)*got == (unsigned char)jstr_tolower(c) ||
-	       (unsigned char)*got == (unsigned char)jstr_toupper(c));
+	assert(*got == '\0' || (unsigned char)*got == (unsigned char)jstr_tolower(c) || (unsigned char)*got == (unsigned char)jstr_toupper(c));
 }
 
 #endif
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 #ifndef JSTR_HAVENT_STRCASECHRNUL_SIMD
 	{
@@ -96,7 +95,19 @@ main(int argc, char **argv)
 
 	{
 		static const int chars[] = {
-			0, 'a', 'A', 'z', 'Z', 'q', 'Q', '0', ' ', '~', 0x7F, 0x80, 0xFF
+			0,
+			'a',
+			'A',
+			'z',
+			'Z',
+			'q',
+			'Q',
+			'0',
+			' ',
+			'~',
+			0x7F,
+			0x80,
+			0xFF
 		};
 		for (size_t li = 0; li < RIGOR_NLENS; ++li) {
 			const size_t len = rigor_lens[li];
@@ -112,6 +123,5 @@ main(int argc, char **argv)
 	}
 #endif
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

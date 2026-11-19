@@ -4,9 +4,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	assert(jstr_isbinary(NULL, 0, 0) == 0);
 	assert(jstr_isbinary(jstr_literal(""), 5) == 0);
 	{
@@ -28,6 +27,5 @@ main(int argc, char **argv)
 		assert(jstr_isbinary(b, 3, 1) == 0);
 		assert(jstr_isbinary(b, 3, 2) == 1);
 	}
-	SUCCESS();
 	return 0;
 }

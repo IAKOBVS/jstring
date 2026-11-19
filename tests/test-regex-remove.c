@@ -8,47 +8,29 @@
 #include "../include/regex.h"
 
 /* Helper: assign a C string to result, trimming capacity to fit. */
-#define FILL(result, str)                                                                     \
-	do {                                                                                  \
-		(void)jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
-		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
-	} while (0)
 /* Assert that result equals expected string. */
-#define T_ASSERT(func, result, expected)                                                                           \
-	do {                                                                                                       \
-		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
-		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
-	} while (0)
 
 /* Test a removal function.
  * Calls func on the current result, asserts it returns expected_n,
  * then asserts result string matches expected. */
-#define T_RM(func, result, expected, expected_n)           \
-	do {                                               \
-		TESTING(func);                             \
-		jstr_re_off_ty ret_n_ = func;              \
-		ASSERT_ERRFUNC(func, ret_n_ == expected_n); \
-		T_ASSERT(func, result, expected);          \
-	} while (0)
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	jstr_ty result = JSTR_INIT;
 	{
 		/* jstr_re_rm_exec: remove first match of digit sequence. */
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "abc123def456");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "abcdef456", 1);
+		test_shrink_fill(&result, "abc123def456");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(1), &result, "abcdef456");
 
-		FILL(result, "no digits here");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "no digits here", 0);
+		test_shrink_fill(&result, "no digits here");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(0), &result, "no digits here");
 
-		FILL(result, "123");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "", 1);
+		test_shrink_fill(&result, "123");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(1), &result, "");
 
 		jstr_re_free(&preg);
 	}
@@ -57,16 +39,16 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "abc123def456");
-		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 3, 0), result, "abcdef456", 1);
+		test_shrink_fill(&result, "abc123def456");
+		test_expect_call("jstr_re_rm_from_exec", (long long)(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 3, 0)), (long long)(1), &result, "abcdef456");
 
 		/* start_idx past first match, finds the second. */
-		FILL(result, "abc123def456");
-		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 7, 0), result, "abc123def", 1);
+		test_shrink_fill(&result, "abc123def456");
+		test_expect_call("jstr_re_rm_from_exec", (long long)(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 7, 0)), (long long)(1), &result, "abc123def");
 
 		/* start_idx past all matches. */
-		FILL(result, "abc123def456");
-		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 15, 0), result, "abc123def456", 0);
+		test_shrink_fill(&result, "abc123def456");
+		test_expect_call("jstr_re_rm_from_exec", (long long)(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 15, 0)), (long long)(0), &result, "abc123def456");
 
 		jstr_re_free(&preg);
 	}
@@ -75,14 +57,14 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "1a2b3c4d");
-		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, 2), result, "ab3c4d", 2);
+		test_shrink_fill(&result, "1a2b3c4d");
+		test_expect_call("jstr_re_rmn_exec", (long long)(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, 2)), (long long)(2), &result, "ab3c4d");
 
-		FILL(result, "1a2b3c4d");
-		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, 0), result, "1a2b3c4d", 0);
+		test_shrink_fill(&result, "1a2b3c4d");
+		test_expect_call("jstr_re_rmn_exec", (long long)(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, 0)), (long long)(0), &result, "1a2b3c4d");
 
-		FILL(result, "1a2b3c4d");
-		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, (size_t)-1), result, "abcd", 4);
+		test_shrink_fill(&result, "1a2b3c4d");
+		test_expect_call("jstr_re_rmn_exec", (long long)(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, (size_t)-1)), (long long)(4), &result, "abcd");
 
 		jstr_re_free(&preg);
 	}
@@ -91,8 +73,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "1a2b3c4d");
-		T_RM(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 2, 0, 2), result, "1abc4d", 2);
+		test_shrink_fill(&result, "1a2b3c4d");
+		test_expect_call("jstr_re_rmn_from_exec", (long long)(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 2, 0, 2)), (long long)(2), &result, "1abc4d");
 
 		jstr_re_free(&preg);
 	}
@@ -101,14 +83,14 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "1a2b3c4d");
-		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "abcd", 4);
+		test_shrink_fill(&result, "1a2b3c4d");
+		test_expect_call("jstr_re_rmall_exec", (long long)(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0)), (long long)(4), &result, "abcd");
 
-		FILL(result, "no_digits");
-		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "no_digits", 0);
+		test_shrink_fill(&result, "no_digits");
+		test_expect_call("jstr_re_rmall_exec", (long long)(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0)), (long long)(0), &result, "no_digits");
 
-		FILL(result, "123");
-		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "", 1);
+		test_shrink_fill(&result, "123");
+		test_expect_call("jstr_re_rmall_exec", (long long)(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0)), (long long)(1), &result, "");
 
 		jstr_re_free(&preg);
 	}
@@ -117,11 +99,11 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "1a2b3c4d");
-		T_RM(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 2, 0), result, "1abcd", 3);
+		test_shrink_fill(&result, "1a2b3c4d");
+		test_expect_call("jstr_re_rmall_from_exec", (long long)(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 2, 0)), (long long)(3), &result, "1abcd");
 
-		FILL(result, "1a2b3c4d");
-		T_RM(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 0, 0), result, "abcd", 4);
+		test_shrink_fill(&result, "1a2b3c4d");
+		test_expect_call("jstr_re_rmall_from_exec", (long long)(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 0, 0)), (long long)(4), &result, "abcd");
 
 		jstr_re_free(&preg);
 	}
@@ -130,8 +112,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-zA-Z]\\{1,\\}", 0)));
 
-		FILL(result, "abc123def456ghi");
-		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "123456", 3);
+		test_shrink_fill(&result, "abc123def456ghi");
+		test_expect_call("jstr_re_rmall_exec", (long long)(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0)), (long long)(3), &result, "123456");
 
 		jstr_re_free(&preg);
 	}
@@ -140,8 +122,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "_\\{1,\\}", 0)));
 
-		FILL(result, "a_b_c_d");
-		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "abcd", 3);
+		test_shrink_fill(&result, "a_b_c_d");
+		test_expect_call("jstr_re_rmall_exec", (long long)(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0)), (long long)(3), &result, "abcd");
 
 		jstr_re_free(&preg);
 	}
@@ -150,11 +132,11 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
 
-		FILL(result, "hello world hello");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, " world hello", 1);
+		test_shrink_fill(&result, "hello world hello");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(1), &result, " world hello");
 
-		FILL(result, "say hello");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "say hello", 0);
+		test_shrink_fill(&result, "say hello");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(0), &result, "say hello");
 
 		jstr_re_free(&preg);
 	}
@@ -163,8 +145,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "world$", 0)));
 
-		FILL(result, "hello world");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "hello ", 1);
+		test_shrink_fill(&result, "hello world");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(1), &result, "hello ");
 
 		jstr_re_free(&preg);
 	}
@@ -173,8 +155,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
 
-		FILL(result, "hello world");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), JSTR_RE_EF_NOTBOL), result, "hello world", 0);
+		test_shrink_fill(&result, "hello world");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), JSTR_RE_EF_NOTBOL)), (long long)(0), &result, "hello world");
 
 		jstr_re_free(&preg);
 	}
@@ -183,8 +165,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^[a-z]\\{1,\\}", JSTR_RE_CF_NEWLINE)));
 
-		FILL(result, "\nhello_world");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "\n_world", 1);
+		test_shrink_fill(&result, "\nhello_world");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(1), &result, "\n_world");
 
 		jstr_re_free(&preg);
 	}
@@ -193,8 +175,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{1,\\}", 0)));
 
-		FILL(result, "hello world foo bar");
-		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "   ", 4);
+		test_shrink_fill(&result, "hello world foo bar");
+		test_expect_call("jstr_re_rmall_exec", (long long)(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0)), (long long)(4), &result, "   ");
 
 		jstr_re_free(&preg);
 	}
@@ -203,11 +185,11 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "abc");
-		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 3, 0), result, "abc", 0);
+		test_shrink_fill(&result, "abc");
+		test_expect_call("jstr_re_rm_from_exec", (long long)(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 3, 0)), (long long)(0), &result, "abc");
 
-		FILL(result, "");
-		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 0, 0), result, "", 0);
+		test_shrink_fill(&result, "");
+		test_expect_call("jstr_re_rm_from_exec", (long long)(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 0, 0)), (long long)(0), &result, "");
 
 		jstr_re_free(&preg);
 	}
@@ -216,10 +198,10 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{1,\\}", 0)));
 
-		FILL(result, "");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "", 0);
-		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "", 0);
-		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, (size_t)-1), result, "", 0);
+		test_shrink_fill(&result, "");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(0), &result, "");
+		test_expect_call("jstr_re_rmall_exec", (long long)(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0)), (long long)(0), &result, "");
+		test_expect_call("jstr_re_rmn_exec", (long long)(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, (size_t)-1)), (long long)(0), &result, "");
 
 		jstr_re_free(&preg);
 	}
@@ -228,8 +210,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "a1b2c3");
-		T_RM(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 0, 0, 1), result, "ab2c3", 1);
+		test_shrink_fill(&result, "a1b2c3");
+		test_expect_call("jstr_re_rmn_from_exec", (long long)(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 0, 0, 1)), (long long)(1), &result, "ab2c3");
 
 		jstr_re_free(&preg);
 	}
@@ -238,8 +220,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "a1b2c3");
-		T_RM(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 99, 0, (size_t)-1), result, "a1b2c3", 0);
+		test_shrink_fill(&result, "a1b2c3");
+		test_expect_call("jstr_re_rmn_from_exec", (long long)(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 99, 0, (size_t)-1)), (long long)(0), &result, "a1b2c3");
 
 		jstr_re_free(&preg);
 	}
@@ -248,8 +230,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
-		FILL(result, "a1b2c3");
-		T_RM(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 20, 0), result, "a1b2c3", 0);
+		test_shrink_fill(&result, "a1b2c3");
+		test_expect_call("jstr_re_rmall_from_exec", (long long)(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 20, 0)), (long long)(0), &result, "a1b2c3");
 
 		jstr_re_free(&preg);
 	}
@@ -258,11 +240,11 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".", 0)));
 
-		FILL(result, "abc");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "bc", 1);
+		test_shrink_fill(&result, "abc");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(1), &result, "bc");
 
-		FILL(result, "a");
-		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "", 1);
+		test_shrink_fill(&result, "a");
+		test_expect_call("jstr_re_rm_exec", (long long)(jstr_re_rm_exec(&preg, jstr_struct(&result), 0)), (long long)(1), &result, "");
 
 		jstr_re_free(&preg);
 	}
@@ -271,8 +253,8 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".", 0)));
 
-		FILL(result, "abc");
-		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "", 3);
+		test_shrink_fill(&result, "abc");
+		test_expect_call("jstr_re_rmall_exec", (long long)(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0)), (long long)(3), &result, "");
 
 		jstr_re_free(&preg);
 	}
@@ -281,11 +263,11 @@ main(int argc, char **argv)
 		jstr_re_ty preg;
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
 
-		FILL(result, "hello hello");
-		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 1, JSTR_RE_EF_NOTBOL), result, "hello hello", 0);
+		test_shrink_fill(&result, "hello hello");
+		test_expect_call("jstr_re_rm_from_exec", (long long)(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 1, JSTR_RE_EF_NOTBOL)), (long long)(0), &result, "hello hello");
 
 		/* Without NOTBOL, skips bol-only match. */
-		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 6, JSTR_RE_EF_NOTBOL), result, "hello hello", 0);
+		test_expect_call("jstr_re_rm_from_exec", (long long)(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 6, JSTR_RE_EF_NOTBOL)), (long long)(0), &result, "hello hello");
 
 		jstr_re_free(&preg);
 	}
@@ -296,7 +278,5 @@ main(int argc, char **argv)
 		jstr_re_free(&preg);
 	}
 	jstr_free_j(&result);
-	SUCCESS();
 	return 0;
-	(void)argc;
 }

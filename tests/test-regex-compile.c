@@ -8,9 +8,8 @@
 #include "../include/regex.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	{
 		jstr_re_ty preg;
 		/* Valid pattern compiles successfully. */
@@ -91,7 +90,5 @@ main(int argc, char **argv)
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "abc", 0)));
 		jstr_re_free(&preg);
 	}
-	SUCCESS();
 	return 0;
-	(void)argc;
 }

@@ -3,11 +3,10 @@
 
 #include "test.h"
 #include "test-array.h"
+
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	T_STRCPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
-	SUCCESS();
+	t_strcpy("jstr_stpcpy", jstr_stpcpy, simple_stpcpy, test_array_memmem, JSTR_ARRAY_COUNT(test_array_memmem));
 	return EXIT_SUCCESS;
 }

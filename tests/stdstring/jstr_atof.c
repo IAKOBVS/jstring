@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_atof("2.5f") == 2.5f);
 	assert(jstr_atof("0") == 0.0f);
 	assert(jstr_atof("abc") == 0.0f);

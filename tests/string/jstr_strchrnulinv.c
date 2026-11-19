@@ -5,11 +5,9 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-{
+	{
 		const char *p = jstr_strchrnulinv("aaaabc", 'a');
 		assert(*p == 'b');
 		p = jstr_strchrnulinv("aaaa", 'a');

@@ -10,11 +10,8 @@
 #include "internal/musl/ctype.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	for (int c = 0; c < 256; c++) {
 		const int got = jstr_isascii(c);
@@ -41,6 +38,5 @@ main(int argc, char **argv)
 	assert(jstr_isascii(EOF) == 0);
 	assert((jstr_isascii(EOF) != 0) == (isascii((unsigned char)EOF) != 0));
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

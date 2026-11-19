@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char buf[8] = "abcd";
 	char *r = jstr_stpset(buf, 'X');
 	assert(r == buf + 4);

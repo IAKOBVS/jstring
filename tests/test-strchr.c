@@ -42,20 +42,21 @@ aligncpy(const void *p, size_t len, size_t a)
 	return memcpy((char *)aligned(buf) + a, p, len);
 }
 
-#define T(res, exp, ...)                                     \
-	do {                                                 \
-		t.result = (const char *)res(__VA_ARGS__);   \
-		t.expected = (const char *)exp(__VA_ARGS__); \
-		T_DEBUG(#res, t.result == t.expected);       \
-	} while (0)
+static void
+check_ptr(const char *name, const char *got, const char *want)
+{
+	t.result = got;
+	t.expected = want;
+	t_check(name, got == want);
+}
 
-#define T_size(res, exp, ...)                              \
-	do {                                               \
-		t.result_n = res(__VA_ARGS__);             \
-		t.expected_n = exp(__VA_ARGS__);           \
-		T_DEBUG(#res, t.result_n == t.expected_n); \
-	} while (0)
-
+static void
+check_size(const char *name, size_t got, size_t want)
+{
+	t.result_n = got;
+	t.expected_n = want;
+	t_check(name, got == want);
+}
 
 void
 T_ALL(const char *s, int c)
@@ -66,18 +67,17 @@ T_ALL(const char *s, int c)
 		t_init();
 		t.hs = p;
 		t.n = strlen(p);
-		T(jstr_strncasechr, simple_strncasechr, p, c, t.n);
-		T(jstr_strnchr, simple_strnchr, p, c, t.n);
-		T(jstr_memrchr, simple_memrchr, p, c, t.n);
-		T(jstr_memcasechr, simple_memcasechr, p, c, t.n);
-		T(jstr_strchrnul, simple_strchrnul, p, c);
-		T(jstr_strcasechr, simple_strcasechr, p, c);
-		T(jstr_strcasechrnul, simple_strcasechrnul, p, c);
-		T_size(jstr_countchr, simple_countchr, p, c);
-		T_size(jstr_countchr_len, simple_countchr_len, p, c, t.n);
+		check_ptr("jstr_strncasechr", jstr_strncasechr(p, c, t.n), simple_strncasechr(p, c, t.n));
+		check_ptr("jstr_strnchr", jstr_strnchr(p, c, t.n), simple_strnchr(p, c, t.n));
+		check_ptr("jstr_memrchr", jstr_memrchr(p, c, t.n), simple_memrchr(p, c, t.n));
+		check_ptr("jstr_memcasechr", jstr_memcasechr(p, c, t.n), simple_memcasechr(p, c, t.n));
+		check_ptr("jstr_strchrnul", jstr_strchrnul(p, c), simple_strchrnul(p, c));
+		check_ptr("jstr_strcasechr", jstr_strcasechr(p, c), simple_strcasechr(p, c));
+		check_ptr("jstr_strcasechrnul", jstr_strcasechrnul(p, c), simple_strcasechrnul(p, c));
+		check_size("jstr_countchr", jstr_countchr(p, c), simple_countchr(p, c));
+		check_size("jstr_countchr_len", jstr_countchr_len(p, c, t.n), simple_countchr_len(p, c, t.n));
 	}
 }
-
 
 void
 T_ALL_SPN(const char *s, const char *a)
@@ -88,15 +88,14 @@ T_ALL_SPN(const char *s, const char *a)
 		t_init();
 		t.hs = p;
 		t.n = strlen(p);
-		T_size(jstr_strrspn_len, simple_memrspn, p, a, t.n);
-		T_size(jstr_strrcspn_len, simple_memrcspn, p, a, t.n);
+		check_size("jstr_strrspn_len", jstr_strrspn_len(p, a, t.n), simple_memrspn(p, a, t.n));
+		check_size("jstr_strrcspn_len", jstr_strrcspn_len(p, a, t.n), simple_memrcspn(p, a, t.n));
 	}
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	int i;
 	char a[128];
 	char s[256];
@@ -186,6 +185,5 @@ main(int argc, char **argv)
 
 	T_ALL_SPN("hello", "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

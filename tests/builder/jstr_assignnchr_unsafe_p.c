@@ -8,11 +8,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[64];
 	char *p = jstr_assignnchr_unsafe_p(buf, 'a', 4);
@@ -24,6 +21,5 @@ main(int argc, char **argv)
 	assert(buf[0] == '\0');
 	assert(p2 == buf);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

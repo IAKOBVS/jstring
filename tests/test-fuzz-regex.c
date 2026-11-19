@@ -11,28 +11,28 @@
 #include "fuzz-regex.h"
 
 static const struct regex_pattern patterns[] = {
-	{ "[0-9]",                               0,                       0 },
-	{ "[0-9]\\{1,\\}",                       0,                       0 },
-	{ "[a-z]\\{1,\\}",                       0,                       0 },
-	{ "[a-zA-Z]",                            0,                       0 },
-	{ ".",                                   0,                       0 },
-	{ ".*",                                  0,                       0 },
-	{ "hello",                               0,                       0 },
-	{ "^hello",                              0,                       0 },
-	{ "world$",                              0,                       0 },
-	{ "[a-z]+",                              JSTR_RE_CF_EXTENDED,     0 },
-	{ "[0-9]+",                              JSTR_RE_CF_EXTENDED,     0 },
-	{ "colou?r",                             JSTR_RE_CF_EXTENDED,     0 },
-	{ "(foo|bar)",                           JSTR_RE_CF_EXTENDED,     0 },
-	{ "^.",                                  JSTR_RE_CF_EXTENDED,     0 },
-	{ "hello",                               JSTR_RE_CF_ICASE,        0 },
-	{ "^hello",                              JSTR_RE_CF_ICASE,        0 },
-	{ "[a-z]+",                              JSTR_RE_CF_ICASE,        0 },
-	{ "colou?r",                             JSTR_RE_CF_EXTENDED | JSTR_RE_CF_ICASE, 0 },
-	{ "[a-z]+",                              JSTR_RE_CF_NEWLINE,      0 },
-	{ "\\([a-z]\\{1,\\}\\)",                0,                       1 },
-	{ "\\([0-9]\\{1,\\}\\)",                0,                       1 },
-	{ "\\([a-z]\\{1,\\}\\)_\\([a-z]\\{1,\\}\\)", 0,                1 },
+	{ "[0-9]",                                   0,                                      0 },
+	{ "[0-9]\\{1,\\}",                           0,                                      0 },
+	{ "[a-z]\\{1,\\}",                           0,                                      0 },
+	{ "[a-zA-Z]",                                0,                                      0 },
+	{ ".",                                       0,                                      0 },
+	{ ".*",                                      0,                                      0 },
+	{ "hello",                                   0,                                      0 },
+	{ "^hello",                                  0,                                      0 },
+	{ "world$",                                  0,                                      0 },
+	{ "[a-z]+",                                  JSTR_RE_CF_EXTENDED,                    0 },
+	{ "[0-9]+",                                  JSTR_RE_CF_EXTENDED,                    0 },
+	{ "colou?r",                                 JSTR_RE_CF_EXTENDED,                    0 },
+	{ "(foo|bar)",                               JSTR_RE_CF_EXTENDED,                    0 },
+	{ "^.",                                      JSTR_RE_CF_EXTENDED,                    0 },
+	{ "hello",                                   JSTR_RE_CF_ICASE,                       0 },
+	{ "^hello",                                  JSTR_RE_CF_ICASE,                       0 },
+	{ "[a-z]+",                                  JSTR_RE_CF_ICASE,                       0 },
+	{ "colou?r",                                 JSTR_RE_CF_EXTENDED | JSTR_RE_CF_ICASE, 0 },
+	{ "[a-z]+",                                  JSTR_RE_CF_NEWLINE,                     0 },
+	{ "\\([a-z]\\{1,\\}\\)",                     0,                                      1 },
+	{ "\\([0-9]\\{1,\\}\\)",                     0,                                      1 },
+	{ "\\([a-z]\\{1,\\}\\)_\\([a-z]\\{1,\\}\\)", 0,                                      1 },
 };
 static const size_t npatterns = sizeof(patterns) / sizeof(patterns[0]);
 
@@ -41,28 +41,26 @@ static const size_t npatterns = sizeof(patterns) / sizeof(patterns[0]);
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
 	size_t iter = FITER;
-#ifdef JSTR_TEST_SLOW
+#	ifdef JSTR_TEST_SLOW
 	iter *= 2;
-#else
+#	else
 	if (iter > 50)
 		iter = 50;
-#endif
+#	endif
 	if (iter < 1)
 		iter = 1;
-#ifdef FUZZ_AFL
+#	ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
-#endif
+#	endif
 	{
 		srand(seed);
-		TESTING(fuzz_regex);
+		test_testing("fuzz_regex");
 		fuzz_regex_patterns(iter, patterns, npatterns);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 
@@ -73,8 +71,7 @@ LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
 	if (size < 4)
 		return 0;
-	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
-	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
 	srand(seed);
 	data += 4;
 	size -= 4;

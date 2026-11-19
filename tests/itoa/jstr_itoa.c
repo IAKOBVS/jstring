@@ -40,11 +40,8 @@ check_safe(int value, const char *expected)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	check_p(0, 10, "0");
 	check_p(1, 10, "1");
@@ -87,6 +84,5 @@ main(int argc, char **argv)
 		jstr_free(&s, &sz, &cap);
 	}
 
-	SUCCESS();
 	return 0;
 }

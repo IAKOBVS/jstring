@@ -44,11 +44,8 @@ check_maxlen(int expected, const char *fmt, ...)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	/* The result always includes the NUL terminator. */
 	check_maxlen(1, "");
@@ -104,6 +101,5 @@ main(int argc, char **argv)
 	assert(call_vsprintf_maxlen("%") < 0);
 	assert(errno == EINVAL);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

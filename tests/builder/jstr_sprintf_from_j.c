@@ -5,11 +5,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	jstr_ty j = JSTR_INIT;
 
@@ -19,6 +16,5 @@ main(int argc, char **argv)
 	assert(memcmp(j.data + 3, "x5y", 4) == 0);
 
 	jstr_free_j(&j);
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

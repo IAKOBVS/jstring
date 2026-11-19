@@ -13,11 +13,8 @@
 #include <unistd.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	/* Basic append and exact end pointer. */
 	{
@@ -194,6 +191,5 @@ main(int argc, char **argv)
 		assert(rmdir(tmpdir) == 0);
 	}
 
-	SUCCESS();
 	return 0;
 }

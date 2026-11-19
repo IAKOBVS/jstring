@@ -5,10 +5,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 	char *p = jstr_basename("/usr/local/bin");
 	assert(p && !strcmp(p, "bin"));
 	p = jstr_basename("foo");

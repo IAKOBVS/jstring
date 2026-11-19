@@ -6,9 +6,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	const char *data = "hello";
 	size_t dlen = 5;
 	FILE *fp = tmpfile();
@@ -25,7 +24,9 @@ main(int argc, char **argv)
 	/* 0 */
 	rewind(fp);
 	/* empty stream read 0 */
-	s = NULL; sz = 0; cap = 0;
+	s = NULL;
+	sz = 0;
+	cap = 0;
 	assert(jstr_io_freadfilefp_len(&s, &sz, &cap, fp, 0) == JSTR_RET_SUCC);
 	assert(sz == 0);
 	free(s);
@@ -34,10 +35,11 @@ main(int argc, char **argv)
 	assert(fp);
 	assert(fwrite(data, 1, dlen, fp) == dlen);
 	rewind(fp);
-	s = NULL; sz = 0; cap = 0;
+	s = NULL;
+	sz = 0;
+	cap = 0;
 	assert(jstr_io_freadfilefp_len(&s, &sz, &cap, fp, dlen + 1) != JSTR_RET_SUCC);
 	free(s);
 	fclose(fp);
-	SUCCESS();
 	return 0;
 }

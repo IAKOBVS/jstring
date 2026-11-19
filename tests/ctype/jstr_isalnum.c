@@ -6,10 +6,8 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 
 	/* Differential test against libc over the full int domain -1..255,
 	 * casting through unsigned char (the documented input contract). */

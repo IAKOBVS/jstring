@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_strcasecmpeq_loop("abc", "ABC") == 0);
 	/* returns trailing byte of s2 at first diff */
 	int r = jstr_strcasecmpeq_loop("abx", "aby");

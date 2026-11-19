@@ -14,9 +14,7 @@
 
 JSTR_ATTR_MAYBE_UNUSED
 static int
-simple_rplcn_len_from(char **s, size_t *sz, size_t *cap, size_t start_idx,
-                      const char *find, size_t find_len,
-                      const char *rplc, size_t rplc_len, size_t n)
+simple_rplcn_len_from(char **s, size_t *sz, size_t *cap, size_t start_idx, const char *find, size_t find_len, const char *rplc, size_t rplc_len, size_t n)
 {
 	if (n == 0 || *sz == 0 || find_len == 0 || start_idx >= *sz)
 		return 0;
@@ -39,11 +37,9 @@ simple_rplcn_len_from(char **s, size_t *sz, size_t *cap, size_t start_idx,
 				*s = tmp;
 				*cap = new_cap;
 			}
-			memmove(*s + idx + rplc_len, *s + idx + find_len,
-			        *sz - idx - find_len + 1);
+			memmove(*s + idx + rplc_len, *s + idx + find_len, *sz - idx - find_len + 1);
 		} else if (diff < 0) {
-			memmove(*s + idx + rplc_len, *s + idx + find_len,
-			        *sz - idx - find_len + 1);
+			memmove(*s + idx + rplc_len, *s + idx + find_len, *sz - idx - find_len + 1);
 		}
 		memcpy(*s + idx, rplc, rplc_len);
 		*sz = *sz + (size_t)diff;
@@ -60,8 +56,7 @@ simple_rmn_len(char *s, size_t *sz, const char *find, size_t find_len, size_t n)
 	if (n == 0 || *sz == 0 || find_len == 0)
 		return 0;
 	size_t cap = (size_t)-1;
-	return (size_t)simple_rplcn_len_from(&s, sz, &cap, 0,
-	                                     find, find_len, "", 0, n);
+	return (size_t)simple_rplcn_len_from(&s, sz, &cap, 0, find, find_len, "", 0, n);
 }
 
 /* ---- fuzz function ---- */
@@ -87,10 +82,8 @@ fuzz_replace_substr(size_t iter)
 		/* --- rplcn_len_from --- */
 		assert(jstr_assign_len(&jbuf, &jsz, &jcap, h, hl) == JSTR_RET_SUCC);
 		assert(jstr_assign_len(&sbuf, &ssz, &scap, h, hl) == JSTR_RET_SUCC);
-		int gj = jstr_rplcn_len_from(&jbuf, &jsz, &jcap, start_idx,
-		                             n_small, nl, r, rl, count);
-		int es = simple_rplcn_len_from(&sbuf, &ssz, &scap, start_idx,
-		                               n_small, nl, r, rl, count);
+		int gj = jstr_rplcn_len_from(&jbuf, &jsz, &jcap, start_idx, n_small, nl, r, rl, count);
+		int es = simple_rplcn_len_from(&sbuf, &ssz, &scap, start_idx, n_small, nl, r, rl, count);
 		if (gj < 0)
 			assert(es < 0);
 		else {
@@ -120,29 +113,27 @@ fuzz_replace_substr(size_t iter)
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
 	size_t iter = FITER;
-#ifdef JSTR_TEST_SLOW
+#	ifdef JSTR_TEST_SLOW
 	iter *= 10;
-#else
+#	else
 	if (iter > 500)
 		iter = 500;
-#endif
+#	endif
 	if (iter < 1)
 		iter = 1;
 	/* PRINTERR("seed=%u iter=%zu\n", seed, iter); */
-#ifdef FUZZ_AFL
+#	ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
-#endif
+#	endif
 	{
 		srand(seed);
-		TESTING(fuzz_replace_substr);
+		test_testing("fuzz_replace_substr");
 		fuzz_replace_substr(iter);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 
@@ -153,8 +144,7 @@ LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
 	if (size < 4)
 		return 0;
-	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
-	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
 	srand(seed);
 	data += 4;
 	size -= 4;

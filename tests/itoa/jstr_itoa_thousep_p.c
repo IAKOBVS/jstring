@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char tmp[256];
 	memset(tmp, 0xAA, sizeof(tmp));
 	char *end = jstr_itoa_thousep_p(-999, tmp, 10, ',');

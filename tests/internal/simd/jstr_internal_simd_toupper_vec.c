@@ -36,7 +36,9 @@ fill_pattern(unsigned char *p, size_t len, int pat)
 	}
 	case 3:
 		for (size_t i = 0; i < len; ++i)
-			p[i] = (unsigned char)(i % 4 == 0 ? 'a' : i % 4 == 1 ? 'z' : i % 4 == 2 ? 'A' : 'Z');
+			p[i] = (unsigned char)(i % 4 == 0 ? 'a' : i % 4 == 1   ? 'z'
+			                                          : i % 4 == 2 ? 'A'
+			                                                       : 'Z');
 		break;
 	case 4:
 		for (size_t i = 0; i < len; ++i)
@@ -44,7 +46,8 @@ fill_pattern(unsigned char *p, size_t len, int pat)
 		break;
 	default:
 		for (size_t i = 0; i < len; ++i)
-			p[i] = (unsigned char)(i % 3 == 0 ? '@' : i % 3 == 1 ? '[' : '`');
+			p[i] = (unsigned char)(i % 3 == 0 ? '@' : i % 3 == 1 ? '['
+			                                                     : '`');
 		break;
 	}
 }
@@ -66,11 +69,8 @@ check_vec(const unsigned char *src, size_t off)
 #endif
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 #if defined(CMPGT8)
 	{
@@ -100,8 +100,22 @@ main(int argc, char **argv)
 	{
 		/* Explicit boundary pairs around 'a'-'z'. */
 		static const unsigned char edges[] = {
-			'@', 'A', 'B', 'Y', 'Z', '[', '`', 'a', 'b', 'y', 'z', '{',
-			0x00, 0x7F, 0x80, 0xFF
+			'@',
+			'A',
+			'B',
+			'Y',
+			'Z',
+			'[',
+			'`',
+			'a',
+			'b',
+			'y',
+			'z',
+			'{',
+			0x00,
+			0x7F,
+			0x80,
+			0xFF
 		};
 		unsigned char storage[VEC_SIZE + 128];
 		for (size_t i = 0; i < sizeof storage; ++i)
@@ -111,6 +125,5 @@ main(int argc, char **argv)
 	}
 #endif
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

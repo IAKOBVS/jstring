@@ -7,90 +7,72 @@
 #include "test.h"
 #include "../include/regex.h"
 
-#define T_ASSERT(func, result, expected)                                                                           \
-	do {                                                                                                       \
-		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
-		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
-	} while (0)
-#define FILL(result, str)                                                                     \
-	do {                                                                                  \
-		(void)jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
-		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
-	} while (0)
-#define T_APPEND_NORET(func, ...)                              \
-	do {                                                   \
-		TESTING(func);                                 \
-		func(__VA_ARGS__);                             \
-		T_ASSERT(func(__VA_ARGS__), result, expected); \
-		(result).size = 0;                             \
-		*(result).data = '\0';                         \
-	} while (0)
-#define T_RE(_string, _find, _rplc, _expected, _n)                                                                \
-	do {                                                                                                      \
-		const char *rplc, *find, *expected;                                                               \
-		FILL(result, _string);                                                                            \
-		find = _find;                                                                                     \
-		rplc = _rplc;                                                                                     \
-		expected = _expected;                                                                             \
-		jstr_re_ty preg;                                                                                  \
-		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                          \
-		T_APPEND_NORET(jstr_re_rplcn_len_exec, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _n); \
-		jstr_re_free(&preg);                                                                              \
-		(void)find;                                                                                       \
-		(void)rplc;                                                                                       \
-	} while (0)
+static void
+check_re_replace(jstr_ty *result, const char *str, const char *pattern, const char *rplc, size_t n, const char *expected)
+{
+	jstr_re_ty preg;
+	assert(!jstr_re_chkcomp(jstr_re_comp(&preg, pattern, 0)));
+	test_shrink_fill(result, str);
+	jstr_re_off_ty ignored_re = jstr_re_rplcn_len_exec(&preg, jstr_struct(result), rplc, strlen(rplc), 0, n);
+	(void)ignored_re;
+	test_expect_buf("jstr_re_rplcn_len_exec", result, expected);
+	test_reset(result);
+	jstr_re_free(&preg);
+}
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	jstr_ty result = JSTR_INIT;
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", (size_t)-1);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", 4);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___hello", 3);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "__hello_hello", 2);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "_hello_hello_hello", 1);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "hello_hello_hello_hello", 0);
+
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", (size_t)-1, "___");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", 4, "___");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", 3, "___hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", 2, "__hello_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", 1, "_hello_hello_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", 0, "hello_hello_hello_hello");
 	/* rplc_len > find_len */
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", (size_t)-1);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", 4);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_hello", 3);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_hello_hello", 2);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_hello_hello_hello", 1);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "hello_hello_hello_hello", 0);
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", (size_t)-1, "world?_world?_world?_world?");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", 4, "world?_world?_world?_world?");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", 3, "world?_world?_world?_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", 2, "world?_world?_hello_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", 1, "world?_hello_hello_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", 0, "hello_hello_hello_hello");
 	/* rplc_len < find_len */
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_worl", (size_t)-1);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_worl", 4);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_hello", 3);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_hello_hello", 2);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_hello_hello_hello", 1);
-	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "hello_hello_hello_hello", 0);
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", (size_t)-1, "worl_worl_worl_worl");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", 4, "worl_worl_worl_worl");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", 3, "worl_worl_worl_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", 2, "worl_worl_hello_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", 1, "worl_hello_hello_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", 0, "hello_hello_hello_hello");
 	/* .* */
-	T_RE("hello_hello_hello_hello", ".*", "worl", "worl", (size_t)-1);
-	T_RE("hello_hello_hello_hello", "(.*)", "worl", "hello_hello_hello_hello", (size_t)-1);
-	T_RE("hello_hello_hello_hello", "\\(.*\\)", "worl", "worl", (size_t)-1);
-	T_RE("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", (size_t)-1);
+	check_re_replace(&result, "hello_hello_hello_hello", ".*", "worl", (size_t)-1, "worl");
+	check_re_replace(&result, "hello_hello_hello_hello", "(.*)", "worl", (size_t)-1, "hello_hello_hello_hello");
+	check_re_replace(&result, "hello_hello_hello_hello", "\\(.*\\)", "worl", (size_t)-1, "worl");
+	check_re_replace(&result, "hello_(hello)_hello_hello", "(.*)", "worl", (size_t)-1, "hello_worl_hello_hello");
 
 	/* test REG_NEWLINE replace bug: .* b should result in b\nb rather than bb */
 	{
 		jstr_re_ty preg;
-		const char *expected = "b\nb";
-		FILL(result, " b\n b");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".* b", REG_NEWLINE | REG_EXTENDED)));
-		T_APPEND_NORET(jstr_re_rplcn_len_exec, &preg, jstr_struct(&result), "b", 1, 0, (size_t)-1);
+		test_shrink_fill(&result, " b\n b");
+		jstr_re_off_ty ignored_re = jstr_re_rplcn_len_exec(&preg, jstr_struct(&result), "b", 1, 0, (size_t)-1);
+		(void)ignored_re;
+		test_expect_buf("jstr_re_rplcn_len_exec", &result, "b\nb");
+		test_reset(&result);
 		jstr_re_free(&preg);
 	}
 	{
 		jstr_re_ty preg;
-		const char *expected = "\n";
-		FILL(result, " b\n b");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".* b", REG_NEWLINE | REG_EXTENDED)));
-		T_APPEND_NORET(jstr_re_rmn_exec, &preg, jstr_struct(&result), 0, (size_t)-1);
+		test_shrink_fill(&result, " b\n b");
+		jstr_re_off_ty ignored_re = jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, (size_t)-1);
+		(void)ignored_re;
+		test_expect_buf("jstr_re_rmn_exec", &result, "\n");
+		test_reset(&result);
 		jstr_re_free(&preg);
 	}
 
 	jstr_free_j(&result);
-	SUCCESS();
 	return 0;
-	(void)argc;
 }

@@ -16,10 +16,8 @@ alloc_buf(size_t extra)
 }
 
 int
-main(int argc, char *argv[])
+main(void)
 {
-	(void)argc;
-	(void)argv;
 
 	/* Test jstr_memrchr (exercises jstr_internal_memrchr_musl). */
 	{
@@ -254,6 +252,5 @@ main(int argc, char *argv[])
 		assert(n == 5);
 	}
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

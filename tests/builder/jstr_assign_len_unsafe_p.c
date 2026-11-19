@@ -8,11 +8,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[64];
 	char *p = jstr_assign_len_unsafe_p(buf, "hello", 5);
@@ -23,6 +20,5 @@ main(int argc, char **argv)
 	assert(memcmp(buf, "hi", 3) == 0);
 	assert(p2 == buf + 2);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

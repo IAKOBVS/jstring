@@ -5,10 +5,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 	const char s[] = "aBcD";
 	assert(jstr_memcasechr(s, 'b', 4) == s + 1);
 	assert(jstr_memcasechr(s, 'd', 4) == s + 3);

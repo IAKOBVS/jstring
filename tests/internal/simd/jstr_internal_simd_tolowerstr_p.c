@@ -6,11 +6,8 @@
 #include "internal/simd.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[128];
 	strcpy(buf, "ABC123");
@@ -23,6 +20,5 @@ main(int argc, char **argv)
 	p = jstr_internal_simd_tolowerstr_p(buf2);
 	assert(p == buf2);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

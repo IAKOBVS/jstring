@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char buf[] = "abac";
 	assert(jstr_memnchr(buf, 'a', 4, 4) == buf);
 	assert(jstr_memnchr(buf, 'c', 4, 2) == NULL);

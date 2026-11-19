@@ -6,10 +6,8 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 
 	/* Differential test over the full byte domain.  jstr_tolower casts its
 	 * argument through unsigned char, so 0xff is a valid input byte; libc is

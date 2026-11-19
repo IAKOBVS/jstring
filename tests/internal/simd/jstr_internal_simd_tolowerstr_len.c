@@ -34,7 +34,9 @@ fill_pattern(unsigned char *p, size_t len, int pat)
 	}
 	case 3:
 		for (size_t i = 0; i < len; ++i)
-			p[i] = (unsigned char)(i % 4 == 0 ? 'A' : i % 4 == 1 ? 'Z' : i % 4 == 2 ? 'a' : 'z');
+			p[i] = (unsigned char)(i % 4 == 0 ? 'A' : i % 4 == 1   ? 'Z'
+			                                          : i % 4 == 2 ? 'a'
+			                                                       : 'z');
 		break;
 	case 4:
 		for (size_t i = 0; i < len; ++i)
@@ -51,7 +53,9 @@ fill_pattern(unsigned char *p, size_t len, int pat)
 static void
 check_len(size_t len, int pat, size_t off)
 {
-	enum { PAD = 128, GUARD = 64, TOTAL = 4096 };
+	enum { PAD = 128,
+	       GUARD = 64,
+	       TOTAL = 4096 };
 	unsigned char orig[2064];
 	unsigned char storage[TOTAL];
 	unsigned char *s = storage + PAD + off;
@@ -76,11 +80,8 @@ check_len(size_t len, int pat, size_t off)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	{
 		char buf[128];
@@ -103,6 +104,5 @@ main(int argc, char **argv)
 		}
 	}
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

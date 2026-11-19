@@ -4,9 +4,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	{
 		char dst[64];
 		jstr_strcpy_len(dst, jstr_literal("hello"));
@@ -24,6 +23,5 @@ main(int argc, char **argv)
 		jstr_strcpy_len(dst, "x", 0);
 		assert(dst[0] == '\0');
 	}
-	SUCCESS();
 	return 0;
 }

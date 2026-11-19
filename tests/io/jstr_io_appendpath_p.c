@@ -4,9 +4,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	{
 		char buf[64];
 		memcpy(buf, jstr_literal("dir"));
@@ -21,6 +20,5 @@ main(int argc, char **argv)
 		assert(strcmp(buf, "a/bc") == 0);
 		assert(p == buf + 4);
 	}
-	SUCCESS();
 	return 0;
 }

@@ -6,11 +6,8 @@
 #include "internal/musl/stdstring.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[128];
 	strcpy(buf, "abcab");
@@ -19,6 +16,5 @@ main(int argc, char **argv)
 	assert(jstr_internal_memrchr_musl(buf, 'a', 0) == NULL);
 	assert(jstr_internal_memrchr_musl(buf, 'a', 3) == buf);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

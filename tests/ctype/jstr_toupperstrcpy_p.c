@@ -6,14 +6,14 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char dst[64];
 	assert(jstr_toupperstrcpy_p(dst, "") == dst);
-	assert(strcmp(dst,"")==0);
+	assert(strcmp(dst, "") == 0);
 	char *r = jstr_toupperstrcpy_p(dst, "aBc");
 	assert(r == dst + 3);
-	assert(strcmp(dst,"ABC")==0);
+	assert(strcmp(dst, "ABC") == 0);
 	return 0;
 }

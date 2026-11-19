@@ -146,8 +146,14 @@ fuzz_stdstring(size_t iter)
 		int cmp1 = jstr_strncasecmp(h, h2, cmp_n);
 		int cmp2 = jstr_strncasecmp(h, h2, cmp_n);
 		assert((cmp1 == 0) == (cmp2 == 0));
-		{int _r = jstr_strncasecmpeq(h, h2, cmp_n);(void)_r;}
-		{int _r = jstr_memcasecmpeq(h, h2, cmp_n);(void)_r;}
+		{
+			int _r = jstr_strncasecmpeq(h, h2, cmp_n);
+			(void)_r;
+		}
+		{
+			int _r = jstr_memcasecmpeq(h, h2, cmp_n);
+			(void)_r;
+		}
 		int cmpeq_len = jstr_strcasecmpeq_len(h, h2, cmp_n);
 		int cmpeq_ll = jstr_strcasecmpeq_len_loop(h, h2, cmp_n);
 		assert(!!cmpeq_len == !!cmpeq_ll);
@@ -226,28 +232,26 @@ fuzz_stdstring(size_t iter)
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
 	size_t iter = FITER;
-#ifdef JSTR_TEST_SLOW
+#	ifdef JSTR_TEST_SLOW
 	iter *= 10;
-#else
+#	else
 	if (iter > 500)
 		iter = 500;
-#endif
+#	endif
 	if (iter < 1)
 		iter = 1;
-#ifdef FUZZ_AFL
+#	ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
-#endif
+#	endif
 	{
 		srand(seed);
-		TESTING(fuzz_stdstring);
+		test_testing("fuzz_stdstring");
 		fuzz_stdstring(iter);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 
@@ -258,8 +262,7 @@ LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
 	if (size < 4)
 		return 0;
-	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
-	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
 	srand(seed);
 	data += 4;
 	size -= 4;

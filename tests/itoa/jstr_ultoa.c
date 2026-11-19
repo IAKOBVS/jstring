@@ -7,10 +7,9 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc; (void)argv;
+
 	char *s = NULL;
 	size_t sz = 0, cap = 0;
 	assert(jstr_ultoa(&s, &sz, &cap, 0, 10) == JSTR_RET_SUCC);
@@ -20,6 +19,5 @@ main(int argc, char **argv)
 	/* invalid base */
 	assert(jstr_chk(jstr_ultoa(&s, &sz, &cap, 1, 1)) == 1 || jstr_ultoa(&s, &sz, &cap, 1, 1) == JSTR_RET_ERR);
 	jstr_free(&s, &sz, &cap);
-	SUCCESS();
 	return 0;
 }

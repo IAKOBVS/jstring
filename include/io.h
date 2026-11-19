@@ -909,10 +909,6 @@ jstr_io_readsystem(char *R *R s, size_t *R sz, size_t *R cap, const char *R cmd)
 		for (;;) {
 			requested_sz = *cap - *sz;
 			read_sz = jstr_io_fread(*s + *sz, 1, requested_sz, fp);
-			if (jstr_unlikely(read_sz == (size_t)-1)) {
-				pclose(fp);
-				JSTR_RETURN_ERR(JSTR_RET_ERR);
-			}
 			*sz += read_sz;
 			if (read_sz < requested_sz) {
 				/* EOF */
@@ -953,40 +949,39 @@ jstr_io_readsystem(char *R *R s, size_t *R sz, size_t *R cap, const char *R cmd)
  * @param cap size_t *cap Capacity; updated. Must not be NULL.
  *
  * @return jstr_ret_ty JSTR_RET_SUCC on success, JSTR_RET_ERR on read/
- *         allocation failure.
+ *         allocation failure, or when no bytes are available (empty stdin).
  *
- * @note Reads until EOF on stdin.
+ * @note Reads until EOF on stdin; short reads are retried, and EINTR is
+ *       handled transparently.
  */
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_readstdin(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
 {
-	char buf[BUFSIZ];
-	ssize_t read_sz = read(STDIN_FILENO, buf, sizeof(buf));
-	if (jstr_unlikely(read_sz == (ssize_t)-1))
+	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)JSTR_MIN_CAP)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	const size_t initialsz = (size_t)(read_sz == sizeof(buf) ? read_sz * JSTR_GROWTH : read_sz + 1);
-	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)initialsz)))
-		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	memcpy(*s, buf, (size_t)read_sz);
-	*sz = (size_t)read_sz;
-	if (jstr_unlikely(read_sz == BUFSIZ)) {
-		ssize_t requested_sz;
-		for (;;) {
-			requested_sz = (ssize_t)(*cap - *sz);
-			read_sz = read(STDIN_FILENO, *s + *sz, (size_t)requested_sz);
-			if (jstr_unlikely(read_sz == (ssize_t)-1))
+	*sz = 0;
+	for (;;) {
+		if (*sz + 1 >= *cap) {
+			if (jstr_unlikely(*cap > SIZE_MAX / JSTR_GROWTH))
 				JSTR_RETURN_ERR(JSTR_RET_ERR);
-			*sz += (size_t)read_sz;
-			if (read_sz < requested_sz)
-				break;
-			if (*sz == *cap)
-				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH))))
-					JSTR_RETURN_ERR(JSTR_RET_ERR);
+			if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)(*cap * JSTR_GROWTH))))
+				JSTR_RETURN_ERR(JSTR_RET_ERR);
 		}
+		const ssize_t read_sz = read(STDIN_FILENO, *s + *sz, *cap - *sz - 1);
+		if (jstr_unlikely(read_sz < 0)) {
+			if (errno == EINTR)
+				continue;
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
+		}
+		if (read_sz == 0)
+			break;
+		*sz += (size_t)read_sz;
 	}
 	*(*s + *sz) = '\0';
+	if (jstr_unlikely(*sz == 0))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
 }
 #	else
@@ -1179,7 +1174,7 @@ typedef enum jstr_io_ftw_flag_ty {
 				}                                                      \
 			} while (0)
 #		define STAT_ALWAYS(st, fd, ep, dirpath) \
-			STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
+			STAT_DO(st, fd, ep, dirpath, goto func)
 #		define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                           \
 			do {                                                                   \
 				if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) < 0)) { \
@@ -1214,7 +1209,7 @@ typedef enum jstr_io_ftw_flag_ty {
 				}                                        \
 			} while (0)
 #		define STAT_ALWAYS(st, fd, ep, dirpath) \
-			STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
+			STAT_DO(st, fd, ep, dirpath, goto func)
 #		define OPENAT(dstfd, srcfd, file, oflag, do_on_err) \
 			do {                                         \
 			} while (0)
@@ -1331,9 +1326,9 @@ jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_
 	(void)dirfd;
 	DIR *dp = OPENDIR(dirfd, a->ftw.dirpath);
 	if (jstr_nullchk(dp)) {
-#	if USE_ATFILE
+#		if USE_ATFILE
 		close(dirfd);
-#	endif
+#		endif
 		if (NONFATAL_ERR()) {
 			if (FLAG(JSTR_IO_FTW_REG))
 				if (!FLAG(JSTR_IO_FTW_DIR))
@@ -1505,6 +1500,10 @@ skip_fn:
 				closedir(dp);
 				return JSTR_RET_SUCC;
 			}
+			if (jstr_unlikely(jstr_chk(tmp))) {
+				closedir(dp);
+				JSTR_RETURN_ERR(JSTR_RET_ERR);
+			}
 		} else {
 			if (jstr_chk(tmp)) {
 				closedir(dp);
@@ -1622,9 +1621,7 @@ ftw:;
 			}
 			/* SKIP_SUBTREE/SKIP_SIBLINGS at root mean continue
 			 * (no parent/siblings to skip, recursion hasn't started) */
-			if (jstr_unlikely(tmp != JSTR_IO_FTW_RET_CONTINUE &&
-					 tmp != JSTR_IO_FTW_RET_SKIP_SUBTREE &&
-					 tmp != JSTR_IO_FTW_RET_SKIP_SIBLINGS)) {
+			if (jstr_unlikely(tmp != JSTR_IO_FTW_RET_CONTINUE && tmp != JSTR_IO_FTW_RET_SKIP_SUBTREE && tmp != JSTR_IO_FTW_RET_SKIP_SIBLINGS)) {
 				CLOSE(dirfd, );
 				JSTR_RETURN_ERR(JSTR_RET_ERR);
 			}
@@ -1655,8 +1652,8 @@ file:;
 				return JSTR_RET_SUCC;
 		} else {
 			dirpath = (char *)jstr_memrchr(fulpath, '/', dirpath_len);
-			const char *end = (char *)dirpath + dirpath_len;
 			if (dirpath) {
+				const char *end = fulpath + dirpath_len;
 				if (*++dirpath && func_match(dirpath, end - dirpath, func_match_args))
 					return JSTR_RET_SUCC;
 			} else {

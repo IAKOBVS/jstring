@@ -15,15 +15,15 @@ JSTR_INTERNAL_BEGIN_DECLS
 #	include <wchar.h>
 JSTR_INTERNAL_END_DECLS
 
-#ifdef JSTR_IMPLEMENTATION
-#undef JSTR_IMPLEMENTATION
-#	include "config.h"
-#	include "ctype.h"
-#	include "macros.h"
-#	include "stdstring.h"
-#	include "string.h"
-#define JSTR_IMPLEMENTATION 1
-#endif
+#	ifdef JSTR_IMPLEMENTATION
+#		undef JSTR_IMPLEMENTATION
+#		include "config.h"
+#		include "ctype.h"
+#		include "macros.h"
+#		include "stdstring.h"
+#		include "string.h"
+#		define JSTR_IMPLEMENTATION 1
+#	endif
 
 /**
  * \brief Alias for JSTR_RESTRICT.
@@ -38,7 +38,7 @@ JSTR_INTERNAL_END_DECLS
 /**
  * \brief Zero initializer for jstr_ty.
  */
-#	define JSTR_INIT {0}
+#	define JSTR_INIT { 0 }
 
 /**
  * \brief Iterate over each byte of a jstr_ty's data.
@@ -57,21 +57,21 @@ JSTR_INTERNAL_END_DECLS
 /**
  * \brief Internal unchecked pointer to j's i-th byte.
  */
-#	define jstr_internal_at(j, i)      ((j)->data + (i))
+#	define jstr_internal_at(j, i) ((j)->data + (i))
 /**
  * \brief Pointer to the first byte of j's data.
  */
-#	define jstr_start(j)       ((j)->data)
+#	define jstr_start(j) ((j)->data)
 /**
  * \brief Pointer one past the last byte of j's data.
  */
-#	define jstr_end(j)         ((j)->data + (j)->size)
+#	define jstr_end(j) ((j)->data + (j)->size)
 /**
  * \brief Bounds-checked (in debug) pointer to j's i-th byte.
  */
-#	ifdef JSTR_DEBUG
+#	if JSTR_DEBUG
 #		define jstr_at(j, i) \
-			((i <= (j)->size) ? ((j)->data + (i)) : assert(i <= (j)->size), ((j)->data))
+			((i) <= (j)->size ? ((j)->data + (i)) : (assert((i) <= (j)->size), (j)->data))
 #	else
 #		define jstr_at(j, i) ((j)->data + (i))
 #	endif
@@ -92,8 +92,7 @@ JSTR_INTERNAL_BEGIN_DECLS
  * \warning If sz is NULL the behaviour is undefined.
  */
 JSTR_FUNC_VOID
-static JSTR_ATTR_INLINE
-void
+static JSTR_ATTR_INLINE void
 jstr_empty(char *R s, size_t *R sz) JSTR_NOEXCEPT
 {
 	if (jstr_likely(s != NULL))
@@ -116,7 +115,7 @@ jstr_empty(char *R s, size_t *R sz) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 jstr_ret_ty
 jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	int ret;
 	ret = fprintf(stderr, "size       :%zu.\n"
@@ -158,9 +157,9 @@ jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
 	}
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Free a raw buffer and reset pointers and sizes.
@@ -177,16 +176,16 @@ jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 void
 jstr_free(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	free(*s);
 	*s = NULL;
 	*cap = 0;
 	*sz = 0;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Free a jstr_ty's buffer and reset the struct.
@@ -199,13 +198,13 @@ jstr_free(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 void
 jstr_free_j(jstr_ty *j) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	jstr_free(&j->data, &j->size, &j->capacity);
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Grow capacity to at least new_cap, always reallocating or growing.
@@ -226,11 +225,14 @@ jstr_free_j(jstr_ty *j) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	size_t old_cap = JSTR_MAX(*cap, JSTR_MIN_CAP);
-	while (old_cap < new_cap)
+	while (old_cap < new_cap) {
+		if (jstr_unlikely(old_cap > SIZE_MAX / JSTR_GROWTH))
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		old_cap *= JSTR_GROWTH;
+	}
 	char *tmp = (char *)realloc(*s, old_cap);
 	if (jstr_nullchk(tmp))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -239,9 +241,9 @@ jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JS
 	return JSTR_RET_SUCC;
 	(void)sz;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Reserve capacity if new_cap exceeds current capacity.
@@ -259,21 +261,22 @@ jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JS
 JSTR_FUNC
 jstr_ret_ty
 jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (new_cap <= *cap)
 		return JSTR_RET_SUCC;
 	return jstr_reservealways(s, sz, cap, new_cap);
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Reallocate to exactly new_cap when new_cap is non-zero.
  *
- * \details If new_cap != 0, sets *cap = new_cap and reallocates *s to that
- *          size. If new_cap == 0, skips realloc and returns success.
+ * \details If new_cap != 0, reallocates *s to that size and updates *cap and
+ *          *s only after the allocation succeeds. If new_cap == 0, skips
+ *          realloc and returns success.
  *
  * \param[in,out] s Non-NULL pointer to buffer pointer.
  * \param[in,out] sz Non-NULL pointer to size; ignored.
@@ -282,27 +285,26 @@ jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOE
  * \return JSTR_RET_SUCC on success (no-op if new_cap == 0); JSTR_RET_ERR if realloc fails when new_cap != 0.
  * \pre s, sz and cap are non-NULL.
  * \note new_cap == 0 leaves capacity unchanged.
- * \warning On allocation failure *cap may already reflect new_cap while *s
- *          is unchanged.
+ * \warning On allocation failure *s and *cap are left unchanged.
  */
 JSTR_FUNC
 jstr_ret_ty
 jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(new_cap != 0)) {
-		*cap = new_cap;
-		char *tmp = (char *)realloc(*s, *cap);
+		char *tmp = (char *)realloc(*s, new_cap);
 		if (jstr_nullchk(tmp))
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
+		*cap = new_cap;
 		*s = tmp;
 	}
 	return JSTR_RET_SUCC;
 	(void)sz;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Reserve exact capacity if new_cap exceeds current capacity.
@@ -322,15 +324,15 @@ jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_ca
 JSTR_FUNC
 jstr_ret_ty
 jstr_reserveexact(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
 	return jstr_reserveexactalways(s, sz, cap, new_cap);
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Shrink capacity to size + 1 (exact fit for current size).
@@ -346,13 +348,13 @@ jstr_reserveexact(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JST
 JSTR_FUNC
 jstr_ret_ty
 jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_reserveexactalways(s, sz, cap, *sz + 1);
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Write a jstr_ty's bytes to stdout without trailing newline.
@@ -385,7 +387,7 @@ jstr_io_print(const jstr_ty *j) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_unlikely(jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -393,9 +395,9 @@ jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Internal variadic concatenation helper.
@@ -415,7 +417,7 @@ jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t arg_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	char *p;
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + arg_len + 1)))
@@ -426,9 +428,9 @@ jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t 
 	for (; (arg = va_arg(ap, const char *)); p = jstr_stpcpy(p, arg)) {}
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Concatenate an array of (ptr, size) chunks into a buffer.
@@ -510,13 +512,13 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 char *
 jstr_append_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_stpcpy_len(s + sz, src, src_len);
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Append a NUL-terminated src to s at offset sz without bounds checks.
@@ -530,8 +532,7 @@ jstr_append_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len
  * \warning No bounds checking; caller must ensure capacity.
  */
 JSTR_FUNC_VOID
-static JSTR_ATTR_INLINE
-void
+static JSTR_ATTR_INLINE void
 jstr_append_unsafe(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
 {
 	strcpy(s + sz, src);
@@ -553,13 +554,13 @@ jstr_append_unsafe(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
 JSTR_FUNC
 char *
 jstr_append_unsafe_p(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_stpcpy(s + sz, src);
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Append src (length src_len) to a managed buffer, growing as needed.
@@ -578,16 +579,16 @@ jstr_append_unsafe_p(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_append_len_unsafe_p(*s, *sz, src, src_len), *s);
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Fill existing buffer contents up to the first NUL with character c.
@@ -600,8 +601,7 @@ jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
  * \note Does not resize or reallocate.
  */
 JSTR_FUNC_VOID
-static JSTR_ATTR_INLINE
-void
+static JSTR_ATTR_INLINE void
 jstr_strset(char *s, int c) JSTR_NOEXCEPT
 {
 	memset(s, c, strlen(s));
@@ -622,15 +622,15 @@ jstr_strset(char *s, int c) JSTR_NOEXCEPT
 JSTR_FUNC
 char *
 jstr_assignnchr_unsafe_p(char *s, int c, size_t n) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	memset(s, c, n);
 	*(s + n) = '\0';
 	return s + n;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Assign n copies of c to a managed buffer, truncating or growing.
@@ -651,7 +651,7 @@ jstr_assignnchr_unsafe_p(char *s, int c, size_t n) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_unlikely(n > *sz)) {
 		if (jstr_chk(jstr_reservealways(s, sz, cap, n + 1)))
@@ -662,9 +662,9 @@ jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
 	*sz = n;
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Append n copies of c to s at offset sz without bounds checks.
@@ -681,8 +681,7 @@ jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
  * \warning No bounds checking and no NUL termination.
  */
 JSTR_FUNC
-static JSTR_ATTR_INLINE
-char *
+static JSTR_ATTR_INLINE char *
 jstr_pushbackn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 {
 	return (char *)memset(s + sz, c, n) + n;
@@ -705,16 +704,16 @@ jstr_pushbackn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_pushbackn_len_unsafe_p(*s, *sz, c, n), *s);
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Prepend n copies of c to s without bounds checks.
@@ -733,14 +732,14 @@ jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_
 JSTR_FUNC
 char *
 jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	jstr_strmove_len(s + n, s, sz);
 	return (char *)jstr_mempset(s, c, n) + sz;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Prepend n copies of c to a managed buffer, growing as needed.
@@ -759,16 +758,16 @@ jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_pushfrontn_len_unsafe_p(*s, *sz, c, n), *s);
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Prepend src (length src_len) to s at the front without bounds checks.
@@ -789,7 +788,7 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 char *
 jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(sz != 0))
 		jstr_strmove_len(s + src_len, s, sz);
@@ -798,9 +797,9 @@ jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_le
 	memcpy(s, src, src_len);
 	return s + sz + src_len;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Prepend src (length src_len) to a managed buffer, growing as needed.
@@ -818,16 +817,16 @@ jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_le
 JSTR_FUNC
 jstr_ret_ty
 jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_prepend_len_unsafe_p(*s, *sz, src, src_len), *s);
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Assign src (length src_len) to s without bounds checks.
@@ -845,13 +844,13 @@ jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, s
 JSTR_FUNC
 char *
 jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_stpcpy_len(s, src, src_len);
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Assign src (length src_len) to a managed buffer, growing as needed.
@@ -870,7 +869,7 @@ jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len) JSTR_NOEX
 JSTR_FUNC
 jstr_ret_ty
 jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -878,9 +877,9 @@ jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
 	*sz = src_len;
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Append a single character to s at offset sz without bounds checks.
@@ -898,16 +897,16 @@ jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
 JSTR_FUNC
 char *
 jstr_pushback_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	s += sz;
 	*s = c;
 	*++s = '\0';
 	return s;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Append a single character to a managed buffer, growing as needed.
@@ -924,16 +923,16 @@ jstr_pushback_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + 1 + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_pushback_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Prepend a single character to s without bounds checks.
@@ -951,15 +950,15 @@ jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 char *
 jstr_pushfront_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	jstr_strmove_len(s + 1, s, sz);
 	*s = c;
 	return s + sz + 1;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Prepend a single character to a managed buffer, growing as needed.
@@ -976,16 +975,16 @@ jstr_pushfront_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
 JSTR_FUNC
 jstr_ret_ty
 jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + 1 + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_pushfront_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Remove the last character of s.
@@ -1001,7 +1000,7 @@ jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 char *
 jstr_popback_p(char *s, size_t sz) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(sz != 0)) {
 		*(s + sz - 1) = '\0';
@@ -1009,9 +1008,9 @@ jstr_popback_p(char *s, size_t sz) JSTR_NOEXCEPT
 	}
 	return s;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Remove the first character of s.
@@ -1027,7 +1026,7 @@ jstr_popback_p(char *s, size_t sz) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 char *
 jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(sz != 0)) {
 		memmove(s, s + 1, sz);
@@ -1035,9 +1034,9 @@ jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
 	}
 	return s;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 #	if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
 	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
@@ -1063,38 +1062,38 @@ JSTR_FUNC
 JSTR_ATTR_FORMAT(printf, 2, 0)
 int
 jstr_vsprintf_maxlen(va_list ap, const char *fmt) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
-#	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
+#		if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 	const int ret = vsnprintf(NULL, 0, fmt, ap);
 	if (jstr_likely(ret > 0) || ret == 0)
 		return ret + 1;
 	JSTR_RETURN_ERR(-1);
-#	else
-#		define JSTR_INTERNAL_COUNTDIGITS(lflag, base)               \
-			if (lflag == L_INT)                          \
-				arg_len += INT / base;               \
-			else {                                       \
-				if (lflag == L_LONG)                 \
-					arg_len += LONG / base;      \
-				else if (lflag == L_LONG_LONG)       \
-					arg_len += LONG_LONG / base; \
-				else                                 \
-					goto einval;                 \
-				lflag = L_INT;                       \
-			}
-#		define JSTR_INTERNAL_GETMAXDIGITS(length)                                         \
-			do {                                                               \
-				if (base == B_DEC)                                         \
-					arg_len                                            \
-					+= (is_thousep) ? DEC_##length : 2 * DEC_##length; \
-				else if (base == B_HEX)                                    \
-					arg_len                                            \
-					+= (is_thousep) ? HEX_##length : 2 * DEC_##length; \
-				else                                                       \
-					arg_len                                            \
-					+= (is_thousep) ? OCT_##length : 2 * DEC_##length; \
-			} while (0)
+#		else
+#			define JSTR_INTERNAL_COUNTDIGITS(lflag, base)       \
+				if (lflag == L_INT)                          \
+					arg_len += INT / base;               \
+				else {                                       \
+					if (lflag == L_LONG)                 \
+						arg_len += LONG / base;      \
+					else if (lflag == L_LONG_LONG)       \
+						arg_len += LONG_LONG / base; \
+					else                                 \
+						goto einval;                 \
+					lflag = L_INT;                       \
+				}
+#			define JSTR_INTERNAL_GETMAXDIGITS(length)                                 \
+				do {                                                               \
+					if (base == B_DEC)                                         \
+						arg_len                                            \
+						+= (is_thousep) ? DEC_##length : 2 * DEC_##length; \
+					else if (base == B_HEX)                                    \
+						arg_len                                            \
+						+= (is_thousep) ? HEX_##length : 2 * DEC_##length; \
+					else                                                       \
+						arg_len                                            \
+						+= (is_thousep) ? OCT_##length : 2 * DEC_##length; \
+				} while (0)
 	typedef enum {
 		B_DEC = 10,
 		B_OCT = 8,
@@ -1292,13 +1291,13 @@ get_arg:
 	if (jstr_unlikely(arg_len > INT_MAX))
 		arg_len = INT_MAX;
 	return arg_len;
-#	endif
-#	undef JSTR_INTERNAL_COUNTDIGITS
-#	undef JSTR_INTERNAL_GETMAXDIGITS
+#		endif
+#		undef JSTR_INTERNAL_COUNTDIGITS
+#		undef JSTR_INTERNAL_GETMAXDIGITS
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 #	if JSTR_HAVE_SNPRINTF_STRLEN
 
@@ -1322,7 +1321,7 @@ JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 jstr_ret_ty
 jstr_asprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#		ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1340,9 +1339,9 @@ jstr_asprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...)
 	*sz = (size_t)arg_len;
 	return JSTR_RET_SUCC;
 }
-#else
+#		else
 ;
-#endif
+#		endif
 
 /**
  * \brief Format into a jstr_ty, replacing its contents.
@@ -1360,7 +1359,7 @@ JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 jstr_ret_ty
 jstr_asprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#		ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1378,9 +1377,9 @@ jstr_asprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	j->size = (size_t)ret;
 	return JSTR_RET_SUCC;
 }
-#else
+#		else
 ;
-#endif
+#		endif
 
 /**
  * \brief Append formatted output to a managed buffer.
@@ -1400,7 +1399,7 @@ JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 jstr_ret_ty
 jstr_asprintf_append(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#		ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1418,9 +1417,9 @@ jstr_asprintf_append(char *R *R s, size_t *R sz, size_t *R cap, const char *R fm
 	*sz += (size_t)ret;
 	return JSTR_RET_SUCC;
 }
-#else
+#		else
 ;
-#endif
+#		endif
 
 /**
  * \brief Append formatted output to a jstr_ty.
@@ -1438,7 +1437,7 @@ JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 jstr_ret_ty
 jstr_asprintf_append_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#		ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1456,9 +1455,9 @@ jstr_asprintf_append_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	j->size += (size_t)ret;
 	return JSTR_RET_SUCC;
 }
-#else
+#		else
 ;
-#endif
+#		endif
 
 /**
  * \brief Format into a managed buffer starting at start_idx.
@@ -1480,7 +1479,7 @@ JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 jstr_ret_ty
 jstr_asprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#		ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1499,9 +1498,9 @@ jstr_asprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, 
 	return JSTR_RET_SUCC;
 	(void)cap;
 }
-#else
+#		else
 ;
-#endif
+#		endif
 
 /**
  * \brief Format into a jstr_ty starting at start_idx.
@@ -1520,7 +1519,7 @@ JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 jstr_ret_ty
 jstr_asprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#		ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1538,9 +1537,9 @@ jstr_asprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JST
 	j->size = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
 }
-#else
+#		else
 ;
-#endif
+#		endif
 
 #	endif
 
@@ -1563,7 +1562,7 @@ JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 jstr_ret_ty
 jstr_sprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1575,9 +1574,9 @@ jstr_sprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) 
 	return JSTR_RET_SUCC;
 	(void)cap;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Format into an already-allocated jstr_ty, replacing its contents.
@@ -1595,7 +1594,7 @@ JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 jstr_ret_ty
 jstr_sprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1606,9 +1605,9 @@ jstr_sprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 	j->size = (size_t)ret;
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Format into an already-allocated buffer starting at start_idx.
@@ -1629,7 +1628,7 @@ JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 jstr_ret_ty
 jstr_sprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1641,9 +1640,9 @@ jstr_sprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, c
 	return JSTR_RET_SUCC;
 	(void)cap;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 /**
  * \brief Format into an already-allocated jstr_ty starting at start_idx.
@@ -1662,7 +1661,7 @@ JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 jstr_ret_ty
 jstr_sprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
-#ifdef JSTR_IMPLEMENTATION
+#	ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1673,9 +1672,9 @@ jstr_sprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR
 	j->size = (size_t)ret + start_idx;
 	return JSTR_RET_SUCC;
 }
-#else
+#	else
 ;
-#endif
+#	endif
 
 JSTR_INTERNAL_END_DECLS
 

@@ -6,9 +6,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -31,6 +30,5 @@ main(int argc, char **argv)
 		assert(jstr_io_readsystem(&s, &sz, &cap, "nonexistent_command_xyz") != JSTR_RET_SUCC);
 		free(s);
 	}
-	SUCCESS();
 	return 0;
 }

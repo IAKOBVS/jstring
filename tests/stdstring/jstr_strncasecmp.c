@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_strncasecmp("abc", "ABC", 3) == 0);
 	assert(jstr_strncasecmp("abc", "abd", 3) < 0);
 	assert(jstr_strncasecmp("abd", "abc", 3) > 0);

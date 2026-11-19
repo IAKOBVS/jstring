@@ -8,27 +8,41 @@
 #include <unistd.h>
 
 static int gcount;
-static int cb_count(const struct JSTR_IO_FTW *ftw, const void *args) {
-	(void)ftw; (void)args; ++gcount; return 0;
+static int
+cb_count(const struct JSTR_IO_FTW *ftw, const void *args)
+{
+	(void)ftw;
+	(void)args;
+	++gcount;
+	return 0;
 }
 
-static int cb_fail(const struct JSTR_IO_FTW *ftw, const void *args) {
-	(void)ftw; (void)args; return -1;
+static int
+cb_fail(const struct JSTR_IO_FTW *ftw, const void *args)
+{
+	(void)ftw;
+	(void)args;
+	return -1;
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	char tmpdir[] = "/tmp/jstr_ftwl_XXXXXX";
 	assert(mkdtemp(tmpdir));
 	char p[256];
 	snprintf(p, sizeof p, "%s/a.txt", tmpdir);
-	FILE *f = fopen(p, "w"); assert(f); fputc('x', f); fclose(f);
+	FILE *f = fopen(p, "w");
+	assert(f);
+	fputc('x', f);
+	fclose(f);
 	snprintf(p, sizeof p, "%s/sub", tmpdir);
 	assert(mkdir(p, 0755) == 0);
 	snprintf(p, sizeof p, "%s/sub/b.txt", tmpdir);
-	f = fopen(p, "w"); assert(f); fputc('y', f); fclose(f);
+	f = fopen(p, "w");
+	assert(f);
+	fputc('y', f);
+	fclose(f);
 
 	/* empty dirpath */
 	{
@@ -55,6 +69,5 @@ main(int argc, char **argv)
 	char cmd[256];
 	snprintf(cmd, sizeof cmd, "rm -rf %s", tmpdir);
 	system(cmd);
-	SUCCESS();
 	return 0;
 }

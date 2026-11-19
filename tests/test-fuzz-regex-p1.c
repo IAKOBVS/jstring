@@ -10,20 +10,19 @@
 #include "fuzz-regex.h"
 
 static const struct regex_pattern patterns[] = {
-	{ "world$",                              0,                       0 },
-	{ "[a-z]+",                              JSTR_RE_CF_EXTENDED,     0 },
-	{ "[0-9]+",                              JSTR_RE_CF_EXTENDED,     0 },
-	{ "colou?r",                             JSTR_RE_CF_EXTENDED,     0 },
-	{ "(foo|bar)",                           JSTR_RE_CF_EXTENDED,     0 },
-	{ "^.",                                  JSTR_RE_CF_EXTENDED,     0 },
-	{ "hello",                               JSTR_RE_CF_ICASE,        0 },
+	{ "world$",    0,                   0 },
+	{ "[a-z]+",    JSTR_RE_CF_EXTENDED, 0 },
+	{ "[0-9]+",    JSTR_RE_CF_EXTENDED, 0 },
+	{ "colou?r",   JSTR_RE_CF_EXTENDED, 0 },
+	{ "(foo|bar)", JSTR_RE_CF_EXTENDED, 0 },
+	{ "^.",        JSTR_RE_CF_EXTENDED, 0 },
+	{ "hello",     JSTR_RE_CF_ICASE,    0 },
 };
 static const size_t npatterns = sizeof(patterns) / sizeof(patterns[0]);
 
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
@@ -38,9 +37,8 @@ main(int argc, char **argv)
 		iter = 1;
 	{
 		srand(seed);
-		TESTING(fuzz_regex_p1);
+		test_testing("fuzz_regex_p1");
 		fuzz_regex_patterns(iter, patterns, npatterns);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

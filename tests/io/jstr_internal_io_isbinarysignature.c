@@ -3,9 +3,8 @@
 #include "io.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	assert(jstr_internal_io_isbinarysignature(jstr_literal("")) == -1);
 	assert(jstr_internal_io_isbinarysignature(jstr_literal("ab")) == -1);
 	{
@@ -21,6 +20,5 @@ main(int argc, char **argv)
 		assert(jstr_internal_io_isbinarysignature((const char *)b, 4) == 0);
 	}
 	assert(jstr_internal_io_isbinarysignature(jstr_literal("hello")) == -1);
-	SUCCESS();
 	return 0;
 }

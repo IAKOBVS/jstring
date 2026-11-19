@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char buf[64];
 	strcpy(buf, "");
 	assert(jstr_toupperstr_p(buf) == buf);
@@ -19,6 +19,6 @@ main(int argc, char **argv)
 	strcpy(buf, "a\0hidden");
 	/* stops at first NUL */
 	jstr_toupperstr_p(buf);
-	assert(buf[0]=='A' && buf[1]=='\0');
+	assert(buf[0] == 'A' && buf[1] == '\0');
 	return 0;
 }

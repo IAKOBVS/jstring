@@ -7,9 +7,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char tmp[256];
 	memset(tmp, 0xAA, sizeof(tmp));
 	char *end = jstr_lltoa_p(0, tmp, 10);

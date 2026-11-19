@@ -10,9 +10,8 @@
 #include <sys/wait.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	{
 		/* jstr_re_err with invalid pattern error code.
 		 * Covers jstr_re_verr (lines 187-196) and jstr_re_err (lines 205-212). */
@@ -168,8 +167,5 @@ main(int argc, char **argv)
 		jstr_free_j(&s);
 		jstr_re_free(&preg);
 	}
-	SUCCESS();
 	return 0;
-	(void)argc;
-	(void)argv;
 }

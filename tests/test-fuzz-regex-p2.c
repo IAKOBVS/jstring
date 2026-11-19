@@ -10,20 +10,19 @@
 #include "fuzz-regex.h"
 
 static const struct regex_pattern patterns[] = {
-	{ "^hello",                              JSTR_RE_CF_ICASE,        0 },
-	{ "[a-z]+",                              JSTR_RE_CF_ICASE,        0 },
-	{ "colou?r",                             JSTR_RE_CF_EXTENDED | JSTR_RE_CF_ICASE, 0 },
-	{ "[a-z]+",                              JSTR_RE_CF_NEWLINE,      0 },
-	{ "\\([a-z]\\{1,\\}\\)",                0,                       1 },
-	{ "\\([0-9]\\{1,\\}\\)",                0,                       1 },
-	{ "\\([a-z]\\{1,\\}\\)_\\([a-z]\\{1,\\}\\)", 0,                1 },
+	{ "^hello",                                  JSTR_RE_CF_ICASE,                       0 },
+	{ "[a-z]+",                                  JSTR_RE_CF_ICASE,                       0 },
+	{ "colou?r",                                 JSTR_RE_CF_EXTENDED | JSTR_RE_CF_ICASE, 0 },
+	{ "[a-z]+",                                  JSTR_RE_CF_NEWLINE,                     0 },
+	{ "\\([a-z]\\{1,\\}\\)",                     0,                                      1 },
+	{ "\\([0-9]\\{1,\\}\\)",                     0,                                      1 },
+	{ "\\([a-z]\\{1,\\}\\)_\\([a-z]\\{1,\\}\\)", 0,                                      1 },
 };
 static const size_t npatterns = sizeof(patterns) / sizeof(patterns[0]);
 
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
@@ -38,9 +37,8 @@ main(int argc, char **argv)
 		iter = 1;
 	{
 		srand(seed);
-		TESTING(fuzz_regex_p2);
+		test_testing("fuzz_regex_p2");
 		fuzz_regex_patterns(iter, patterns, npatterns);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

@@ -7,9 +7,8 @@
 #include <sys/stat.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	char tmpdir[] = "/tmp/jstr_frfull_XXXXXX";
 	assert(mkdtemp(tmpdir));
 	char path[256];
@@ -28,12 +27,13 @@ main(int argc, char **argv)
 	assert(memcmp(s, data, dlen) == 0);
 	free(s);
 	/* bad path */
-	s = NULL; sz = 0; cap = 0;
+	s = NULL;
+	sz = 0;
+	cap = 0;
 	assert(jstr_io_freadfile(&s, &sz, &cap, "/no/such/file", "r", &st) != JSTR_RET_SUCC);
 	free(s);
 	char cmd[256];
 	snprintf(cmd, sizeof cmd, "rm -rf %s", tmpdir);
 	system(cmd);
-	SUCCESS();
 	return 0;
 }

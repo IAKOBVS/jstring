@@ -6,11 +6,8 @@
 #include "internal/musl/stdstring.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	assert(jstr_internal_memrspn_musl("aaabbb", "b", 6) == 3);
 	assert(jstr_internal_memrspn_musl("aaaa", "b", 4) == 4);
@@ -19,6 +16,5 @@ main(int argc, char **argv)
 	assert(jstr_internal_memrspn_musl("abc", "a", 0) == 0);
 	assert(jstr_internal_memrspn_musl("abc", "", 3) == 0);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

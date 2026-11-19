@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(int argc, char **argv)
+int
+main(void)
 {
-	(void)argc; (void)argv;
-	assert(jstr_strchrnul("abc", 'b') == (char*)"abc" + 1);
-	assert(jstr_strchrnul("abc", 'z') == (char*)"abc" + 3);
-	assert(jstr_strchrnul("", 'z') == (char*)"");
+
+	assert(jstr_strchrnul("abc", 'b') == (char *)"abc" + 1);
+	assert(jstr_strchrnul("abc", 'z') == (char *)"abc" + 3);
+	assert(jstr_strchrnul("", 'z') == (char *)"");
 	return 0;
 }

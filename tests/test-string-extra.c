@@ -7,9 +7,8 @@
 #define _POSIX_C_SOURCE 200809L
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	/* jstr_memrchrnul */
 	{
 		const char s[] = "abcde";
@@ -449,6 +448,5 @@ main(int argc, char **argv)
 		assert(jstr_strnlen("hello world", 5) == 5);
 		assert(jstr_strnlen("hello world", 50) == 11);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char buf[] = "12345";
 	assert(jstr_atoul_len(buf, 0) == 0);
 	assert(jstr_atoul_len(buf, 3) == 123);

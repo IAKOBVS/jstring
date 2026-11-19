@@ -6,11 +6,8 @@
 #include "internal/simd.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 #ifndef JSTR_HAVENT_STRCASECHR_SIMD
 	char buf[128];
@@ -20,6 +17,5 @@ main(int argc, char **argv)
 	assert(jstr_internal_simd_strcasechr(buf, 'c') == buf + 2);
 #endif
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

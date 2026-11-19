@@ -27,11 +27,11 @@ fuzz_io(size_t iter)
 				assert(r == 0);
 			} else {
 				size_t check = JSTR_MIN(n, hl);
-		int found = 0;
-		for (size_t j = 0; j < check; ++j) {
-			if (((unsigned char)h[j] < ' ' && h[j] != '\t' && h[j] != '\n') || (unsigned char)h[j] == 127)
-				found = 1;
-		}
+				int found = 0;
+				for (size_t j = 0; j < check; ++j) {
+					if (((unsigned char)h[j] < ' ' && h[j] != '\t' && h[j] != '\n') || (unsigned char)h[j] == 127)
+						found = 1;
+				}
 				assert(r == found);
 			}
 		}
@@ -118,28 +118,26 @@ fuzz_io(size_t iter)
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
 	size_t iter = FITER;
-#ifdef JSTR_TEST_SLOW
+#	ifdef JSTR_TEST_SLOW
 	iter *= 2;
-#else
+#	else
 	if (iter > 50)
 		iter = 50;
-#endif
+#	endif
 	if (iter < 1)
 		iter = 1;
-#ifdef FUZZ_AFL
+#	ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
-#endif
+#	endif
 	{
 		srand(seed);
-		TESTING(fuzz_io);
+		test_testing("fuzz_io");
 		fuzz_io(iter);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 
@@ -150,8 +148,7 @@ LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
 	if (size < 4)
 		return 0;
-	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
-	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
 	srand(seed);
 	data += 4;
 	size -= 4;

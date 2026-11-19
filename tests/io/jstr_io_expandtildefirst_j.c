@@ -20,11 +20,8 @@ seed_j(jstr_ty *j, const char *s, size_t cap)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	setenv("HOME", "/home/tester", 1);
 
@@ -131,6 +128,5 @@ main(int argc, char **argv)
 		setenv("HOME", "/home/tester", 1);
 	}
 
-	SUCCESS();
 	return 0;
 }

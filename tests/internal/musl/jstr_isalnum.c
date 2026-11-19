@@ -6,11 +6,8 @@
 #include "internal/musl/ctype.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	for (int c = 0; c < 256; c++) {
 		assert((jstr_isalnum(c) != 0) == (isalnum((unsigned char)c) != 0));
@@ -19,6 +16,5 @@ main(int argc, char **argv)
 	assert(jstr_isalnum('0'));
 	assert(!jstr_isalnum('.'));
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

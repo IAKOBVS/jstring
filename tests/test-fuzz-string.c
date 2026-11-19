@@ -95,9 +95,14 @@ simple_unescape_p(char *s)
 			break;
 		++s;
 		switch (*s) {
-		case '0': case '1': case '2': case '3':
-		case '4': case '5': case '6': case '7':
-		{
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7': {
 			*dst = '\0';
 			for (int o = 3; o-- && *s >= '0' && *s <= '7'; ++s)
 				*dst = (*dst << 3) + (*s - '0');
@@ -111,7 +116,7 @@ simple_unescape_p(char *s)
 		case 'r': *dst++ = '\r'; break;
 		case 't': *dst++ = '\t'; break;
 		case 'v': *dst++ = '\v'; break;
-		default:  *dst++ = *s;   break;
+		default: *dst++ = *s; break;
 		}
 	}
 	*dst = '\0';
@@ -235,7 +240,6 @@ fuzz_string(size_t iter)
 				}
 			}
 		}
-
 
 		/* --- thousep --- */
 		if (hl > 0 && hl < 180) {
@@ -366,28 +370,26 @@ fuzz_string(size_t iter)
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
 	size_t iter = FITER;
-#ifdef JSTR_TEST_SLOW
+#	ifdef JSTR_TEST_SLOW
 	iter *= 10;
-#else
+#	else
 	if (iter > 500)
 		iter = 500;
-#endif
+#	endif
 	if (iter < 1)
 		iter = 1;
-#ifdef FUZZ_AFL
+#	ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
-#endif
+#	endif
 	{
 		srand(seed);
-		TESTING(fuzz_string);
+		test_testing("fuzz_string");
 		fuzz_string(iter);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 
@@ -398,8 +400,7 @@ LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
 	if (size < 4)
 		return 0;
-	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
-	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
 	srand(seed);
 	data += 4;
 	size -= 4;

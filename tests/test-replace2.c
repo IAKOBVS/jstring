@@ -8,14 +8,13 @@
 #include "../include/jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 
 	jstr_ty result = JSTR_INIT;
 
 	/* === jstr_insert_unsafe, jstr_insert_len === */
-	TESTING(jstr_insert_unsafe);
+	test_testing("jstr_insert_unsafe");
 	{
 		char buf[64] = "hello";
 		size_t sz = strlen(buf);
@@ -32,7 +31,7 @@ main(int argc, char **argv)
 		jstr_insert_unsafe(buf, sz, 2, "XYZ", 3);
 		assert(!strcmp(buf, "heXYZllo"));
 	}
-	TESTING(jstr_insert_len);
+	test_testing("jstr_insert_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -48,7 +47,7 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_insertafterchr_len === */
-	TESTING(jstr_insertafterchr_len);
+	test_testing("jstr_insertafterchr_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -62,7 +61,7 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_insertafterallchr_len === */
-	TESTING(jstr_insertafterallchr_len);
+	test_testing("jstr_insertafterallchr_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -79,7 +78,7 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_insertafter_len === */
-	TESTING(jstr_insertafter_len);
+	test_testing("jstr_insertafter_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -103,7 +102,7 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_insertafterall_len === */
-	TESTING(jstr_insertafterall_len);
+	test_testing("jstr_insertafterall_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -118,7 +117,7 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_rmspn_len === */
-	TESTING(jstr_rmspn_len);
+	test_testing("jstr_rmspn_len");
 	{
 		char buf[] = "hello---world";
 		size_t sz = strlen(buf);
@@ -128,7 +127,7 @@ main(int argc, char **argv)
 		sz = strlen("abc");
 		assert(jstr_rmspn_len(buf, &sz, "-") == 0);
 	}
-	TESTING(jstr_rmspn_len_from);
+	test_testing("jstr_rmspn_len_from");
 	{
 		char buf[] = "hello---world---!";
 		size_t sz = strlen(buf);
@@ -140,14 +139,14 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_rmallchr_from, jstr_rmallchr === */
-	TESTING(jstr_rmallchr_from);
+	test_testing("jstr_rmallchr_from");
 	{
 		char buf[] = "hello world";
 		size_t sz = strlen(buf);
 		assert(jstr_rmallchr_from(buf, &sz, 3, 'l') == 2);
 		assert(sz == 9);
 	}
-	TESTING(jstr_rmallchr);
+	test_testing("jstr_rmallchr");
 	{
 		char buf[] = "hello world";
 		size_t sz = strlen(buf);
@@ -156,7 +155,7 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_rm_len === */
-	TESTING(jstr_rm_len);
+	test_testing("jstr_rm_len");
 	{
 		char buf[] = "hello world";
 		size_t sz = strlen(buf);
@@ -167,7 +166,7 @@ main(int argc, char **argv)
 		assert(jstr_rm_len(buf, &sz, "notfound", 8) == 0);
 		assert(sz == 3);
 	}
-	TESTING(jstr_rm_len_exec);
+	test_testing("jstr_rm_len_exec");
 	{
 		char buf[] = "hello world";
 		size_t sz = strlen(buf);
@@ -176,7 +175,7 @@ main(int argc, char **argv)
 		assert(jstr_rm_len_exec(&t, buf, &sz, "world", 5) == 1);
 		assert(sz == strlen("hello "));
 	}
-	TESTING(jstr_rmn_len_exec);
+	test_testing("jstr_rmn_len_exec");
 	{
 		char buf[] = "ababab";
 		size_t sz = strlen(buf);
@@ -185,7 +184,7 @@ main(int argc, char **argv)
 		assert(jstr_rmn_len_exec(&t, buf, &sz, "ab", 2, 2) == 2);
 		assert(sz == strlen("ab"));
 	}
-	TESTING(jstr_rmall_len_exec);
+	test_testing("jstr_rmall_len_exec");
 	{
 		char buf[] = "ababab";
 		size_t sz = strlen(buf);
@@ -194,7 +193,7 @@ main(int argc, char **argv)
 		assert(jstr_rmall_len_exec(&t, buf, &sz, "ab", 2) == 3);
 		assert(sz == 0);
 	}
-	TESTING(jstr_rmall_len);
+	test_testing("jstr_rmall_len");
 	{
 		char buf[] = "ababab";
 		size_t sz = strlen(buf);
@@ -203,14 +202,14 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_rmlast_len, jstr_rmlast_len_from === */
-	TESTING(jstr_rmlast_len);
+	test_testing("jstr_rmlast_len");
 	{
 		char buf[] = "abcabcabc";
 		size_t sz = strlen(buf);
 		assert(jstr_rmlast_len(buf, &sz, "abc", 3) == 1);
 		assert(sz == strlen("abcabc"));
 	}
-	TESTING(jstr_rmlast_len_from);
+	test_testing("jstr_rmlast_len_from");
 	{
 		char buf[] = "abcabcabc";
 		size_t sz = strlen(buf);
@@ -222,7 +221,7 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_rplclast_len === */
-	TESTING(jstr_rplclast_len);
+	test_testing("jstr_rplclast_len");
 	{
 		jstr_empty(result.data, &result.size);
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result), "abcabc", 6)));
@@ -237,13 +236,13 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_rplcallchr, jstr_rplcnchr, jstr_rplcchr === */
-	TESTING(jstr_rplcallchr);
+	test_testing("jstr_rplcallchr");
 	{
 		char buf[] = "hello";
 		jstr_rplcallchr(buf, 'l', 'x');
 		assert(!strcmp(buf, "hexxo"));
 	}
-	TESTING(jstr_rplcnchr);
+	test_testing("jstr_rplcnchr");
 	{
 		char buf[] = "hello";
 		size_t n = jstr_rplcnchr(buf, 'l', 'x', 1);
@@ -255,7 +254,7 @@ main(int argc, char **argv)
 		assert(n == 2);
 		assert(!strcmp(buf, "hexxo"));
 	}
-	TESTING(jstr_rplcchr);
+	test_testing("jstr_rplcchr");
 	{
 		char buf[] = "hello";
 		assert(jstr_rplcchr(buf, 'l', 'x') == 1);
@@ -268,38 +267,34 @@ main(int argc, char **argv)
 
 	/* === jstr_rplc_len_exec, jstr_rplcn_len_exec,
 	       jstr_rplcall_len_exec === */
-	TESTING(jstr_rplc_len_exec);
+	test_testing("jstr_rplc_len_exec");
 	{
 		jstr_empty(result.data, &result.size);
-		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result),
-			"hello world", 11)));
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result), "hello world", 11)));
 		jstr_twoway_ty t;
 		jstr_memmem_comp(&t, "world", 5);
-		assert(jstr_rplc_len_exec(&t, jstr_struct(&result),
-			"world", 5, "there", 5) == 1);
+		assert(jstr_rplc_len_exec(&t, jstr_struct(&result), "world", 5, "there", 5) == 1);
 	}
-	TESTING(jstr_rplcn_len_exec);
+	test_testing("jstr_rplcn_len_exec");
 	{
 		jstr_empty(result.data, &result.size);
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result), "ababab", 6)));
 		jstr_twoway_ty t;
 		jstr_memmem_comp(&t, "ab", 2);
-		assert(jstr_rplcn_len_exec(&t, jstr_struct(&result),
-			"ab", 2, "X", 1, 2) == 2);
+		assert(jstr_rplcn_len_exec(&t, jstr_struct(&result), "ab", 2, "X", 1, 2) == 2);
 	}
-	TESTING(jstr_rplcall_len_exec);
+	test_testing("jstr_rplcall_len_exec");
 	{
 		jstr_empty(result.data, &result.size);
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result), "ababab", 6)));
 		jstr_twoway_ty t;
 		jstr_memmem_comp(&t, "ab", 2);
-		assert(jstr_rplcall_len_exec(&t, jstr_struct(&result),
-			"ab", 2, "X", 1) == 3);
+		assert(jstr_rplcall_len_exec(&t, jstr_struct(&result), "ab", 2, "X", 1) == 3);
 	}
 
 	/* === jstr_place_len, jstr_place_len_unsafe,
 	       jstr_placeafterchr_len, jstr_placeafter_len === */
-	TESTING(jstr_place_len);
+	test_testing("jstr_place_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -315,13 +310,13 @@ main(int argc, char **argv)
 		assert(!memcmp(s, "hi\0\0\0hello", 10));
 		free(s);
 	}
-	TESTING(jstr_place_len_unsafe);
+	test_testing("jstr_place_len_unsafe");
 	{
 		char buf[] = "hello";
 		jstr_place_len_unsafe(buf, 1, "xyz", 3);
 		assert(!memcmp(buf, "hxyzo", 5));
 	}
-	TESTING(jstr_placeafterchr_len);
+	test_testing("jstr_placeafterchr_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -337,7 +332,7 @@ main(int argc, char **argv)
 		assert(!memcmp(s, "abc", 3));
 		free(s);
 	}
-	TESTING(jstr_placeafter_len);
+	test_testing("jstr_placeafter_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -360,7 +355,7 @@ main(int argc, char **argv)
 	}
 
 	/* === jstr_repeat_len === */
-	TESTING(jstr_repeat_len);
+	test_testing("jstr_repeat_len");
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -379,34 +374,33 @@ main(int argc, char **argv)
 	}
 
 	/* === edge cases for partially covered functions === */
-	TESTING(jstr_rplcchr_len_notfound);
+	test_testing("jstr_rplcchr_len_notfound");
 	{
 		char buf[] = "hello";
 		assert(jstr_rplcchr_len(buf, 5, 'z', 'x') == 0);
 		assert(!strcmp(buf, "hello"));
 	}
-	TESTING(jstr_rplc_len_from_exec_edge);
+	test_testing("jstr_rplc_len_from_exec_edge");
 	{
 		jstr_empty(result.data, &result.size);
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&result), "hi", 2)));
 		jstr_twoway_ty t;
 		jstr_memmem_comp(&t, "hi", 2);
-		assert(jstr_rplc_len_from_exec(&t, jstr_struct(&result),
-			5, "hi", 2, "x", 1) == 0);
+		assert(jstr_rplc_len_from_exec(&t, jstr_struct(&result), 5, "hi", 2, "x", 1) == 0);
 	}
-	TESTING(jstr_rplcallspn_from_edge);
+	test_testing("jstr_rplcallspn_from_edge");
 	{
 		char buf[] = "hello";
 		size_t sz = strlen(buf);
 		assert(jstr_rplcallspn_from(buf, &sz, 10, "aeiou", '_') == 0);
 	}
-	TESTING(jstr_rmspn_from_edge);
+	test_testing("jstr_rmspn_from_edge");
 	{
 		char buf[] = "hello";
 		size_t sz = strlen(buf);
 		assert(jstr_rmspn_from(buf, &sz, 10, "aeiou") == 0);
 	}
-	TESTING(jstr_rmallspn_from_edge);
+	test_testing("jstr_rmallspn_from_edge");
 	{
 		char buf[] = "hello";
 		size_t sz = strlen(buf);
@@ -414,6 +408,5 @@ main(int argc, char **argv)
 	}
 
 	jstr_free_j(&result);
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

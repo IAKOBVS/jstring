@@ -6,11 +6,9 @@
 #include "../include/string.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	T_MEMCMP(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp);
-	T_STRCMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp);
-	SUCCESS();
+	t_memcmp("jstr_strncasecmp", (t_memcmp_fn)jstr_strncasecmp, (t_memcmp_fn)simple_strncasecmp, test_array_memcmp, JSTR_ARRAY_COUNT(test_array_memcmp), 0);
+	t_strcmp("jstr_strcasecmp", jstr_strcasecmp, simple_strcasecmp, test_array_memcmp, JSTR_ARRAY_COUNT(test_array_memcmp), 0);
 	return EXIT_SUCCESS;
 }

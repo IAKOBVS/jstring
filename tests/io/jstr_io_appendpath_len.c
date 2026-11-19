@@ -4,9 +4,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	{
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
@@ -28,13 +27,14 @@ main(int argc, char **argv)
 		char *s = NULL;
 		size_t sz = 0, cap = 0;
 		s = malloc(2);
-		s[0] = 'a'; s[1] = '\0';
-		sz = 1; cap = 2;
+		s[0] = 'a';
+		s[1] = '\0';
+		sz = 1;
+		cap = 2;
 		int r = jstr_io_appendpath_len(&s, &sz, &cap, jstr_literal(""));
 		assert(r == JSTR_RET_SUCC);
 		assert(strcmp(s, "a/") == 0);
 		free(s);
 	}
-	SUCCESS();
 	return 0;
 }

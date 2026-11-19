@@ -4,9 +4,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	assert(jstr_io_isbinary_atleast(jstr_literal(""), 5) == 0);
 	{
 		const char *s = "hello world";
@@ -20,7 +19,7 @@ main(int argc, char **argv)
 		assert(jstr_io_isbinary_atleast(data, 5, 3) == 1);
 	}
 	{
-		const char late[] = { 'a','a','a','a','a','a','a','a','\0','b','b','b' };
+		const char late[] = { 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', '\0', 'b', 'b', 'b' };
 		assert(jstr_io_isbinary_atleast(late, 12, 8) == 0);
 		assert(jstr_io_isbinary_atleast(late, 12, 9) == 1);
 	}
@@ -38,6 +37,5 @@ main(int argc, char **argv)
 		const char *s = "hello";
 		assert(jstr_io_isbinary_atleast(s, 5, 0) == 0);
 	}
-	SUCCESS();
 	return 0;
 }

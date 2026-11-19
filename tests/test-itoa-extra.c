@@ -13,16 +13,15 @@
 static int
 ref_streq(const char *a, const char *b)
 {
-	while (*a && *b && *a == *b) { ++a, ++b; }
+	while (*a && *b && *a == *b) {
+		++a, ++b;
+	}
 	return *a == *b;
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char *s = NULL;
 	size_t sz = 0, cap = 0;
@@ -39,7 +38,8 @@ main(int argc, char **argv)
 	assert(ref_streq(s, "42"));
 	assert(sz == 2);
 	assert(jstr_ultoa(&s, &sz, &cap, 1234567890UL, 10) == JSTR_RET_SUCC);
-	assert(ref_streq(s, "42" "1234567890"));
+	assert(ref_streq(s, "42"
+	                    "1234567890"));
 
 	/* jstr_ulltoa (unsigned long long) */
 	sz = 0;
@@ -202,7 +202,8 @@ main(int argc, char **argv)
 	assert(strstr(s, ",") != NULL);
 
 	free(s);
-	s = NULL; cap = 0;
+	s = NULL;
+	cap = 0;
 
 	/* --- stdstring.h atou/atoi wrappers (lines 522-529) --- */
 	assert(jstr_atou("42") == 42U);
@@ -214,6 +215,5 @@ main(int argc, char **argv)
 	assert(jstr_atod("3.14") > 3.0 && jstr_atod("3.14") < 4.0);
 	assert(jstr_atof("2.5") > 2.0f && jstr_atof("2.5") < 3.0f);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

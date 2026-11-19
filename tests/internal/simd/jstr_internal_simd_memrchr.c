@@ -6,11 +6,8 @@
 #include "internal/simd.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 #ifndef JSTR_HAVENT_MEMRCHR_SIMD
 	char buf[128];
@@ -21,6 +18,5 @@ main(int argc, char **argv)
 	assert(jstr_internal_simd_memrchr(buf, 'a', 3) == buf);
 #endif
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

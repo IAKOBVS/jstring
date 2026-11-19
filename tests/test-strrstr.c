@@ -5,10 +5,8 @@
 #include "test-array.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	T_MEMMEM(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
-	SUCCESS();
+	t_memmem("jstr_strrstr_len", (t_memmem_fn)jstr_strrstr_len, (t_memmem_fn)simple_strrstr_len, test_array_memmem, JSTR_ARRAY_COUNT(test_array_memmem));
 	return EXIT_SUCCESS;
 }

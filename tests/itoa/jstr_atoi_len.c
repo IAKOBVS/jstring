@@ -10,10 +10,8 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 
 	char buf[] = "-123";
 	assert(jstr_atoi_len(buf, 0) == 0);

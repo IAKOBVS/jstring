@@ -5,10 +5,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
 	assert(jstr_endscase_len("hello", 5, "LO", 2));
 	assert(!jstr_endscase_len("hello", 5, "LX", 2));
 	assert(jstr_endscase_len("", 0, "", 0));

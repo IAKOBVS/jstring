@@ -280,7 +280,7 @@ test_io_more_edges(void)
 	/* 1. expandtildefirst error condition when $HOME is unset/missing or empty */
 	char *old_home = getenv("HOME");
 	/* Keep old home to restore it later */
-	char home_backup[JSTR_IO_PATH_MAX] = {0};
+	char home_backup[JSTR_IO_PATH_MAX] = { 0 };
 	if (old_home) {
 		strncpy(home_backup, old_home, sizeof(home_backup) - 1);
 	}
@@ -338,8 +338,8 @@ test_io_more_edges(void)
 		assert(fp_dummy != NULL);
 		int inner_fd = fileno(fp_dummy);
 		assert(inner_fd >= 0);
-		unlink(fpath_dummy);  /* remove the path (path-based branch fails) */
-		close(inner_fd);      /* invalidate the fd (fd-based branch fails) */
+		unlink(fpath_dummy); /* remove the path (path-based branch fails) */
+		close(inner_fd); /* invalidate the fd (fd-based branch fails) */
 
 		ret = jstr_io_freadfilefp(&s, &sz, &cap, fpath_dummy, fp_dummy, &st);
 		assert(ret == JSTR_RET_ERR);
@@ -380,42 +380,38 @@ test_fwritefilefp_len(void)
 /* ---------- main ---------- */
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 	if (setup()) {
-		PRINTERR("test-io-extra: failed to create temp dir\n");
+		fprintf(stderr, "test-io-extra: failed to create temp dir\n");
 		return EXIT_FAILURE;
 	}
-	TESTING(test_elf_signature);
+	test_testing("test_elf_signature");
 	test_elf_signature();
-	TESTING(test_utf8_bom_signature);
+	test_testing("test_utf8_bom_signature");
 	test_utf8_bom_signature();
-	TESTING(test_isbinary_control_char);
+	test_testing("test_isbinary_control_char");
 	test_isbinary_control_char();
-	TESTING(test_isbinary_atleast);
+	test_testing("test_isbinary_atleast");
 	test_isbinary_atleast();
-	TESTING(test_fwritefile);
+	test_testing("test_fwritefile");
 	test_fwritefile();
-	TESTING(test_fwritefile_append_newline);
+	test_testing("test_fwritefile_append_newline");
 	test_fwritefile_append_newline();
-	TESTING(test_freadfile_full);
+	test_testing("test_freadfile_full");
 	test_freadfile_full();
-	TESTING(test_readfilefd);
+	test_testing("test_readfilefd");
 	test_readfilefd();
-	TESTING(test_readfile);
+	test_testing("test_readfile");
 	test_readfile();
-	TESTING(test_expandtilde_unsafe);
+	test_testing("test_expandtilde_unsafe");
 	test_expandtilde_unsafe();
-	TESTING(test_writefilefd_len_empty);
+	test_testing("test_writefilefd_len_empty");
 	test_writefilefd_len_empty();
-	TESTING(test_fwritefilefp_len);
+	test_testing("test_fwritefilefp_len");
 	test_fwritefilefp_len();
-	TESTING(test_io_more_edges);
+	test_testing("test_io_more_edges");
 	test_io_more_edges();
 	teardown();
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

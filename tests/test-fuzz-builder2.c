@@ -132,7 +132,7 @@ fuzz_builder2(size_t iter)
 		char *t = NULL;
 		size_t tsz = 0, tcap = 0;
 		{
-			jstr_cat_arg_ty cat_args[] = {jstr_literal_init("AB"), jstr_literal_init("CD"), jstr_literal_init("EF")};
+			jstr_cat_arg_ty cat_args[] = { jstr_literal_init("AB"), jstr_literal_init("CD"), jstr_literal_init("EF") };
 			ret = jstr_cat(&t, &tsz, &tcap, cat_args, 3);
 		}
 		assert(ret == JSTR_RET_SUCC);
@@ -237,7 +237,6 @@ fuzz_builder2(size_t iter)
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
@@ -255,10 +254,9 @@ main(int argc, char **argv)
 #	endif
 	{
 		srand(seed);
-		TESTING(fuzz_builder2);
+		test_testing("fuzz_builder2");
 		fuzz_builder2(iter);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 

@@ -6,11 +6,8 @@
 #include "internal/simd.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char dst[128];
 	char *p = jstr_internal_simd_stpcpy(dst, "hello");
@@ -21,6 +18,5 @@ main(int argc, char **argv)
 	assert(p == dst);
 	assert(dst[0] == '\0');
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

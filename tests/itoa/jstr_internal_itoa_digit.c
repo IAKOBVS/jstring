@@ -7,9 +7,9 @@
 #include "internal/musl/ctype.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_internal_itoa_digit(0) == '0');
 	assert(jstr_internal_itoa_digit(9) == '9');
 	assert(jstr_internal_itoa_digit(10) == 'a');

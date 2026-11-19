@@ -5,11 +5,9 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-{
+	{
 		assert(jstr_cmpeq("abc", 3, "abc", 3) == 0);
 		assert(jstr_cmpeq("abc", 3, "abd", 3) != 0);
 		assert(jstr_cmpeq("abc", 3, "ab", 2) == 1);

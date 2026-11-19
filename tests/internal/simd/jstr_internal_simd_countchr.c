@@ -6,11 +6,8 @@
 #include "internal/simd.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 #ifndef JSTR_HAVENT_COUNTCHR_SIMD
 	assert(jstr_internal_simd_countchr("abacaba", 'a') == 4);
@@ -18,6 +15,5 @@ main(int argc, char **argv)
 	assert(jstr_internal_simd_countchr("bbb", 'a') == 0);
 #endif
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

@@ -8,219 +8,141 @@
 #include "../include/jstr.h"
 #include "test-array.h"
 
-#define T(func, expected)                                                                 \
-	do {                                                                              \
-		assert(!jstr_chk(func));                                                  \
-		ASSERT_ERRFUNC(func, (result).capacity > strlen(expected));               \
-		ASSERT_ERRFUNC(func, (result).data);                                      \
-		ASSERT_ERRFUNC(func, (result).size == strlen(expected));                  \
-		ASSERT_ERRFUNC(func, !memcmp((result).data, expected, strlen(expected))); \
-	} while (0)
+/* Diagnostic helper shared by the table-driven differential runners below. */
+static void
+check_case(const char *func, const char *str, const char *find, const char *rplc, size_t n, int cond, const jstr_ty *result, const jstr_ty *expected)
+{
+	if (!cond) {
+		fprintf(stderr, "\nAssertion failure: %s().\nString: %s\nfind  : %s\nrplc  : %s\nn     : %zu\nResult:\n", func, test_str(str), test_str(find), test_str(rplc), n);
+		jstr_debug(result);
+		fprintf(stderr, "Expected:\n");
+		jstr_debug(expected);
+		abort();
+	}
+}
 
-#define T_P(func, expected)                                                               \
-	do {                                                                              \
-		func;                                                                     \
-		ASSERT_ERRFUNC(func, (result).data);                                      \
-		ASSERT_ERRFUNC(func, (result).size == strlen(expected));                  \
-		ASSERT_ERRFUNC(func, !memcmp((result).data, expected, strlen(expected))); \
-	} while (0)
+static void
+rplc_init(jstr_ty *buf, const char *str, size_t str_len)
+{
+	jstr_empty(buf->data, &buf->size);
+	assert(!jstr_chk(jstr_assign_len(jstr_struct(buf), str, str_len)));
+	assert(buf->size == str_len);
+	assert(!memcmp(buf->data, str, str_len));
+}
 
-#define T_ASSERT(func, result, expected)                                                                           \
-	do {                                                                                                       \
-		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
-		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
-	} while (0)
+static void
+check_ret(const char *func, jstr_ret_ty got, jstr_ret_ty want, const jstr_ty *buf)
+{
+	if (got != want) {
+		jstr_debug(buf);
+		jstr_errdie("%s", func);
+	}
+}
 
-#define T_APPEND(ret, func, ...)                               \
-	do {                                                   \
-		TESTING(func);                                 \
-		if (ret != func(__VA_ARGS__)) {                \
-			jstr_debug(&(result));                 \
-			jstr_errdie("%s", "");                       \
-		}                                              \
-		T_ASSERT(func(__VA_ARGS__), result, expected); \
-		(result).size = 0;                             \
-		*(result).data = '\0';                         \
-	} while (0)
+typedef size_t (*rmchr_fn)(char *, size_t *, size_t, int, size_t);
+typedef size_t (*rplcchr_fn)(char *, size_t, char, char, size_t);
+typedef size_t (*rm_fn)(char *, size_t *, const char *, size_t, size_t);
+typedef size_t (*rplc_fn)(char **, size_t *, size_t *, size_t, const char *, size_t, const char *, size_t, size_t);
 
-#define T_APPEND_NORET(func, ...)                              \
-	do {                                                   \
-		TESTING(func);                                 \
-		func(__VA_ARGS__);                             \
-		T_ASSERT(func(__VA_ARGS__), result, expected); \
-		(result).size = 0;                             \
-		*(result).data = '\0';                         \
-	} while (0)
+static void
+run_rmchr(const char *name, rmchr_fn fn, rmchr_fn simple_fn, struct test_pair *pair)
+{
+	test_testing(name);
+	for (size_t i = 0; i < JSTR_ARRAY_COUNT(test_array_memcmp); ++i) {
+		const char *str = test_array_memcmp[i].s1;
+		const char find = *test_array_memcmp[i].s2;
+		const char find_str[2] = { find, '\0' };
+		size_t str_len = strlen(str);
+		rplc_init(&pair->result, str, str_len);
+		rplc_init(&pair->expected, str, str_len);
+		t.n = i;
+		t.result_n = fn(pair->result.data, &pair->result.size, 0, find, t.n);
+		t.expected_n = simple_fn(pair->expected.data, &pair->expected.size, 0, find, t.n);
+		check_case(name, str, find_str, "", i, t.expected_n == t.result_n, &pair->result, &pair->expected);
+		check_case(name, str, find_str, "", i, strlen(pair->result.data) == strlen(pair->expected.data), &pair->result, &pair->expected);
+		check_case(name, str, find_str, "", i, pair->result.size == pair->expected.size, &pair->result, &pair->expected);
+		check_case(name, str, find_str, "", i, !memcmp(pair->result.data, pair->expected.data, pair->result.size), &pair->result, &pair->expected);
+	}
+}
 
-#define FILL(result, str)                                                                     \
-	do {                                                                                  \
-		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
-		(void)jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
-	} while (0)
+static void
+run_rplcchr(const char *name, rplcchr_fn fn, rplcchr_fn simple_fn, struct test_pair *pair)
+{
+	test_testing(name);
+	for (size_t i = 0; i < JSTR_ARRAY_COUNT(test_array_memcmp); ++i) {
+		const char *str = test_array_memcmp[i].s1;
+		const char find = *test_array_memcmp[i].s2;
+		const char rplc = *test_array_memcmp[i].s1;
+		const char find_str[2] = { find, '\0' };
+		const char rplc_str[2] = { rplc, '\0' };
+		size_t str_len = strlen(str);
+		rplc_init(&pair->result, str, str_len);
+		rplc_init(&pair->expected, str, str_len);
+		t.n = i;
+		t.result_n = fn(pair->result.data, pair->result.size, find, rplc, t.n);
+		t.expected_n = simple_fn(pair->expected.data, pair->expected.size, find, rplc, t.n);
+		check_case(name, str, find_str, rplc_str, i, t.result_n == t.expected_n, &pair->result, &pair->expected);
+		check_case(name, str, find_str, rplc_str, i, !memcmp(pair->result.data, pair->expected.data, pair->result.size), &pair->result, &pair->expected);
+	}
+}
 
-#define T_RPLC_INIT(buf, str, str_len)                                               \
-	do {                                                                         \
-		jstr_empty(buf.data, &buf.size);                                     \
-		assert(!jstr_chk(jstr_assign_len(jstr_struct(&buf), str, str_len))); \
-		assert(buf.size == str_len);                                         \
-		assert(!memcmp(buf.data, str, str_len));                             \
-	} while (0)
+static void
+run_rm(const char *name, rm_fn fn, rm_fn simple_fn, struct test_pair *pair)
+{
+	test_testing(name);
+	for (size_t i = 0; i < JSTR_ARRAY_COUNT(test_array_memmem); ++i) {
+		const char *str = test_array_memmem[i].hs;
+		const char *find = test_array_memmem[i].ne;
+		size_t str_len = strlen(str);
+		size_t find_len = strlen(find);
+		rplc_init(&pair->result, str, str_len);
+		rplc_init(&pair->expected, str, str_len);
+		t.n = i;
+		t.result_n = fn(pair->result.data, &pair->result.size, find, find_len, t.n);
+		t.expected_n = simple_fn(pair->expected.data, &pair->expected.size, find, find_len, t.n);
+		check_case(name, str, find, "", i, t.expected_n == t.result_n, &pair->result, &pair->expected);
+		check_case(name, str, find, "", i, strlen(pair->result.data) == strlen(pair->expected.data), &pair->result, &pair->expected);
+		check_case(name, str, find, "", i, pair->result.size == pair->expected.size, &pair->result, &pair->expected);
+		check_case(name, str, find, "", i, !memcmp(pair->result.data, pair->expected.data, pair->result.size), &pair->result, &pair->expected);
+	}
+}
 
-#define ASSERT_RESULT_RMCHR(func, str, rplc, expr)                       \
-	do {                                                             \
-		if (jstr_unlikely(!(expr))) {                            \
-			PRINTERR("\nAssertion failure: %s().\n", #func); \
-			PRINTERR("String:%s.\n"                          \
-			         "find  :%c.\n"                          \
-			         "rplc  :%c.\n",                         \
-			         str,                                    \
-			         find,                                   \
-			         rplc);                                  \
-			PRINTERR("Result:\n");                           \
-			jstr_debug(&(result));                           \
-			PRINTERR("Expected:\n");                         \
-			jstr_debug(&(expected));                         \
-			T_DEBUG(func, expr);                             \
-			assert(expr);                                    \
-		}                                                        \
-	} while (0)
-
-#define ASSERT_RESULT_RPLCCHR(func, str, find, rplc, expr)               \
-	do {                                                             \
-		if (jstr_unlikely(!(expr))) {                            \
-			PRINTERR("\nAssertion failure: %s().\n", #func); \
-			PRINTERR("String  :%s.\n"                        \
-			         "find    :%c.\n"                        \
-			         "rplc    :%c.\n",                       \
-			         str,                                    \
-			         find,                                   \
-			         rplc);                                  \
-			PRINTERR("Result  :\n");                         \
-			jstr_debug(&(result));                           \
-			PRINTERR("Expected:\n");                         \
-			jstr_debug(&(expected));                         \
-			T_DEBUG(func, expr);                             \
-			assert(expr);                                    \
-		}                                                        \
-	} while (0)
-
-#define ASSERT_RESULT_RPLC(func, str, find, rplc, n, expr)               \
-	do {                                                             \
-		if (jstr_unlikely(!(expr))) {                            \
-			PRINTERR("\nAssertion failure: %s().\n", #func); \
-			PRINTERR("string:%s.\n"                          \
-			         "find  :%s.\n"                          \
-			         "rplc  :%s.\n",                         \
-			         str,                                    \
-			         find,                                   \
-			         rplc);                                  \
-			PRINTERR("string len:%zu.\n", strlen(str));      \
-			PRINTERR("find len:%zu.\n", strlen(find));       \
-			PRINTERR("rplc len:%zu.\n", strlen(rplc));       \
-			PRINTERR("Result:\n");                           \
-			PRINTERR("N     :%zu\n", n);                     \
-			jstr_debug(&(result));                           \
-			PRINTERR("Expected:\n");                         \
-			jstr_debug(&(expected));                         \
-			T_DEBUG(func, expr);                             \
-			assert(expr);                                    \
-		}                                                        \
-	} while (0)
-
-#define T_RMCHR(func, simple_func)                                                                                                             \
-	do {                                                                                                                                   \
-		TESTING(func);                                                                                                                 \
-		T_FOREACHI(test_array_memcmp, i)                                                                                               \
-		{                                                                                                                              \
-			const char *str = test_array_memcmp[i].s1;                                                                             \
-			const char find = *test_array_memcmp[i].s2;                                                                            \
-			size_t str_len = strlen(str);                                                                                          \
-			T_RPLC_INIT((result), str, str_len);                                                                                   \
-			T_RPLC_INIT((expected), str, str_len);                                                                                 \
-			t.n = i;                                                                                                               \
-			t.result_n = func((result).data, &((result).size), 0, find, t.n);                                                      \
-			t.expected_n = simple_func((expected).data, &((expected).size), 0, find, t.n);                                         \
-			ASSERT_RESULT_RMCHR(func, str, find, t.expected_n == t.result_n);                                                      \
-			ASSERT_RESULT_RMCHR(func, str, find, strlen((result).data) == strlen((expected).data));                                \
-			ASSERT_RESULT_RMCHR(func, str, find, (result).size == (expected).size);                                                \
-			ASSERT_RESULT_RMCHR(func, str, find, !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data))); \
-		}                                                                                                                              \
-	} while (0)
-
-#define T_RPLCCHR(func, simple_func)                                                                                                                   \
-	do {                                                                                                                                           \
-		TESTING(func);                                                                                                                         \
-		T_FOREACHI(test_array_memcmp, i)                                                                                                       \
-		{                                                                                                                                      \
-			const char *str = test_array_memcmp[i].s1;                                                                                     \
-			const char find = *test_array_memcmp[i].s2;                                                                                    \
-			const char rplc = *test_array_memcmp[i].s1;                                                                                    \
-			size_t str_len = strlen(str);                                                                                                  \
-			T_RPLC_INIT((result), str, str_len);                                                                                           \
-			T_RPLC_INIT((expected), str, str_len);                                                                                         \
-			t.n = i;                                                                                                                       \
-			t.result_n = func((result).data, ((result).size), find, rplc, t.n);                                                            \
-			t.expected_n = simple_func((expected).data, ((expected).size), find, rplc, t.n);                                               \
-			ASSERT_RESULT_RPLCCHR(func, str, find, rplc, t.result_n == t.expected_n);                                                      \
-			ASSERT_RESULT_RPLCCHR(func, str, find, rplc, !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data))); \
-		}                                                                                                                                      \
-	} while (0)
-
-#define T_RM(func, simple_func)                                                                                                                      \
-	do {                                                                                                                                         \
-		TESTING(func);                                                                                                                       \
-		T_FOREACHI(test_array_memmem, i)                                                                                                     \
-		{                                                                                                                                    \
-			const char *str = test_array_memmem[i].hs;                                                                                   \
-			const char *find = test_array_memmem[i].ne;                                                                                  \
-			size_t str_len = strlen(str);                                                                                                \
-			size_t find_len = strlen(find);                                                                                              \
-			T_RPLC_INIT((result), str, str_len);                                                                                         \
-			T_RPLC_INIT((expected), str, str_len);                                                                                       \
-			t.n = i;                                                                                                                     \
-			t.result_n = func((result).data, &((result).size), find, find_len, t.n);                                                     \
-			t.expected_n = simple_func((expected).data, &((expected).size), find, find_len, t.n);                                        \
-			ASSERT_RESULT_RPLC(func, str, find, "", i, t.expected_n == t.result_n);                                                      \
-			ASSERT_RESULT_RPLC(func, str, find, "", i, strlen((result).data) == strlen((expected).data));                                \
-			ASSERT_RESULT_RPLC(func, str, find, "", i, (result).size == (expected).size);                                                \
-			ASSERT_RESULT_RPLC(func, str, find, "", i, !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data))); \
-		}                                                                                                                                    \
-	} while (0)
-
-#define T_RPLC(func, simple_func)                                                                                                                                               \
-	do {                                                                                                                                                                    \
-		TESTING(func);                                                                                                                                                  \
-		T_FOREACHI(test_array_memmem, i)                                                                                                                                \
-		{                                                                                                                                                               \
-			int loop = 1;                                                                                                                                           \
-			const char *str = test_array_memmem[i].hs;                                                                                                              \
-			const char *find = test_array_memmem[i].ne;                                                                                                             \
-			size_t find_len = strlen(find);                                                                                                                         \
-			const char *rplc = find + find_len / 2;                                                                                                                 \
-			size_t str_len = strlen(str);                                                                                                                           \
-			size_t rplc_len = strlen(rplc);                                                                                                                         \
-			for (;;) {                                                                                                                                              \
-				t.n = i;                                                                                                                                        \
-				T_RPLC_INIT((result), str, str_len);                                                                                                            \
-				T_RPLC_INIT((expected), str, str_len);                                                                                                          \
-				t.expected_n = func(&(result).data, &(result).size, &(result).capacity, (i < str_len) ? i : 0, find, find_len, rplc, rplc_len, t.n);            \
-				t.result_n = simple_func(&(expected).data, &(expected).size, &(expected).capacity, (i < str_len) ? i : 0, find, find_len, rplc, rplc_len, t.n); \
-				ASSERT_RESULT_RPLC(func, str, find, rplc, i, t.expected_n == t.result_n);                                                                       \
-				ASSERT_RESULT_RPLC(func, str, find, rplc, i, strlen((result).data) == strlen((expected).data));                                                 \
-				ASSERT_RESULT_RPLC(func, str, find, rplc, i, (result).size == (expected).size);                                                                 \
-				ASSERT_RESULT_RPLC(func, str, find, rplc, i, !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data)));                  \
-				if (!loop)                                                                                                                                      \
-					break;                                                                                                                                  \
-				loop = 0;                                                                                                                                       \
-				JSTR_SWAP(const char *, find, rplc);                                                                                                            \
-				JSTR_SWAP(size_t, find_len, rplc_len);                                                                                                          \
-			}                                                                                                                                                       \
-		}                                                                                                                                                               \
-	} while (0)
+static void
+run_rplc(const char *name, rplc_fn fn, rplc_fn simple_fn, struct test_pair *pair)
+{
+	test_testing(name);
+	for (size_t i = 0; i < JSTR_ARRAY_COUNT(test_array_memmem); ++i) {
+		const char *str = test_array_memmem[i].hs;
+		const char *find = test_array_memmem[i].ne;
+		size_t find_len = strlen(find);
+		const char *rplc = find + find_len / 2;
+		size_t str_len = strlen(str);
+		size_t rplc_len = strlen(rplc);
+		for (int loop = 1;; loop = 0) {
+			t.n = i;
+			rplc_init(&pair->result, str, str_len);
+			rplc_init(&pair->expected, str, str_len);
+			t.expected_n = fn(&pair->result.data, &pair->result.size, &pair->result.capacity, (i < str_len) ? i : 0, find, find_len, rplc, rplc_len, t.n);
+			t.result_n = simple_fn(&pair->expected.data, &pair->expected.size, &pair->expected.capacity, (i < str_len) ? i : 0, find, find_len, rplc, rplc_len, t.n);
+			check_case(name, str, find, rplc, i, t.expected_n == t.result_n, &pair->result, &pair->expected);
+			check_case(name, str, find, rplc, i, strlen(pair->result.data) == strlen(pair->expected.data), &pair->result, &pair->expected);
+			check_case(name, str, find, rplc, i, pair->result.size == pair->expected.size, &pair->result, &pair->expected);
+			check_case(name, str, find, rplc, i, !memcmp(pair->result.data, pair->expected.data, pair->result.size), &pair->result, &pair->expected);
+			if (!loop)
+				break;
+			const char *tmp_find = find;
+			size_t tmp_find_len = find_len;
+			find = rplc;
+			find_len = rplc_len;
+			rplc = tmp_find;
+			rplc_len = tmp_find_len;
+		}
+	}
+}
 
 JSTR_ATTR_MAYBE_UNUSED
 static size_t
-simple_rmnchr_len_from(char *s, size_t *sz, size_t start_idx, char remove, size_t n)
+simple_rmnchr_len_from(char *s, size_t *sz, size_t start_idx, int remove, size_t n)
 {
 	if (n == 0)
 		return 0;
@@ -284,126 +206,205 @@ simple_rmn_len(char *s, size_t *sz, const char *find, size_t find_len, size_t n)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-
-	/* replace tests. */
 	jstr_ty result = JSTR_INIT;
-	{
-		jstr_ty expected = JSTR_INIT;
-		T_RMCHR(jstr_rmnchr_len_from, simple_rmnchr_len_from);
-		T_RPLCCHR(jstr_rplcnchr_len, simple_rplcnchr_len);
-		T_RM(jstr_rmn_len, simple_rmn_len);
-		T_RPLC(jstr_rplcn_len_from, simple_rplcn_len_from);
-		jstr_free_j(&expected);
-		jstr_empty(result.data, &result.size);
-	}
+	struct test_pair pair;
+	test_pair_init(&pair);
+
+	/* differential table-driven replace/remove tests */
+	run_rmchr("jstr_rmnchr_len_from", jstr_rmnchr_len_from, simple_rmnchr_len_from, &pair);
+	run_rplcchr("jstr_rplcnchr_len", jstr_rplcnchr_len, simple_rplcnchr_len, &pair);
+	run_rm("jstr_rmn_len", jstr_rmn_len, simple_rmn_len, &pair);
+	run_rplc("jstr_rplcn_len_from", (rplc_fn)jstr_rplcn_len_from, simple_rplcn_len_from, &pair);
+	test_pair_free(&pair);
+	jstr_empty(result.data, &result.size);
 
 	const char *expected, *find, *rplc;
 
-	/* TODO: more tests. */
-
-	/* builder tests. */
+	/* builder tests */
 	expected = "hello world";
 	{
-		jstr_cat_arg_ty args[] = {jstr_literal_init("hello"), jstr_literal_init(" "), jstr_literal_init("world")};
-		T_APPEND(JSTR_RET_SUCC, jstr_cat, jstr_struct(&result), args, (size_t)3);
+		jstr_cat_arg_ty args[] = { jstr_literal_init("hello"), jstr_literal_init(" "), jstr_literal_init("world") };
+		jstr_ret_ty ret = jstr_cat(jstr_struct(&result), args, (size_t)3);
+		check_ret("jstr_cat", ret, JSTR_RET_SUCC, &result);
+		test_builder_expect("jstr_cat", ret, &result, expected);
+		test_reset(&result);
 	}
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_append_len, jstr_struct(&result), expected, strlen(expected));
+	{
+		jstr_ret_ty ret = jstr_append_len(jstr_struct(&result), expected, strlen(expected));
+		check_ret("jstr_append_len", ret, JSTR_RET_SUCC, &result);
+		test_builder_expect("jstr_append_len", ret, &result, expected);
+		test_reset(&result);
+	}
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_prepend_len, jstr_struct(&result), expected, strlen(expected));
+	{
+		jstr_ret_ty ret = jstr_prepend_len(jstr_struct(&result), expected, strlen(expected));
+		check_ret("jstr_prepend_len", ret, JSTR_RET_SUCC, &result);
+		test_builder_expect("jstr_prepend_len", ret, &result, expected);
+		test_reset(&result);
+	}
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_assign_len, jstr_struct(&result), expected, strlen(expected));
+	{
+		jstr_ret_ty ret = jstr_assign_len(jstr_struct(&result), expected, strlen(expected));
+		check_ret("jstr_assign_len", ret, JSTR_RET_SUCC, &result);
+		test_builder_expect("jstr_assign_len", ret, &result, expected);
+		test_reset(&result);
+	}
 
-	/* replace tests. */
-	FILL(result, "hello hello hello hello");
+	/* replace tests */
+	test_fill_shrunk(&result, "hello hello hello hello");
 	find = "hello";
 	rplc = "world";
 	expected = "world hello hello hello";
-	T_APPEND_NORET(jstr_rplc_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "hello hello hello hello");
+	{
+		size_t n = jstr_rplc_len(jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplc_len", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "hello hello hello hello");
 	find = "hello";
 	rplc = "world";
 	expected = "world world world world";
-	T_APPEND_NORET(jstr_rplcall_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "hello hello hello hello");
+	{
+		size_t n = jstr_rplcall_len(jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "hello hello hello hello");
 	find = "hello";
 	rplc = "";
 	expected = "   ";
-	T_APPEND_NORET(jstr_rplcall_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "hello hello hello hello");
+	{
+		size_t n = jstr_rplcall_len(jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "hello hello hello hello");
 	find = "hello";
 	rplc = "";
 	expected = "   ";
-	T_APPEND_NORET(jstr_rplcall_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "world hello hello hello");
+	{
+		size_t n = jstr_rplcall_len(jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "world hello hello hello");
 	find = "world";
 	rplc = "q";
 	expected = "world hello hello hello";
-	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "world hello hello hello");
+	{
+		size_t n = jstr_rplcall_len_from(jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len_from", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "world hello hello hello");
 	find = "world";
 	rplc = "PworldQ";
 	expected = "world hello hello hello";
-	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "world hello hello hello");
+	{
+		size_t n = jstr_rplcall_len_from(jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len_from", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "world hello hello hello");
 	find = "world";
 	rplc = "q";
 	expected = "q hello hello hello";
-	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "world hello hello hello");
+	{
+		size_t n = jstr_rplcall_len_from(jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len_from", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "world hello hello hello");
 	find = "world";
 	rplc = "PworldQ";
 	expected = "PworldQ hello hello hello";
-	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "world hello hello hello");
+	{
+		size_t n = jstr_rplcall_len_from(jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len_from", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "world hello hello hello");
 	find = "world";
 	rplc = "";
 	expected = " hello hello hello";
-	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "world hello hello hello");
+	{
+		size_t n = jstr_rplcall_len_from(jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len_from", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "world hello hello hello");
 	find = "world";
 	rplc = "";
 	expected = "world hello hello hello";
-	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
-	FILL(result, "hello_world");
+	{
+		size_t n = jstr_rplcall_len_from(jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
+		test_expect_buf("jstr_rplcall_len_from", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
+	test_fill_shrunk(&result, "hello_world");
 	find = "abcdefghijklmnopqrstuvwxyz";
 	rplc = "q";
 	expected = "qqqqq_qqqqq";
-	T_APPEND_NORET(jstr_rplcallspn, result.data, &result.size, find, *rplc);
+	{
+		size_t n = jstr_rplcallspn(result.data, &result.size, find, *rplc);
+		test_expect_buf("jstr_rplcallspn", &result, expected);
+		(void)n;
+		test_reset(&result);
+	}
 
-	/* builder tests. */
+	/* builder tests */
 	jstr_empty(result.data, &result.size);
 	{
-		jstr_cat_arg_ty args[] = {jstr_literal_init("hello"), jstr_literal_init(" world")};
-		T(jstr_cat(jstr_struct(&result), args, 2), "hello world");
+		jstr_cat_arg_ty args[] = { jstr_literal_init("hello"), jstr_literal_init(" world") };
+		test_builder_expect("jstr_cat", jstr_cat(jstr_struct(&result), args, 2), &result, "hello world");
 	}
 	{
-		jstr_cat_arg_ty args[] = {jstr_literal_init("a"), jstr_literal_init("b")};
-		T(jstr_cat(jstr_struct(&result), args, 2), "hello worldab");
+		jstr_cat_arg_ty args[] = { jstr_literal_init("a"), jstr_literal_init("b") };
+		test_builder_expect("jstr_cat", jstr_cat(jstr_struct(&result), args, 2), &result, "hello worldab");
 	}
-	T(jstr_asprintf(jstr_struct(&result), "%s", "c"), "c");
-	T(jstr_asprintf_append(jstr_struct(&result), "%s", "z"), "cz");
-	T(jstr_assign_len(jstr_struct(&result), "hello", strlen("hello")), "hello");
-	T(jstr_assign_len(jstr_struct(&result), jstr_literal("hello")), "hello");
-	T(jstr_append_len(jstr_struct(&result), jstr_literal(" world")), "hello world");
+	test_builder_expect("jstr_asprintf", jstr_asprintf(jstr_struct(&result), "%s", "c"), &result, "c");
+	test_builder_expect("jstr_asprintf_append", jstr_asprintf_append(jstr_struct(&result), "%s", "z"), &result, "cz");
+	test_builder_expect("jstr_assign_len", jstr_assign_len(jstr_struct(&result), "hello", strlen("hello")), &result, "hello");
+	test_builder_expect("jstr_assign_len", jstr_assign_len(jstr_struct(&result), jstr_literal("hello")), &result, "hello");
+	test_builder_expect("jstr_append_len", jstr_append_len(jstr_struct(&result), jstr_literal(" world")), &result, "hello world");
 	jstr_empty(result.data, &result.size);
-	T_P(result.size = JSTR_PTR_DIFF(jstr_pushback_unsafe_p(result.data, result.size, 'k'), result.data), "k");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_pushfront_unsafe_p(result.data, result.size, 'l'), result.data), "lk");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "k");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "");
-	T(jstr_assign_len(jstr_struct(&result), "hello", strlen("hello")), "hello");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "hell");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "hel");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "el");
-	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "l");
+	result.size = JSTR_PTR_DIFF(jstr_pushback_unsafe_p(result.data, result.size, 'k'), result.data);
+	test_expect_buf("jstr_pushback_unsafe_p", &result, "k");
+	result.size = JSTR_PTR_DIFF(jstr_pushfront_unsafe_p(result.data, result.size, 'l'), result.data);
+	test_expect_buf("jstr_pushfront_unsafe_p", &result, "lk");
+	result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popfront_p", &result, "k");
+	result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popfront_p", &result, "");
+	result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popfront_p", &result, "");
+	result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popback_p", &result, "");
+	result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popback_p", &result, "");
+	test_builder_expect("jstr_assign_len", jstr_assign_len(jstr_struct(&result), "hello", strlen("hello")), &result, "hello");
+	result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popback_p", &result, "hell");
+	result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popback_p", &result, "hel");
+	result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popfront_p", &result, "el");
+	result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data);
+	test_expect_buf("jstr_popfront_p", &result, "l");
 
 	jstr_free_j(&result);
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

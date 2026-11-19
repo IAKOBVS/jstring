@@ -15,25 +15,26 @@
 struct fmt_spec {
 	const char *fmt;
 	int nargs;
-	enum { ARG_INT, ARG_STR } types[4];
+	enum { ARG_INT,
+	       ARG_STR } types[4];
 };
 
 static const struct fmt_spec formats[] = {
-	{ "%d",               1, {ARG_INT} },
-	{ "%u",               1, {ARG_INT} },
-	{ "%x",               1, {ARG_INT} },
-	{ "%d%s",             2, {ARG_INT, ARG_STR} },
-	{ "%s%d",             2, {ARG_STR, ARG_INT} },
-	{ "|%d|%u|",          2, {ARG_INT, ARG_INT} },
-	{ "[%s]",             1, {ARG_STR} },
-	{ "%s%s",             2, {ARG_STR, ARG_STR} },
-	{ "pre%dmid%ssuf",    2, {ARG_INT, ARG_STR} },
-	{ "%d,%d,%d",         3, {ARG_INT, ARG_INT, ARG_INT} },
-	{ "%d%%%d",           2, {ARG_INT, ARG_INT} },
+	{ "%d",            1, { ARG_INT }                   },
+	{ "%u",            1, { ARG_INT }                   },
+	{ "%x",            1, { ARG_INT }                   },
+	{ "%d%s",          2, { ARG_INT, ARG_STR }          },
+	{ "%s%d",          2, { ARG_STR, ARG_INT }          },
+	{ "|%d|%u|",       2, { ARG_INT, ARG_INT }          },
+	{ "[%s]",          1, { ARG_STR }                   },
+	{ "%s%s",          2, { ARG_STR, ARG_STR }          },
+	{ "pre%dmid%ssuf", 2, { ARG_INT, ARG_STR }          },
+	{ "%d,%d,%d",      3, { ARG_INT, ARG_INT, ARG_INT } },
+	{ "%d%%%d",        2, { ARG_INT, ARG_INT }          },
 };
 static const size_t nformats = sizeof(formats) / sizeof(formats[0]);
 
-static const char *str_args[] = {"", "x", "hello", "AB", "longer_string", "123"};
+static const char *str_args[] = { "", "x", "hello", "AB", "longer_string", "123" };
 static const size_t nstrargs = sizeof(str_args) / sizeof(str_args[0]);
 
 JSTR_ATTR_MAYBE_UNUSED
@@ -48,7 +49,7 @@ fuzz_snprintf(size_t iter)
 		/* Build variadic argument list values */
 		int iargs[4];
 		const char *sargs[4];
-		for (int j = 0; j < fs->nargs && j < (int)(sizeof(iargs)/sizeof(iargs[0])); ++j) {
+		for (int j = 0; j < fs->nargs && j < (int)(sizeof(iargs) / sizeof(iargs[0])); ++j) {
 			if (fs->types[j] == ARG_INT)
 				iargs[j] = (int)(rand() & 0xFFFF) - (int)(rand() & 0x7FFF);
 			else
@@ -120,28 +121,26 @@ fuzz_snprintf(size_t iter)
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
 	size_t iter = FITER;
-#ifdef JSTR_TEST_SLOW
+#	ifdef JSTR_TEST_SLOW
 	iter *= 10;
-#else
+#	else
 	if (iter > 500)
 		iter = 500;
-#endif
+#	endif
 	if (iter < 1)
 		iter = 1;
-#ifdef FUZZ_AFL
+#	ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
-#endif
+#	endif
 	{
 		srand(seed);
-		TESTING(fuzz_snprintf);
+		test_testing("fuzz_snprintf");
 		fuzz_snprintf(iter);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 
@@ -152,8 +151,7 @@ LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
 	if (size < 4)
 		return 0;
-	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
-	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
 	srand(seed);
 	data += 4;
 	size -= 4;

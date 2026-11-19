@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char a[] = "abc";
 	char b[] = "ABC";
 	assert(jstr_memcasecmpeq(a, b, 3) == 0);

@@ -33,7 +33,10 @@ ref_ulltoa_p(unsigned long long n, char *buf, unsigned int base)
 static int
 ref_streq(const char *a, const char *b)
 {
-	while (*a && *b && *a == *b) { ++a; ++b; }
+	while (*a && *b && *a == *b) {
+		++a;
+		++b;
+	}
 	return *a == *b;
 }
 
@@ -86,7 +89,8 @@ fuzz_itoa(size_t iter)
 
 		/* --- itoa_p (int) --- */
 		int ival = (int)(sval & 0x7FFFFFFF);
-		if (rand() % 2) ival = -ival;
+		if (rand() % 2)
+			ival = -ival;
 		memset(j_buf, 0xAA, sizeof(j_buf));
 		je = jstr_itoa_p(ival, j_buf, base);
 		if (ival == 0) {
@@ -129,12 +133,16 @@ fuzz_itoa(size_t iter)
 		sz = 0;
 		ret = jstr_utoa(&s, &sz, &cap, uval, base);
 		assert(ret == JSTR_RET_SUCC);
-		{char *re = ref_ulltoa_p(uval, ref_buf, base);(void)re;}
+		{
+			char *re = ref_ulltoa_p(uval, ref_buf, base);
+			(void)re;
+		}
 		assert(ref_streq(s, ref_buf));
 		assert(sz == strlen(s));
 
 		long long sval = (long long)(int)(rand() & 0x7FFF);
-		if (rand() % 2) sval = -sval;
+		if (rand() % 2)
+			sval = -sval;
 		sz = 0;
 		ret = jstr_lltoa(&s, &sz, &cap, sval, base);
 		assert(ret == JSTR_RET_SUCC);
@@ -192,28 +200,26 @@ fuzz_itoa(size_t iter)
 int
 main(int argc, char **argv)
 {
-	START();
 	unsigned seed = 0;
 	if (argc > 1)
 		seed = (unsigned)atoi(argv[1]);
 	size_t iter = FITER;
-#ifdef JSTR_TEST_SLOW
+#	ifdef JSTR_TEST_SLOW
 	iter *= 10;
-#else
+#	else
 	if (iter > 500)
 		iter = 500;
-#endif
+#	endif
 	if (iter < 1)
 		iter = 1;
-#ifdef FUZZ_AFL
+#	ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
-#endif
+#	endif
 	{
 		srand(seed);
-		TESTING(fuzz_itoa);
+		test_testing("fuzz_itoa");
 		fuzz_itoa(iter);
 	}
-	SUCCESS();
 	return EXIT_SUCCESS;
 }
 
@@ -224,8 +230,7 @@ LLVMFuzzerTestOneInput(const unsigned char *data, size_t size)
 {
 	if (size < 4)
 		return 0;
-	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) |
-	                ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+	unsigned seed = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
 	srand(seed);
 	data += 4;
 	size -= 4;

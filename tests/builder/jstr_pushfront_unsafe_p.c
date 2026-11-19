@@ -16,11 +16,8 @@ check_guard(const char *p, size_t n, unsigned char value)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	/* Exact-size buffer: 2 existing bytes + 1 prepended byte + NUL. */
 	{
@@ -147,6 +144,5 @@ main(int argc, char **argv)
 		assert(cap == 0);
 	}
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

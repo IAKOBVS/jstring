@@ -8,11 +8,8 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char *s = NULL;
 	size_t sz = 0, cap = 0;
@@ -37,6 +34,5 @@ main(int argc, char **argv)
 	assert(memcmp(s, "www", 4) == 0);
 
 	jstr_free(&s, &sz, &cap);
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

@@ -8,9 +8,8 @@
 #include <unistd.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	char tmpdir[] = "/tmp/jstr_wfd_XXXXXX";
 	assert(mkdtemp(tmpdir));
 	char path[256];
@@ -58,6 +57,5 @@ main(int argc, char **argv)
 	char cmd[256];
 	snprintf(cmd, sizeof cmd, "rm -rf %s", tmpdir);
 	system(cmd);
-	SUCCESS();
 	return 0;
 }

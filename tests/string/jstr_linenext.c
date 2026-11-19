@@ -5,11 +5,9 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-{
+	{
 		const char *p = jstr_linenext("abc\ndef");
 		assert(p != NULL && *p == 'd');
 		p = jstr_linenext("abc");

@@ -11,11 +11,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	/* Basic copy plus NUL. */
 	{
@@ -112,6 +109,5 @@ main(int argc, char **argv)
 		}
 	}
 
-	SUCCESS();
 	return 0;
 }

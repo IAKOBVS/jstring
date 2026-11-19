@@ -5,11 +5,9 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc;
-	(void)argv;
-{
+	{
 		const char s[] = "/usr/local/bin";
 		char *p = jstr_basename_len(s, 14);
 		assert(!strcmp(p, "bin"));

@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char buf[] = "hello";
 	assert(jstr_strnlen_loop(buf, 10) == 5);
 	assert(jstr_strnlen_loop(buf, 3) == 3);

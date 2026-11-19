@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_strcasecmp_len("abc", "ABC", 3) == 0);
 	assert(jstr_strcasecmp_len("abc\0zzz", "ABC\0yyy", 4) == 0); /* exact n includes NULs? tolower('\0') */
 	/* differing at last */

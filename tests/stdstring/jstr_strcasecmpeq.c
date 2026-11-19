@@ -6,9 +6,9 @@
 #include "../test.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	assert(jstr_strcasecmpeq("abc", "ABC") == 0);
 	int r = jstr_strcasecmpeq("abx", "aby");
 	assert(r != 0);

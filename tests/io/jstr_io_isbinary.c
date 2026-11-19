@@ -4,9 +4,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	assert(jstr_io_isbinary(jstr_literal("")) == 0);
 	{
 		const unsigned char b[] = { 0x7F, 'E', 'L', 'F', 0, 0, 0, 0 };
@@ -26,6 +25,5 @@ main(int argc, char **argv)
 		const char *s = "hello";
 		assert(jstr_io_isbinary(s, 5) == 0);
 	}
-	SUCCESS();
 	return 0;
 }

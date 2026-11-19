@@ -5,9 +5,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	setenv("HOME", "/home/tester", 1);
 	/* not tilde */
 	{
@@ -35,6 +34,5 @@ main(int argc, char **argv)
 		assert(p == NULL);
 		setenv("HOME", "/home/tester", 1);
 	}
-	SUCCESS();
 	return 0;
 }

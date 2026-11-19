@@ -6,11 +6,8 @@
 #include "internal/musl/stdstring.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
-	(void)argc;
-	(void)argv;
 
 	char buf[128];
 	strcpy(buf, "abac");
@@ -24,6 +21,5 @@ main(int argc, char **argv)
 	assert(jstr_internal_strnchr_musl(buf, 0, 5) == NULL);
 	assert(jstr_internal_strnchr_musl(buf, 0, 99) == NULL);
 
-	SUCCESS();
 	return EXIT_SUCCESS;
 }

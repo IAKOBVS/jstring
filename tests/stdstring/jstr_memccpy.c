@@ -6,9 +6,9 @@
 #include "jstr.h"
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	(void)argc; (void)argv;
+
 	char src[] = "a,b,c";
 	char dst[8];
 	void *r = jstr_memccpy(dst, src, ',', 6);

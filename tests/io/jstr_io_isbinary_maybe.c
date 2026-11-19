@@ -4,9 +4,8 @@
 #include <string.h>
 
 int
-main(int argc, char **argv)
+main(void)
 {
-	START();
 	/* empty */
 	assert(jstr_io_isbinary_maybe(jstr_literal("")) == 0);
 	/* NULL with sz 0 */
@@ -36,6 +35,5 @@ main(int argc, char **argv)
 		const char b[] = { 'a', 127, 'b' };
 		assert(jstr_io_isbinary_maybe(b, 3) == 1);
 	}
-	SUCCESS();
 	return 0;
 }
