@@ -48,6 +48,8 @@ class MakeVars:
     cflags: str
     test_base: str
     test_decl: str
+    test_impl_decl: str
+    test_impl_dir: str
     parser_bin: str
     parser_src: list[str]
     lib: str
@@ -110,6 +112,8 @@ def load_vars() -> MakeVars:
         cflags=scalar("CFLAGS"),
         test_base=scalar("TEST_BASE"),
         test_decl=scalar("TEST_DECL"),
+        test_impl_decl=scalar("TEST_IMPL_DECL"),
+        test_impl_dir=scalar("TEST_IMPL_DIR"),
         parser_bin=scalar("PARSER_BIN"),
         parser_src=words("PARSER_SRC"),
         lib=scalar("LIB"),
@@ -193,6 +197,8 @@ def main() -> None:
     cflags = v.cflags
     test_base = v.test_base
     test_decl = v.test_decl
+    test_impl_decl = v.test_impl_decl
+    test_impl_dir = v.test_impl_dir
     parser_bin = v.parser_bin
     parser_src = v.parser_src
     compiles = v.compiles
@@ -275,14 +281,18 @@ def main() -> None:
     for variant in variants:
         name = variant.name
         tv = cp(variant.flags)
-        w("rule cc_test_%s" % name)
-        w(
-            "  command = %s %s %s %s -MMD -MP -MF $out.d -c $in -o $out"
-            % (join_tokens(cc), join_tokens(test_base), tv, join_tokens(test_decl))
-        )
-        w("  depfile = $out.d")
-        w("  deps = gcc")
-        w("")
+        for rule_name, decl in (
+            ("cc_test_%s" % name, test_decl),
+            ("cc_test_impl_%s" % name, test_impl_decl),
+        ):
+            w("rule %s" % rule_name)
+            w(
+                "  command = %s %s %s %s -MMD -MP -MF $out.d -c $in -o $out"
+                % (join_tokens(cc), join_tokens(test_base), tv, join_tokens(decl))
+            )
+            w("  depfile = $out.d")
+            w("  deps = gcc")
+            w("")
         w("rule ld_test_%s" % name)
         w(
             "  command = %s %s %s $in -L%s -Wl,-rpath,%s -ljstr -o $out"
@@ -328,11 +338,13 @@ def main() -> None:
             name = variant.name
             obj = os.path.join(test_objdir, "%s_%s.o" % (key, name))
             binp = os.path.join(test_bindir, "%s_%s" % (key, name))
+            is_impl = src.startswith(test_impl_dir + os.sep)
+            rule = "cc_test_impl_%s" % name if is_impl else "cc_test_%s" % name
             w(
-                "build %s: cc_test_%s %s | %s || %s"
+                "build %s: %s %s | %s || %s"
                 % (
                     np(obj),
-                    name,
+                    rule,
                     np(src),
                     np(os.path.join(hdrgen, "jstr.h")),
                     " ".join(np(g) for g in all_gens),

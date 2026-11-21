@@ -86,16 +86,36 @@ if [ "$SKIP_TEST" != "1" ]; then
 
 	testdir=$(mktemp -d "$REPOROOT/build/tests/.run.XXXXXX")
 	export REPOROOT TEST_CFLAGS testdir
-	find tests/ -maxdepth 1 \( -name 'test-*.c' -o -name 'repro-*.c' \) -print0 | xargs -0 -P "$MAX_JOBS" -I{} sh -c '
-		tbase=$(basename "$1" .c)
-		$CC -DJSTR_DECL_ONLY -include "$REPOROOT/build/include/jstr/jstr.h" \
+	# Shared implementation for the fuzz tests (no main of its own).
+	$CC -DJSTR_DECL_ONLY -include "$REPOROOT/build/include/jstr/jstr.h" \
+		-iquote "$REPOROOT/build/include/jstr" \
+		-c tests/fuzz-regex.c -o build/tests/fuzz-regex.o $TEST_CFLAGS
+	# Mirror the main harness: discover every tests/**/*.c, key by relative
+	# path (slashes become underscores), and honour the impl/fuzz variants.
+	find tests/ -type f -name '*.c' \
+		! -name 'fuzz-regex.c' \
+		! -name 'repro_crash.c' ! -name 'repro-replace-color.c' \
+		-print0 | xargs -0 -P "$MAX_JOBS" -I{} sh -c '
+		src="$1"
+		tbase=${src#tests/}
+		tbase=${tbase%.c}
+		tbase=$(printf "%s" "$tbase" | tr "/" "_")
+		case "$src" in
+			tests/impl/*) decl="-DJSTR_IMPLEMENTATION=1" ;;
+			*) decl="-DJSTR_DECL_ONLY" ;;
+		esac
+		extra=""
+		if grep -q "fuzz-regex\.h" "$src"; then
+			extra="build/tests/fuzz-regex.o"
+		fi
+		$CC $decl -include "$REPOROOT/build/include/jstr/jstr.h" \
 			-iquote "$REPOROOT/build/include/jstr" \
-			-c "$1" -o "build/tests/$tbase.o" \
+			-c "$src" -o "build/tests/$tbase.o" \
 			$TEST_CFLAGS 2>"$testdir/$tbase.err" || {
 				echo "compile $tbase" > "$testdir/$tbase.status"
 				exit 1
 			}
-		$CC "build/tests/$tbase.o" -o "build/tests/$tbase" \
+		$CC "build/tests/$tbase.o" $extra -o "build/tests/$tbase" \
 			$TEST_CFLAGS -L"$REPOROOT/build/lib" -ljstr 2>>"$testdir/$tbase.err" || {
 				echo "link $tbase" > "$testdir/$tbase.status"
 				exit 1

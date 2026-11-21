@@ -49,7 +49,7 @@ JSTR_INTERNAL_END_DECLS
  * \brief Iterate over indices of a jstr_ty's data.
  */
 #	define jstr_foreachi(j, i) \
-		for (size_t i = 0, const _jstr_internal_foreachi_end_##i = ((j)->size); i < _jstr_internal_foreachi_end_##i; ++i)
+		for (size_t i = 0, _jstr_internal_foreachi_end_##i = ((j)->size); i < _jstr_internal_foreachi_end_##i; ++i)
 /**
  * \brief Compute the index of curr within j's data.
  */

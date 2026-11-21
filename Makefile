@@ -68,7 +68,7 @@ ALL_GENS   := $(MACRO_GENS) $(INT_GENS) $(MUSL_GENS) $(REG_GENS)
 # Targets
 # ═══════════════════════════════════════════════════════════════
 
-.PHONY: all clean test testbuild test1 test-parser test-runner bench-parser install uninstall headers setup ninja-vars compile-commands
+.PHONY: all clean test testbuild test1 test-parser test-runner bench-parser doc-check install uninstall headers setup ninja-vars compile-commands
 
 # Keep generated source wrappers (not intermediate)
 .PRECIOUS: $(SRCGEN)/%.c
@@ -160,6 +160,11 @@ TESTSRC     := $(filter-out $(FUZZ_SRC) $(TEST_SKIP),$(TESTSRC_ALL))
 TEST_SANITIZE ?= -fsanitize=address
 TEST_BASE  := -std=c99 -Wall -Wextra -Wno-unused-result -O2 -g $(TEST_SANITIZE) -D_XOPEN_SOURCE=700
 TEST_DECL  := -DJSTR_DECL_ONLY -include $(HDRGEN)/jstr.h -iquote $(HDRGEN)
+# Tests under tests/impl need JSTR_IMPLEMENTATION so they can call internal
+# statics directly; every other test sees declarations only.
+TEST_IMPL_DIR  := $(REPO)/tests/impl
+TEST_IMPL_DECL := -DJSTR_IMPLEMENTATION=1 -include $(HDRGEN)/jstr.h -iquote $(HDRGEN)
+test-decl = $(if $(filter $(TEST_IMPL_DIR)/%,$(2)),$(TEST_IMPL_DECL),$(TEST_DECL))
 
 TVARS       := v0 v1 v2 v3
 TV_FLAGS_v0 :=
@@ -207,7 +212,7 @@ TESTBINS :=
 define TEST_rules
 $(call test-obj,$(1),$(3)): $(2) $(HDRGEN)/jstr.h | $(TEST_OBJDIR) $(ALL_GENS)
 	@echo "  CC  [$(3)] $(notdir $(2))"
-	@$$(CC) $(TEST_BASE) $(TV_FLAGS_$(3)) $(TEST_DECL) -MMD -MP -c $(2) -o $$@
+	@$$(CC) $(TEST_BASE) $(TV_FLAGS_$(3)) $(call test-decl,$(1),$(2)) -MMD -MP -c $(2) -o $$@
 $(call test-bin,$(1),$(3)): $(call test-obj,$(1),$(3)) $(call test-sup,$(1),$(2),$(3)) | $(LIB) $(TEST_BINDIR)
 	@echo "  LD  [$(3)] $(1)"
 	@$$(CC) $(TEST_BASE) $(TV_FLAGS_$(3)) $(call test-obj,$(1),$(3)) $(call test-sup,$(1),$(2),$(3)) -L$(LIBDIR) -Wl,-rpath,$(LIBDIR) -ljstr -o $$@
@@ -303,6 +308,11 @@ test-runner:
 bench-parser: $(PARSER_BIN)
 	@$(PARSER_DIR)/bench
 
+# Validate spec-comment anchors/tags, then build the HTML docs.
+doc-check:
+	python3 docs/spec_check.py
+	doxygen docs/Doxyfile
+
 # Build all test variant binaries incrementally (does not run them).
 testbuild: headers $(LIB) $(TESTBINS)
 
@@ -362,6 +372,8 @@ ninja-vars:
 	@printf '@@CFLAGS@@%s\n' '$(CFLAGS)'
 	@printf '@@TEST_BASE@@%s\n' '$(TEST_BASE)'
 	@printf '@@TEST_DECL@@%s\n' '$(TEST_DECL)'
+	@printf '@@TEST_IMPL_DECL@@%s\n' '$(TEST_IMPL_DECL)'
+	@printf '@@TEST_IMPL_DIR@@%s\n' '$(TEST_IMPL_DIR)'
 	@printf '@@PARSER_BIN@@%s\n' '$(PARSER_BIN)'
 	@printf '@@PARSER_SRC@@%s\n' '$(PARSER_SRC)'
 	@printf '@@LIB@@%s\n' '$(LIB)'

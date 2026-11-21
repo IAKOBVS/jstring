@@ -4,10 +4,11 @@
 /* Bounds-safety tests for the regex backreference replacement engine:
  * - A trailing lone '\' in the replacement must be emitted literally,
  *   not read past the end of the replacement buffer.
- * - Backreferences to groups that did not participate in the match
- *   expand as empty strings, never as (size_t)-2 arithmetic.
- * - Backreferences >= nmatch expand as empty strings (no uninitialized
- *   rm[] access in release builds). */
+ * - Backreferences to groups that did not participate in the match expand
+ *   as the literal two-byte "\d" pair (jstr's chosen semantics), never as
+ *   (size_t)-2 arithmetic.
+ * - Backreferences >= nmatch likewise expand as a literal pair (no
+ *   uninitialized rm[] access in release builds). */
 
 #define __STDC_NO_VLA__ 1
 

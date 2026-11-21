@@ -1282,7 +1282,6 @@ struct jstr_internal_io_ftw_data {
 	const void *func_match_args;
 	struct JSTR_IO_FTW ftw;
 	int ftw_flags;
-	int action_stop;
 };
 
 #	define JSTR_IO_FTW_FUNC(func_name, ftw, func_args) \
@@ -1299,31 +1298,133 @@ struct jstr_internal_io_ftw_data {
 
 #	define FLAG(x) ((a)->ftw_flags & (x))
 
-/**
- * @brief jstr_internal_io_ftw_len
- *
- * Internal recursive implementation of the file tree walk. Iterates directory
- * entries, applies flags/filter, invokes the callback, and recurses into
- * subdirectories. Not part of the public API.
- *
- * @param a            struct jstr_internal_io_ftw_data *a Walk state. Must not
- *                     be NULL.
- * @param dirpath_len  jstr_io_path_size_ty dirpath_len Length of the current
- *                     directory path.
- * @param dirfd        int dirfd Directory file descriptor (or -1).
- *
- * @return int JSTR_RET_SUCC on success, JSTR_RET_ERR on error, or a callback
- *             result depending on flags.
- *
- * @note Internal helper; callers should use jstr_io_ftw_len.
- */
-JSTR_FUNC_MAY_NULL
-JSTR_NONNULL((1))
-int
-jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_ty dirpath_len, int dirfd) JSTR_NOEXCEPT
 #	ifdef JSTR_IMPLEMENTATION
+
+/**
+ * @anchor spec_jstr_internal_io_ftw_state_ty
+ * @brief Internal file-tree-walk traversal result states.
+ *
+ * @details This type is part of the io.c traversal contract. STOP and ERROR
+ *          propagate by value through recursive frames, while FINISH marks a
+ *          completed walk. STOP is still reported as JSTR_RET_SUCC at the
+ *          public API boundary.
+ * @pre The owning module is initialized before any traversal state is used.
+ * @post Enumerators are immutable and carry no ownership of caller objects.
+ * @par Side Effects:
+ *   None; these are compile-time constants with no storage or lifetime.
+ * @par Threading and Reentrancy:
+ *   Safe to read concurrently; the type has no mutable state.
+ *
+ * @note Internal type; not part of the public jstr API.
+ */
+typedef enum jstr_internal_io_ftw_state_ty {
+	JSTR_INTERNAL_IO_FTW_NEXT = 0,
+	JSTR_INTERNAL_IO_FTW_RECURSE,
+	JSTR_INTERNAL_IO_FTW_SKIP_SIBLINGS,
+	JSTR_INTERNAL_IO_FTW_STOP,
+	JSTR_INTERNAL_IO_FTW_ERROR,
+	JSTR_INTERNAL_IO_FTW_FINISH
+} jstr_internal_io_ftw_state_ty;
+
+/**
+ * @anchor spec_jstr_internal_io_ftw_map_callback
+ * @brief Map one callback return code to an internal traversal state.
+ *
+ * @details This helper is part of the io.c traversal contract. It reads only
+ *          the four scalar inputs named below and writes nothing except its
+ *          return value. It normalizes the ACTIONRETVAL flavor of callback
+ *          results and preserves the historical asymmetry where an invalid
+ *          value at the root means ERROR and a nested one means STOP.
+ * @pre The owning module is initialized and the callback has already returned.
+ * @param ret Callback return code to classify.
+ * @param actionretval Non-zero when JSTR_IO_FTW_ACTIONRETVAL is active.
+ * @param at_root Non-zero when the callback ran on the traversal root.
+ * @param on_continue State to return for a CONTINUE-style result.
+ * @return The mapped jstr_internal_io_ftw_state_ty value.
+ * @post No caller-owned object is modified; ownership stays with the caller.
+ * @par Side Effects:
+ *   None; this is a pure classification of the scalar inputs.
+ * @par Threading and Reentrancy:
+ *   Single-threaded use only; this helper touches no shared state and is
+ *   reentrant when callers serialize their own traversal data.
+ */
+static jstr_internal_io_ftw_state_ty
+jstr_internal_io_ftw_map_callback(int ret, int actionretval, int at_root, jstr_internal_io_ftw_state_ty on_continue)
+{
+	if (!actionretval)
+		return jstr_chk(ret) ? JSTR_INTERNAL_IO_FTW_ERROR : on_continue;
+	if (ret == JSTR_IO_FTW_RET_CONTINUE)
+		return on_continue;
+	if (ret == JSTR_IO_FTW_RET_SKIP_SUBTREE)
+		return at_root ? on_continue : JSTR_INTERNAL_IO_FTW_NEXT;
+	if (ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
+		return at_root ? on_continue : JSTR_INTERNAL_IO_FTW_SKIP_SIBLINGS;
+	if (ret == JSTR_IO_FTW_RET_STOP)
+		return JSTR_INTERNAL_IO_FTW_STOP;
+	/* Preserve the historical asymmetry: nested invalid values mean STOP,
+	 * root invalid values mean ERROR. */
+	return at_root ? JSTR_INTERNAL_IO_FTW_ERROR : JSTR_INTERNAL_IO_FTW_STOP;
+}
+
+/**
+ * @anchor spec_jstr_internal_io_ftw_map_child
+ * @brief Fold a child walk state into the parent traversal state.
+ *
+ * @details This helper is part of the io.c traversal contract. It reads only
+ *          the child state named below and fails without touching any object
+ *          other than its return value. STOP and ERROR propagate unchanged;
+ *          every other child state becomes NEXT for the parent frame.
+ * @pre The owning module is initialized and the child walk has returned.
+ * @param child Terminal state reported by the completed child walk.
+ * @return The state the parent frame must act on.
+ * @post No caller-owned object is modified; ownership stays with the caller.
+ * @par Side Effects:
+ *   None; the function is a pure fold of its scalar input.
+ * @par Threading and Reentrancy:
+ *   Single-threaded use only; no shared state is read or written.
+ */
+static jstr_internal_io_ftw_state_ty
+jstr_internal_io_ftw_map_child(jstr_internal_io_ftw_state_ty child)
+{
+	if (child == JSTR_INTERNAL_IO_FTW_STOP || child == JSTR_INTERNAL_IO_FTW_ERROR)
+		return child;
+	return JSTR_INTERNAL_IO_FTW_NEXT;
+}
+
+#	endif
+
+/**
+ * @anchor spec_jstr_internal_io_ftw_walk
+ * @brief Recursively walk one directory and publish its traversal state.
+ *
+ * @details This function is part of the io.c traversal contract. It reads only
+ *          the inputs named below and writes only *out_state and the walk
+ *          state reachable through a. All pointer inputs must remain valid for
+ *          the call duration. Failures never leave a partially published
+ *          callback result or an unclosed directory stream.
+ * @pre a and out_state are non-NULL, a->ftw.dirpath is valid, and the owning
+ *      module is initialized.
+ * @param a struct jstr_internal_io_ftw_data *a Walk state; must not be NULL.
+ * @param dirpath_len jstr_io_path_size_ty Length of the current directory path.
+ * @param dirfd int Directory file descriptor, or -1.
+ * @param out_state Non-NULL output receiving the terminal traversal state.
+ * @return JSTR_RET_SUCC on success; otherwise a typed error code.
+ * @post On success *out_state holds FINISH, STOP, or ERROR and all opened
+ *       directory streams are closed; on failure the caller retains ownership
+ *       of caller-owned inputs.
+ * @par Side Effects:
+ *   Only the walk state reachable through a and *out_state are modified;
+ *   directory streams are opened/closed and the user callback is invoked.
+ * @par Threading and Reentrancy:
+ *   Single-threaded use only; concurrent walks require independent walk data.
+ */
+#	ifdef JSTR_IMPLEMENTATION
+static int
+jstr_internal_io_ftw_walk(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_ty dirpath_len, int dirfd, jstr_internal_io_ftw_state_ty *out_state) JSTR_NOEXCEPT
 {
 	(void)dirfd;
+	jstr_internal_io_ftw_state_ty state = JSTR_INTERNAL_IO_FTW_NEXT;
+	(void)state;
 	DIR *dp = OPENDIR(dirfd, a->ftw.dirpath);
 	if (jstr_nullchk(dp)) {
 #		if USE_ATFILE
@@ -1331,14 +1432,20 @@ jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_
 #		endif
 		if (NONFATAL_ERR()) {
 			if (FLAG(JSTR_IO_FTW_REG))
-				if (!FLAG(JSTR_IO_FTW_DIR))
+				if (!FLAG(JSTR_IO_FTW_DIR)) {
+					*out_state = JSTR_INTERNAL_IO_FTW_FINISH;
 					return JSTR_RET_SUCC;
-			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
+				}
+			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args)) {
+				*out_state = JSTR_INTERNAL_IO_FTW_FINISH;
 				return JSTR_RET_SUCC;
+			}
 			a->ftw.dirpath_len = dirpath_len;
 			a->func(&a->ftw, a->func_args);
+			*out_state = JSTR_INTERNAL_IO_FTW_FINISH;
 			return JSTR_RET_SUCC;
 		}
+		*out_state = JSTR_INTERNAL_IO_FTW_ERROR;
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
 	int tmp;
@@ -1356,12 +1463,14 @@ jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_
 		if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
 			errno = ENAMETOOLONG;
 			closedir(dp);
+			*out_state = JSTR_INTERNAL_IO_FTW_ERROR;
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		}
 #		else
 		if (jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX) && jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
 			errno = ENAMETOOLONG;
 			closedir(dp);
+			*out_state = JSTR_INTERNAL_IO_FTW_ERROR;
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		}
 #		endif
@@ -1428,28 +1537,19 @@ do_reg:
 			STAT_OR_MODE((struct stat *)a->ftw.st, dirfd, a->ftw.ep, a->ftw.dirpath);
 		}
 func:
-		tmp = a->func(&a->ftw, a->func_args);
-		/* ACTIONRETVAL according to glibc ftw. */
-		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
-			if (tmp == JSTR_IO_FTW_RET_CONTINUE || tmp == JSTR_IO_FTW_RET_SKIP_SUBTREE) {
-				goto next_entry;
-			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS) {
-				break;
-			} else /* tmp == RET_STOP (== JSTR_RET_SUCC == 0) */ {
-				/* RET_STOP and JSTR_RET_SUCC are both 0, so the stop
-				 * cannot travel through the return value. Record it in
-				 * the shared walk data instead. */
-				a->action_stop = 1;
-				closedir(dp);
-				return JSTR_RET_SUCC;
-			}
-		} else {
-			if (jstr_chk(tmp)) {
-				closedir(dp);
-				JSTR_RETURN_ERR(JSTR_RET_ERR);
-			}
+		state = jstr_internal_io_ftw_map_callback(a->func(&a->ftw, a->func_args), (int)FLAG(JSTR_IO_FTW_ACTIONRETVAL), 0, JSTR_INTERNAL_IO_FTW_NEXT);
+		if (state == JSTR_INTERNAL_IO_FTW_NEXT)
+			goto next_entry;
+		if (state == JSTR_INTERNAL_IO_FTW_SKIP_SIBLINGS)
+			break;
+		if (state == JSTR_INTERNAL_IO_FTW_STOP) {
+			*out_state = state;
+			closedir(dp);
+			return JSTR_RET_SUCC;
 		}
-		goto next_entry;
+		*out_state = JSTR_INTERNAL_IO_FTW_ERROR;
+		closedir(dp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 dir:
 		/* Go to next entry if we don't traverse subdirectories and
 		 * don't need to call FUNC on directories. */
@@ -1463,28 +1563,21 @@ dir:
 		/* Don't call FUNC on directory if we don't need to. */
 		if (FLAG(JSTR_IO_FTW_REG) && !FLAG(JSTR_IO_FTW_DIR))
 			goto skip_fn;
-		tmp = a->func(&a->ftw, a->func_args);
-		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
-			if (tmp == JSTR_IO_FTW_RET_CONTINUE) {
-				/* Recurse into this directory. */
-				goto skip_fn;
-			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SUBTREE) {
-				/* Don't recurse, but keep processing siblings. */
-				goto next_entry;
-			} else if (tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS) {
-				/* Don't recurse; abort sibling iteration. */
-				break;
-			} else /* tmp == RET_STOP (== JSTR_RET_SUCC == 0) */ {
-				a->action_stop = 1;
-				closedir(dp);
-				return JSTR_RET_SUCC;
-			}
-		} else {
-			if (jstr_chk(tmp)) {
-				closedir(dp);
-				JSTR_RETURN_ERR(JSTR_RET_ERR);
-			}
+		state = jstr_internal_io_ftw_map_callback(a->func(&a->ftw, a->func_args), (int)FLAG(JSTR_IO_FTW_ACTIONRETVAL), 0, JSTR_INTERNAL_IO_FTW_RECURSE);
+		if (state == JSTR_INTERNAL_IO_FTW_RECURSE)
+			goto skip_fn;
+		if (state == JSTR_INTERNAL_IO_FTW_NEXT)
+			goto next_entry;
+		if (state == JSTR_INTERNAL_IO_FTW_SKIP_SIBLINGS)
+			break;
+		if (state == JSTR_INTERNAL_IO_FTW_STOP) {
+			*out_state = state;
+			closedir(dp);
+			return JSTR_RET_SUCC;
 		}
+		*out_state = JSTR_INTERNAL_IO_FTW_ERROR;
+		closedir(dp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 skip_fn:
 		/* Don't traverse subdirectories when we don't need to. */
 		if (FLAG(JSTR_IO_FTW_NOSUBDIR))
@@ -1494,18 +1587,17 @@ skip_fn:
 		int filefd = -1;
 		(void)filefd;
 		OPENAT(filefd, dirfd, a->ftw.ep->d_name, O_RDONLY | JSTR_INTERNAL_IO_O_DIRECTORY, goto next_entry);
-		tmp = jstr_internal_io_ftw_len(a, a->ftw.dirpath_len, filefd);
-		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
-			if (jstr_unlikely(a->action_stop)) {
+		{
+			jstr_internal_io_ftw_state_ty child_state = JSTR_INTERNAL_IO_FTW_FINISH;
+			tmp = jstr_internal_io_ftw_walk(a, a->ftw.dirpath_len, filefd, &child_state);
+			state = jstr_internal_io_ftw_map_child(child_state);
+			if (state == JSTR_INTERNAL_IO_FTW_STOP) {
+				*out_state = state;
 				closedir(dp);
 				return JSTR_RET_SUCC;
 			}
-			if (jstr_unlikely(jstr_chk(tmp))) {
-				closedir(dp);
-				JSTR_RETURN_ERR(JSTR_RET_ERR);
-			}
-		} else {
-			if (jstr_chk(tmp)) {
+			if (state == JSTR_INTERNAL_IO_FTW_ERROR || jstr_chk(tmp)) {
+				*out_state = JSTR_INTERNAL_IO_FTW_ERROR;
 				closedir(dp);
 				JSTR_RETURN_ERR(JSTR_RET_ERR);
 			}
@@ -1513,7 +1605,44 @@ skip_fn:
 next_entry:;
 	}
 	closedir(dp);
+	*out_state = JSTR_INTERNAL_IO_FTW_FINISH;
 	return JSTR_RET_SUCC;
+}
+#	endif
+
+/**
+ * @anchor spec_jstr_internal_io_ftw_len
+ * @brief Run a file-tree walk and return the public-style status code.
+ *
+ * @details This function is part of the io.c traversal contract. It reads only
+ *          the inputs named below and writes only the walk state reachable
+ *          through a. All pointer inputs must remain valid for the call
+ *          duration. Failures leave no published callback result behind,
+ *          because the underlying walk reports errors through its return code.
+ * @pre a is non-NULL, a->ftw.dirpath is valid, and the module is initialized.
+ * @param a struct jstr_internal_io_ftw_data *a Walk state; must not be NULL.
+ * @param dirpath_len jstr_io_path_size_ty Length of the current directory path.
+ * @param dirfd int Directory file descriptor, or -1.
+ * @return JSTR_RET_SUCC on success; otherwise a typed error code.
+ * @post On success all directory streams are closed and the walk state is
+ *       terminal; on failure the caller retains ownership of caller-owned
+ *       inputs.
+ * @par Side Effects:
+ *   Only the walk state reachable through a is modified; directory streams are
+ *   opened/closed and the user callback is invoked.
+ * @par Threading and Reentrancy:
+ *   Single-threaded use only; callers must serialize access to a.
+ */
+JSTR_FUNC_MAY_NULL
+JSTR_NONNULL((1))
+int
+jstr_internal_io_ftw_len(struct jstr_internal_io_ftw_data *a, jstr_io_path_size_ty dirpath_len, int dirfd) JSTR_NOEXCEPT
+#	ifdef JSTR_IMPLEMENTATION
+{
+	jstr_internal_io_ftw_state_ty state = JSTR_INTERNAL_IO_FTW_FINISH;
+	int ret = jstr_internal_io_ftw_walk(a, dirpath_len, dirfd, &state);
+	(void)state;
+	return ret;
 }
 #	else
 ;
@@ -1612,24 +1741,15 @@ ftw:;
 		if (FLAG(JSTR_IO_FTW_REG))
 			if (!FLAG(JSTR_IO_FTW_DIR))
 				goto file;
-		int tmp;
-		tmp = func(&data.ftw, func_args);
-		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
-			if (tmp == JSTR_IO_FTW_RET_STOP) {
-				CLOSE(dirfd, );
-				return (jstr_ret_ty)tmp;
-			}
-			/* SKIP_SUBTREE/SKIP_SIBLINGS at root mean continue
-			 * (no parent/siblings to skip, recursion hasn't started) */
-			if (jstr_unlikely(tmp != JSTR_IO_FTW_RET_CONTINUE && tmp != JSTR_IO_FTW_RET_SKIP_SUBTREE && tmp != JSTR_IO_FTW_RET_SKIP_SIBLINGS)) {
-				CLOSE(dirfd, );
-				JSTR_RETURN_ERR(JSTR_RET_ERR);
-			}
-		} else {
-			if (jstr_chk(tmp)) {
-				CLOSE(dirfd, );
-				JSTR_RETURN_ERR(JSTR_RET_ERR);
-			}
+		int tmp = func(&data.ftw, func_args);
+		jstr_internal_io_ftw_state_ty root_state = jstr_internal_io_ftw_map_callback(tmp, (int)FLAG(JSTR_IO_FTW_ACTIONRETVAL), 1, JSTR_INTERNAL_IO_FTW_RECURSE);
+		if (root_state == JSTR_INTERNAL_IO_FTW_STOP) {
+			CLOSE(dirfd, );
+			return (jstr_ret_ty)JSTR_IO_FTW_RET_STOP;
+		}
+		if (root_state == JSTR_INTERNAL_IO_FTW_ERROR) {
+			CLOSE(dirfd, );
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		}
 file:;
 		data.func = func;
@@ -1637,7 +1757,6 @@ file:;
 		data.func_match = func_match;
 		data.ftw_flags = jstr_io_ftw_flags;
 		data.func_match_args = func_match_args;
-		data.action_stop = 0;
 		tmp = jstr_internal_io_ftw_len(&data, dirpath_len, dirfd);
 		return tmp;
 	}

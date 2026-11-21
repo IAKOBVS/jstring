@@ -2,8 +2,9 @@
 /* Copyright (c) 2023-2026 James Tirta Halim <tirtajames45 at gmail dot com> */
 
 /* Edge cases for the in-place remove/replace loops in replace.h and regex.h.
- * These loops were rewritten to avoid goto and to share the zero-length-match
- * handling helper in regex.h, so this test pins down their exact semantics:
+ * These loops now use the explicit iterator in include/internal/inplace.h
+ * (SCAN/COMMIT/GROW/DONE/ERR) with shared zero-length handling, so this test
+ * pins down their exact semantics:
  * matched-at-start/end, n limits, start_idx, equal/shrinking/growing
  * replacements, and zero-length regex matches. */
 
